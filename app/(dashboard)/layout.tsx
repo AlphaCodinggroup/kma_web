@@ -11,7 +11,8 @@ export default async function PrivateLayout({
   children: React.ReactNode;
 }) {
   // Guard server-side (redirige a /login si no hay sesión)
-  await ensureAuthenticated();
+  //! DESCOMENTAR CUANDO ESTEN BACKEND Y AUTH LISTOS
+  // await ensureAuthenticated();
 
   // Si pasa el guard, renderizamos normalmente
   return <main className="min-h-dvh bg-white text-black">{children}</main>;

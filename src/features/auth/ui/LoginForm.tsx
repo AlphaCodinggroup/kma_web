@@ -5,7 +5,7 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { Button, Input, Label, ErrorText, HelpText } from "@shared/ui/controls";
-import { loginUsecase } from "@entities/user/lib/usecases/login";
+import { loginUsecase } from "@features/auth/lib/usecases/login";
 
 const LoginSchema = z.object({
   username: z.string().min(1, "Enter your username"),
