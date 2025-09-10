@@ -6,12 +6,15 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.2"
+    "next": "15.5.2",
+    "axios": "^1.7.7",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "typescript": "^5",
