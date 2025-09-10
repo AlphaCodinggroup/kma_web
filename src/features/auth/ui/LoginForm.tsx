@@ -1,97 +1,101 @@
 "use client";
 
 import * as React from "react";
-import {
-  BrandTitle,
-  Card,
-  Field,
-  Input,
-  PasswordInput,
-  Button,
-  FormError,
-} from "@shared/ui/controls";
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { Button, Input, Label, ErrorText, HelpText } from "@shared/ui/controls";
+import { loginUsecase } from "@entities/user/lib/usecases/login";
+
+const LoginSchema = z.object({
+  username: z.string().min(1, "Enter your username"),
+  password: z.string().min(1, "Enter your password"),
+});
 
 export default function LoginForm() {
+  const router = useRouter();
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-
-  const userRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    // auto-focus en usuario
-    userRef.current?.focus();
-  }, []);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
+    setFormError(null);
 
-    if (!username || password.length < 6) {
-      setError("Ingresá usuario y contraseña (mín. 6 caracteres).");
+    const parsed = LoginSchema.safeParse({ username, password });
+    if (!parsed.success) {
+      const msg = parsed.error.errors[0]?.message ?? "Check the entered data.";
+      setFormError(msg);
       return;
     }
 
-    setLoading(true);
-    try {
-      // TODO: Reemplazar por backend real con cookies httpOnly:
-      // const res = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ username, password }),
-      //   credentials: "include",
-      // });
-      // if (!res.ok) throw new Error("Credenciales inválidas");
-      // --> redirigir a /(dashboard) o /audits
-
-      // Simulación mínima mientras no hay API:
-      await new Promise((r) => setTimeout(r, 350));
-    } catch (err: any) {
-      setError(err?.message ?? "Error de autenticación");
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   setIsLoading(true);
+    //   await loginUsecase({ username, password });
+    //   // Importante: el route handler setea cookies httpOnly;
+    //   // navegamos y refrescamos para asegurar estado.
+    //   router.push("/dashboard" as Route);
+    //   router.refresh();
+    // } catch (err: any) {
+    //   setFormError(err?.message ?? "Failed to log in.");
+    // } finally {
+    //   setIsLoading(false);
+    // }
+    router.push("/dashboard" as Route);
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto">
-      <BrandTitle title="KMA" className="mb-6" />
-      <Card>
-        <form onSubmit={onSubmit} className="space-y-4" noValidate>
-          <Field label="Usuario" htmlFor="username">
+    <div className="w-full">
+      {/* Card */}
+      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-2 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight text-black">
+            KMA
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Log in to access the dashboard.
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={onSubmit} className="px-6 pb-6 pt-4 space-y-4">
+          <div>
+            <Label htmlFor="username">Username</Label>
             <Input
               id="username"
-              ref={userRef}
-              placeholder="usuario"
+              name="username"
+              placeholder="your-username"
+              autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-              required
-              aria-invalid={!!error && !username}
+              aria-invalid={!!formError}
             />
-          </Field>
+            <HelpText>Use your assigned username.</HelpText>
+          </div>
 
-          <Field label="Contraseña" htmlFor="password">
-            <PasswordInput
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input
               id="password"
+              name="password"
+              type="password"
               placeholder="••••••••"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-              minLength={6}
-              aria-invalid={!!error && password.length < 6}
+              aria-invalid={!!formError}
             />
-          </Field>
+          </div>
 
-          <FormError message={error} />
+          {formError ? <ErrorText>{formError}</ErrorText> : null}
 
-          <Button type="submit" loading={loading} className="w-full">
-            Entrar
+          <Button type="submit" isLoading={isLoading}>
+            Log in
           </Button>
         </form>
-      </Card>
+      </div>
     </div>
   );
 }

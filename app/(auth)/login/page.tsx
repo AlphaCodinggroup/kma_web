@@ -3,7 +3,7 @@ import LoginForm from "@features/auth/ui/LoginForm";
 
 export const metadata: Metadata = {
   title: "Login — KMA_web",
-  description: "Accedé al dashboard de auditorías",
+  description: "Access the audit dashboard",
 };
 
 export default function Page() {
