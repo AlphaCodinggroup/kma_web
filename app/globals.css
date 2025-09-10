@@ -1,26 +1,124 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --kma-bg: #ffffff; /* Fondo general */
+    --kma-fg: #111111; /* Texto principal */
+    --kma-border: #e5e5e5; /* Bordes sutiles */
+
+    --kma-input: #f5f5f5; /* Fondo de inputs */
+    --kma-input-fg: #111111; /* Texto en inputs */
+    --kma-input-border: #e5e5e5; /* Borde inputs */
+    --kma-input-focus: #ebebeb; /* Fondo en foco */
+    --kma-ring: 0 0% 0% / 0.2; /* Ring negro 20% (H S L / alpha) */
+
+    --kma-primary: #000000; /* Botones, acentos */
+    --kma-primary-contrast: #ffffff;
+    --kma-link: #111111; /* Links subrayados sutiles */
+    --kma-link-hover: #000000;
+  }
+
+  html,
+  body,
+  :root {
+    height: 100%;
+  }
+
+  body {
+    background: var(--kma-bg);
+    color: var(--kma-fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Noto Sans", Ubuntu, Cantarell, "Helvetica Neue", Arial;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a {
+    color: var(--kma-link);
+    text-decoration: underline;
+    text-decoration-color: color-mix(
+      in oklab,
+      var(--kma-link) 35%,
+      transparent
+    );
+    text-underline-offset: 2px;
+  }
+  a:hover {
+    color: var(--kma-link-hover);
+    text-decoration-color: currentColor;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Utilidades globales alineadas al dashboard */
+@layer utilities {
+  .container-app {
+    @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--kma-border);
+    border-radius: 1rem; /* 2xl */
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  /* ---- INPUTS (claro por defecto) ---- */
+  .input {
+    height: 2.5rem; /* h-10 */
+    width: 100%;
+    border-radius: 0.5rem; /* md */
+    border: 1px solid var(--kma-input-border);
+    background: var(--kma-input);
+    color: var(--kma-input-fg);
+    padding: 0.5rem 0.75rem; /* py-2 px-3 */
+    font-size: 0.875rem; /* text-sm */
+    outline: none;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .input::placeholder {
+    color: color-mix(in oklab, var(--kma-input-fg) 55%, transparent);
+  }
+  .input:focus {
+    background: var(--kma-input-focus);
+    border-color: var(--kma-input-border);
+    /* ring negro 20% */
+    box-shadow: 0 0 0 3px hsl(var(--kma-ring));
+  }
+
+  /* Normaliza inputs nativos por si se usa <input> sin clase */
+  input[type],
+  textarea,
+  select {
+    background: var(--kma-input);
+    color: var(--kma-input-fg);
+    border: 1px solid var(--kma-input-border);
+  }
+  input[type]:focus,
+  textarea:focus,
+  select:focus {
+    background: var(--kma-input-focus);
+    box-shadow: 0 0 0 3px hsl(var(--kma-ring));
+  }
+
+  /* ---- Botones ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    padding: 0 1rem;
+    border-radius: 0.5rem;
+    background: var(--kma-primary);
+    color: var(--kma-primary-contrast);
+    transition: opacity 0.15s ease;
+    user-select: none;
+  }
+  .btn:hover {
+    opacity: 0.92;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
