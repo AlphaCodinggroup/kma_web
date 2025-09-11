@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ES2022"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -21,24 +17,13 @@
     "moduleDetection": "force",
     "baseUrl": ".",
     "paths": {
-      "@app/*": [
-        "app/*"
-      ],
-      "@shared/*": [
-        "src/shared/*"
-      ],
-      "@entities/*": [
-        "src/entities/*"
-      ],
-      "@features/*": [
-        "src/features/*"
-      ],
-      "@widgets/*": [
-        "src/widgets/*"
-      ],
-      "@processes/*": [
-        "src/processes/*"
-      ]
+      "@app/*": ["app/*"],
+      "@shared/*": ["src/shared/*"],
+      "@entities/*": ["src/entities/*"],
+      "@features/*": ["src/features/*"],
+      "@widgets/*": ["src/widgets/*"],
+      "@processes/*": ["src/processes/*"],
+      "@components/*": ["src/components/*"]
     },
     "plugins": [
       {
@@ -47,13 +32,6 @@
     ],
     "incremental": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
