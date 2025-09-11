@@ -22,12 +22,9 @@ const PrivateLayout: React.FC<PrivateLayoutProps> = async ({ children }) => {
   return (
     <div className="bg-white text-black">
       <AppHeader />
-      <div
-        className="flex h-[calc(100dvh-56px)] min-h-0"
-        style={{ height: `calc(100dvh - ${HEADER_HEIGHT}px)` }}
-      >
+      <div className="flex h-[calc(100dvh-64px)] min-h-0">
         <SidebarNav />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-hidden">
           <div className="mx-auto p-6">{children}</div>
         </main>
       </div>

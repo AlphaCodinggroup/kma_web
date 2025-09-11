@@ -1,10 +1,7 @@
 "use client";
 
+import { cn } from "@shared/lib/cn";
 import * as React from "react";
-
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(

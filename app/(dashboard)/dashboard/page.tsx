@@ -1,4 +1,4 @@
-import DashboardActivitySection from "@widgets/dashboard/DashbiardActivitySection";
+import DashboardActivitySection from "@widgets/dashboard/DashboardActivitySection";
 import DashboardMetrics from "@widgets/dashboard/DashboardMetrics";
 
 const activity = [
