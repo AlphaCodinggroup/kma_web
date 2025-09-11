@@ -7,7 +7,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from "@components/ui/card";
+} from "@shared/ui/card";
 import ActivityItem from "./ActivityItem";
 
 export type Activity = {

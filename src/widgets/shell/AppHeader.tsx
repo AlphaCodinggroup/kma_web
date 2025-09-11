@@ -16,7 +16,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 }) => {
   return (
     <header className="sticky top-0 z-40 h-16 border-b border-gray-200 bg-white">
-      <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between px-6">
+      <div className="flex h-full items-center justify-between px-6">
         {/* Título izquierda */}
         <div className="text-xl font-bold tracking-wide text-black">
           {title}

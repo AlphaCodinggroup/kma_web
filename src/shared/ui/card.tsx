@@ -1,11 +1,7 @@
 "use client";
 
+import { cn } from "@shared/lib/cn";
 import * as React from "react";
-
-/** util mínima para combinar classNames sin dependencias */
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
