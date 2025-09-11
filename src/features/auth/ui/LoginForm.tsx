@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useState, type FormEvent } from "react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -12,14 +12,14 @@ const LoginSchema = z.object({
   password: z.string().min(1, "Enter your password"),
 });
 
-export default function LoginForm() {
+const LoginForm: React.FC = () => {
   const router = useRouter();
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [formError, setFormError] = React.useState<string | null>(null);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormError(null);
 
@@ -43,7 +43,7 @@ export default function LoginForm() {
     //   setIsLoading(false);
     // }
     router.push("/dashboard" as Route);
-  }
+  };
 
   return (
     <div className="w-full">
@@ -98,4 +98,6 @@ export default function LoginForm() {
       </div>
     </div>
   );
-}
+};
+
+export default LoginForm;

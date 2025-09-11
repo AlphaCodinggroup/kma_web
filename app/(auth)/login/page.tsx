@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Access the audit dashboard",
 };
 
-export default function Page() {
+const Page: React.FC = () => {
   return (
     <main className="min-h-dvh grid place-items-center p-6">
       <div className="w-full max-w-sm">
@@ -14,4 +14,6 @@ export default function Page() {
       </div>
     </main>
   );
-}
+};
+
+export default Page;

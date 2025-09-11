@@ -1,4 +1,4 @@
-export default function DashboardPage() {
+const DashboardPage: React.FC = () => {
   return (
     <section className="p-6">
       <h1 className="text-2xl font-semibold">Dashboard</h1>
@@ -8,4 +8,5 @@ export default function DashboardPage() {
       </p>
     </section>
   );
-}
+};
+export default DashboardPage;
