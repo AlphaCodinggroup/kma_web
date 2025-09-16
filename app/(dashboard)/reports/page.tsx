@@ -1,12 +1,18 @@
+<<<<<<< HEAD
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+=======
+>>>>>>> develop
 import ReportsSearchCard from "@features/reports/ui/ReportsSearchCard";
 import ReportsListCard from "@features/reports/ui/ReportsListCard";
 import type { ReportRowVM } from "@features/reports/ui/ReportsTable";
 import PageHeader from "@shared/ui/page-header";
 import { cn } from "@shared/lib/cn";
+<<<<<<< HEAD
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+=======
+>>>>>>> develop
 
 const MOCK_ITEMS: ReportRowVM[] = [
   {
@@ -41,6 +47,7 @@ const MOCK_ITEMS: ReportRowVM[] = [
   },
 ];
 
+<<<<<<< HEAD
 // normaliza para búsqueda insensible a mayúsculas/acentos
 function norm(s: string) {
   return (
@@ -100,6 +107,11 @@ export default function ReportsPage() {
 
   return (
     <main className={cn("min-h-dvh overflow-hidden bg-white p-6 md:p-8")}>
+=======
+const ReportsPage: React.FC = () => {
+  return (
+    <main className={cn("min-h-dv hoverflow-hidden bg-white")}>
+>>>>>>> develop
       {/* Page header */}
       <PageHeader
         title="Generated Reports"
@@ -108,6 +120,7 @@ export default function ReportsPage() {
 
       {/* Search card */}
       <div className="mb-6">
+<<<<<<< HEAD
         <ReportsSearchCard
           value={query}
           onValueChange={setQuery}
@@ -121,9 +134,24 @@ export default function ReportsPage() {
       <ReportsListCard
         items={filtered}
         totalCount={filtered.length}
+=======
+        <ReportsSearchCard placeholder="Search by project name, auditor, or report ID…" />
+      </div>
+
+      {/* List card con tabla */}
+      <ReportsListCard
+        items={MOCK_ITEMS}
+        totalCount={MOCK_ITEMS.length}
+>>>>>>> develop
         description="Complete list of generated audit reports"
         bodyMaxHeightClassName="max-h-[560px]"
       />
     </main>
   );
+<<<<<<< HEAD
 }
+=======
+};
+
+export default ReportsPage;
+>>>>>>> develop
