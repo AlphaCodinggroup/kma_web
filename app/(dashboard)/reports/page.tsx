@@ -1,8 +1,18 @@
+<<<<<<< HEAD
+"use client";
+
+import React, { useEffect, useMemo, useState } from "react";
+=======
+>>>>>>> develop
 import ReportsSearchCard from "@features/reports/ui/ReportsSearchCard";
 import ReportsListCard from "@features/reports/ui/ReportsListCard";
 import type { ReportRowVM } from "@features/reports/ui/ReportsTable";
 import PageHeader from "@shared/ui/page-header";
 import { cn } from "@shared/lib/cn";
+<<<<<<< HEAD
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+=======
+>>>>>>> develop
 
 const MOCK_ITEMS: ReportRowVM[] = [
   {
@@ -37,9 +47,71 @@ const MOCK_ITEMS: ReportRowVM[] = [
   },
 ];
 
+<<<<<<< HEAD
+// normaliza para búsqueda insensible a mayúsculas/acentos
+function norm(s: string) {
+  return (
+    s
+      .normalize("NFD")
+      // @ts-expect-error: Unicode category needs 'u' flag
+      .replace(/\p{Diacritic}/gu, "")
+      .toLowerCase()
+  );
+}
+
+export default function ReportsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const initialQ = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(initialQ);
+
+  // Mantener estado en sync si cambia el URL (back/forward)
+  useEffect(() => {
+    const next = searchParams.get("q") ?? "";
+    if (next !== query) setQuery(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const filtered = useMemo(() => {
+    const q = norm(query.trim());
+    if (!q) return MOCK_ITEMS;
+
+    return MOCK_ITEMS.filter((r) => {
+      const haystack = [
+        r.id,
+        r.projectName,
+        r.auditor,
+        r.reviewer,
+        new Date(r.generatedDate).toLocaleDateString(),
+      ]
+        .filter(Boolean)
+        .map((v) => norm(String(v)));
+
+      return haystack.some((v) => v.includes(q));
+    });
+  }, [query]);
+
+  // Navegación -> reemplaza ?q= (debounced desde ReportsSearchCard)
+  function updateQueryParam(next: string) {
+    const sp = new URLSearchParams(searchParams.toString());
+    const value = next.trim();
+    if (value) sp.set("q", value);
+    else sp.delete("q");
+
+    const qs = sp.toString();
+    const href = qs ? `${pathname}?${qs}` : pathname;
+    router.replace(href, { scroll: false });
+  }
+
+  return (
+    <main className={cn("min-h-dvh overflow-hidden bg-white p-6 md:p-8")}>
+=======
 const ReportsPage: React.FC = () => {
   return (
     <main className={cn("min-h-dv hoverflow-hidden bg-white")}>
+>>>>>>> develop
       {/* Page header */}
       <PageHeader
         title="Generated Reports"
@@ -48,6 +120,21 @@ const ReportsPage: React.FC = () => {
 
       {/* Search card */}
       <div className="mb-6">
+<<<<<<< HEAD
+        <ReportsSearchCard
+          value={query}
+          onValueChange={setQuery}
+          onDebouncedChange={updateQueryParam}
+          placeholder="Search by project name, auditor, or report ID…"
+          debounceMs={350}
+        />
+      </div>
+
+      {/* List card con tabla (usa filtrados) */}
+      <ReportsListCard
+        items={filtered}
+        totalCount={filtered.length}
+=======
         <ReportsSearchCard placeholder="Search by project name, auditor, or report ID…" />
       </div>
 
@@ -55,11 +142,16 @@ const ReportsPage: React.FC = () => {
       <ReportsListCard
         items={MOCK_ITEMS}
         totalCount={MOCK_ITEMS.length}
+>>>>>>> develop
         description="Complete list of generated audit reports"
         bodyMaxHeightClassName="max-h-[560px]"
       />
     </main>
   );
+<<<<<<< HEAD
+}
+=======
 };
 
 export default ReportsPage;
+>>>>>>> develop
