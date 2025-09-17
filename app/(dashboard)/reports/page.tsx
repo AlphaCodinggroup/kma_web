@@ -7,6 +7,7 @@ import type { ReportRowVM } from "@features/reports/ui/ReportsTable";
 import PageHeader from "@shared/ui/page-header";
 import { cn } from "@shared/lib/cn";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import type { Route } from "next";
 
 const MOCK_ITEMS: ReportRowVM[] = [
   {
@@ -43,16 +44,13 @@ const MOCK_ITEMS: ReportRowVM[] = [
 
 // normaliza para búsqueda insensible a mayúsculas/acentos
 function norm(s: string) {
-  return (
-    s
-      .normalize("NFD")
-      // @ts-expect-error: Unicode category needs 'u' flag
-      .replace(/\p{Diacritic}/gu, "")
-      .toLowerCase()
-  );
+  return s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
 }
 
-export default function ReportsPage() {
+const ReportsPage: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -95,7 +93,7 @@ export default function ReportsPage() {
 
     const qs = sp.toString();
     const href = qs ? `${pathname}?${qs}` : pathname;
-    router.replace(href, { scroll: false });
+    router.replace(href as Route, { scroll: false });
   }
 
   return (
@@ -126,4 +124,6 @@ export default function ReportsPage() {
       />
     </main>
   );
-}
+};
+
+export default ReportsPage;
