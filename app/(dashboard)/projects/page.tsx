@@ -62,6 +62,7 @@ const ProjectsPage: React.FC = () => {
         total={filtered.length}
         query={query}
         onQueryChange={setQuery}
+        placeholder="Search projects by Project name, Auditor, or Building..."
       >
         <ProjectsTable items={filtered} onEdit={() => {}} onDelete={() => {}} />
       </ProjectsSearchCard>

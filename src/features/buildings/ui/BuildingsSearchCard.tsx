@@ -1,26 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { type ReactNode } from "react";
 import { cn } from "@shared/lib/cn";
 import SearchInput from "@shared/ui/search-input";
 import TableHeader from "@shared/ui/table-header";
 
-export interface ProjectsSearchCardProps {
-  total: number;
+export interface BuildingsSearchCardProps {
+  total?: number;
   query: string;
   onQueryChange: (value: string) => void;
-  placeholder?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
+  placeholder?: string;
 }
 
-const ProjectsSearchCard: React.FC<ProjectsSearchCardProps> = ({
-  total,
+const BuildingsSearchCard: React.FC<BuildingsSearchCardProps> = ({
+  total = 0,
   query,
   onQueryChange,
-  placeholder = "Search projects...",
   children,
   className,
+  placeholder,
 }) => {
   return (
     <section
@@ -29,10 +29,9 @@ const ProjectsSearchCard: React.FC<ProjectsSearchCardProps> = ({
         className
       )}
     >
-      {/* Encabezado */}
-      <TableHeader title="Projects" subtitle="Total projects" total={total} />
+      {/* Header */}
+      <TableHeader title="Buildings" subtitle="Total buildings" total={total} />
 
-      {/* Buscador */}
       <div className="mb-4">
         <div className="relative">
           <SearchInput
@@ -43,11 +42,9 @@ const ProjectsSearchCard: React.FC<ProjectsSearchCardProps> = ({
           />
         </div>
       </div>
-
-      {/* Slot para la tabla/listado */}
       {children}
     </section>
   );
 };
 
-export default ProjectsSearchCard;
+export default BuildingsSearchCard;
