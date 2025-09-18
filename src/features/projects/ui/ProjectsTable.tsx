@@ -88,7 +88,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                       aria-label="Edit project"
                       className={cn(
                         "inline-flex h-9 w-9 items-center justify-center rounded-lg",
-                        "border border-gray-300 bg-white text-black",
+                        " bg-white text-black",
                         "transition-colors hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-black/30"
                       )}
                       onClick={() => onEdit?.(row.id)}
@@ -100,7 +100,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                       aria-label="Delete project"
                       className={cn(
                         "inline-flex h-9 w-9 items-center justify-center rounded-lg",
-                        "border border-gray-300 bg-white text-black",
+                        " bg-white text-black",
                         "transition-colors hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-black/30"
                       )}
                       onClick={() => onDelete?.(row.id)}
