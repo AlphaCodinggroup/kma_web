@@ -5,15 +5,30 @@ import {
   FileText,
   BarChart3,
   CheckCircle2,
+  UserPlus,
+  ShieldCheck,
+  BadgeCheck,
+  Briefcase,
   type LucideProps,
 } from "lucide-react";
 
-type IconKey = "file-text" | "bar-chart-3" | "check-circle-2";
+type IconKey =
+  | "file-text"
+  | "bar-chart-3"
+  | "check-circle-2"
+  | "user-plus"
+  | "shield-check"
+  | "badge-check"
+  | "brief-case";
 
 const ICONS: Record<IconKey, React.ComponentType<LucideProps>> = {
   "file-text": FileText,
   "bar-chart-3": BarChart3,
   "check-circle-2": CheckCircle2,
+  "user-plus": UserPlus,
+  "shield-check": ShieldCheck,
+  "badge-check": BadgeCheck,
+  "brief-case": Briefcase,
 };
 
 export type MetricCardProps = {
@@ -21,7 +36,6 @@ export type MetricCardProps = {
   value: React.ReactNode;
   subtitle?: string | undefined;
   icon?: IconKey | undefined;
-  /** id útil para tests (Playwright/Vitest) */
   "data-testid"?: string | undefined;
 };
 
