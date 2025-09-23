@@ -9,8 +9,10 @@ import {
 import ProjectsSearchCard from "@features/projects/ui/ProjectsSearchCard";
 import CreateProjectDialog from "@features/projects/ui/CreateProjectDialog";
 import EditProjectDialog from "@features/projects/ui/EditProjectDialog";
+import ConfirmDialog from "@shared/ui/confirm-dialog";
+import ConfirmTitle from "@shared/ui/confirm-title";
 
-const MOCK_ITEMS: ProjectRowVM[] = [
+const SEED_ITEMS: ProjectRowVM[] = [
   {
     id: "PRJ-001",
     name: "Safety Audit Q1 2024",
@@ -47,6 +49,7 @@ const BUILDING_OPTIONS = [
 ] as const;
 
 const ProjectsPage: React.FC = () => {
+  const [items, setItems] = useState<ProjectRowVM[]>(SEED_ITEMS);
   const [query, setQuery] = useState<string>("");
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
@@ -56,29 +59,33 @@ const ProjectsPage: React.FC = () => {
     auditorId?: string | undefined;
     buildingId?: string | undefined;
   } | null>(null);
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [projectToDelete, setProjectToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const auditors = useMemo(() => [...AUDITOR_OPTIONS], []);
   const buildings = useMemo(() => [...BUILDING_OPTIONS], []);
 
   const filtered = useMemo<ProjectRowVM[]>(() => {
-    if (!query.trim()) return MOCK_ITEMS;
+    if (!query.trim()) return items;
     const q = query.toLowerCase();
-    return MOCK_ITEMS.filter(
+    return items.filter(
       (it) =>
         it.name.toLowerCase().includes(q) ||
         it.auditor.toLowerCase().includes(q) ||
         it.building.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [items, query]);
 
   const handleEdit = (id: string) => {
-    const row = MOCK_ITEMS.find((r) => r.id === id);
+    const row = items.find((r) => r.id === id);
     if (!row) return;
 
     const auditorId = auditors.find(
       (a) => a.name.toLowerCase() === row.auditor.toLowerCase()
     )?.id;
-
     const buildingId = buildings.find(
       (b) => b.name.toLowerCase() === row.building.toLowerCase()
     )?.id;
@@ -97,6 +104,20 @@ const ProjectsPage: React.FC = () => {
 
     setSelectedProject(next);
     setOpenEdit(true);
+  };
+
+  const handleDelete = (id: string) => {
+    const row = items.find((r) => r.id === id);
+    if (!row) return;
+    setProjectToDelete({ id: row.id, name: row.name });
+    setOpenDelete(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!projectToDelete) return;
+    setItems((prev) => prev.filter((it) => it.id !== projectToDelete.id));
+    setOpenDelete(false);
+    setProjectToDelete(null);
   };
 
   return (
@@ -120,7 +141,7 @@ const ProjectsPage: React.FC = () => {
         <ProjectsTable
           items={filtered}
           onEdit={handleEdit}
-          onDelete={() => {}}
+          onDelete={handleDelete}
         />
       </ProjectsSearchCard>
 
@@ -131,7 +152,18 @@ const ProjectsPage: React.FC = () => {
         auditors={auditors}
         buildings={buildings}
         onSubmit={async (v) => {
-          console.log("create:", v);
+          const auditorName =
+            auditors.find((a) => a.id === v.auditorId)?.name ?? "—";
+          const buildingName =
+            buildings.find((b) => b.id === v.buildingId)?.name ?? "—";
+          const newRow: ProjectRowVM = {
+            id: `PRJ-${String(Date.now()).slice(-6)}`,
+            name: v.name,
+            auditor: auditorName,
+            building: buildingName,
+            createdISO: new Date().toISOString().slice(0, 10),
+          };
+          setItems((prev) => [newRow, ...prev]);
           setOpenCreate(false);
         }}
       />
@@ -144,14 +176,52 @@ const ProjectsPage: React.FC = () => {
             setOpenEdit(o);
             if (!o) setSelectedProject(null);
           }}
-          project={selectedProject}
+          project={{
+            id: selectedProject.id,
+            name: selectedProject.name,
+            auditorId: selectedProject.auditorId ?? null,
+            buildingId: selectedProject.buildingId ?? null,
+          }}
           auditors={auditors}
           buildings={buildings}
           onSubmit={async (v) => {
-            console.log("update:", v);
+            setItems((prev) =>
+              prev.map((it) =>
+                it.id === v.id
+                  ? {
+                      ...it,
+                      name: v.name,
+                      auditor:
+                        auditors.find((a) => a.id === v.auditorId)?.name ??
+                        it.auditor,
+                      building:
+                        buildings.find((b) => b.id === v.buildingId)?.name ??
+                        it.building,
+                    }
+                  : it
+              )
+            );
             setOpenEdit(false);
             setSelectedProject(null);
           }}
+        />
+      )}
+
+      {/* Eliminar */}
+      {projectToDelete && (
+        <ConfirmDialog
+          open={openDelete}
+          onOpenChange={(o) => {
+            setOpenDelete(o);
+            if (!o) setProjectToDelete(null);
+          }}
+          title={
+            <ConfirmTitle action="delete" subject={projectToDelete.name} />
+          }
+          description="This action cannot be undone."
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          onConfirm={confirmDelete}
         />
       )}
     </div>
