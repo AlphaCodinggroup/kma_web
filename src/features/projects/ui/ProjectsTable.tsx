@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@shared/ui/table";
 import { Pencil, Trash2 } from "lucide-react";
+import RowActionButton from "@shared/ui/row-action-button";
 
 export type ProjectRowVM = {
   id: string;
@@ -83,30 +84,19 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 </TableCell>
                 <TableCell className="px-4 py-4">
                   <div className="flex items-center justify-end gap-2">
-                    <button
-                      type="button"
-                      aria-label="Edit project"
-                      className={cn(
-                        "inline-flex h-9 w-9 items-center justify-center rounded-lg",
-                        " bg-white text-black",
-                        "transition-colors hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-black/30"
-                      )}
+                    <RowActionButton
+                      icon={Pencil}
+                      ariaLabel="Edit project"
                       onClick={() => onEdit?.(row.id)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="Delete project"
-                      className={cn(
-                        "inline-flex h-9 w-9 items-center justify-center rounded-lg",
-                        " bg-white text-black",
-                        "transition-colors hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-black/30"
-                      )}
+                      size="md"
+                    />
+                    <RowActionButton
+                      icon={Trash2}
+                      ariaLabel="Delete project"
                       onClick={() => onDelete?.(row.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                      variant="danger"
+                      size="md"
+                    />
                   </div>
                 </TableCell>
               </TableRow>
