@@ -6,8 +6,8 @@ type RootLayoutProps = {
 };
 
 export const metadata: Metadata = {
-  title: "KMA_web",
-  description: "Dashboard de auditorías — KMA_web",
+  title: "KMA",
+  description: "Dashboard de auditorías — KMA",
 };
 
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
