@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
+import RowActionButton from "@shared/ui/row-action-button";
 
 export interface BuildingRowVM {
   id: string;
@@ -85,30 +86,21 @@ const BuildingsTable: React.FC<BuildingsTableProps> = ({
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
                     {/* Edit */}
-                    <button
-                      type="button"
+                    <RowActionButton
+                      icon={Pencil}
+                      ariaLabel="Edit buildings"
                       onClick={() => onEdit?.(row.id)}
-                      className={cn(
-                        "inline-flex h-9 w-9 items-center justify-center ",
-                        "bg-white transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"
-                      )}
-                      aria-label="Edit building"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
+                      size="md"
+                    />
 
                     {/* Delete */}
-                    <button
-                      type="button"
-                      onClick={() => onDelete?.(row.id)}
-                      className={cn(
-                        "inline-flex h-9 w-9 items-center justify-center ",
-                        "bg-white transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"
-                      )}
-                      aria-label="Delete building"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <RowActionButton
+                      icon={Trash2}
+                      ariaLabel="Delete buildings"
+                      onClick={() => onEdit?.(row.id)}
+                      variant="danger"
+                      size="md"
+                    />
                   </div>
                 </TableCell>
               </TableRow>

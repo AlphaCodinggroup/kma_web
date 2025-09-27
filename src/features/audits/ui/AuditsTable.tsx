@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
+import RowActionButton from "@shared/ui/row-action-button";
 
 export interface AuditRowVM {
   id: string;
@@ -80,17 +81,12 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                 </TableCell>
                 <TableCell className="tabular-nums">{row.auditDate}</TableCell>
                 <TableCell className="text-right pr-6">
-                  <button
-                    type="button"
-                    aria-label={`Edit ${row.id}`}
+                  <RowActionButton
+                    icon={Pencil}
+                    ariaLabel="Delete project"
                     onClick={() => onEdit?.(row.id)}
-                    className={cn(
-                      "inline-flex h-8 w-8 items-center justify-center rounded-md",
-                      "transition-colors hover:bg-gray-100"
-                    )}
-                  >
-                    <Pencil className="h-4 w-4 text-gray-700" aria-hidden />
-                  </button>
+                    size="md"
+                  />
                 </TableCell>
               </TableRow>
             ))}
