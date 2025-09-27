@@ -52,7 +52,7 @@ const RowActionButton: React.FC<RowActionButtonProps> = ({
       aria-label={ariaLabel}
       title={ariaLabel}
       className={cn(
-        "inline-flex items-center justify-center transition-colors",
+        "inline-flex items-center justify-center transition-colors cursor-pointer",
         sizeCls,
         variantCls,
         disabledCls,

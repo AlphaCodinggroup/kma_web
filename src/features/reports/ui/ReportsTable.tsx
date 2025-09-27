@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
+import RowActionButton from "@shared/ui/row-action-button";
 
 /** ViewModel mínimo para la tabla (visual-only). */
 export interface ReportRowVM {
@@ -36,22 +37,6 @@ export interface ReportsTableProps {
   bodyMaxHeightClassName?: string;
   emptyMessage?: string;
 }
-
-/** Botón estilo outline (local al componente, reusable si luego lo extraemos a @shared/ui). */
-const OutlineButton: React.FC<
-  React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ className, children, ...props }) => (
-  <button
-    className={cn(
-      "inline-flex items-center rounded-xl border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-900",
-      "hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300",
-      className
-    )}
-    {...props}
-  >
-    {children}
-  </button>
-);
 
 /**
  * Tabla de Reports: columnas
@@ -85,7 +70,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               <TableHead>Generated Date</TableHead>
               <TableHead className="text-right">Findings</TableHead>
               <TableHead className="text-right">Total Cost</TableHead>
-              <TableHead className="w-[220px]">Actions</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -127,28 +112,26 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                       <div className="flex items-center gap-2">
                         {/* View */}
                         <Link href={viewHref}>
-                          <OutlineButton
-                            aria-label="View"
+                          <RowActionButton
+                            icon={Eye}
+                            ariaLabel="Delete project"
                             onClick={(e) => {
                               if (onView) {
                                 e.preventDefault();
                                 onView(r.auditId);
                               }
                             }}
-                          >
-                            <Eye className="mr-2 h-4 w-4" />
-                            View
-                          </OutlineButton>
+                            size="md"
+                          />
                         </Link>
 
                         {/* Download */}
-                        <OutlineButton
-                          aria-label="Download"
+                        <RowActionButton
+                          icon={Download}
+                          ariaLabel="Delete project"
                           onClick={() => onDownload?.(r.id)}
-                        >
-                          <Download className="mr-2 h-4 w-4" />
-                          Download
-                        </OutlineButton>
+                          size="md"
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

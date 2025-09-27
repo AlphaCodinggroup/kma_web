@@ -9,6 +9,7 @@ import AuditQuestionsHeader, {
 } from "./AuditQuestionsHeader";
 import ReportItemsTable from "./ReportItemsTable";
 import FinalReportHeader from "./FinalReportHeader";
+import CommentsSidebar from "./CommentsSidebar";
 
 export type ReportSeverity = "high" | "medium" | "low";
 export interface ReportItemVM {
@@ -26,10 +27,14 @@ export interface AuditEditContentProps {
   activeTab?: AuditEditTab;
   defaultTab?: AuditEditTab;
   onChangeTab?: (tab: AuditEditTab) => void;
+
+  // preguntas
   filterMode?: QuestionsFilterMode;
   defaultFilterMode?: QuestionsFilterMode;
   onToggleFilter?: () => void;
-  onExportPdf?: () => void;
+
+  // reporte
+  onExportPdf?: (() => void) | undefined;
   formatCurrency?: (n: number) => string;
 
   className?: string;
@@ -41,9 +46,11 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   activeTab,
   defaultTab = "questions",
   onChangeTab,
+
   filterMode,
   defaultFilterMode = "yes",
   onToggleFilter,
+
   onExportPdf,
   formatCurrency,
   className,
@@ -52,8 +59,14 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const [internalFilter, setInternalFilter] =
     useState<QuestionsFilterMode>(defaultFilterMode);
 
+  // Estado del panel de comentarios (cuando es undefined NO se muestra)
+  const [selectedCommentTarget, setSelectedCommentTarget] = useState<
+    { id: string; title: string } | undefined
+  >(undefined);
+
   const tab = activeTab ?? internalTab;
   const qFilter = filterMode ?? internalFilter;
+  const hasSidebar = !!selectedCommentTarget;
 
   const handleChangeTab = (t: AuditEditTab) =>
     onChangeTab ? onChangeTab(t) : setInternalTab(t);
@@ -97,7 +110,36 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         <section className="w-full px-4 sm:px-6 lg:px-8" aria-live="polite">
           <FinalReportHeader onExport={onExportPdf} className="mb-3" />
 
-          <ReportItemsTable items={reportItems} formatCurrency={toCurrency} />
+          <div className={cn("flex gap-4", "flex-col md:flex-row")}>
+            <div
+              className={cn(
+                "min-w-0 flex-1",
+                hasSidebar && "md:max-h-[70vh] md:overflow-y-auto pr-1"
+              )}
+            >
+              <ReportItemsTable
+                items={reportItems}
+                formatCurrency={toCurrency}
+                onAddComment={(row) => {
+                  setSelectedCommentTarget({
+                    id: row.id,
+                    title:
+                      (row as any).barrierStatement ??
+                      (row as any).title ??
+                      "Selected item",
+                  });
+                }}
+              />
+            </div>
+
+            {hasSidebar && (
+              <CommentsSidebar
+                selected={selectedCommentTarget}
+                onClose={() => setSelectedCommentTarget(undefined)}
+                className="md:w-[380px]"
+              />
+            )}
+          </div>
         </section>
       )}
     </div>

@@ -10,9 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import { Button } from "@shared/ui/controls";
-import { Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, MessageSquare } from "lucide-react";
 import type { ReportItemVM } from "./AuditEditContent";
+import RowActionButton from "@shared/ui/row-action-button";
+import { Button } from "@shared/ui/controls";
 
 /** VM para la tabla */
 export interface ReportBarrierRowVM {
@@ -154,15 +155,13 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
         <Table className="min-w-[1200px]">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[60px]">#</TableHead>
-              <TableHead className="min-w-[280px]">Barrier Statement</TableHead>
-              <TableHead className="min-w-[200px]">Code References</TableHead>
-              <TableHead className="min-w-[300px]">Photo</TableHead>
-              <TableHead className="min-w-[320px]">
-                Proposed Mitigation
-              </TableHead>
-              <TableHead className="w-[140px] text-right">Cost</TableHead>
-              <TableHead className="w-[140px] text-right">Actions</TableHead>
+              <TableHead>#</TableHead>
+              <TableHead>Barrier Statement</TableHead>
+              <TableHead>Code References</TableHead>
+              <TableHead>Photo</TableHead>
+              <TableHead>Proposed Mitigation</TableHead>
+              <TableHead>Cost</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -226,14 +225,12 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
 
                   {/* Actions */}
                   <TableCell className="text-right">
-                    <Button
-                      type="button"
-                      className="h-8 rounded-lg border bg-background px-3 text-xs hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"
+                    <RowActionButton
+                      icon={MessageSquare}
+                      ariaLabel="Delete project"
                       onClick={onAddComment ? () => onAddComment(r) : undefined}
-                      aria-label={`Add comment to ${r.id}`}
-                    >
-                      Add comment
-                    </Button>
+                      size="md"
+                    />
                   </TableCell>
                 </TableRow>
               ))
