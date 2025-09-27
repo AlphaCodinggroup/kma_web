@@ -154,14 +154,14 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
       <div className="w-full overflow-x-auto">
         <Table className="min-w-[1200px]">
           <TableHeader>
-            <TableRow>
-              <TableHead>#</TableHead>
+            <TableRow className="rounded-2xl">
+              <TableHead className="rounded-tl-2xl">#</TableHead>
               <TableHead>Barrier Statement</TableHead>
               <TableHead>Code References</TableHead>
               <TableHead>Photo</TableHead>
               <TableHead>Proposed Mitigation</TableHead>
               <TableHead>Cost</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="rounded-tr-2xl">Actions</TableHead>
             </TableRow>
           </TableHeader>
 
