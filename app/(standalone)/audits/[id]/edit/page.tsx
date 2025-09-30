@@ -5,10 +5,10 @@ import AuditEditContent from "@features/audits/ui/AuditEditContent";
 import type { QuestionItemVM } from "@features/audits/ui/AuditQuestionsList";
 import type { ReportItemVM } from "@features/audits/ui/AuditEditContent";
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-  searchParams?: Record<string, string | string[] | undefined>;
-};
+// type PageProps = {
+//   params: Promise<{ id: string }>;
+//   searchParams?: Record<string, string | string[] | undefined>;
+// };
 const projectName = "Green Tower – Phase A";
 const auditor = "María Pérez";
 const status = "in_review" as const;
@@ -100,7 +100,15 @@ const reportItems: ReportItemVM[] = [
   },
 ];
 
-const AuditEditPage: React.FC<PageProps> = async ({ params }) => {
+export default async function AuditEditPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams?:
+    | Record<string, string | string[] | undefined>
+    | Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { id: auditId } = await params;
 
   return (
@@ -122,6 +130,4 @@ const AuditEditPage: React.FC<PageProps> = async ({ params }) => {
       </div>
     </main>
   );
-};
-
-export default AuditEditPage;
+}
