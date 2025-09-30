@@ -100,16 +100,21 @@ const reportItems: ReportItemVM[] = [
   },
 ];
 
+async function unwrap<T>(maybePromise: T | Promise<T>): Promise<T> {
+  return maybePromise instanceof Promise ? await maybePromise : maybePromise;
+}
+
 export default async function AuditEditPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
+  params: { id: string } | Promise<{ id: string }>;
   searchParams?:
     | Record<string, string | string[] | undefined>
     | Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { id: auditId } = await params;
+  const { id: auditId } = await unwrap(params);
+  const sp = searchParams ? await unwrap(searchParams) : {};
 
   return (
     <main className="flex min-h-screen flex-col py-4 sm:py-6">
