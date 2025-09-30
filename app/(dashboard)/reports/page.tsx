@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import ReportsSearchCard from "@features/reports/ui/ReportsSearchCard";
 import ReportsListCard from "@features/reports/ui/ReportsListCard";
 import type { ReportRowVM } from "@features/reports/ui/ReportsTable";
@@ -50,7 +50,7 @@ function norm(s: string) {
     .toLowerCase();
 }
 
-const ReportsPage: React.FC = () => {
+function ReportsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -58,7 +58,6 @@ const ReportsPage: React.FC = () => {
   const initialQ = searchParams.get("q") ?? "";
   const [query, setQuery] = useState(initialQ);
 
-  // Mantener estado en sync si cambia el URL (back/forward)
   useEffect(() => {
     const next = searchParams.get("q") ?? "";
     if (next !== query) setQuery(next);
@@ -84,7 +83,6 @@ const ReportsPage: React.FC = () => {
     });
   }, [query]);
 
-  // Navegación -> reemplaza ?q= (debounced desde ReportsSearchCard)
   function updateQueryParam(next: string) {
     const sp = new URLSearchParams(searchParams.toString());
     const value = next.trim();
@@ -97,14 +95,12 @@ const ReportsPage: React.FC = () => {
   }
 
   return (
-    <main className={cn("min-h-dvh overflow-hidden bg-white p-6 md:p-8")}>
-      {/* Page header */}
+    <>
       <PageHeader
         title="Generated Reports"
         subtitle="View and download all audit reports"
       />
 
-      {/* Search card */}
       <div className="mb-6">
         <ReportsSearchCard
           value={query}
@@ -115,15 +111,33 @@ const ReportsPage: React.FC = () => {
         />
       </div>
 
-      {/* List card con tabla (usa filtrados) */}
       <ReportsListCard
         items={filtered}
         totalCount={filtered.length}
         description="Complete list of generated audit reports"
         bodyMaxHeightClassName="max-h-[560px]"
       />
+    </>
+  );
+}
+
+function ReportsFallback() {
+  // mantené la estética del zip (skeleton simple)
+  return (
+    <div className="space-y-4">
+      <div className="h-8 w-64 animate-pulse rounded-md bg-muted" />
+      <div className="h-24 w-full animate-pulse rounded-xl bg-muted/60" />
+      <div className="h-[420px] w-full animate-pulse rounded-xl bg-muted/40" />
+    </div>
+  );
+}
+
+export default function ReportsPage() {
+  return (
+    <main className={cn("min-h-dvh overflow-hidden bg-white ")}>
+      <Suspense fallback={<ReportsFallback />}>
+        <ReportsContent />
+      </Suspense>
     </main>
   );
-};
-
-export default ReportsPage;
+}
