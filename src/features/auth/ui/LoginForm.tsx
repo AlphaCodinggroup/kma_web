@@ -1,49 +1,61 @@
 "use client";
 
-import React, { useState, type FormEvent } from "react";
+import React from "react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input, Label, ErrorText, HelpText } from "@shared/ui/controls";
-import { loginUsecase } from "@features/auth/lib/usecases/login";
+import { loginWithPassword } from "@features/auth/lib/usecases/login";
 
+// Esquema zod
 const LoginSchema = z.object({
   username: z.string().min(1, "Enter your username"),
   password: z.string().min(1, "Enter your password"),
 });
 
+type FormValues = z.infer<typeof LoginSchema>;
+
 const LoginForm: React.FC = () => {
   const router = useRouter();
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [formError, setFormError] = useState<string | null>(null);
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // Configuración react-hook-form con zod
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<FormValues>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: { username: "", password: "" },
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
+
+  // Error global para mostrar en el bloque inferior del form
+  const [formError, setFormError] = React.useState<string | null>(null);
+
+  // Handler onSubmit con try/catch
+  const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
-
-    const parsed = LoginSchema.safeParse({ username, password });
-    if (!parsed.success) {
-      const msg = parsed.error.errors[0]?.message ?? "Check the entered data.";
-      setFormError(msg);
-      return;
+    try {
+      await loginWithPassword(values);
+      // Importante: el route handler setea cookies httpOnly;
+      // navegamos y refrescamos para asegurar estado.
+      console.log("NAVEGACION CORRECTA");
+      router.push("/dashboard" as Route);
+      router.refresh();
+    } catch (err: any) {
+      const message: string =
+        (typeof err?.message === "string" && err.message) ||
+        "Failed to log in. Please try again.";
+      // Mostramos error global y, opcionalmente, marcamos ambos campos
+      setFormError(message);
+      setError("username", { type: "server", message: " " }); // espacio evita layout shift
+      setError("password", { type: "server", message: " " });
     }
-
-    // try {
-    //   setIsLoading(true);
-    //   await loginUsecase({ username, password });
-    //   // Importante: el route handler setea cookies httpOnly;
-    //   // navegamos y refrescamos para asegurar estado.
-    //   router.push("/dashboard" as Route);
-    //   router.refresh();
-    // } catch (err: any) {
-    //   setFormError(err?.message ?? "Failed to log in.");
-    // } finally {
-    //   setIsLoading(false);
-    // }
-    router.push("/dashboard" as Route);
-  };
+  });
 
   return (
     <div className="w-full">
@@ -60,38 +72,49 @@ const LoginForm: React.FC = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={onSubmit} className="px-6 pb-6 pt-4 space-y-4">
+        <form
+          onSubmit={onSubmit}
+          className="px-6 pb-6 pt-4 space-y-4"
+          noValidate
+        >
           <div>
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
-              name="username"
               placeholder="your-username"
               autoComplete="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              aria-invalid={!!formError}
+              aria-invalid={!!errors.username || !!formError}
+              {...register("username")}
             />
-            <HelpText>Use your assigned username.</HelpText>
+            {errors.username ? (
+              <ErrorText>{errors.username.message}</ErrorText>
+            ) : (
+              <HelpText>Use your assigned username.</HelpText>
+            )}
           </div>
 
           <div>
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
-              name="password"
               type="password"
               placeholder="••••••••"
               autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              aria-invalid={!!formError}
+              aria-invalid={!!errors.password || !!formError}
+              {...register("password")}
             />
+            {errors.password ? (
+              <ErrorText>{errors.password.message}</ErrorText>
+            ) : null}
           </div>
 
           {formError ? <ErrorText>{formError}</ErrorText> : null}
 
-          <Button type="submit" isLoading={isLoading}>
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
+          >
             Log in
           </Button>
         </form>
