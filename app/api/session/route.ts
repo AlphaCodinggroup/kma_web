@@ -6,11 +6,7 @@
 // - Incluye DELETE para cerrar sesión (borra cookies).
 // -----------------------------------------------------------------------------------
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { z } from "zod";
 
 import { serverEnv } from "@shared/config/env";
@@ -28,35 +24,47 @@ const BodySchema = z.object({
 // -----------------------------
 // Helpers de cookies
 // -----------------------------
+const isLocalEnv =
+  process.env.NEXT_PUBLIC_APP_ENV === "development" ||
+  process.env.VERCEL_ENV === "development";
 
 /** Construye opciones comunes de cookie según .env (secure, sameSite, domain). */
 function commonCookieOptions() {
   const env = serverEnv();
+
+  // Inferencia simple de "ambiente local"
+
+  // Si es local, forzamos secure=false para que el navegador setee las cookies en HTTP
   const sameSiteLower = (env.cookies.sameSite.toLowerCase() ?? "lax") as
     | "lax"
     | "strict"
     | "none";
+
+  const secure = isLocalEnv ? false : env.cookies.secure;
+  const domain = isLocalEnv ? undefined : env.cookies.domain;
   return {
     httpOnly: true as const,
-    secure: env.cookies.secure,
+    secure,
     sameSite: sameSiteLower,
-    domain: env.cookies.domain,
+    domain,
     path: "/" as const,
   };
 }
 
 /** Setea cookies httpOnly para sesión: access, refresh y una flag de sesión. */
-async function setSessionCookies(params: {
-  accessToken: string;
-  refreshToken?: string;
-  accessTtlSeconds: number;
-}) {
+function setSessionCookies(
+  res: NextResponse,
+  params: {
+    accessToken: string;
+    refreshToken?: string;
+    accessTtlSeconds: number;
+  }
+) {
   const env = serverEnv();
-  const jar = await cookies();
   const base = commonCookieOptions();
 
   // Access token (TTL desde Cognito, p.ej. 3600s)
-  jar.set(env.cookies.accessName, params.accessToken, {
+  res.cookies.set(env.cookies.accessName, params.accessToken, {
     ...base,
     maxAge: params.accessTtlSeconds,
   });
@@ -64,7 +72,7 @@ async function setSessionCookies(params: {
   // Refresh token (TTL configurable en user pool; usamos fallback de 30 días si no viene)
   if (params.refreshToken) {
     const THIRTY_DAYS = 60 * 60 * 24 * 30;
-    jar.set(env.cookies.refreshName, params.refreshToken, {
+    res.cookies.set(env.cookies.refreshName, params.refreshToken, {
       ...base,
       // Si la app luego conoce el TTL real de refresh en server, cámbiese aquí.
       maxAge: THIRTY_DAYS,
@@ -72,7 +80,7 @@ async function setSessionCookies(params: {
   }
 
   // Cookie de marca de sesión (opcional, no sensible) para checks rápidos en UI/SSR
-  jar.set(env.cookies.sessionName, "1", {
+  res.cookies.set(env.cookies.sessionName, "1", {
     ...base,
     httpOnly: false, // puede ser leída por el cliente como simple flag
     maxAge: params.accessTtlSeconds,
@@ -80,15 +88,18 @@ async function setSessionCookies(params: {
 }
 
 /** Borra todas las cookies de sesión. */
-async function clearSessionCookies() {
+function clearSessionCookiesOnResponse(res: NextResponse) {
   const env = serverEnv();
-  const jar = await cookies();
   const base = commonCookieOptions();
 
-  jar.set(env.cookies.accessName, "", { ...base, maxAge: 0 });
-  jar.set(env.cookies.refreshName, "", { ...base, maxAge: 0 });
+  res.cookies.set(env.cookies.accessName, "", { ...base, maxAge: 0 });
+  res.cookies.set(env.cookies.refreshName, "", { ...base, maxAge: 0 });
   // La flag de sesión no es httpOnly; igual la limpiamos
-  jar.set(env.cookies.sessionName, "", { ...base, httpOnly: false, maxAge: 0 });
+  res.cookies.set(env.cookies.sessionName, "", {
+    ...base,
+    httpOnly: false,
+    maxAge: 0,
+  });
 }
 
 // -----------------------------
@@ -111,14 +122,15 @@ export async function POST(req: Request) {
     const tokens = await initiateAuthWithPassword(username, password);
 
     // Seteo de cookies httpOnly
-    setSessionCookies({
+    const res = NextResponse.json({ ok: true } as const, { status: 200 });
+    setSessionCookies(res, {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken ?? "",
       accessTtlSeconds: tokens.expiresInSeconds,
     });
 
     // Respondemos éxito sin exponer tokens
-    return NextResponse.json({ ok: true } as const, { status: 200 });
+    return res;
   } catch (e) {
     const err = e as ApiError;
     // Si el error vino del proveedor con mensaje claro (p.ej., credenciales inválidas),
@@ -138,7 +150,7 @@ export async function POST(req: Request) {
         ? 502
         : 400;
 
-    return NextResponse.json(
+    const res = NextResponse.json(
       {
         ok: false as const,
         code: err.code ?? "UNKNOWN_ERROR",
@@ -148,6 +160,11 @@ export async function POST(req: Request) {
       },
       { status }
     );
+    // En fallos de auth podría ser útil limpiar cualquier residuo
+    if (status === 401) {
+      clearSessionCookiesOnResponse(res);
+    }
+    return res;
   }
 }
 
@@ -156,6 +173,7 @@ export async function POST(req: Request) {
  * 204: borra cookies y no retorna body.
  */
 export async function DELETE() {
-  clearSessionCookies();
-  return new NextResponse(null, { status: 204 });
+  const res = new NextResponse(null, { status: 204 });
+  clearSessionCookiesOnResponse(res);
+  return res;
 }

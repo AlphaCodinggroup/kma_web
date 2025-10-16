@@ -43,6 +43,7 @@ const LoginForm: React.FC = () => {
       await loginWithPassword(values);
       // Importante: el route handler setea cookies httpOnly;
       // navegamos y refrescamos para asegurar estado.
+      console.log("NAVEGACION CORRECTA");
       router.push("/dashboard" as Route);
       router.refresh();
     } catch (err: any) {

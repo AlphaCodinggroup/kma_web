@@ -9,13 +9,16 @@ export const metadata: Metadata = {
   description: "Access the audit dashboard",
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const Page: React.FC = async () => {
   const env = serverEnv();
   const jar = await cookies();
-  const hasSessionFlag = jar.get(env.cookies.sessionName)?.value === "1";
+
   const hasAccess = !!jar.get(env.cookies.accessName)?.value;
 
-  if (hasSessionFlag || hasAccess) {
+  if (hasAccess) {
     redirect("/dashboard");
   }
 

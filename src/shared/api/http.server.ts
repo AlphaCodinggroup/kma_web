@@ -85,7 +85,6 @@ export function createServerHttp(
     // Adjunta Authorization: Bearer desde cookie httpOnly si se pidió
     if (opts?.withAuthCookie) {
       try {
-        // cookies() es síncrono en Next 14
         const jar = await cookies();
         const accessName = env.cookies.accessName;
         const raw = jar.get(accessName)?.value;
@@ -140,12 +139,11 @@ export function createServerHttp(
     },
     (err: AxiosError) => {
       // Errores previos a respuesta (DNS, timeout, etc.)
-      const url = err.config?.url ?? "";
       const msg =
         (err.response?.data as any)?.message ||
         err.message ||
         "Network request failed.";
-      const error = new Error(`Request failed on "${url}": ${msg}`);
+      const error = new Error(msg);
       (error as any).cause = err;
       throw error;
     }

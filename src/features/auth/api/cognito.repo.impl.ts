@@ -40,6 +40,14 @@ type CognitoInitiateAuthBody = Readonly<{
   };
 }>;
 
+type CognitoInitiateAuthRefreshBody = Readonly<{
+  AuthFlow: "REFRESH_TOKEN_AUTH";
+  ClientId: string;
+  AuthParameters: {
+    REFRESH_TOKEN: string;
+  };
+}>;
+
 // Modelo de dominio que exponemos a capas superiores
 export type AuthTokens = Readonly<{
   accessToken: string;
@@ -84,6 +92,20 @@ function buildInitiateAuthBody(
     AuthParameters: {
       USERNAME: username,
       PASSWORD: password,
+    },
+  };
+}
+
+/** Construye el body para InitiateAuth con REFRESH_TOKEN_AUTH. */
+function buildRefreshBody(
+  refreshToken: string
+): CognitoInitiateAuthRefreshBody {
+  const env = serverEnv();
+  return {
+    AuthFlow: "REFRESH_TOKEN_AUTH",
+    ClientId: env.cognito.clientId,
+    AuthParameters: {
+      REFRESH_TOKEN: refreshToken,
     },
   };
 }
@@ -143,5 +165,51 @@ export async function initiateAuthWithPassword(
     // Normalizamos SIEMPRE a ApiError para mantener contrato consistente
     const apiErr = createApiError(err);
     throw apiErr;
+  }
+}
+
+/**
+ * Realiza InitiateAuth (REFRESH_TOKEN_AUTH) contra AWS Cognito.
+ * - Usa el refresh token para obtener un nuevo access token (y opcionalmente un nuevo refresh).
+ * @throws ApiError en cualquier fallo (mensaje legible en inglés).
+ */
+export async function initiateAuthWithRefreshToken(
+  refreshToken: string
+): Promise<AuthTokens> {
+  try {
+    if (!refreshToken) {
+      throw <ApiError>{
+        code: "VALIDATION_ERROR",
+        message: "Refresh token is required.",
+      };
+    }
+
+    const body = buildRefreshBody(refreshToken);
+    const http = cognitoHttp();
+
+    const res: AxiosResponse<CognitoInitiateAuthDTO> = await http.post(
+      "/",
+      body
+    );
+
+    if (res.status < 200 || res.status >= 300) {
+      const data = res.data as unknown as { __type?: string; message?: string };
+      if (data && (data.__type || data.message)) {
+        throw createApiErrorFromAwsLike(
+          data,
+          res.status,
+          "Session refresh failed."
+        );
+      }
+      throw <ApiError>{
+        code: "BAD_RESPONSE_STATUS",
+        message: `Session refresh failed with HTTP ${res.status}.`,
+        details: { status: res.status, body: res.data },
+      };
+    }
+
+    return mapDtoToDomain(res.data);
+  } catch (err) {
+    throw createApiError(err);
   }
 }

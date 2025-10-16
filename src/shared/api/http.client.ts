@@ -8,6 +8,8 @@
 
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { PublicEnv } from "@shared/config/env";
+import { installErrorInterceptor } from "@shared/interceptors/error";
+import { installAuthInterceptor } from "@shared/interceptors/auth";
 
 // Nota: mantenemos soporte para un backend propio bajo /api (Next Route Handlers).
 // Si definís NEXT_PUBLIC_API_BASE_URL, se respeta. Si no, usamos "/" y
@@ -26,6 +28,9 @@ export const httpClient = axios.create({
     Accept: "application/json",
   },
 });
+
+installErrorInterceptor(httpClient);
+installAuthInterceptor(httpClient);
 
 // ---------------------------
 // Interceptores
@@ -59,9 +64,7 @@ httpClient.interceptors.response.use(
       (typeof err.message === "string" && err.message) ||
       "Network request failed.";
 
-    const enriched = new Error(
-      status ? message : `Request failed on "${url ?? ""}": ${message}`
-    );
+    const enriched = new Error(message);
 
     return Promise.reject(enriched);
   }
