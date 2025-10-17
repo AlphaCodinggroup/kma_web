@@ -36,8 +36,8 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
 }) => {
   const filtered = useMemo(
     () =>
-      filterMode === "yes"
-        ? items.filter((q) => q.answeredYes === true)
+      filterMode === "no"
+        ? items.filter((q) => q.answeredYes === false)
         : items,
     [items, filterMode]
   );
@@ -79,8 +79,8 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
           data-testid="audit-questions-empty"
         >
           <p className="text-sm text-muted-foreground">
-            {filterMode === "yes"
-              ? "No questions with YES answer found."
+            {filterMode === "no"
+              ? "No questions with NO answer found."
               : "No questions available."}
           </p>
         </div>

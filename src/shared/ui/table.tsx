@@ -98,7 +98,7 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
   ({ className, ...props }, ref) => (
     <td
       ref={ref}
-      className={cn("p-4 align-middle text-sm text-gray-900", className)}
+      className={cn("p-4 text-sm text-gray-900", className)}
       {...props}
     />
   )

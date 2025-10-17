@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import { Image as ImageIcon, MessageSquare } from "lucide-react";
+import { Eye, EyeOff, Image as ImageIcon, MessageSquare } from "lucide-react";
 import type { ReportItemVM } from "./AuditEditContent";
 import RowActionButton from "@shared/ui/row-action-button";
 import { Button } from "@shared/ui/controls";
@@ -79,8 +79,20 @@ function normalizeItem(
   };
 }
 
-/** Fotos grandes apiladas verticalmente */
+/** Fotos grandes apiladas verticalmente con toggle mostrar/ocultar por imagen */
 function PhotosColumn({ photos }: { photos: string[] }) {
+  // índices ocultos (no alteramos data ni layout)
+  const [hidden, setHidden] = React.useState<Set<number>>(new Set());
+
+  const toggle = React.useCallback((i: number) => {
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  }, []);
+
   if (!photos?.length) {
     return (
       <div className="relative h-[160px] w-[260px] overflow-hidden rounded-xl border bg-muted/30">
@@ -94,19 +106,46 @@ function PhotosColumn({ photos }: { photos: string[] }) {
   const stack = photos.slice(0, 3);
   return (
     <div className="flex w-[260px] flex-col items-stretch gap-3">
-      {stack.map((src, i) => (
-        <div
-          key={src + i}
-          className="relative h-[160px] w-full overflow-hidden rounded-xl border border-gray-300 shadow-sm"
-        >
-          <img
-            src={src}
-            alt={`photo-${i + 1}`}
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
-        </div>
-      ))}
+      {stack.map((src, i) => {
+        const isHidden = hidden.has(i);
+        return (
+          <div
+            key={src + i}
+            className="relative h-[160px] w-full overflow-hidden rounded-xl border border-gray-300 shadow-sm"
+          >
+            {/* Botón ojo (derecha) */}
+            <button
+              type="button"
+              onClick={() => toggle(i)}
+              aria-label={isHidden ? "Mostrar imagen" : "Ocultar imagen"}
+              className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-card/80 backdrop-blur ring-1 ring-border hover:bg-card"
+            >
+              {isHidden ? (
+                <Eye className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <EyeOff className="h-4 w-4" aria-hidden="true" />
+              )}
+            </button>
+
+            {/* Contenido de la tarjeta: imagen o placeholder */}
+            {isHidden ? (
+              <div className="flex h-full w-full items-center justify-center bg-muted/40">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  <span>Imagen oculta</span>
+                </div>
+              </div>
+            ) : (
+              <img
+                src={src}
+                alt={`photo-${i + 1}`}
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            )}
+          </div>
+        );
+      })}
       {photos.length > 3 && (
         <span className="text-xs text-muted-foreground">
           +{photos.length - 3} more

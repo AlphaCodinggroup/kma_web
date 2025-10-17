@@ -48,7 +48,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   onChangeTab,
 
   filterMode,
-  defaultFilterMode = "yes",
+  defaultFilterMode = "no",
   onToggleFilter,
 
   onExportPdf,
@@ -74,7 +74,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const handleToggleFilter = () =>
     onToggleFilter
       ? onToggleFilter()
-      : setInternalFilter((prev) => (prev === "yes" ? "all" : "yes"));
+      : setInternalFilter((prev) => (prev === "no" ? "all" : "no"));
 
   const toCurrency = useMemo(() => {
     if (formatCurrency) return formatCurrency;
