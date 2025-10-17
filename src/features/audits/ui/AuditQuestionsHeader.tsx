@@ -5,7 +5,7 @@ import { Filter } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { Button } from "@shared/ui/controls";
 
-export type QuestionsFilterMode = "yes" | "all";
+export type QuestionsFilterMode = "no" | "all";
 
 export interface AuditQuestionsHeaderProps {
   filterMode: QuestionsFilterMode;
@@ -22,10 +22,10 @@ const AuditQuestionsHeader: React.FC<AuditQuestionsHeaderProps> = ({
   containerPaddingClassName = "px-4 sm:px-6 lg:px-8",
   ariaLabelledById,
 }) => {
-  const isYesOnly = filterMode === "yes";
+  const isNoOnly = filterMode === "no";
 
-  const title = isYesOnly ? "Questions Answered YES" : "All Questions";
-  const toggleLabel = isYesOnly ? "Show All Questions" : "Show YES Only";
+  const title = isNoOnly ? "Questions Answered NO" : "All Questions";
+  const toggleLabel = isNoOnly ? "Show All Questions" : "Show NO Only";
   return (
     <div
       className={cn("w-full", containerPaddingClassName, className)}
@@ -39,7 +39,7 @@ const AuditQuestionsHeader: React.FC<AuditQuestionsHeaderProps> = ({
           type="button"
           onClick={onToggleFilter}
           disabled={!onToggleFilter}
-          aria-pressed={isYesOnly}
+          aria-pressed={isNoOnly}
           aria-label={toggleLabel}
           className="justify-self-end font-semibold"
           data-testid="audit-questions-toggle"
