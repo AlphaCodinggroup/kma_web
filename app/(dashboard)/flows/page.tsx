@@ -1,37 +1,12 @@
 "use client";
 
-import * as React from "react";
+import React from "react";
 import PageHeader from "@shared/ui/page-header";
-import { FlowSection } from "@features/flows/ui/FlowSection";
-import type { FlowItemVM } from "@features/flows/ui/FlowSection";
+import {
+  DUMMY_FLOWS_SECTION_ITEMS,
+  FlowsSection,
+} from "@features/flows/ui/FlowSection";
 import SearchInput from "@shared/ui/search-input";
-
-const MOCK_ITEMS: FlowItemVM[] = [
-  {
-    id: "flow-fire",
-    title: "Fire Safety Audit Flow",
-    description: "Comprehensive fire safety inspection checklist",
-    questionsCount: 25,
-  },
-  {
-    id: "flow-electrical",
-    title: "Electrical Safety Flow",
-    description: "Electrical systems and safety compliance check",
-    questionsCount: 18,
-  },
-  {
-    id: "flow-hvac",
-    title: "HVAC System Flow",
-    description: "Heating, ventilation, and air conditioning inspection",
-    questionsCount: 22,
-  },
-  {
-    id: "flow-building",
-    title: "General Building Safety Flow",
-    description: "Overall building safety and structural integrity",
-    questionsCount: 30,
-  },
-];
 
 export default function FlowsPage() {
   const [search, setSearch] = React.useState<string>("");
@@ -46,8 +21,8 @@ export default function FlowsPage() {
   // Filtro solo visual (client). Más adelante se reemplaza por query a la API.
   const filtered = React.useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return MOCK_ITEMS;
-    return MOCK_ITEMS.filter(
+    if (!q) return DUMMY_FLOWS_SECTION_ITEMS;
+    return DUMMY_FLOWS_SECTION_ITEMS.filter(
       (i) =>
         i.title.toLowerCase().includes(q) ||
         (i.description?.toLowerCase().includes(q) ?? false)
@@ -69,7 +44,7 @@ export default function FlowsPage() {
         />
       </div>
 
-      <FlowSection items={filtered} />
+      <FlowsSection items={DUMMY_FLOWS_SECTION_ITEMS} />
     </main>
   );
 }
