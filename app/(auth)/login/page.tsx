@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Login — KMA_web",
+  title: "Login — KMA",
   description: "Access the audit dashboard",
 };
 

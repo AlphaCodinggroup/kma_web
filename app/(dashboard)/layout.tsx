@@ -8,7 +8,7 @@ type PrivateLayoutProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Dashboard — KMA_web",
+  title: "Dashboard — KMA",
 };
 
 const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
