@@ -49,6 +49,10 @@ const PublicSchema = z.object({
   NEXT_PUBLIC_QUERY_STALE_TIME: z
     .string()
     .min(1, "NEXT_PUBLIC_QUERY_STALE_TIME is required"),
+  // NUEVO: Base URL del backend público (sin token aquí)
+  NEXT_PUBLIC_API_BASE_URL: z
+    .string()
+    .url("NEXT_PUBLIC_API_BASE_URL must be a valid URL"),
 });
 
 // Variables de servidor
@@ -97,6 +101,7 @@ function loadPublicEnv() {
     NEXT_PUBLIC_AUTH_BASE_URL: process.env.NEXT_PUBLIC_AUTH_BASE_URL,
     NEXT_PUBLIC_HTTP_TIMEOUT_MS: process.env.NEXT_PUBLIC_HTTP_TIMEOUT_MS,
     NEXT_PUBLIC_QUERY_STALE_TIME: process.env.NEXT_PUBLIC_QUERY_STALE_TIME,
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
   });
 
   if (!parsed.success) {
@@ -121,6 +126,8 @@ function loadPublicEnv() {
     authBaseUrl: pub.NEXT_PUBLIC_AUTH_BASE_URL,
     httpTimeoutMs: PUBLIC_HTTP_TIMEOUT_MS,
     queryStaleTimeMs: PUBLIC_QUERY_STALE_TIME,
+    // NUEVO
+    apiBaseUrl: pub.NEXT_PUBLIC_API_BASE_URL,
   } as const;
 }
 

@@ -1,70 +1,74 @@
 "use client";
 
 import React from "react";
-import { cn } from "@shared/lib/cn";
-import { FlowCard } from "./FlowCard";
+import FlowCardWithDialog from "./FlowCardWithDialog";
 
 export interface FlowItemVM {
   id: string;
   title: string;
   description?: string;
-  questionsCount: number;
+  questionsCount: number; // ← por ahora lo seguimos recibiendo; más adelante podemos derivarlo del flow real
+  flowId?: string;
 }
 
-export interface FlowSectionProps {
+export interface FlowsSectionProps {
+  /** Lista de flows a mostrar (catálogo de la página). */
   items: FlowItemVM[];
   className?: string;
-  bodyClassName?: string;
-  emptyMessage?: string;
   "data-testid"?: string;
-  search?: string;
-  onSearchChange?: (value: string) => void;
 }
-
 /**
- * Sección reutilizable para listar Flows
- * - Grid responsivo de FlowCard
- * - Empty state
+ * Sección de catálogo de Flows
+ * - Enlaza cada card con FlowQuestionsDialog vía FlowCardWithDialog.
  */
-export const FlowSection: React.FC<FlowSectionProps> = ({
+export const FlowsSection: React.FC<FlowsSectionProps> = ({
   items,
   className,
-  bodyClassName,
-  emptyMessage = "No flows found",
-  "data-testid": dataTestId,
+  "data-testid": testId,
 }) => {
-  const hasItems = items.length > 0;
-
   return (
-    <section
-      data-testid={dataTestId ?? "flows-section"}
-      className={cn("w-full", className)}
-    >
-      <div
-        className={cn(
-          "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3",
-          "mt-0",
-          bodyClassName
-        )}
-      >
-        {hasItems ? (
-          items.map((f) => (
-            <FlowCard
-              key={f.id}
-              title={f.title}
-              {...(f.description ? { description: f.description } : {})}
-              questionsCount={f.questionsCount}
-              onViewQuestions={() => {}}
+    <section className={className} data-testid={testId ?? "flows-section"}>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {items.map((it) => {
+          return (
+            <FlowCardWithDialog
+              key={it.id}
+              flowId={it.flowId ?? it.id}
+              title={it.title}
+              description={it.description ?? ""}
+              questionsCount={it.questionsCount}
+              data-testid={`flow-card-${it.id}`}
+              dialogTestId={`flow-dialog-${it.id}`}
             />
-          ))
-        ) : (
-          <div className="col-span-full rounded-xl border bg-white p-10 text-center text-sm text-muted-foreground">
-            {emptyMessage}
-          </div>
-        )}
+          );
+        })}
       </div>
     </section>
   );
 };
 
-export default FlowSection;
+export default FlowsSection;
+
+/** --------- Helper de demo opcional ----------
+ * Podés eliminarlo cuando conectemos API real.
+ */
+export const DUMMY_FLOWS_SECTION_ITEMS: FlowItemVM[] = [
+  {
+    id: "fire-safety",
+    title: "Fire Safety Audit Flow",
+    description: "Comprehensive fire safety inspection checklist",
+    questionsCount: 5,
+  },
+  {
+    id: "emergency-exits",
+    title: "Emergency Exits Verification",
+    description: "Check signage, lighting and obstruction",
+    questionsCount: 4,
+  },
+  {
+    id: "equipment-room",
+    title: "Equipment Room Compliance",
+    description: "Ventilation, access and maintenance",
+    questionsCount: 6,
+  },
+];
