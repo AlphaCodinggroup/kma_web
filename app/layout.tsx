@@ -1,20 +1,26 @@
-import type { Metadata } from "next";
-import "./globals.css";
-
-type RootLayoutProps = {
-  children: React.ReactNode;
-};
+import type { Metadata } from 'next'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
+import { Analytics } from '@vercel/analytics/next'
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: "KMA",
-  description: "Dashboard de auditorías — KMA",
-};
+  title: 'v0 App',
+  description: 'Created with v0',
+  generator: 'v0.app',
+}
 
-const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body>{children}</body>
+    <html lang="en">
+      <body className={`font-sans antialiased ${GeistSans.variable} ${GeistMono.variable}`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
-  );
-};
-export default RootLayout;
+  )
+}
