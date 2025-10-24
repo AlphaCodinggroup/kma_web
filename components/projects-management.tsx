@@ -23,8 +23,7 @@ import { Plus, Edit, Trash2, Search, X } from "lucide-react"
 interface Project {
   id: string
   name: string
-  auditors: string[] // Changed from auditor: string to auditors: string[]
-  facilities: string[] // Changed from buildings to facilities
+  facilities: string[]
   createdAt: string
 }
 
@@ -32,31 +31,21 @@ const mockProjects: Project[] = [
   {
     id: "1",
     name: "Safety Audit Q1 2024",
-    auditors: ["Maria Garcia", "Carlos Lopez"],
     facilities: ["Main Office Building", "Warehouse A"],
     createdAt: "2024-01-15",
   },
   {
     id: "2",
     name: "Fire Safety Inspection",
-    auditors: ["Carlos Lopez"],
     facilities: ["Warehouse A"],
     createdAt: "2024-01-10",
   },
   {
     id: "3",
     name: "Emergency Systems Check",
-    auditors: ["Ana Martinez", "John Perez"],
     facilities: ["Production Facility", "Storage Unit B"],
     createdAt: "2024-01-20",
   },
-]
-
-const mockAuditors = [
-  { id: "1", name: "Maria Garcia" },
-  { id: "2", name: "Carlos Lopez" },
-  { id: "3", name: "Ana Martinez" },
-  { id: "4", name: "John Perez" },
 ]
 
 const mockFacilities = [
@@ -73,16 +62,13 @@ export function ProjectsManagement() {
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [formData, setFormData] = useState({
     name: "",
-    auditors: [] as string[],
     facilities: [] as string[],
   })
-  const [selectedAuditor, setSelectedAuditor] = useState("")
   const [selectedFacility, setSelectedFacility] = useState("")
 
   const filteredProjects = projects.filter(
     (project) =>
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.auditors.some((auditor) => auditor.toLowerCase().includes(searchTerm.toLowerCase())) ||
       project.facilities.some((facility) => facility.toLowerCase().includes(searchTerm.toLowerCase())),
   )
 
@@ -100,10 +86,9 @@ export function ProjectsManagement() {
       setProjects([...projects, newProject])
     }
 
-    setFormData({ name: "", auditors: [], facilities: [] })
+    setFormData({ name: "", facilities: [] })
     setEditingProject(null)
     setIsDialogOpen(false)
-    setSelectedAuditor("")
     setSelectedFacility("")
   }
 
@@ -111,7 +96,6 @@ export function ProjectsManagement() {
     setEditingProject(project)
     setFormData({
       name: project.name,
-      auditors: project.auditors,
       facilities: project.facilities,
     })
     setIsDialogOpen(true)
@@ -119,17 +103,6 @@ export function ProjectsManagement() {
 
   const handleDelete = (id: string) => {
     setProjects(projects.filter((project) => project.id !== id))
-  }
-
-  const handleAddAuditor = (auditorName: string) => {
-    if (auditorName && !formData.auditors.includes(auditorName)) {
-      setFormData({ ...formData, auditors: [...formData.auditors, auditorName] })
-      setSelectedAuditor("")
-    }
-  }
-
-  const handleRemoveAuditor = (auditorName: string) => {
-    setFormData({ ...formData, auditors: formData.auditors.filter((a) => a !== auditorName) })
   }
 
   const handleAddFacility = (facilityName: string) => {
@@ -155,8 +128,7 @@ export function ProjectsManagement() {
             <Button
               onClick={() => {
                 setEditingProject(null)
-                setFormData({ name: "", auditors: [], facilities: [] })
-                setSelectedAuditor("")
+                setFormData({ name: "", facilities: [] })
                 setSelectedFacility("")
               }}
             >
@@ -182,45 +154,6 @@ export function ProjectsManagement() {
                     placeholder="Enter project name"
                     required
                   />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="auditors">Assigned Auditors</Label>
-                  <div className="flex gap-2">
-                    <select
-                      id="auditors"
-                      value={selectedAuditor}
-                      onChange={(e) => setSelectedAuditor(e.target.value)}
-                      className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select an auditor</option>
-                      {mockAuditors
-                        .filter((auditor) => !formData.auditors.includes(auditor.name))
-                        .map((auditor) => (
-                          <option key={auditor.id} value={auditor.name}>
-                            {auditor.name}
-                          </option>
-                        ))}
-                    </select>
-                    <Button type="button" onClick={() => handleAddAuditor(selectedAuditor)} disabled={!selectedAuditor}>
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  {formData.auditors.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.auditors.map((auditor) => (
-                        <Badge key={auditor} variant="secondary" className="flex items-center gap-1">
-                          {auditor}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveAuditor(auditor)}
-                            className="ml-1 hover:text-destructive"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="facilities">Facilities</Label>
@@ -267,7 +200,7 @@ export function ProjectsManagement() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" disabled={formData.auditors.length === 0 || formData.facilities.length === 0}>
+                <Button type="submit" disabled={formData.facilities.length === 0}>
                   {editingProject ? "Update Project" : "Create Project"}
                 </Button>
               </DialogFooter>
@@ -296,7 +229,6 @@ export function ProjectsManagement() {
             <TableHeader>
               <TableRow>
                 <TableHead>Project Name</TableHead>
-                <TableHead>Auditors</TableHead>
                 <TableHead>Facilities</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Actions</TableHead>
@@ -306,15 +238,6 @@ export function ProjectsManagement() {
               {filteredProjects.map((project) => (
                 <TableRow key={project.id}>
                   <TableCell className="font-medium">{project.name}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {project.auditors.map((auditor) => (
-                        <Badge key={auditor} variant="outline">
-                          {auditor}
-                        </Badge>
-                      ))}
-                    </div>
-                  </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {project.facilities.map((facility) => (
