@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Pencil } from "lucide-react";
-import { StatusBadge, type AuditStatus } from "@shared/ui/badge";
+import { StatusBadge } from "@shared/ui/badge";
 import { cn } from "@shared/lib/cn";
 import {
   Table,
@@ -13,33 +13,26 @@ import {
   TableRow,
 } from "@shared/ui/table";
 import RowActionButton from "@shared/ui/row-action-button";
-
-export interface AuditRowVM {
-  id: string;
-  project: string;
-  auditor: string;
-  status: AuditStatus;
-  auditDate: string; // ISO o ya formateada
-}
+import type { Audit } from "@entities/audit/model";
 
 export interface AuditsTableProps {
-  items: AuditRowVM[];
-  onEdit?: ((id: string) => void) | undefined;
-  emptyMessage?: string | undefined;
-  bodyMaxHeightClassName?: string | undefined;
+  items: Audit[];
+  total: number;
+  onEdit?: (id: string) => void;
+  emptyMessage?: string;
+  bodyMaxHeightClassName?: string;
 }
 
 /**
- * Tabla de auditorías: columnas [ID, Project, Auditor, Status, Audit Date, Actions]
+ * Tabla de auditorías: columnas [Project, Auditor, Status, Audit Date, Actions]
  */
 const AuditsTable: React.FC<AuditsTableProps> = ({
   items,
+  total,
   onEdit,
   emptyMessage = "No audits found",
   bodyMaxHeightClassName,
 }) => {
-  const hasItems = items.length > 0;
-
   return (
     <div className={cn("w-full bg-white")}>
       <div
@@ -48,7 +41,6 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
-              <TableHead className="w-[140px]">ID</TableHead>
               <TableHead>Project</TableHead>
               <TableHead>Auditor</TableHead>
               <TableHead className="w-[180px]">Status</TableHead>
@@ -60,10 +52,10 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
           </TableHeader>
 
           <TableBody>
-            {!hasItems && (
+            {!total && (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={5}
                   className="py-10 text-center text-sm text-gray-500"
                 >
                   {emptyMessage}
@@ -73,17 +65,18 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
 
             {items.map((row) => (
               <TableRow key={row.id}>
-                <TableCell className="font-medium">{row.id}</TableCell>
-                <TableCell>{row.project}</TableCell>
-                <TableCell>{row.auditor}</TableCell>
+                <TableCell>{row.projectId ?? "—"}</TableCell>
+                <TableCell>{row.createdBy ?? "—"}</TableCell>
                 <TableCell>
                   <StatusBadge status={row.status} />
                 </TableCell>
-                <TableCell className="tabular-nums">{row.auditDate}</TableCell>
+                <TableCell className="tabular-nums">
+                  {row.createdAt ?? "—"}
+                </TableCell>
                 <TableCell className="text-right pr-6">
                   <RowActionButton
                     icon={Pencil}
-                    ariaLabel="Delete project"
+                    ariaLabel="Edit audit"
                     onClick={() => onEdit?.(row.id)}
                     size="md"
                   />

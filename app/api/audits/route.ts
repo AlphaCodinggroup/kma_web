@@ -11,7 +11,7 @@ export async function GET() {
   if (!token)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  const upstreamUrl = `${PublicEnv.apiBaseUrl}/flows`;
+  const upstreamUrl = `${PublicEnv.apiBaseUrl}/audits`;
 
   try {
     const res = await fetch(upstreamUrl, {
