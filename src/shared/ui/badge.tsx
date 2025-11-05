@@ -77,7 +77,6 @@ const STATUS_LABELS: Record<AuditStatus, string> = {
   draft: "Draft",
   pending_review: "Pending Review",
   in_review: "In Review",
-  "In Review": "In Review",
   "Generating Report": "Generating Report",
   review_modified: "Review Modified",
   generating_report_draft: "Generating Report (Draft)",
@@ -93,7 +92,6 @@ export function StatusBadge({
   BadgeProps,
   "children" | "tone" | "variant"
 >) {
-  console.log(status);
   const label = STATUS_LABELS[status];
   const isCompleted = status === "completed";
 

@@ -29,22 +29,20 @@ const RowActionButton: React.FC<RowActionButtonProps> = ({
 
   const variantCls =
     variant === "danger"
-      ? [
+      ? cn(
           "bg-white text-red-600",
           "hover:bg-red-50",
           "focus-visible:ring-2 focus-visible:ring-black/30",
-          "border border-[var(--kma-border)]",
-        ].join(" ")
-      : [
+          "border border-[var(--kma-border)]"
+        )
+      : cn(
           "bg-white text-black",
           "hover:bg-gray-100",
           "focus-visible:ring-2 focus-visible:ring-black/30",
-          "border border-[var(--kma-border)]",
-        ].join(" ");
+          "border border-[var(--kma-border)]"
+        );
 
-  const disabledCls = disabled
-    ? "opacity-60 cursor-not-allowed hover:bg-white"
-    : "";
+  const disabledCls = disabled ? "opacity-60 hover:bg-white" : "cursor-pointer";
 
   return (
     <button
@@ -52,7 +50,7 @@ const RowActionButton: React.FC<RowActionButtonProps> = ({
       aria-label={ariaLabel}
       title={ariaLabel}
       className={cn(
-        "inline-flex items-center justify-center transition-colors cursor-pointer",
+        "inline-flex items-center justify-center transition-colors",
         sizeCls,
         variantCls,
         disabledCls,

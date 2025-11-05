@@ -6,7 +6,8 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@shared/lib/cn";
-import { StatusBadge, type AuditStatus } from "@shared/ui/badge";
+import { StatusBadge } from "@shared/ui/badge";
+import type { AuditStatus } from "@entities/audit/model";
 
 export interface AuditEditHeaderProps {
   title: string;

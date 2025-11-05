@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { Pencil } from "lucide-react";
 import { StatusBadge } from "@shared/ui/badge";
 import { cn } from "@shared/lib/cn";
@@ -14,13 +14,17 @@ import {
 } from "@shared/ui/table";
 import RowActionButton from "@shared/ui/row-action-button";
 import type { Audit } from "@entities/audit/model";
+import { Button } from "@shared/ui/controls";
+import { formatIsoToYmdHm } from "@shared/lib/date";
 
 export interface AuditsTableProps {
   items: Audit[];
-  total: number;
-  onEdit?: (id: string) => void;
+  onEdit?: (audit: Audit) => void;
   emptyMessage?: string;
   bodyMaxHeightClassName?: string;
+  loading?: boolean;
+  error?: boolean;
+  onError?: () => void;
 }
 
 /**
@@ -28,11 +32,32 @@ export interface AuditsTableProps {
  */
 const AuditsTable: React.FC<AuditsTableProps> = ({
   items,
-  total,
   onEdit,
   emptyMessage = "No audits found",
   bodyMaxHeightClassName,
+  loading = false,
+  error,
+  onError,
 }) => {
+  if (loading) {
+    return (
+      <div className="mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-800 animate-pulse text-2xl text-center">
+        Loading audits…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-3 flex items-center justify-between rounded-md border border-red-200 bg-red-50 px-3 py-2 text-2xl text-red-700">
+        <span>Failed to load audits. Please try again.</span>
+        <Button onClick={onError}>Retry</Button>
+      </div>
+    );
+  }
+
+  const hasItems = items.length > 0;
+
   return (
     <div className={cn("w-full bg-white")}>
       <div
@@ -52,7 +77,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
           </TableHeader>
 
           <TableBody>
-            {!total && (
+            {!hasItems && (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -64,22 +89,24 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
             )}
 
             {items.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={`${row.id}-${row.version}`}>
                 <TableCell>{row.projectId ?? "—"}</TableCell>
                 <TableCell>{row.createdBy ?? "—"}</TableCell>
                 <TableCell>
                   <StatusBadge status={row.status} />
                 </TableCell>
                 <TableCell className="tabular-nums">
-                  {row.createdAt ?? "—"}
+                  {formatIsoToYmdHm(row.createdAt) ?? "—"}
                 </TableCell>
                 <TableCell className="text-right pr-6">
-                  <RowActionButton
-                    icon={Pencil}
-                    ariaLabel="Edit audit"
-                    onClick={() => onEdit?.(row.id)}
-                    size="md"
-                  />
+                  {!(row.status === "draft" || row.status === "in_review") && (
+                    <RowActionButton
+                      icon={Pencil}
+                      ariaLabel="Edit audit"
+                      onClick={() => onEdit?.(row)}
+                      size="md"
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -90,4 +117,4 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
   );
 };
 
-export default AuditsTable;
+export default memo(AuditsTable);

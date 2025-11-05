@@ -1,10 +1,9 @@
 export type IsoDateString = string;
 
 export type AuditStatus =
-  | "draft"
+  | "draft" //
   | "pending_review"
-  | "in_review"
-  | "In Review"
+  | "in_review" //
   | "review_modified"
   | "Generating Report"
   | "generating_report_draft"

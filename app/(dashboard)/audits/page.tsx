@@ -9,7 +9,6 @@ import { cn } from "@shared/lib/cn";
 import PageHeader from "@shared/ui/page-header";
 import useListAudits from "@features/audits/lib/hooks/useListAudits";
 import type { Audit } from "@entities/audit/model";
-import { Button } from "@shared/ui/controls";
 
 const AuditsPage: React.FC = () => {
   const router = useRouter();
@@ -23,28 +22,23 @@ const AuditsPage: React.FC = () => {
     if (!q) return data.audits;
 
     return data.audits.filter((row) => {
-      const id = row.id?.toLowerCase?.() ?? "";
       const projectId = row.projectId?.toLowerCase?.() ?? "";
       const auditor = row.createdBy?.toLowerCase?.() ?? "";
       const status = row.status?.toLowerCase?.() ?? "";
       const createdAt = row.createdAt?.toLowerCase?.() ?? "";
-      const updatedAt = row.updatedAt?.toLowerCase?.() ?? "";
-
       return (
-        id.includes(q) ||
         projectId.includes(q) ||
         auditor.includes(q) ||
-        status.includes(q) ||
         createdAt.includes(q) ||
-        updatedAt.includes(q)
+        status.includes(q)
       );
     });
   }, [data, query]);
 
   const handleEdit = useCallback(
-    (id: string) => {
+    (audit: Audit) => {
       const href = `/audits/${encodeURIComponent(
-        id
+        audit.id
       )}/edit` as Route<`/audits/${string}/edit`>;
       router.push(href);
     },
@@ -59,21 +53,6 @@ const AuditsPage: React.FC = () => {
           "w-full rounded-xl border border-gray-200 bg-white px-4 py-3"
         )}
       >
-        {/* Banner de error (no rompe layout) */}
-        {isError && (
-          <div className="mb-3 flex items-center justify-between rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-            <span>Failed to load audits. Please try again.</span>
-            <Button onClick={() => refetch()}>Retry</Button>
-          </div>
-        )}
-
-        {/* Indicador de carga sutil (mantiene el layout) */}
-        {isLoading && (
-          <div className="mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 animate-pulse">
-            Loading audits…
-          </div>
-        )}
-
         <AuditsToolbar
           searchValue={query}
           onSearchChange={setQuery}
@@ -81,8 +60,10 @@ const AuditsPage: React.FC = () => {
         />
         <AuditsTable
           items={filtered}
-          total={data?.total ?? 0}
           onEdit={handleEdit}
+          loading={isLoading}
+          error={isError}
+          onError={refetch}
         />
       </div>
     </main>
