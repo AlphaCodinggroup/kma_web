@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import AuditsTable from "@features/audits/ui/AuditsTable";
@@ -9,12 +9,20 @@ import { cn } from "@shared/lib/cn";
 import PageHeader from "@shared/ui/page-header";
 import useListAudits from "@features/audits/lib/hooks/useListAudits";
 import type { Audit } from "@entities/audit/model";
+import { useSendForReviewAudit } from "@features/audits/lib/hooks/useSendForReviewAudit";
 
 const AuditsPage: React.FC = () => {
   const router = useRouter();
   const [query, setQuery] = useState<string>("");
+  const [pendingAuditId, setPendingAuditId] = useState<string | null>(null);
 
   const { data, isLoading, isError, refetch } = useListAudits();
+
+  const { start: startSendForReview, sendResult } = useSendForReviewAudit({
+    refetchIntervalMs: 5000,
+    stopWhenReady: true,
+    onReady: () => refetch(),
+  });
 
   const filtered = useMemo<Audit[]>(() => {
     if (!data) return [];
@@ -37,13 +45,27 @@ const AuditsPage: React.FC = () => {
 
   const handleEdit = useCallback(
     (audit: Audit) => {
+      if (audit.status === "pending_review") {
+        startSendForReview(audit.id);
+        setPendingAuditId(audit.id);
+        return;
+      }
       const href = `/audits/${encodeURIComponent(
         audit.id
       )}/edit` as Route<`/audits/${string}/edit`>;
       router.push(href);
     },
-    [router]
+    [router, startSendForReview]
   );
+
+  useEffect(() => {
+    if (!sendResult || !pendingAuditId) return;
+    const href = `/audits/${encodeURIComponent(
+      pendingAuditId
+    )}/edit` as Route<`/audits/${string}/edit`>;
+    router.push(href);
+    setPendingAuditId(null);
+  }, [sendResult, pendingAuditId, router]);
 
   return (
     <main className={cn("min-h-dv hoverflow-hidden bg-white")}>

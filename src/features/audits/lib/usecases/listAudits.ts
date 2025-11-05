@@ -1,8 +1,6 @@
-import type { Audit, AuditType } from "@entities/audit/model";
-import type { AuditRepo, AuditListQuery } from "@entities/audit/api/audit.repo";
+import type { AuditType } from "@entities/audit/model";
+import type { AuditRepo } from "@entities/audit/api/audit.repo";
 import auditRepoImpl from "@features/audits/api/audit.repo.impl";
-
-export type ListAuditsInput = AuditListQuery;
 
 type Deps = {
   repo: AuditRepo;
