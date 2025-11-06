@@ -4,18 +4,18 @@ import { cookies } from "next/headers";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { auditReviewId: string } }
+  ctx: { params: Promise<{ auditReviewId: string }> }
 ) {
+  const { auditReviewId } = await ctx.params;
   const { cookies: cookieCfg } = serverEnv();
   const cookieStore = await cookies();
   const token = cookieStore.get(cookieCfg.accessName)?.value;
   if (!token)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  const upstreamUrl = `${PublicEnv.apiBaseUrl.replace(
-    /\/$/,
-    ""
-  )}/audit-reviews/${encodeURIComponent(params.auditReviewId)}`;
+  const upstreamUrl = `${
+    PublicEnv.apiBaseUrl
+  }/audits-review/${encodeURIComponent(auditReviewId)}`;
 
   try {
     const res = await fetch(upstreamUrl, {
@@ -40,7 +40,7 @@ export async function GET(
     const data = isJson ? await res.json().catch(() => ({})) : {};
     return NextResponse.json(data, { status: res.status });
   } catch (err) {
-    console.error("[api/audit-reviews] upstream error:", err);
+    console.error("[api/audits-review] upstream error:", err);
     return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
   }
 }

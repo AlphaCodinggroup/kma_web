@@ -3,12 +3,7 @@ import AuditEditHeader from "@features/audits/ui/AuditEditHeader";
 import AuditInfoPanel from "@features/audits/ui/AuditInfoPanel";
 import AuditEditContent from "@features/audits/ui/AuditEditContent";
 import type { QuestionItemVM } from "@features/audits/ui/AuditQuestionsList";
-import type { ReportItemVM } from "@features/audits/ui/AuditEditContent";
 
-// type PageProps = {
-//   params: Promise<{ id: string }>;
-//   searchParams?: Record<string, string | string[] | undefined>;
-// };
 const projectName = "Green Tower – Phase A";
 const auditor = "María Pérez";
 const status = "in_review" as const;
@@ -65,56 +60,16 @@ const questions = [
   },
 ] satisfies QuestionItemVM[];
 
-const reportItems: ReportItemVM[] = [
-  {
-    id: "r1",
-    title: "Exposed wiring near elevator shaft",
-    severity: "high",
-    photos: [
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=1600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=1600&auto=format&fit=crop&q=80",
-    ],
-    quantity: 12,
-    unitPrice: 1500,
-  },
-  {
-    id: "r2",
-    title: "Replace damaged exit sign (stairwell B)",
-    severity: "medium",
-    photos: [
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1600&auto=format&fit=crop&q=80",
-    ],
-    quantity: 2,
-    unitPrice: 180,
-  },
-  {
-    id: "r3",
-    title: "Paint touch-up in corridor L2",
-    severity: "low",
-    photos: [
-      "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=1600&auto=format&fit=crop&q=80",
-    ],
-    quantity: 1,
-    unitPrice: 90,
-  },
-];
-
 async function unwrap<T>(maybePromise: T | Promise<T>): Promise<T> {
   return maybePromise instanceof Promise ? await maybePromise : maybePromise;
 }
 
 export default async function AuditEditPage({
   params,
-  searchParams,
 }: {
   params: { id: string } | Promise<{ id: string }>;
-  searchParams?:
-    | Record<string, string | string[] | undefined>
-    | Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id: auditId } = await unwrap(params);
-  const sp = searchParams ? await unwrap(searchParams) : {};
 
   return (
     <main className="flex min-h-screen flex-col py-4 sm:py-6">
@@ -131,7 +86,7 @@ export default async function AuditEditPage({
       </div>
 
       <div className="mt-4 sm:mt-5">
-        <AuditEditContent questions={questions} reportItems={reportItems} />
+        <AuditEditContent questions={questions} id={auditId} />
       </div>
     </main>
   );

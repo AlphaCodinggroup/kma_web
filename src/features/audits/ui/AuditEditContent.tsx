@@ -10,6 +10,8 @@ import AuditQuestionsHeader, {
 import ReportItemsTable from "./ReportItemsTable";
 import FinalReportHeader from "./FinalReportHeader";
 import CommentsSidebar from "./CommentsSidebar";
+import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
+import type { AuditFinding } from "@entities/audit/model/audit-review";
 
 export type ReportSeverity = "high" | "medium" | "low";
 export interface ReportItemVM {
@@ -22,8 +24,9 @@ export interface ReportItemVM {
 }
 
 export interface AuditEditContentProps {
+  id: string;
   questions: QuestionItemVM[];
-  reportItems?: ReportItemVM[];
+
   activeTab?: AuditEditTab;
   defaultTab?: AuditEditTab;
   onChangeTab?: (tab: AuditEditTab) => void;
@@ -35,14 +38,13 @@ export interface AuditEditContentProps {
 
   // reporte
   onExportPdf?: (() => void) | undefined;
-  formatCurrency?: (n: number) => string;
 
   className?: string;
 }
 
 const AuditEditContent: React.FC<AuditEditContentProps> = ({
+  id,
   questions,
-  reportItems = [],
   activeTab,
   defaultTab = "questions",
   onChangeTab,
@@ -52,7 +54,6 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   onToggleFilter,
 
   onExportPdf,
-  formatCurrency,
   className,
 }) => {
   const [internalTab, setInternalTab] = useState<AuditEditTab>(defaultTab);
@@ -63,6 +64,10 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const [selectedCommentTarget, setSelectedCommentTarget] = useState<
     { id: string; title: string } | undefined
   >(undefined);
+
+  const { data, isLoading, isError, refetch } = useAuditReviewDetail(id);
+
+  console.log({ data });
 
   const tab = activeTab ?? internalTab;
   const qFilter = filterMode ?? internalFilter;
@@ -76,19 +81,10 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
       ? onToggleFilter()
       : setInternalFilter((prev) => (prev === "no" ? "all" : "no"));
 
-  const toCurrency = useMemo(() => {
-    if (formatCurrency) return formatCurrency;
-    try {
-      const f = new Intl.NumberFormat(undefined, {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 2,
-      });
-      return (n: number) => f.format(n);
-    } catch {
-      return (n: number) => `$${n.toLocaleString()}`;
-    }
-  }, [formatCurrency]);
+  const rows = useMemo<AuditFinding[]>(() => {
+    if (!data?.findings) return [];
+    return data.findings;
+  }, [data]);
 
   return (
     <div
@@ -118,17 +114,19 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
               )}
             >
               <ReportItemsTable
-                items={reportItems}
-                formatCurrency={toCurrency}
-                onAddComment={(row) => {
-                  setSelectedCommentTarget({
-                    id: row.id,
-                    title:
-                      (row as any).barrierStatement ??
-                      (row as any).title ??
-                      "Selected item",
-                  });
-                }}
+                items={rows}
+                loading={isLoading}
+                error={isError}
+                onError={refetch}
+                // onAddComment={(row) => {
+                //   setSelectedCommentTarget({
+                //     id: row.id,
+                //     title:
+                //       (row as any).barrierStatement ??
+                //       (row as any).title ??
+                //       "Selected item",
+                //   });
+                // }}
               />
             </div>
 
