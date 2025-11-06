@@ -60,16 +60,10 @@ const questions = [
   },
 ] satisfies QuestionItemVM[];
 
-async function unwrap<T>(maybePromise: T | Promise<T>): Promise<T> {
-  return maybePromise instanceof Promise ? await maybePromise : maybePromise;
-}
-
-export default async function AuditEditPage({
-  params,
-}: {
-  params: { id: string } | Promise<{ id: string }>;
-}) {
-  const { id: auditId } = await unwrap(params);
+export default async function AuditEditPage(
+  props: PageProps<"/audits/[id]/edit">
+) {
+  const { id: auditId } = await props.params;
 
   return (
     <main className="flex min-h-screen flex-col py-4 sm:py-6">
