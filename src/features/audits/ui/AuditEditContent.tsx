@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { cn } from "@shared/lib/cn";
 import AuditEditTabsBar, { type AuditEditTab } from "./AuditEditTabsBar";
 import AuditQuestionsList, { type QuestionItemVM } from "./AuditQuestionsList";
@@ -12,6 +12,7 @@ import FinalReportHeader from "./FinalReportHeader";
 import CommentsSidebar from "./CommentsSidebar";
 import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
+import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
 
 export type ReportSeverity = "high" | "medium" | "low";
 export interface ReportItemVM {
@@ -26,39 +27,15 @@ export interface ReportItemVM {
 export interface AuditEditContentProps {
   id: string;
   questions: QuestionItemVM[];
-
-  activeTab?: AuditEditTab;
-  defaultTab?: AuditEditTab;
-  onChangeTab?: (tab: AuditEditTab) => void;
-
-  // preguntas
-  filterMode?: QuestionsFilterMode;
-  defaultFilterMode?: QuestionsFilterMode;
-  onToggleFilter?: () => void;
-
-  // reporte
-  onExportPdf?: (() => void) | undefined;
-
-  className?: string;
 }
 
 const AuditEditContent: React.FC<AuditEditContentProps> = ({
   id,
   questions,
-  activeTab,
-  defaultTab = "questions",
-  onChangeTab,
-
-  filterMode,
-  defaultFilterMode = "no",
-  onToggleFilter,
-
-  onExportPdf,
-  className,
 }) => {
-  const [internalTab, setInternalTab] = useState<AuditEditTab>(defaultTab);
+  const [internalTab, setInternalTab] = useState<AuditEditTab>("questions");
   const [internalFilter, setInternalFilter] =
-    useState<QuestionsFilterMode>(defaultFilterMode);
+    useState<QuestionsFilterMode>("no");
 
   // Estado del panel de comentarios (cuando es undefined NO se muestra)
   const [selectedCommentTarget, setSelectedCommentTarget] = useState<
@@ -67,44 +44,58 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
 
   const { data, isLoading, isError, refetch } = useAuditReviewDetail(id);
 
-  console.log({ data });
+  const {
+    data: report,
+    isFetching: isFetchingReport,
+    refetch: refetchReport,
+  } = useAuditReport(id, { enabled: false });
 
-  const tab = activeTab ?? internalTab;
-  const qFilter = filterMode ?? internalFilter;
   const hasSidebar = !!selectedCommentTarget;
 
-  const handleChangeTab = (t: AuditEditTab) =>
-    onChangeTab ? onChangeTab(t) : setInternalTab(t);
+  const handleChangeTab = (t: AuditEditTab) => setInternalTab(t);
 
   const handleToggleFilter = () =>
-    onToggleFilter
-      ? onToggleFilter()
-      : setInternalFilter((prev) => (prev === "no" ? "all" : "no"));
+    setInternalFilter((prev) => (prev === "no" ? "all" : "no"));
 
   const rows = useMemo<AuditFinding[]>(() => {
     if (!data?.findings) return [];
     return data.findings;
   }, [data]);
 
-  return (
-    <div
-      className={cn("space-y-4 sm:space-y-5", className)}
-      data-testid="audit-edit-content"
-    >
-      <AuditEditTabsBar activeTab={tab} onChangeTab={handleChangeTab} />
+  const handleExport = useCallback(async () => {
+    const res = await refetchReport();
+    // priorizamos el dato fresco (res.data); caemos al cacheado si no llegó
+    const url = res.data?.reportUrl ?? report?.reportUrl ?? null;
 
-      {tab === "questions" ? (
+    if (url && /^https?:\/\//.test(url)) {
+      // noopener/noreferrer por seguridad
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      // Silencioso por ahora (sin UI extra). Podrías agregar un toast si tenés uno.
+      console.warn("[FinalReport] No reportUrl available yet.");
+    }
+  }, [refetchReport, report]);
+
+  return (
+    <div className={"space-y-4 sm:space-y-5"} data-testid="audit-edit-content">
+      <AuditEditTabsBar activeTab={internalTab} onChangeTab={handleChangeTab} />
+
+      {internalTab === "questions" ? (
         <>
           <AuditQuestionsHeader
-            filterMode={qFilter}
+            filterMode={internalFilter}
             onToggleFilter={handleToggleFilter}
             className="mt-2"
           />
-          <AuditQuestionsList items={questions} filterMode={qFilter} />
+          <AuditQuestionsList items={questions} filterMode={internalFilter} />
         </>
       ) : (
         <section className="w-full px-4 sm:px-6 lg:px-8" aria-live="polite">
-          <FinalReportHeader onExport={onExportPdf} className="mb-3" />
+          <FinalReportHeader
+            onExport={handleExport}
+            exporting={isFetchingReport}
+            className="mb-3"
+          />
 
           <div className={cn("flex gap-4", "flex-col md:flex-row")}>
             <div
