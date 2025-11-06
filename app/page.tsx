@@ -1,5 +1,7 @@
-import { Dashboard } from "@/components/dashboard"
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
-  return <Dashboard />
-}
+const Home: React.FC = async () => {
+  redirect("/login");
+};
+
+export default Home;
