@@ -61,7 +61,6 @@ const toAuditStatus = (raw: string): AuditStatus => {
 };
 
 export const mapAuditFindingDTO = (dto: AuditFindingDTO): AuditFinding => {
-  console.log({ dto });
   return {
     questionCode: dto.question_code,
     answer: dto.answer,
