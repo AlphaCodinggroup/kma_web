@@ -38,16 +38,20 @@ export function useSendForReviewAudit(opts?: {
   });
 
   // GET estado de la revisión
+  const pollArgs = useMemo(() => {
+    return {
+      ...(auditReviewId ? { auditReviewId } : {}),
+      enabled: started && !!auditReviewId,
+      refetchIntervalMs,
+      stopWhenReady,
+    };
+  }, [auditReviewId, started, refetchIntervalMs, stopWhenReady]);
+
   const {
     data: progress,
     isFetching: isPolling,
     error: pollError,
-  } = usePollAuditReview({
-    auditReviewId,
-    enabled: started && Boolean(auditReviewId),
-    refetchIntervalMs,
-    stopWhenReady,
-  });
+  } = usePollAuditReview(pollArgs);
 
   // Llamar onReady una sola vez cuando quede listo
   const readyCalledRef = useRef(false);
