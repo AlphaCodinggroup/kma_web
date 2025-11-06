@@ -77,25 +77,29 @@ const mapAnswerDtoToDomain = (dto: AuditAnswerDTO): AuditAnswer => {
       return {
         ...base,
         type: "Question",
-        answer: dto.answer,
-        values: dto.values,
+        answer: dto.answer ?? "",
+        ...(dto.values !== undefined ? { values: dto.values } : {}),
       };
+
     case "Form":
       return {
         ...base,
         type: "Form",
-        values: dto.values,
+        ...(dto.values !== undefined ? { values: dto.values } : {}),
       };
+
     case "Select":
       return {
         ...base,
         type: "Select",
-        answer: dto.answer,
+        ...(dto.answer !== undefined ? { answer: dto.answer } : {}),
       };
+
     default:
       return {
         ...base,
         type: "Question",
+        answer: "",
       };
   }
 };
