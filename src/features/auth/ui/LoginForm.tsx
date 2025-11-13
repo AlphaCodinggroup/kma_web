@@ -100,6 +100,7 @@ const LoginForm: React.FC = () => {
               placeholder="••••••••"
               autoComplete="current-password"
               aria-invalid={!!errors.password || !!formError}
+              withPasswordToggle
               {...register("password")}
             />
             {errors.password ? (
