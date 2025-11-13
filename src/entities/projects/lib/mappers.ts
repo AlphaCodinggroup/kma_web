@@ -1,10 +1,5 @@
-// src/entities/project/lib/mappers.ts
 import type { Project, ProjectListPage } from "../model";
 
-/**
- * Tipos DTO según la respuesta real del endpoint /projects
- * (adaptado a la forma observada en el JSON proporcionado).
- */
 export interface ProjectDTO {
   project_id: string;
   code?: string;
@@ -18,14 +13,6 @@ export interface ProjectDTO {
   created_by: string;
 }
 
-/**
- * Forma completa de la respuesta del backend
- * Ejemplo:
- * {
- *   "data": { "projects": ProjectDTO[], "limit": 1, "cursor"?: string },
- *   "status": "success"
- * }
- */
 export interface ProjectsResponseDTO {
   data: {
     projects: ProjectDTO[];
@@ -35,15 +22,13 @@ export interface ProjectsResponseDTO {
   status: string;
 }
 
-/**
- * Mapeo de un ProjectDTO → Project (dominio)
- */
+/** Mapeo DTO -> Dominio */
 export function mapProjectFromDTO(dto: ProjectDTO): Project {
   return {
     id: dto.project_id,
-    code: dto.code,
+    code: dto.code ?? "",
     name: dto.name,
-    description: dto.description,
+    description: dto.description ?? "",
     status: dto.status,
     userIds: dto.user_ids,
     facilityIds: dto.facility_ids,
@@ -53,9 +38,7 @@ export function mapProjectFromDTO(dto: ProjectDTO): Project {
   };
 }
 
-/**
- * Mapeo de una lista de Projects (respuesta de API → dominio)
- */
+/** Lista paginada */
 export function mapProjectsListFromDTO(
   response: ProjectsResponseDTO
 ): ProjectListPage {
@@ -63,7 +46,7 @@ export function mapProjectsListFromDTO(
 
   return {
     items: projects.map(mapProjectFromDTO),
-    limit,
-    cursor,
+    limit: typeof limit === "number" ? limit : 0,
+    cursor: cursor ?? "",
   };
 }
