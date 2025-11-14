@@ -3,18 +3,17 @@ import type {
   ProjectListPage,
   ProjectId,
   Project,
+  CreateProjectParams,
+  CreateProjectResult,
 } from "../model";
 
 export interface ProjectsRepo {
-  /**
-   * Obtiene una lista paginada de proyectos.
-   * Admite filtros por estado, búsqueda, cursor y ordenamiento.
-   */
+  /** Obtiene lista paginada de proyectos */
   getProjects(params?: ProjectListFilter): Promise<ProjectListPage>;
 
-  /**
-   * Obtiene el detalle de un proyecto específico por su ID.
-   * En este MVP podríamos no implementarlo aún si el endpoint no existe, pero dejamos la firma.
-   */
+  /** Obtiene detalle de un proyecto por ID (opcional) */
   getById?(id: ProjectId): Promise<Project>;
+
+  /** Crea un nuevo proyecto */
+  create(params: CreateProjectParams): Promise<CreateProjectResult>;
 }

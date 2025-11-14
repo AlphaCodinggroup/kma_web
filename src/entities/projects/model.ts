@@ -17,8 +17,6 @@ export interface Project {
 
 /**
  * Resultado paginado para listados de Projects.
- * - El backend devuelve "limit" y "cursor" (cursor aparece sólo si hay más resultados).
- * - Usamos un shape neutral de dominio para paginación cursor-based.
  */
 export interface ProjectListPage {
   items: Project[];
@@ -37,3 +35,20 @@ export interface ProjectListFilter {
   sortBy?: "created_at" | "updated_at" | "name" | "code";
   sortOrder?: "asc" | "desc";
 }
+
+/**
+ * Parámetros de creación desde la UI/caso de uso (dominio).
+ */
+export interface CreateProjectParams {
+  name: string;
+  code?: string;
+  description?: string;
+  userIds?: string[];
+  facilityIds?: string[];
+  status?: ProjectStatus;
+}
+
+/**
+ * Resultado de creación en dominio: el Project creado.
+ */
+export type CreateProjectResult = Project;
