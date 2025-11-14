@@ -14,8 +14,9 @@ import {
 } from "@shared/ui/table";
 import RowActionButton from "@shared/ui/row-action-button";
 import type { Audit } from "@entities/audit/model";
-import { Button } from "@shared/ui/controls";
 import { formatIsoToYmdHm } from "@shared/lib/date";
+import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
 
 export interface AuditsTableProps {
   items: Audit[];
@@ -24,7 +25,7 @@ export interface AuditsTableProps {
   bodyMaxHeightClassName?: string;
   loading?: boolean;
   error?: boolean;
-  onError?: () => void;
+  onError: () => void;
 }
 
 /**
@@ -39,22 +40,15 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
   error,
   onError,
 }) => {
-  if (loading) {
-    return (
-      <div className="mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-800 animate-pulse text-2xl text-center">
-        Loading audits…
-      </div>
-    );
-  }
+  if (loading) return <Loading text="Loading audits…" />;
 
-  if (error) {
+  if (error)
     return (
-      <div className="mb-3 flex items-center justify-between rounded-md border border-red-200 bg-red-50 px-3 py-2 text-2xl text-red-700">
-        <span>Failed to load audits. Please try again.</span>
-        <Button onClick={onError}>Retry</Button>
-      </div>
+      <Retry
+        text="Failed to load audits. Please try again."
+        onClick={onError}
+      />
     );
-  }
 
   const hasItems = items.length > 0;
 

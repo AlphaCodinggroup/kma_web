@@ -2,39 +2,14 @@
 
 import React, { useMemo, useState } from "react";
 import PageHeader from "@shared/ui/page-header";
-import {
-  ProjectsTable,
-  type ProjectRowVM,
-} from "@features/projects/ui/ProjectsTable";
+import { ProjectsTable } from "@features/projects/ui/ProjectsTable";
 import ProjectsSearchCard from "@features/projects/ui/ProjectsSearchCard";
 import CreateProjectDialog from "@features/projects/ui/CreateProjectDialog";
 import EditProjectDialog from "@features/projects/ui/EditProjectDialog";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import ConfirmTitle from "@shared/ui/confirm-title";
-
-const SEED_ITEMS: ProjectRowVM[] = [
-  {
-    id: "PRJ-001",
-    name: "Safety Audit Q1 2024",
-    auditor: "María Pérez",
-    building: "Green Tower",
-    createdISO: "2024-01-15",
-  },
-  {
-    id: "PRJ-002",
-    name: "Fire Safety Inspection",
-    auditor: "Juan Gómez",
-    building: "Central Park",
-    createdISO: "2024-01-10",
-  },
-  {
-    id: "PRJ-003",
-    name: "Emergency Systems Check",
-    auditor: "Ana Martínez",
-    building: "Production Facility",
-    createdISO: "2024-01-20",
-  },
-];
+import { useProjectsQuery } from "@features/projects/ui/hooks/useProjectsQuery";
+import type { Project } from "@entities/projects/model";
 
 const AUDITOR_OPTIONS = [
   { id: "u1", name: "María Pérez" },
@@ -49,7 +24,6 @@ const BUILDING_OPTIONS = [
 ] as const;
 
 const ProjectsPage: React.FC = () => {
-  const [items, setItems] = useState<ProjectRowVM[]>(SEED_ITEMS);
   const [query, setQuery] = useState<string>("");
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
@@ -65,57 +39,48 @@ const ProjectsPage: React.FC = () => {
     name: string;
   } | null>(null);
 
+  const { data, isLoading, isError, error, refetch } = useProjectsQuery();
+
+  const projects = useMemo<Project[]>(() => data?.items ?? [], [data]);
+
   const auditors = useMemo(() => [...AUDITOR_OPTIONS], []);
   const buildings = useMemo(() => [...BUILDING_OPTIONS], []);
 
-  const filtered = useMemo<ProjectRowVM[]>(() => {
-    if (!query.trim()) return items;
-    const q = query.toLowerCase();
-    return items.filter(
-      (it) =>
-        it.name.toLowerCase().includes(q) ||
-        it.auditor.toLowerCase().includes(q) ||
-        it.building.toLowerCase().includes(q)
-    );
-  }, [items, query]);
+  const filtered = useMemo<Project[]>(() => {
+    const list = projects ?? [];
+    const q = query.trim().toLowerCase();
+    if (!q) return list;
+
+    return list.filter((it) => {
+      const scalarMatch = [it.name, it.status, it.createdAt]
+        .filter(Boolean)
+        .some((field) => String(field).toLowerCase().includes(q));
+      const usersMatch = Array.isArray(it.userIds)
+        ? it.userIds.some((u) => String(u).toLowerCase().includes(q))
+        : false;
+      const facilitiesMatch = Array.isArray(it.facilityIds)
+        ? it.facilityIds.some((f) => String(f).toLowerCase().includes(q))
+        : false;
+
+      return scalarMatch || usersMatch || facilitiesMatch;
+    });
+  }, [projects, query]);
 
   const handleEdit = (id: string) => {
-    const row = items.find((r) => r.id === id);
+    const row = projects.find((r) => r.id === id);
     if (!row) return;
-
-    const auditorId = auditors.find(
-      (a) => a.name.toLowerCase() === row.auditor.toLowerCase()
-    )?.id;
-    const buildingId = buildings.find(
-      (b) => b.name.toLowerCase() === row.building.toLowerCase()
-    )?.id;
-
-    const next: {
-      id: string;
-      name: string;
-      auditorId?: string | undefined;
-      buildingId?: string | undefined;
-    } = {
-      id: row.id,
-      name: row.name,
-      ...(auditorId ? { auditorId } : {}),
-      ...(buildingId ? { buildingId } : {}),
-    };
-
-    setSelectedProject(next);
+    setSelectedProject(row);
     setOpenEdit(true);
   };
 
   const handleDelete = (id: string) => {
-    const row = items.find((r) => r.id === id);
+    const row = projects.find((r) => r.id === id);
     if (!row) return;
     setProjectToDelete({ id: row.id, name: row.name });
     setOpenDelete(true);
   };
 
   const confirmDelete = async () => {
-    if (!projectToDelete) return;
-    setItems((prev) => prev.filter((it) => it.id !== projectToDelete.id));
     setOpenDelete(false);
     setProjectToDelete(null);
   };
@@ -136,12 +101,15 @@ const ProjectsPage: React.FC = () => {
         total={filtered.length}
         query={query}
         onQueryChange={setQuery}
-        placeholder="Search projects by Project name, Auditor, or Building..."
+        placeholder="Search projects by Project name, Auditor, facility or Status..."
       >
         <ProjectsTable
           items={filtered}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          isError={isError}
+          isLoading={isLoading}
+          onError={refetch}
         />
       </ProjectsSearchCard>
 
@@ -151,21 +119,7 @@ const ProjectsPage: React.FC = () => {
         onOpenChange={setOpenCreate}
         auditors={auditors}
         buildings={buildings}
-        onSubmit={async (v) => {
-          const auditorName =
-            auditors.find((a) => a.id === v.auditorId)?.name ?? "—";
-          const buildingName =
-            buildings.find((b) => b.id === v.buildingId)?.name ?? "—";
-          const newRow: ProjectRowVM = {
-            id: `PRJ-${String(Date.now()).slice(-6)}`,
-            name: v.name,
-            auditor: auditorName,
-            building: buildingName,
-            createdISO: new Date().toISOString().slice(0, 10),
-          };
-          setItems((prev) => [newRow, ...prev]);
-          setOpenCreate(false);
-        }}
+        onSubmit={() => setOpenCreate(false)}
       />
 
       {/* Editar */}
@@ -184,23 +138,7 @@ const ProjectsPage: React.FC = () => {
           }}
           auditors={auditors}
           buildings={buildings}
-          onSubmit={async (v) => {
-            setItems((prev) =>
-              prev.map((it) =>
-                it.id === v.id
-                  ? {
-                      ...it,
-                      name: v.name,
-                      auditor:
-                        auditors.find((a) => a.id === v.auditorId)?.name ??
-                        it.auditor,
-                      building:
-                        buildings.find((b) => b.id === v.buildingId)?.name ??
-                        it.building,
-                    }
-                  : it
-              )
-            );
+          onSubmit={() => {
             setOpenEdit(false);
             setSelectedProject(null);
           }}

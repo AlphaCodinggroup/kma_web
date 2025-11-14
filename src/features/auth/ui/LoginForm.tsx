@@ -80,7 +80,7 @@ const LoginForm: React.FC = () => {
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
-              placeholder="your-username"
+              placeholder="Your username"
               autoComplete="username"
               aria-invalid={!!errors.username || !!formError}
               {...register("username")}
@@ -100,6 +100,7 @@ const LoginForm: React.FC = () => {
               placeholder="••••••••"
               autoComplete="current-password"
               aria-invalid={!!errors.password || !!formError}
+              withPasswordToggle
               {...register("password")}
             />
             {errors.password ? (

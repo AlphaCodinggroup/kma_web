@@ -27,7 +27,7 @@ const DEFAULT_NAV: NavItem[] = [
   { label: "Reports", href: "/reports" as Route, icon: FileText },
   { label: "Flows", href: "/flows" as Route, icon: GitBranch },
   { label: "Projects", href: "/projects" as Route, icon: FolderClosed },
-  { label: "Buildings", href: "/buildings" as Route, icon: Building2 },
+  { label: "Facilities", href: "/facilities" as Route, icon: Building2 },
   { label: "User Management", href: "/users" as Route, icon: Users },
 ];
 

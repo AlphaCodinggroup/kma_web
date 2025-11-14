@@ -2,6 +2,7 @@
 
 import { cn } from "@shared/lib/cn";
 import * as React from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
@@ -14,32 +15,75 @@ export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
   )
 );
 Label.displayName = "Label";
+type PasswordToggleRenderArgs = {
+  visible: boolean;
+  toggle: () => void;
+  inputId?: string;
+};
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   error?: boolean;
+  withPasswordToggle?: boolean;
+  renderToggle?: (args: PasswordToggleRenderArgs) => React.ReactNode;
 };
+
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, error, ...props }, ref) => (
-    <input
-      ref={ref}
-      className={cn(
-        // base visual: gris claro, texto negro
-        "w-full rounded-xl bg-gray-100 text-black placeholder:text-gray-500",
-        // bordes/ring sutil
-        "ring-1 ring-inset ring-gray-300",
-        // foco: un gris apenas más oscuro + ring más notorio
-        "focus:outline-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400",
-        // tamaño/espaciado
-        "px-3 py-2 text-sm",
-        // disabled
-        "disabled:opacity-60 disabled:cursor-not-allowed",
-        // error
-        error && "ring-red-400 focus:ring-red-500",
-        className
-      )}
-      {...props}
-    />
-  )
+  (
+    { className, error, withPasswordToggle, renderToggle, type, id, ...props },
+    ref
+  ) => {
+    const [visible, setVisible] = React.useState(false);
+    const isPassword = type === "password" && withPasswordToggle;
+    const toggle = React.useCallback(() => setVisible((v) => !v), []);
+    const inputType = isPassword ? (visible ? "text" : "password") : type;
+
+    const inputEl = (
+      <input
+        ref={ref}
+        id={id}
+        type={inputType}
+        className={cn(
+          "w-full rounded-xl bg-gray-100 text-black placeholder:text-gray-500",
+          "ring-1 ring-inset ring-gray-300",
+          "focus:outline-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400",
+          "px-3 py-2 text-sm",
+          "disabled:opacity-60 disabled:cursor-not-allowed",
+          error && "ring-red-400 focus:ring-red-500",
+          isPassword && "pr-10",
+          className
+        )}
+        {...props}
+      />
+    );
+
+    if (!isPassword) return inputEl;
+
+    return (
+      <div className="relative">
+        {inputEl}
+        <div className="absolute inset-y-0 right-2 flex items-center">
+          {renderToggle ? (
+            renderToggle({ visible, toggle, inputId: id ?? "" })
+          ) : (
+            <button
+              type="button"
+              aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-controls={id}
+              aria-pressed={visible}
+              onClick={toggle}
+              className="focus:ring-gray-400"
+            >
+              {visible ? (
+                <EyeOff size={18} aria-hidden />
+              ) : (
+                <Eye size={18} aria-hidden />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 );
 Input.displayName = "Input";
 
