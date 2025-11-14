@@ -12,16 +12,10 @@ import {
   TableRow,
 } from "@shared/ui/table";
 import RowActionButton from "@shared/ui/row-action-button";
-
-export interface BuildingRowVM {
-  id: string;
-  name: string;
-  address: string;
-  createdAt: string;
-}
+import type { Facility } from "@entities/facility/model";
 
 export interface BuildingsTableProps {
-  items: BuildingRowVM[];
+  items: Facility[];
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   bodyMaxHeightClassName?: string | undefined;
