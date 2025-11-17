@@ -11,27 +11,21 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
+import type { UserSummary } from "@entities/user/list.model";
+import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
 
 export type UserStatus = "active" | "inactive";
 
-export interface UserRowVM {
-  id: string;
-  name: string;
-  email: string;
-  role: "Project Manager" | "Auditor" | "QC Manager" | "Admin" | string;
-  status: UserStatus;
-  lastLogin: string;
-  auditsCount: number;
-  avatarUrl?: string | null;
-}
-
 export interface UsersTableProps {
-  items: UserRowVM[];
+  items: UserSummary[];
   emptyMessage?: string;
-  /** Ej: "max-h-[540px]" */
   bodyMaxHeightClassName?: string;
   onOpenActions?: (userId: string) => void;
   className?: string | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  onError: () => void;
 }
 
 export const UsersTable: React.FC<UsersTableProps> = ({
@@ -40,8 +34,18 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   bodyMaxHeightClassName,
   onOpenActions,
   className,
+  isLoading = false,
+  isError = false,
+  onError,
 }) => {
   const hasItems = items.length > 0;
+
+  if (isLoading) return <Loading text="Loading users…" />;
+
+  if (isError)
+    return (
+      <Retry text="Failed to load users. Please try again." onClick={onError} />
+    );
 
   return (
     <div
@@ -57,10 +61,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               <TableHead>User</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last Login</TableHead>
-              <TableHead className="text-right">Audits</TableHead>
-              <TableHead className="w-[56px] text-right">Actions</TableHead>
+              <TableHead className=" text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -79,32 +80,17 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                 <TableRow key={u.id} className="hover:bg-muted/30">
                   {/* User */}
                   <TableCell className="align-middle truncate">
-                    {u.name}
+                    {u.name ?? "-"}
                   </TableCell>
 
                   {/* Email */}
                   <TableCell className="align-middle truncate">
-                    {u.email}
+                    {u.email ?? "-"}
                   </TableCell>
 
                   {/* Role */}
                   <TableCell className="align-middle">
-                    <RolePill>{u.role}</RolePill>
-                  </TableCell>
-
-                  {/* Status */}
-                  <TableCell className="align-middle">
-                    <StatusPill status={u.status} />
-                  </TableCell>
-
-                  {/* Last Login */}
-                  <TableCell className="align-middle">
-                    {u.lastLogin || "—"}
-                  </TableCell>
-
-                  {/* Audits */}
-                  <TableCell className="align-middle text-right tabular-nums">
-                    {u.auditsCount}
+                    -{/* <RolePill>{u.role}</RolePill> */}
                   </TableCell>
 
                   {/* Actions */}
@@ -146,19 +132,5 @@ const RolePill: React.FC<React.PropsWithChildren> = ({ children }) => (
     {children}
   </span>
 );
-
-const StatusPill: React.FC<{ status: UserStatus }> = ({ status }) => {
-  const isActive = status === "active";
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
-        isActive ? "bg-black text-white" : "bg-red-500 text-white"
-      )}
-    >
-      {isActive ? "Active" : "Inactive"}
-    </span>
-  );
-};
 
 export default UsersTable;
