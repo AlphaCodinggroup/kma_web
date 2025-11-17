@@ -10,6 +10,8 @@ import ConfirmDialog from "@shared/ui/confirm-dialog";
 import ConfirmTitle from "@shared/ui/confirm-title";
 import { useProjectsQuery } from "@features/projects/ui/hooks/useProjectsQuery";
 import type { Project } from "@entities/projects/model";
+import { useUsersQuery } from "@features/users/ui/hooks/useUsersQuery";
+import type { UserSummary } from "@entities/user/list.model";
 
 const AUDITOR_OPTIONS = [
   { id: "u1", name: "María Pérez" },
@@ -39,11 +41,15 @@ const ProjectsPage: React.FC = () => {
     name: string;
   } | null>(null);
 
-  const { data, isLoading, isError, error, refetch } = useProjectsQuery();
+  const { data, isLoading, isError, refetch } = useProjectsQuery();
+  const { data: auditorsData } = useUsersQuery({ role: "auditor" }, openCreate);
 
   const projects = useMemo<Project[]>(() => data?.items ?? [], [data]);
 
-  const auditors = useMemo(() => [...AUDITOR_OPTIONS], []);
+  const auditors = useMemo<UserSummary[]>(
+    () => auditorsData?.items ?? [],
+    [auditorsData]
+  );
   const buildings = useMemo(() => [...BUILDING_OPTIONS], []);
 
   const filtered = useMemo<Project[]>(() => {
@@ -117,8 +123,8 @@ const ProjectsPage: React.FC = () => {
       <CreateProjectDialog
         open={openCreate}
         onOpenChange={setOpenCreate}
+        facilities={buildings}
         auditors={auditors}
-        buildings={buildings}
         onSubmit={() => setOpenCreate(false)}
       />
 

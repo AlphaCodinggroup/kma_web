@@ -16,12 +16,14 @@ function createUsersQueryKey(filters?: UsersListFilter) {
  * Hook React Query para listar usuarios.
  */
 export function useUsersQuery(
-  filters?: UsersListFilter
+  filters?: UsersListFilter,
+  enabled: boolean = true
 ): UseQueryResult<UsersListResult> {
   return useQuery({
     queryKey: createUsersQueryKey(filters),
     queryFn: () => usersRepoImpl.getUsers(filters),
     staleTime: 1000 * 60 * 5,
     retry: 2,
+    enabled,
   });
 }
