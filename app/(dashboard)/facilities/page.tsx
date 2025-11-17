@@ -2,10 +2,10 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import PageHeader from "@shared/ui/page-header";
-import BuildingsSearchCard from "@features/facilities/ui/BuildingsSearchCard";
-import BuildingsTable from "@features/facilities/ui/BuildingsTable";
+import FacilitySearchCard from "@features/facilities/ui/FacilitySearchCard";
 import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
 import type { Facility } from "@entities/facility/model";
+import FacilityTable from "@features/facilities/ui/FacilityTable";
 
 export default function BuildingsPage() {
   const [query, setQuery] = useState<string>("");
@@ -43,18 +43,21 @@ export default function BuildingsPage() {
           onClick: () => {},
         }}
       />
-      <BuildingsSearchCard
+      <FacilitySearchCard
         total={filtered.length}
         query={query}
         onQueryChange={setQuery}
         placeholder="Search facility by name, Address, or Created..."
       >
-        <BuildingsTable
+        <FacilityTable
           items={filtered}
           onEdit={() => {}}
           onDelete={() => {}}
+          isError={isError}
+          isLoading={isLoading}
+          onError={refetch}
         />
-      </BuildingsSearchCard>
+      </FacilitySearchCard>
     </div>
   );
 }

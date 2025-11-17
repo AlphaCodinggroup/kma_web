@@ -5,7 +5,7 @@ import { cn } from "@shared/lib/cn";
 import SearchInput from "@shared/ui/search-input";
 import TableHeader from "@shared/ui/table-header";
 
-export interface BuildingsSearchCardProps {
+export interface FacilitySearchCardProps {
   total?: number;
   query: string;
   onQueryChange: (value: string) => void;
@@ -14,7 +14,7 @@ export interface BuildingsSearchCardProps {
   placeholder?: string;
 }
 
-const BuildingsSearchCard: React.FC<BuildingsSearchCardProps> = ({
+const FacilitySearchCard: React.FC<FacilitySearchCardProps> = ({
   total = 0,
   query,
   onQueryChange,
@@ -47,4 +47,4 @@ const BuildingsSearchCard: React.FC<BuildingsSearchCardProps> = ({
   );
 };
 
-export default BuildingsSearchCard;
+export default FacilitySearchCard;
