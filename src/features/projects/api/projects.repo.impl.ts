@@ -96,6 +96,14 @@ export class ProjectsRepoHttp implements ProjectsRepo {
       throw toApiError(err);
     }
   }
+
+  async deleteProject(id: ProjectId): Promise<void> {
+    try {
+      await httpClient.delete<void>(`${this.basePath}/${id}`);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
 }
 
 /** Singleton listo para inyectar donde lo necesites */

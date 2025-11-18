@@ -90,11 +90,14 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   {row.name}
                 </TableCell>
                 <TableCell className="px-4 py-4 text-black">
-                  {row.userIds?.length ? (
+                  {row.users?.length ? (
                     <div className="flex flex-col gap-1">
-                      {row.userIds.map((uid) => (
-                        <span key={uid} className="text-sm">
-                          {uid}
+                      {row.users.map((user) => (
+                        <span
+                          key={user.id}
+                          className="text-sm border rounded-xl text-center"
+                        >
+                          {user.name}
                         </span>
                       ))}
                     </div>
@@ -102,12 +105,16 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                     "—"
                   )}
                 </TableCell>
+
                 <TableCell className="px-4 py-4 text-black">
-                  {row.facilityIds?.length ? (
+                  {row.facilities?.length ? (
                     <div className="flex flex-col gap-1">
-                      {row.facilityIds.map((fid) => (
-                        <span key={fid} className="text-sm">
-                          {fid}
+                      {row.facilities.map((facility) => (
+                        <span
+                          key={facility.id}
+                          className="text-sm border rounded-2xl text-center"
+                        >
+                          {facility.name}
                         </span>
                       ))}
                     </div>
@@ -115,6 +122,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                     "—"
                   )}
                 </TableCell>
+
                 <TableCell className="px-4 py-4 text-black">
                   {row.status ? (
                     <ProjectStatusBadge status={row.status} />

@@ -2,14 +2,16 @@ export type ProjectId = string;
 
 export type ProjectStatus = "ACTIVE" | "ARCHIVED";
 
+export type Options = { id: string; name: string };
+
 export interface Project {
   id: ProjectId;
   name: string;
   code?: string;
   description?: string;
   status: ProjectStatus;
-  userIds: string[];
-  facilityIds: string[];
+  users: Options[];
+  facilities: Options[];
   createdAt: string;
   updatedAt: string;
   createdBy: string;

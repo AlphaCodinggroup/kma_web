@@ -1,4 +1,4 @@
-import type { Project, ProjectListPage } from "../model";
+import type { Options, Project, ProjectListPage } from "../model";
 
 export interface ProjectDTO {
   project_id: string;
@@ -6,8 +6,8 @@ export interface ProjectDTO {
   name: string;
   description?: string;
   status: "ACTIVE" | "ARCHIVED";
-  user_ids: string[];
-  facility_ids: string[];
+  users: Options[];
+  facilities: Options[];
   created_at: string;
   updated_at: string;
   created_by: string;
@@ -30,8 +30,8 @@ export function mapProjectFromDTO(dto: ProjectDTO): Project {
     name: dto.name,
     description: dto.description ?? "",
     status: dto.status,
-    userIds: dto.user_ids,
-    facilityIds: dto.facility_ids,
+    users: dto.users?.map((u) => ({ id: u.id, name: u.name })) ?? [],
+    facilities: dto.facilities?.map((f) => ({ id: f.id, name: f.name })) ?? [],
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
     createdBy: dto.created_by,

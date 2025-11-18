@@ -12,18 +12,7 @@ import { useProjectsQuery } from "@features/projects/ui/hooks/useProjectsQuery";
 import type { Project } from "@entities/projects/model";
 import { useUsersQuery } from "@features/users/ui/hooks/useUsersQuery";
 import type { UserSummary } from "@entities/user/list.model";
-
-const AUDITOR_OPTIONS = [
-  { id: "u1", name: "María Pérez" },
-  { id: "u2", name: "Juan Gómez" },
-  { id: "u3", name: "Ana Martínez" },
-] as const;
-
-const BUILDING_OPTIONS = [
-  { id: "b1", name: "Green Tower" },
-  { id: "b2", name: "Central Park" },
-  { id: "b3", name: "Production Facility" },
-] as const;
+import { useDeleteProjectMutation } from "@features/projects/ui/hooks/useDeleteProjectMutation";
 
 const ProjectsPage: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -43,6 +32,15 @@ const ProjectsPage: React.FC = () => {
 
   const { data, isLoading, isError, refetch } = useProjectsQuery();
   const { data: auditorsData } = useUsersQuery({ role: "auditor" }, openCreate);
+  const { mutate: deleteProject, isPending: isDeleting } =
+    useDeleteProjectMutation({
+      onSuccess: () => {
+        setOpenDelete(false);
+        setProjectToDelete(null);
+        refetch();
+      },
+      onError: (err) => console.error("Failed to delete project", err),
+    });
 
   const projects = useMemo<Project[]>(() => data?.items ?? [], [data]);
 
@@ -50,7 +48,6 @@ const ProjectsPage: React.FC = () => {
     () => auditorsData?.items ?? [],
     [auditorsData]
   );
-  const buildings = useMemo(() => [...BUILDING_OPTIONS], []);
 
   const filtered = useMemo<Project[]>(() => {
     const list = projects ?? [];
@@ -61,11 +58,12 @@ const ProjectsPage: React.FC = () => {
       const scalarMatch = [it.name, it.status, it.createdAt]
         .filter(Boolean)
         .some((field) => String(field).toLowerCase().includes(q));
-      const usersMatch = Array.isArray(it.userIds)
-        ? it.userIds.some((u) => String(u).toLowerCase().includes(q))
+      const usersMatch = Array.isArray(it.users)
+        ? it.users.some((u) => u.name?.toLowerCase().includes(q))
         : false;
-      const facilitiesMatch = Array.isArray(it.facilityIds)
-        ? it.facilityIds.some((f) => String(f).toLowerCase().includes(q))
+
+      const facilitiesMatch = Array.isArray(it.facilities)
+        ? it.facilities.some((f) => f.name?.toLowerCase().includes(q))
         : false;
 
       return scalarMatch || usersMatch || facilitiesMatch;
@@ -87,8 +85,8 @@ const ProjectsPage: React.FC = () => {
   };
 
   const confirmDelete = async () => {
-    setOpenDelete(false);
-    setProjectToDelete(null);
+    if (!projectToDelete) return;
+    deleteProject(projectToDelete.id);
   };
 
   return (
@@ -123,7 +121,7 @@ const ProjectsPage: React.FC = () => {
       <CreateProjectDialog
         open={openCreate}
         onOpenChange={setOpenCreate}
-        facilities={buildings}
+        facilities={[]}
         auditors={auditors}
         onSubmit={() => setOpenCreate(false)}
       />
@@ -143,7 +141,7 @@ const ProjectsPage: React.FC = () => {
             buildingId: selectedProject.buildingId ?? null,
           }}
           auditors={auditors}
-          buildings={buildings}
+          buildings={[]}
           onSubmit={() => {
             setOpenEdit(false);
             setSelectedProject(null);
@@ -165,6 +163,7 @@ const ProjectsPage: React.FC = () => {
           description="This action cannot be undone."
           confirmLabel="Delete"
           cancelLabel="Cancel"
+          loading={isDeleting}
           onConfirm={confirmDelete}
         />
       )}

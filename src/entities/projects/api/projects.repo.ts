@@ -16,4 +16,7 @@ export interface ProjectsRepo {
 
   /** Crea un nuevo proyecto */
   create(params: CreateProjectParams): Promise<CreateProjectResult>;
+
+  /** Elimina un proyecto */
+  deleteProject(id: ProjectId): Promise<void>;
 }
