@@ -32,9 +32,9 @@ type AuditAnswerDTO = QuestionAnswerDTO | FormAnswerDTO | SelectAnswerDTO;
 
 export type AuditDTO = {
   id: string;
-  version: number;
   flow_id: string;
   project_id?: string | null;
+  project_name: string | null;
   facility_id?: string | null;
   status: string;
   answers: AuditAnswerDTO[];
@@ -42,6 +42,8 @@ export type AuditDTO = {
   updated_by?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  auditor_name?: string | null;
+  flow_version: number;
 };
 
 export type AuditsResponseDTO = {
@@ -109,9 +111,10 @@ const mapAnswerDtoToDomain = (dto: AuditAnswerDTO): AuditAnswer => {
 export const mapAuditDtoToDomain = (dto: AuditDTO): Audit => {
   return {
     id: dto.id,
-    version: dto.version,
     flowId: dto.flow_id ?? "",
+    version: dto.flow_version,
     projectId: emptyToNull(dto.project_id),
+    projectName: dto.project_name,
     facilityId: emptyToNull(dto.facility_id),
     status: (dto.status ?? "") as AuditStatus,
     answers: Array.isArray(dto.answers)
@@ -121,6 +124,7 @@ export const mapAuditDtoToDomain = (dto: AuditDTO): Audit => {
     updatedBy: emptyToNull(dto.updated_by),
     createdAt: toIsoOrEmpty(dto.created_at),
     updatedAt: toIsoOrEmpty(dto.updated_at),
+    auditorName: dto.auditor_name ?? "",
   };
 };
 

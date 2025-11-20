@@ -45,9 +45,10 @@ export type AuditAnswer = QuestionAnswer | FormAnswer | SelectAnswer;
 
 export interface Audit {
   id: string;
-  version: number;
   flowId: string;
+  version: number;
   projectId: string | null;
+  projectName: string | null;
   facilityId: string | null;
   status: AuditStatus;
   answers: AuditAnswer[];
@@ -55,6 +56,7 @@ export interface Audit {
   updatedBy: string | null;
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
+  auditorName: string | null;
 }
 
 export type AuditType = {
