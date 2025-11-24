@@ -67,6 +67,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
           <TableHeader>
             <TableRow className="bg-gray-50">
               <TableHead>Project</TableHead>
+              <TableHead>Facility</TableHead>
               <TableHead>Auditor</TableHead>
               <TableHead className="w-[20%]">Status</TableHead>
               <TableHead className="w-[15%]">Audit Date</TableHead>
@@ -89,6 +90,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
             {items.map((row) => (
               <TableRow key={`${row.id}-${row.version}`}>
                 <TableCell>{row.projectName ?? "—"}</TableCell>
+                <TableCell>{row.facilityName ?? "—"}</TableCell>
                 <TableCell>{row.auditorName ?? "—"}</TableCell>
                 <TableCell>
                   <StatusBadge status={row.status} />
