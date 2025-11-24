@@ -49,12 +49,9 @@ const toBool = (v: unknown, fallback = false): boolean => {
 /** Lista de estados conocidos; si llega uno nuevo, lo preservamos para no romper. */
 const toAuditStatus = (raw: string): AuditStatus => {
   const allowed: AuditStatus[] = [
-    "draft",
-    "pending_review",
-    "in_review",
-    "review_modified",
-    "generating_report_draft",
-    "generating_report_final",
+    "draft_report_pending_review",
+    "draft_report_in_review",
+    "final_report_sent_to_client",
     "completed",
   ];
   return (allowed.includes(raw as AuditStatus) ? raw : raw) as AuditStatus;

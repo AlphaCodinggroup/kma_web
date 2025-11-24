@@ -97,14 +97,12 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                   {formatIsoToYmdHm(row.createdAt) ?? "—"}
                 </TableCell>
                 <TableCell className="text-right pr-6">
-                  {!(row.status === "draft") && (
-                    <RowActionButton
-                      icon={Pencil}
-                      ariaLabel="Edit audit"
-                      onClick={() => onEdit?.(row)}
-                      size="md"
-                    />
-                  )}
+                  <RowActionButton
+                    icon={Pencil}
+                    ariaLabel="Edit audit"
+                    onClick={() => onEdit?.(row)}
+                    size="md"
+                  />
                 </TableCell>
               </TableRow>
             ))}
