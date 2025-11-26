@@ -74,13 +74,9 @@ Badge.displayName = "Badge";
 /* -------------------------- Badge de dominio --------------------------- */
 
 const STATUS_LABELS: Record<AuditStatus, string> = {
-  draft: "Draft",
-  pending_review: "Pending Review",
-  in_review: "In Review",
-  "Generating Report": "Generating Report",
-  review_modified: "Review Modified",
-  generating_report_draft: "Generating Report (Draft)",
-  generating_report_final: "Generating Report (Final)",
+  draft_report_pending_review: "Draft Report Pending Review",
+  draft_report_in_review: "Draft Report In Review",
+  final_report_sent_to_client: "Final Report Sent to Client",
   completed: "Completed",
 };
 

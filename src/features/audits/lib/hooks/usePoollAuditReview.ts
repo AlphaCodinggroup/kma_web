@@ -46,7 +46,8 @@ export function usePollAuditReview(params: {
       if (!stopWhenReady) return refetchIntervalMs;
       const data = query.state.data as ReviewProgress | undefined;
       const isReady =
-        data?.reviewReady === true || data?.status === "pending_review";
+        data?.reviewReady === true ||
+        data?.status === "draft_report_pending_review";
 
       return isReady ? false : refetchIntervalMs;
     },
