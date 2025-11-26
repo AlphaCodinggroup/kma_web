@@ -84,7 +84,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const handleExport = useCallback(async () => {
     try {
       // Si está en revisión, cerramos la revisión primero
-      if (status === "in_review") {
+      if (status === "draft_report_in_review") {
         await mutateAsync({ auditId: id });
         await refetchReviewDetail(); // refresca detalle para que status cambie
       }
