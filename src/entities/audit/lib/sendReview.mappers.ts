@@ -15,13 +15,9 @@ export type SendForReviewDTO = {
 /** Normaliza una cadena a AuditStatus manteniendo valores “desconocidos” sin romper el tipado. */
 const toAuditStatus = (raw: string): AuditStatus => {
   const allowed: AuditStatus[] = [
-    "draft",
-    "pending_review",
-    "in_review",
-    "review_modified",
-    "Generating Report",
-    "generating_report_draft",
-    "generating_report_final",
+    "draft_report_pending_review",
+    "draft_report_in_review",
+    "final_report_sent_to_client",
     "completed",
   ];
 

@@ -45,7 +45,7 @@ const AuditsPage: React.FC = () => {
 
   const handleEdit = useCallback(
     (audit: Audit) => {
-      if (audit.status === "pending_review") {
+      if (audit.status === "draft_report_pending_review") {
         startSendForReview(audit.id);
         setPendingAuditId(audit.id);
         return;

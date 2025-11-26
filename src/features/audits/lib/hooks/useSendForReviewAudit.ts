@@ -56,7 +56,8 @@ export function useSendForReviewAudit(opts?: {
   // Llamar onReady una sola vez cuando quede listo
   const readyCalledRef = useRef(false);
   const isReady =
-    progress?.reviewReady === true || progress?.status === "pending_review";
+    progress?.reviewReady === true ||
+    progress?.status === "draft_report_pending_review";
 
   useEffect(() => {
     if (!isReady || readyCalledRef.current) return;
