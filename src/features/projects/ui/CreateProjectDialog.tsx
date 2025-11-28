@@ -5,12 +5,13 @@ import ProjectUpsertDialog, {
   type Option,
   type ProjectUpsertValues,
 } from "./ProjectsUpsertDialog";
+import type { UserSummary } from "@entities/user/list.model";
 
 export interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  auditors: Option[];
-  buildings: Option[];
+  auditors: UserSummary[];
+  facilities: Option[];
   defaultValues?: Partial<ProjectUpsertValues> | undefined;
   onSubmit: (values: ProjectUpsertValues) => void | Promise<void>;
   loading?: boolean | undefined;
@@ -24,7 +25,7 @@ const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
   open,
   onOpenChange,
   auditors,
-  buildings,
+  facilities,
   defaultValues,
   onSubmit,
   loading,
@@ -40,7 +41,7 @@ const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
       onOpenChange={onOpenChange}
       defaultValues={defaultValues}
       auditors={auditors}
-      buildings={buildings}
+      facilities={facilities}
       loading={loading}
       error={error}
       titleOverride={titleOverride}

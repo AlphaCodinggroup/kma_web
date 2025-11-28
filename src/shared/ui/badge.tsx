@@ -1,8 +1,9 @@
 "use client";
 
-import type { AuditStatus } from "@entities/audit/model";
 import { cn } from "@shared/lib/cn";
 import * as React from "react";
+import type { AuditStatus } from "@entities/audit/model";
+import type { ProjectStatus } from "@entities/projects/model";
 
 type BadgeVariant = "solid" | "soft" | "outline";
 type BadgeTone = "neutral" | "success" | "warning" | "danger" | "info";
@@ -99,6 +100,35 @@ export function StatusBadge({
       {...rest}
     >
       {label}
+    </Badge>
+  );
+}
+
+const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
+  ACTIVE: "Active",
+  ARCHIVED: "Archived",
+};
+
+export function ProjectStatusBadge({
+  status,
+  className,
+  variant,
+  size = "sm",
+  ...rest
+}: { status: ProjectStatus } & Omit<BadgeProps, "children" | "tone">) {
+  const tone = status === "ACTIVE" ? "success" : "neutral";
+  const safeVariant: BadgeVariant =
+    variant ?? (status === "ACTIVE" ? "soft" : "outline");
+
+  return (
+    <Badge
+      variant={safeVariant}
+      tone={tone}
+      size={size}
+      className={cn("tracking-tight", className)}
+      {...rest}
+    >
+      {PROJECT_STATUS_LABELS[status]}
     </Badge>
   );
 }

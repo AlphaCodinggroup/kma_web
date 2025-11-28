@@ -12,32 +12,44 @@ import {
   TableRow,
 } from "@shared/ui/table";
 import RowActionButton from "@shared/ui/row-action-button";
+import type { Facility } from "@entities/facility/model";
+import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
 
-export interface BuildingRowVM {
-  id: string;
-  name: string;
-  address: string;
-  createdAt: string;
-}
-
-export interface BuildingsTableProps {
-  items: BuildingRowVM[];
+export interface FacilityTableProps {
+  items: Facility[];
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   bodyMaxHeightClassName?: string | undefined;
   emptyMessage?: string | undefined;
   className?: string | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  onError: () => void;
 }
 
-const BuildingsTable: React.FC<BuildingsTableProps> = ({
+const FacilityTable: React.FC<FacilityTableProps> = ({
   items,
   onEdit,
   onDelete,
   bodyMaxHeightClassName,
-  emptyMessage = "No buildings found",
+  emptyMessage = "No facilities found",
   className,
+  isLoading = false,
+  isError = false,
+  onError,
 }) => {
   const hasItems = items.length > 0;
+
+  if (isLoading) return <Loading text="Loading facilities…" />;
+
+  if (isError)
+    return (
+      <Retry
+        text="Failed to load facilities. Please try again."
+        onClick={onError}
+      />
+    );
 
   return (
     <div
@@ -120,4 +132,4 @@ const BuildingsTable: React.FC<BuildingsTableProps> = ({
   );
 };
 
-export default BuildingsTable;
+export default FacilityTable;
