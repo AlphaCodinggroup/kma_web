@@ -2,14 +2,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { PublicEnv, serverEnv } from "@shared/config/env";
 
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
+type RouteParams = { id: string };
 
-export async function DELETE(req: NextRequest, context: RouteContext) {
-  const { id } = context.params;
+export async function DELETE(req: NextRequest, context: { params: Promise<RouteParams> },) {
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json(

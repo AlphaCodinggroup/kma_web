@@ -7,6 +7,9 @@ export interface GeoPoint {
   lng: number;
 }
 
+/**
+ * Modelo de dominio de Facility.
+ */
 export interface Facility {
   id: FacilityId;
   projectId: ProjectId;
@@ -23,17 +26,20 @@ export interface Facility {
   updatedBy?: string;
 }
 
-/** Página de resultados */
+/** Página de resultados de Facilities (paginación por limit + cursor). */
 export interface FacilityListPage {
   items: Facility[];
   limit?: number;
   cursor?: string;
 }
 
-/** Filtros admitidos por el listado */
+/**
+ * Filtros admitidos por el listado.
+ */
 export interface FacilityListFilter {
   limit?: number;
   cursor?: string;
   status?: FacilityStatus;
   search?: string;
+  projectId?: ProjectId;
 }

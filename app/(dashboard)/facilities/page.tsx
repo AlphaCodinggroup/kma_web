@@ -3,34 +3,40 @@
 import React, { useCallback, useMemo, useState } from "react";
 import PageHeader from "@shared/ui/page-header";
 import FacilitySearchCard from "@features/facilities/ui/FacilitySearchCard";
-import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
-import type { Facility } from "@entities/facility/model";
+import type { Facility, FacilityListFilter } from "@entities/facility/model";
 import FacilityTable from "@features/facilities/ui/FacilityTable";
+import { useDebouncedSearch } from "@shared/lib/useDebouncedSearch";
+import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
 
-export default function BuildingsPage() {
+export default function FacilitiesPage() {
   const [query, setQuery] = useState<string>("");
 
-  const { data, isLoading, isError, refetch } = useFacilitiesQuery();
+  const debouncedQuery = useDebouncedSearch(query);
+
+  const filters = useMemo<FacilityListFilter | undefined>(() => {
+    if (!debouncedQuery) return undefined;
+
+    return {
+      search: debouncedQuery,
+    };
+  }, [debouncedQuery]);
+
+  const { data, isLoading, isError, refetch } = useFacilitiesQuery(filters);
 
   const facilities = useMemo<Facility[]>(() => data?.items ?? [], [data]);
 
-  const filtered = useMemo<Facility[]>(() => {
-    const src = facilities;
-    const q = query.trim().toLowerCase();
-    if (!q) return src;
+  const handleCreate = useCallback(() => {
+    // TODO: Navegar a /facilities/new o abrir modal de creación.
+  }, []);
 
-    return src.filter((f) =>
-      [f.name, f.address ?? "", f.createdAt]
-        .filter(Boolean)
-        .some((field) => String(field).toLowerCase().includes(q))
-    );
-  }, [facilities, query]);
+  const handleEdit = useCallback((id: string) => {
+    // TODO: Navegar a /facilities/[id]/edit o similar.
+    // router.push(`/facilities/${id}/edit`);
+  }, []);
 
-  const handleCreate = useCallback(() => {}, []);
-
-  const handleEdit = useCallback((id: string) => {}, []);
-
-  const handleDelete = useCallback((id: string) => {}, []);
+  const handleDelete = useCallback((id: string) => {
+    // TODO: Abrir modal de confirmación y disparar useMutation de delete.
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -40,19 +46,20 @@ export default function BuildingsPage() {
         verticalAlign="center"
         primaryAction={{
           label: "New Facility",
-          onClick: () => {},
+          onClick: handleCreate,
         }}
       />
+
       <FacilitySearchCard
-        total={filtered.length}
+        total={facilities.length}
         query={query}
         onQueryChange={setQuery}
-        placeholder="Search facility by name, Address, or Created..."
+        placeholder="Search facility by name, address or city..."
       >
         <FacilityTable
-          items={filtered}
-          onEdit={() => {}}
-          onDelete={() => {}}
+          items={facilities}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
           isError={isError}
           isLoading={isLoading}
           onError={refetch}

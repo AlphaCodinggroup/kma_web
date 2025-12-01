@@ -5,7 +5,6 @@ import type {
   FacilityListPage,
   FacilityId,
   Facility,
-  ProjectId,
 } from "@entities/facility/model";
 import {
   mapFacilitiesListFromDTO,
@@ -21,6 +20,7 @@ function toApiError(err: unknown): ApiError {
     const e = err as { code: string; message: string; details?: unknown };
     return { code: e.code, message: e.message, details: e.details };
   }
+
   return {
     code: "UNEXPECTED_ERROR",
     message: "Unexpected error",
@@ -29,14 +29,19 @@ function toApiError(err: unknown): ApiError {
 }
 
 /**
- * Implementación axios del repositorio de Facilities.
+ * Implementación HTTP (axios) del repositorio de Facilities.
  */
 export class FacilitiesRepoHttp implements FacilitiesRepo {
   constructor(private readonly basePath = "/api/facilities") {}
 
-  async getFacilities(
-    filters?: FacilityListFilter & { projectId?: ProjectId }
-  ): Promise<FacilityListPage> {
+  /**
+   * Listado de facilities con filtros opcionales:
+   * - limit, cursor, status, search, projectId
+   *
+   * Internamente llama a GET /api/facilities con query params,
+   * y el route handler reenvía al backend real.
+   */
+  async getFacilities(filters?: FacilityListFilter): Promise<FacilityListPage> {
     try {
       const res = await httpClient.get<FacilitiesResponseDTO>(this.basePath, {
         params: {
@@ -47,17 +52,23 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
           projectId: filters?.projectId,
         },
       });
+
       return mapFacilitiesListFromDTO(res.data);
     } catch (err) {
       throw toApiError(err);
     }
   }
 
+  /**
+   * Obtiene el detalle de una facility por id.
+   * GET /api/facilities/:id
+   */
   async getById(facilityId: FacilityId): Promise<Facility> {
     try {
       const res = await httpClient.get<{ data: FacilityDTO; status: string }>(
-        `${this.basePath}/${facilityId}`
+        `${this.basePath}/${facilityId}`,
       );
+
       return mapFacilityFromDTO(res.data.data);
     } catch (err) {
       throw toApiError(err);
@@ -65,5 +76,5 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
   }
 }
 
-/** Singleton listo para inyectar */
+/** Singleton listo para inyectar donde haga falta */
 export const facilitiesRepoImpl = new FacilitiesRepoHttp();
