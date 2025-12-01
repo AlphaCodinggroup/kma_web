@@ -106,7 +106,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       )}
       {...props}
     >
-      {isLoading ? "Ingresando..." : children}
+      {isLoading ? "Loading..." : children}
     </button>
   )
 );

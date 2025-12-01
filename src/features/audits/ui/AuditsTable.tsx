@@ -61,12 +61,11 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
           <TableHeader>
             <TableRow className="bg-gray-50">
               <TableHead>Project</TableHead>
+              <TableHead>Facility</TableHead>
               <TableHead>Auditor</TableHead>
-              <TableHead className="w-[180px]">Status</TableHead>
-              <TableHead className="w-[160px]">Audit Date</TableHead>
-              <TableHead className="w-[80px] text-right pr-6">
-                Actions
-              </TableHead>
+              <TableHead className="w-[20%]">Status</TableHead>
+              <TableHead className="w-[15%]">Audit Date</TableHead>
+              <TableHead className="w-[5%] text-right pr-6">Actions</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -84,8 +83,9 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
 
             {items.map((row) => (
               <TableRow key={`${row.id}-${row.version}`}>
-                <TableCell>{row.projectId ?? "—"}</TableCell>
-                <TableCell>{row.createdBy ?? "—"}</TableCell>
+                <TableCell>{row.projectName ?? "—"}</TableCell>
+                <TableCell>{row.facilityName ?? "—"}</TableCell>
+                <TableCell>{row.auditorName ?? "—"}</TableCell>
                 <TableCell>
                   <StatusBadge status={row.status} />
                 </TableCell>
@@ -93,14 +93,12 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                   {formatIsoToYmdHm(row.createdAt) ?? "—"}
                 </TableCell>
                 <TableCell className="text-right pr-6">
-                  {!(row.status === "draft" || row.status === "in_review") && (
-                    <RowActionButton
-                      icon={Pencil}
-                      ariaLabel="Edit audit"
-                      onClick={() => onEdit?.(row)}
-                      size="md"
-                    />
-                  )}
+                  <RowActionButton
+                    icon={Pencil}
+                    ariaLabel="Edit audit"
+                    onClick={() => onEdit?.(row)}
+                    size="md"
+                  />
                 </TableCell>
               </TableRow>
             ))}

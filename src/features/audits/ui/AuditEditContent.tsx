@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { cn } from "@shared/lib/cn";
 import AuditEditTabsBar, { type AuditEditTab } from "./AuditEditTabsBar";
 import AuditQuestionsList, { type QuestionItemVM } from "./AuditQuestionsList";
@@ -13,8 +13,10 @@ import CommentsSidebar from "./CommentsSidebar";
 import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
+import { useCompleteReviewAuditMutation } from "../lib/hooks/useCompleteReviewAuditMutation";
 
 export type ReportSeverity = "high" | "medium" | "low";
+
 export interface ReportItemVM {
   id: string;
   title: string;
@@ -29,6 +31,14 @@ export interface AuditEditContentProps {
   questions: QuestionItemVM[];
 }
 
+type CommentTarget = {
+  id: string;
+  title: string;
+};
+
+const POLL_INTERVAL_MS = 2000;
+const POLL_MAX_ATTEMPTS = 15; // ~30 segundos
+
 const AuditEditContent: React.FC<AuditEditContentProps> = ({
   id,
   questions,
@@ -36,48 +46,89 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const [internalTab, setInternalTab] = useState<AuditEditTab>("questions");
   const [internalFilter, setInternalFilter] =
     useState<QuestionsFilterMode>("no");
+  const [isPollingReport, setIsPollingReport] = useState(false);
 
   // Estado del panel de comentarios (cuando es undefined NO se muestra)
   const [selectedCommentTarget, setSelectedCommentTarget] = useState<
-    { id: string; title: string } | undefined
+    CommentTarget | undefined
   >(undefined);
 
-  const { data, isLoading, isError, refetch } = useAuditReviewDetail(id);
-
   const {
-    data: report,
-    isFetching: isFetchingReport,
-    refetch: refetchReport,
-  } = useAuditReport(id, { enabled: false });
+    data: reviewDetail,
+    isLoading,
+    isError,
+    refetch: refetchReviewDetail,
+  } = useAuditReviewDetail(id);
 
-  const hasSidebar = !!selectedCommentTarget;
+  const { mutateAsync, isPending } = useCompleteReviewAuditMutation();
 
-  const handleChangeTab = (t: AuditEditTab) => setInternalTab(t);
+  const { isFetching: isFetchingReport, refetch: refetchReport } =
+    useAuditReport(id, { enabled: false });
 
-  const handleToggleFilter = () =>
+  const findings: AuditFinding[] = reviewDetail?.findings ?? [];
+  const status = reviewDetail?.status;
+  const hasSidebar = Boolean(selectedCommentTarget);
+
+  const handleChangeTab = useCallback((tab: AuditEditTab) => {
+    setInternalTab(tab);
+  }, []);
+
+  const handleToggleFilter = useCallback(() => {
     setInternalFilter((prev) => (prev === "no" ? "all" : "no"));
+  }, []);
 
-  const rows = useMemo<AuditFinding[]>(() => {
-    if (!data?.findings) return [];
-    return data.findings;
-  }, [data]);
+  const handleCloseSidebar = useCallback(() => {
+    setSelectedCommentTarget(undefined);
+  }, []);
 
   const handleExport = useCallback(async () => {
-    const res = await refetchReport();
-    // priorizamos el dato fresco (res.data); caemos al cacheado si no llegó
-    const url = res.data?.reportUrl ?? report?.reportUrl ?? null;
+    try {
+      // Si está en revisión, cerramos la revisión primero
+      if (status === "draft_report_in_review") {
+        await mutateAsync({ auditId: id });
+        await refetchReviewDetail(); // refresca detalle para que status cambie
+      }
 
-    if (url && /^https?:\/\//.test(url)) {
-      // noopener/noreferrer por seguridad
-      window.open(url, "_blank", "noopener,noreferrer");
-    } else {
-      // Silencioso por ahora (sin UI extra). Podrías agregar un toast si tenés uno.
-      console.warn("[FinalReport] No reportUrl available yet.");
+      // Empezamos el polling del reporte
+      setIsPollingReport(true);
+
+      let finalUrl: string | null = null;
+
+      for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt++) {
+        const res = await refetchReport();
+
+        if (res.error) {
+          console.error("[FinalReport] Error fetching report:", res.error);
+          break;
+        }
+
+        const currentUrl = res.data?.reportUrl ?? null;
+
+        if (currentUrl && /^https?:\/\//.test(currentUrl)) {
+          finalUrl = currentUrl;
+          break; // tenemos URL válida, salimos del loop
+        }
+
+        // Seguimos esperando: 2s más
+        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+      }
+
+      if (finalUrl) {
+        window.open(finalUrl, "_blank", "noopener,noreferrer");
+      } else {
+        console.warn(
+          "[FinalReport] No reportUrl available after polling attempts."
+        );
+      }
+    } catch (err) {
+      console.error("[FinalReport] Error al exportar reporte:", err);
+    } finally {
+      setIsPollingReport(false);
     }
-  }, [refetchReport, report]);
+  }, [id, status, mutateAsync, refetchReviewDetail, refetchReport]);
 
   return (
-    <div className={"space-y-4 sm:space-y-5"} data-testid="audit-edit-content">
+    <div className="space-y-4 sm:space-y-5" data-testid="audit-edit-content">
       <AuditEditTabsBar activeTab={internalTab} onChangeTab={handleChangeTab} />
 
       {internalTab === "questions" ? (
@@ -93,7 +144,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         <section className="w-full px-4 sm:px-6 lg:px-8" aria-live="polite">
           <FinalReportHeader
             onExport={handleExport}
-            exporting={isFetchingReport}
+            exporting={isFetchingReport || isPending || isPollingReport}
             className="mb-3"
           />
 
@@ -105,10 +156,10 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
               )}
             >
               <ReportItemsTable
-                items={rows}
+                items={findings}
                 loading={isLoading}
                 error={isError}
-                onError={refetch}
+                onError={refetchReviewDetail}
                 // onAddComment={(row) => {
                 //   setSelectedCommentTarget({
                 //     id: row.id,
@@ -124,7 +175,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             {hasSidebar && (
               <CommentsSidebar
                 selected={selectedCommentTarget}
-                onClose={() => setSelectedCommentTarget(undefined)}
+                onClose={handleCloseSidebar}
                 className="md:w-[380px]"
               />
             )}

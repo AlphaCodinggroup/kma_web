@@ -6,7 +6,7 @@ import type { QuestionItemVM } from "@features/audits/ui/AuditQuestionsList";
 
 const projectName = "Green Tower – Phase A";
 const auditor = "María Pérez";
-const status = "in_review" as const;
+const status = "draft_report_pending_review" as const;
 const auditDate = "2025-08-10";
 const completedDate = null;
 
