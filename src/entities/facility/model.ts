@@ -43,3 +43,21 @@ export interface FacilityListFilter {
   search?: string;
   projectId?: ProjectId;
 }
+
+/**
+ * Parámetros de dominio para crear una Facility.
+ */
+export interface CreateFacilityParams {
+  name: string;
+  projectId?: ProjectId;
+  address?: string;
+  city?: string;
+  notes?: string;
+  status?: FacilityStatus;
+  geo?: GeoPoint;
+}
+
+/**
+ * Resultado de creación en dominio: la Facility creada.
+ */
+export type CreateFacilityResult = Facility;

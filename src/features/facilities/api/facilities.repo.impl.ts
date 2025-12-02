@@ -5,12 +5,16 @@ import type {
   FacilityListPage,
   FacilityId,
   Facility,
+  CreateFacilityParams,
+  CreateFacilityResult,
 } from "@entities/facility/model";
 import {
   mapFacilitiesListFromDTO,
   mapFacilityFromDTO,
   type FacilitiesResponseDTO,
   type FacilityDTO,
+  type CreateFacilityRequestDTO,
+  mapCreateFacilityParamsToDTO,
 } from "@entities/facility/lib/mappers";
 import type { ApiError } from "@shared/interceptors/error";
 
@@ -37,9 +41,6 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
   /**
    * Listado de facilities con filtros opcionales:
    * - limit, cursor, status, search, projectId
-   *
-   * Internamente llama a GET /api/facilities con query params,
-   * y el route handler reenvía al backend real.
    */
   async getFacilities(filters?: FacilityListFilter): Promise<FacilityListPage> {
     try {
@@ -65,11 +66,51 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
    */
   async getById(facilityId: FacilityId): Promise<Facility> {
     try {
-      const res = await httpClient.get<{ data: FacilityDTO; status: string }>(
-        `${this.basePath}/${facilityId}`,
+      const res = await httpClient.get<
+        FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
+      >(`${this.basePath}/${facilityId}`);
+
+      const raw = res.data as
+        | FacilityDTO
+        | { facility: FacilityDTO }
+        | { data: FacilityDTO };
+
+      const dto: FacilityDTO =
+        (raw as { facility?: FacilityDTO }).facility ??
+        (raw as { data?: FacilityDTO }).data ??
+        (raw as FacilityDTO);
+
+      return mapFacilityFromDTO(dto);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  /**
+   * Crea una nueva facility.
+   * POST /api/facilities
+   */
+  async create(params: CreateFacilityParams): Promise<CreateFacilityResult> {
+    try {
+      const body: CreateFacilityRequestDTO = mapCreateFacilityParamsToDTO(
+        params,
       );
 
-      return mapFacilityFromDTO(res.data.data);
+      const res = await httpClient.post<
+        FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
+      >(this.basePath, body);
+
+      const raw = res.data as
+        | FacilityDTO
+        | { facility: FacilityDTO }
+        | { data: FacilityDTO };
+
+      const dto: FacilityDTO =
+        (raw as { facility?: FacilityDTO }).facility ??
+        (raw as { data?: FacilityDTO }).data ??
+        (raw as FacilityDTO);
+
+      return mapFacilityFromDTO(dto);
     } catch (err) {
       throw toApiError(err);
     }
