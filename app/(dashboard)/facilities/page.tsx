@@ -13,6 +13,7 @@ import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQ
 import { useCreateFacilityMutation } from "@features/facilities/ui/hooks/useCreateFacilityMutation";
 import { useUpdateFacilityMutation } from "@features/facilities/ui/hooks/useUpdateFacilityMutation";
 import { useDeleteFacilityMutation } from "@features/facilities/ui/hooks/useDeleteFacilityMutation";
+import { useArchiveFacilityMutation } from "@features/facilities/ui/hooks/useArchiveFacilityMutation";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import ConfirmTitle from "@shared/ui/confirm-title";
 
@@ -27,19 +28,36 @@ export default function FacilitiesPage() {
     null
   );
 
+  const [openArchive, setOpenArchive] = useState(false);
+  const [facilityToArchive, setFacilityToArchive] = useState<Facility | null>(
+    null
+  );
+
   const debouncedQuery = useDebouncedSearch(query);
 
-  const filters = useMemo<FacilityListFilter | undefined>(() => {
-    if (!debouncedQuery) return undefined;
-
+  // 🔹 Backend: solo filtra por estado ACTIVE
+  const filters = useMemo<FacilityListFilter>(() => {
     return {
-      search: debouncedQuery,
+      status: "ACTIVE",
     };
-  }, [debouncedQuery]);
+  }, []);
 
   const { data, isLoading, isError, refetch } = useFacilitiesQuery(filters);
 
   const facilities = useMemo<Facility[]>(() => data?.items ?? [], [data]);
+
+  const visibleFacilities = useMemo<Facility[]>(() => {
+    const src = facilities;
+    const q = debouncedQuery.trim().toLowerCase();
+
+    if (!q) return src;
+
+    return src.filter((f) =>
+      [f.name, f.address ?? "", f.city ?? ""]
+        .filter(Boolean)
+        .some((field) => String(field).toLowerCase().includes(q))
+    );
+  }, [facilities, debouncedQuery]);
 
   const {
     mutateAsync: createFacility,
@@ -55,6 +73,9 @@ export default function FacilitiesPage() {
 
   const { mutateAsync: deleteFacility, isPending: isDeleting } =
     useDeleteFacilityMutation();
+
+  const { mutateAsync: archiveFacility, isPending: isArchiving } =
+    useArchiveFacilityMutation();
 
   // ---- Create ----
   const handleOpenCreate = useCallback(() => setIsCreateOpen(true), []);
@@ -146,6 +167,29 @@ export default function FacilitiesPage() {
     }
   }, [deleteFacility, facilityToDelete]);
 
+  // ---- Archive ----
+  const handleArchive = useCallback(
+    (id: string) => {
+      const found = facilities.find((f) => f.id === id);
+      if (!found) return;
+      setFacilityToArchive(found);
+      setOpenArchive(true);
+    },
+    [facilities]
+  );
+
+  const confirmArchive = useCallback(async () => {
+    if (!facilityToArchive) return;
+
+    try {
+      await archiveFacility(facilityToArchive.id);
+      setOpenArchive(false);
+      setFacilityToArchive(null);
+    } catch {
+      // Ideal: mostrar toast de error; el modal sigue abierto.
+    }
+  }, [archiveFacility, facilityToArchive]);
+
   // Mapear Facility de dominio → valores del formulario de edición
   const editDefaultValues: Partial<FacilityUpsertValues> | undefined =
     useMemo(() => {
@@ -172,15 +216,16 @@ export default function FacilitiesPage() {
         />
 
         <FacilitySearchCard
-          total={facilities.length}
+          total={visibleFacilities.length}
           query={query}
           onQueryChange={setQuery}
           placeholder="Search facility by name, address or city..."
         >
           <FacilityTable
-            items={facilities}
+            items={visibleFacilities}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onArchive={handleArchive}
             isError={isError}
             isLoading={isLoading}
             onError={refetch}
@@ -225,6 +270,26 @@ export default function FacilitiesPage() {
         cancelLabel="Cancel"
         loading={isDeleting}
         onConfirm={confirmDelete}
+      />
+
+      {/* Modal de confirmación de archivado */}
+      <ConfirmDialog
+        open={openArchive}
+        onOpenChange={(o) => {
+          setOpenArchive(o);
+          if (!o) setFacilityToArchive(null);
+        }}
+        title={
+          <ConfirmTitle
+            action="archive"
+            subject={facilityToArchive?.name ?? "this facility"}
+          />
+        }
+        description="This facility will be archived and removed from the active list, but it will not be permanently deleted."
+        confirmLabel="Archive"
+        cancelLabel="Cancel"
+        loading={isArchiving}
+        onConfirm={confirmArchive}
       />
     </>
   );

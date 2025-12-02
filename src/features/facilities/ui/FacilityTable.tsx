@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Pencil, Trash2, MapPin } from "lucide-react";
+import { Pencil, Trash2, MapPin, Archive } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import {
   Table,
@@ -19,8 +19,9 @@ import { formatIsoToYmdHm } from "@shared/lib/date";
 
 export interface FacilityTableProps {
   items: Facility[];
-  onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  onArchive: (id: string) => void;
   bodyMaxHeightClassName?: string | undefined;
   emptyMessage?: string | undefined;
   className?: string | undefined;
@@ -33,6 +34,7 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
   items,
   onEdit,
   onDelete,
+  onArchive,
   bodyMaxHeightClassName,
   emptyMessage = "No facilities found",
   className,
@@ -112,14 +114,19 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
                     <RowActionButton
                       icon={Pencil}
                       ariaLabel="Edit facility"
-                      onClick={() => onEdit?.(row.id)}
+                      onClick={() => onEdit(row.id)}
                       size="md"
                     />
-
+                    <RowActionButton
+                      icon={Archive}
+                      ariaLabel="Archive facility"
+                      onClick={() => onArchive(row.id)}
+                      size="md"
+                    />
                     <RowActionButton
                       icon={Trash2}
                       ariaLabel="Delete facility"
-                      onClick={() => onDelete?.(row.id)}
+                      onClick={() => onDelete(row.id)}
                       variant="danger"
                       size="md"
                     />

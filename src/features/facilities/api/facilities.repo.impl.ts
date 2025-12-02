@@ -159,6 +159,32 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
       throw toApiError(err);
     }
   }
+
+  /**
+   * Archiva una facility.
+   * POST /api/facilities/:id/archive
+   */
+  async archive(facilityId: FacilityId): Promise<Facility> {
+    try {
+      const res = await httpClient.post<
+        FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
+      >(`${this.basePath}/${facilityId}/archive`);
+
+      const raw = res.data as
+        | FacilityDTO
+        | { facility: FacilityDTO }
+        | { data: FacilityDTO };
+
+      const dto: FacilityDTO =
+        (raw as { facility?: FacilityDTO }).facility ??
+        (raw as { data?: FacilityDTO }).data ??
+        (raw as FacilityDTO);
+
+      return mapFacilityFromDTO(dto);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
 }
 
 /** Singleton listo para inyectar donde haga falta */

@@ -32,11 +32,20 @@ export interface FacilitiesRepo {
 
   /**
    * Actualiza una facility existente.
+   *
+   * Semántica tipo PUT:
+   * - `id` es obligatorio.
+   * - El resto de campos son opcionales.
    */
   update(params: UpdateFacilityParams): Promise<UpdateFacilityResult>;
 
   /**
-   * Elimina una facility por su ID.
+   * Elimina una facility por su ID (delete "duro").
    */
   delete(facilityId: FacilityId): Promise<void>;
+
+  /**
+   * Archiva una facility por su ID..
+   */
+  archive(facilityId: FacilityId): Promise<Facility>;
 }
