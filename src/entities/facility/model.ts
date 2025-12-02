@@ -61,3 +61,23 @@ export interface CreateFacilityParams {
  * Resultado de creación en dominio: la Facility creada.
  */
 export type CreateFacilityResult = Facility;
+
+/**
+ * Parámetros de dominio para editar una Facility.
+ *
+ * - `id` es obligatorio.
+ */
+export interface UpdateFacilityParams {
+  id: FacilityId;
+  name?: string;
+  address?: string;
+  city?: string;
+  notes?: string;
+  status?: FacilityStatus;
+  geo?: GeoPoint;
+}
+
+/**
+ * Resultado de actualización en dominio: la Facility actualizada.
+ */
+export type UpdateFacilityResult = Facility;

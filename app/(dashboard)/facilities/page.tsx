@@ -7,13 +7,17 @@ import type { Facility, FacilityListFilter } from "@entities/facility/model";
 import FacilityTable from "@features/facilities/ui/FacilityTable";
 import { useDebouncedSearch } from "@shared/lib/useDebouncedSearch";
 import CreateFacilityDialog from "@features/facilities/ui/CreateFacilityDialog";
+import EditFacilityDialog from "@features/facilities/ui/EditFacilityDialog";
 import type { FacilityUpsertValues } from "@features/facilities/ui/FacilityUpsertDialog";
-import { useCreateFacilityMutation } from "@features/facilities/ui/hooks/useCreateFacilityMutation";
 import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
+import { useCreateFacilityMutation } from "@features/facilities/ui/hooks/useCreateFacilityMutation";
+import { useUpdateFacilityMutation } from "@features/facilities/ui/hooks/useUpdateFacilityMutation";
 
 export default function FacilitiesPage() {
   const [query, setQuery] = useState<string>("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
 
   const debouncedQuery = useDebouncedSearch(query);
 
@@ -31,10 +35,17 @@ export default function FacilitiesPage() {
 
   const {
     mutateAsync: createFacility,
-    isLoading: isCreating,
+    isPending: isCreating,
     error: createError,
   } = useCreateFacilityMutation();
 
+  const {
+    mutateAsync: updateFacility,
+    isPending: isUpdating,
+    error: updateError,
+  } = useUpdateFacilityMutation();
+
+  // ---- Create ----
   const handleOpenCreate = useCallback(() => setIsCreateOpen(true), []);
 
   const handleCloseCreate = useCallback((open: boolean) => {
@@ -49,7 +60,6 @@ export default function FacilitiesPage() {
           address: values.address,
           city: values.city,
           notes: values.notes,
-          // status y demás defaults los resuelve el usecase
         });
         setIsCreateOpen(false);
       } catch {
@@ -59,14 +69,64 @@ export default function FacilitiesPage() {
     [createFacility]
   );
 
-  const handleEdit = useCallback((id: string) => {
-    // TODO: Navegar a /facilities/[id]/edit o similar.
-    // router.push(`/facilities/${id}/edit`);
+  // ---- Edit ----
+  const handleOpenEdit = useCallback((facility: Facility) => {
+    setEditingFacility(facility);
+    setIsEditOpen(true);
   }, []);
+
+  const handleEdit = useCallback(
+    (id: string) => {
+      const found = facilities.find((f) => f.id === id);
+      if (!found) return;
+      handleOpenEdit(found);
+    },
+    [facilities, handleOpenEdit]
+  );
+
+  const handleCloseEdit = useCallback((open: boolean) => {
+    setIsEditOpen(open);
+    if (!open) {
+      setEditingFacility(null);
+    }
+  }, []);
+
+  const handleEditSubmit = useCallback(
+    async (values: FacilityUpsertValues) => {
+      if (!editingFacility) return;
+
+      try {
+        await updateFacility({
+          id: editingFacility.id,
+          name: values.name,
+          address: values.address,
+          city: values.city,
+          notes: values.notes,
+        });
+        setIsEditOpen(false);
+        setEditingFacility(null);
+      } catch {
+        // El error se refleja en `updateError`, mantenemos el modal abierto.
+      }
+    },
+    [editingFacility, updateFacility]
+  );
 
   const handleDelete = useCallback((id: string) => {
     // TODO: Abrir modal de confirmación y disparar useMutation de delete.
   }, []);
+
+  // Mapear Facility de dominio → valores del formulario de edición
+  const editDefaultValues: Partial<FacilityUpsertValues> | undefined =
+    useMemo(() => {
+      if (!editingFacility) return undefined;
+      return {
+        name: editingFacility.name,
+        address: editingFacility.address ?? "",
+        city: editingFacility.city ?? "",
+        notes: editingFacility.notes ?? "",
+      };
+    }, [editingFacility]);
 
   return (
     <>
@@ -105,6 +165,16 @@ export default function FacilitiesPage() {
         onSubmit={handleCreateSubmit}
         loading={isCreating}
         error={createError?.message ?? null}
+      />
+
+      {/* Modal de edición */}
+      <EditFacilityDialog
+        open={isEditOpen}
+        onOpenChange={handleCloseEdit}
+        defaultValues={editDefaultValues}
+        onSubmit={handleEditSubmit}
+        loading={isUpdating}
+        error={updateError?.message ?? null}
       />
     </>
   );

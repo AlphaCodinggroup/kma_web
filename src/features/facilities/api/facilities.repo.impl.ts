@@ -7,6 +7,8 @@ import type {
   Facility,
   CreateFacilityParams,
   CreateFacilityResult,
+  UpdateFacilityParams,
+  UpdateFacilityResult,
 } from "@entities/facility/model";
 import {
   mapFacilitiesListFromDTO,
@@ -15,6 +17,8 @@ import {
   type FacilityDTO,
   type CreateFacilityRequestDTO,
   mapCreateFacilityParamsToDTO,
+  type UpdateFacilityRequestDTO,
+  mapUpdateFacilityParamsToDTO,
 } from "@entities/facility/lib/mappers";
 import type { ApiError } from "@shared/interceptors/error";
 
@@ -92,13 +96,41 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
    */
   async create(params: CreateFacilityParams): Promise<CreateFacilityResult> {
     try {
-      const body: CreateFacilityRequestDTO = mapCreateFacilityParamsToDTO(
-        params,
-      );
+      const body: CreateFacilityRequestDTO =
+        mapCreateFacilityParamsToDTO(params);
 
       const res = await httpClient.post<
         FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
       >(this.basePath, body);
+
+      const raw = res.data as
+        | FacilityDTO
+        | { facility: FacilityDTO }
+        | { data: FacilityDTO };
+
+      const dto: FacilityDTO =
+        (raw as { facility?: FacilityDTO }).facility ??
+        (raw as { data?: FacilityDTO }).data ??
+        (raw as FacilityDTO);
+
+      return mapFacilityFromDTO(dto);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  /**
+   * Actualiza una facility existente.
+   * PUT /api/facilities/:id
+   */
+  async update(params: UpdateFacilityParams): Promise<UpdateFacilityResult> {
+    try {
+      const body: UpdateFacilityRequestDTO =
+        mapUpdateFacilityParamsToDTO(params);
+
+      const res = await httpClient.put<
+        FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
+      >(`${this.basePath}/${params.id}`, body);
 
       const raw = res.data as
         | FacilityDTO

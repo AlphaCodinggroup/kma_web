@@ -2,6 +2,7 @@ import type {
   Facility,
   FacilityListPage,
   CreateFacilityParams,
+  UpdateFacilityParams,
 } from "../model";
 
 /**
@@ -54,10 +55,26 @@ export interface CreateFacilityRequestDTO {
 }
 
 /**
+ * Body para actualizar una Facility en la API (PATCH).
+ */
+export interface UpdateFacilityRequestDTO {
+  name?: string;
+  address?: string;
+  city?: string;
+  description?: string;
+  photo_url?: string;
+  status?: "ACTIVE" | "ARCHIVED";
+  geo?: {
+    lat: number;
+    lng: number;
+  };
+}
+
+/**
  * Mapea CreateFacilityParams (dominio) → CreateFacilityRequestDTO (HTTP).
  */
 export function mapCreateFacilityParamsToDTO(
-  params: CreateFacilityParams,
+  params: CreateFacilityParams
 ): CreateFacilityRequestDTO {
   const dto: CreateFacilityRequestDTO = {
     name: params.name,
@@ -90,6 +107,45 @@ export function mapCreateFacilityParamsToDTO(
   // Si más adelante el dominio tiene photoUrl, se mapea acá:
   // if (params.photoUrl) dto.photo_url = params.photoUrl;
 
+  return dto;
+}
+
+/**
+ * Mapea UpdateFacilityParams (dominio) → UpdateFacilityRequestDTO (HTTP).
+ */
+export function mapUpdateFacilityParamsToDTO(
+  params: UpdateFacilityParams
+): UpdateFacilityRequestDTO {
+  const dto: UpdateFacilityRequestDTO = {};
+
+  if (params.name != null) {
+    dto.name = params.name;
+  }
+
+  if (params.address != null) {
+    dto.address = params.address;
+  }
+
+  if (params.city != null) {
+    dto.city = params.city;
+  }
+
+  if (params.notes != null) {
+    dto.description = params.notes;
+  }
+
+  if (params.status != null) {
+    dto.status = params.status;
+  }
+
+  if (params.geo != null) {
+    dto.geo = {
+      lat: params.geo.lat,
+      lng: params.geo.lng,
+    };
+  }
+
+  // Si más adelante hay photoUrl en UpdateFacilityParams, se mapea acá.
   return dto;
 }
 
@@ -138,7 +194,7 @@ export function mapFacilityFromDTO(dto: FacilityDTO): Facility {
  * Mapea la respuesta de Facilities al modelo de dominio paginado.
  */
 export function mapFacilitiesListFromDTO(
-  response: FacilitiesResponseDTO,
+  response: FacilitiesResponseDTO
 ): FacilityListPage {
   const page: FacilityListPage = {
     items: response.facilities.map(mapFacilityFromDTO),

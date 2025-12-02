@@ -5,6 +5,8 @@ import type {
   FacilityListPage,
   CreateFacilityParams,
   CreateFacilityResult,
+  UpdateFacilityParams,
+  UpdateFacilityResult,
 } from "../model";
 
 /**
@@ -25,4 +27,9 @@ export interface FacilitiesRepo {
    * Crea una nueva facility.
    */
   create(params: CreateFacilityParams): Promise<CreateFacilityResult>;
+
+  /**
+   * Actualiza una facility existente.
+   */
+  update(params: UpdateFacilityParams): Promise<UpdateFacilityResult>;
 }
