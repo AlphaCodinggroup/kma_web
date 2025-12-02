@@ -11,6 +11,8 @@ import type {
 
 /**
  * Puerto de dominio para Facilities.
+ *
+ * NO conoce HTTP ni axios, solo modelos de dominio.
  */
 export interface FacilitiesRepo {
   /**
@@ -32,4 +34,9 @@ export interface FacilitiesRepo {
    * Actualiza una facility existente.
    */
   update(params: UpdateFacilityParams): Promise<UpdateFacilityResult>;
+
+  /**
+   * Elimina una facility por su ID.
+   */
+  delete(facilityId: FacilityId): Promise<void>;
 }

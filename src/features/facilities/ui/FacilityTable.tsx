@@ -59,7 +59,7 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
     <div
       className={cn(
         "overflow-hidden rounded-xl border border-gray-200",
-        className,
+        className
       )}
     >
       <Table>
@@ -76,7 +76,7 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
           className={cn(
             "divide-y",
             bodyMaxHeightClassName && "overflow-y-auto block",
-            bodyMaxHeightClassName,
+            bodyMaxHeightClassName
           )}
         >
           {hasItems ? (

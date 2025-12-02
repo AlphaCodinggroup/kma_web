@@ -147,6 +147,18 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
       throw toApiError(err);
     }
   }
+
+  /**
+   * Elimina una facility.
+   * DELETE /api/facilities/:id
+   */
+  async delete(facilityId: FacilityId): Promise<void> {
+    try {
+      await httpClient.delete<void>(`${this.basePath}/${facilityId}`);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
 }
 
 /** Singleton listo para inyectar donde haga falta */

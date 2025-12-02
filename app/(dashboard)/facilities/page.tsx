@@ -12,12 +12,20 @@ import type { FacilityUpsertValues } from "@features/facilities/ui/FacilityUpser
 import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
 import { useCreateFacilityMutation } from "@features/facilities/ui/hooks/useCreateFacilityMutation";
 import { useUpdateFacilityMutation } from "@features/facilities/ui/hooks/useUpdateFacilityMutation";
+import { useDeleteFacilityMutation } from "@features/facilities/ui/hooks/useDeleteFacilityMutation";
+import ConfirmDialog from "@shared/ui/confirm-dialog";
+import ConfirmTitle from "@shared/ui/confirm-title";
 
 export default function FacilitiesPage() {
   const [query, setQuery] = useState<string>("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
+
+  const [openDelete, setOpenDelete] = useState(false);
+  const [facilityToDelete, setFacilityToDelete] = useState<Facility | null>(
+    null
+  );
 
   const debouncedQuery = useDebouncedSearch(query);
 
@@ -44,6 +52,9 @@ export default function FacilitiesPage() {
     isPending: isUpdating,
     error: updateError,
   } = useUpdateFacilityMutation();
+
+  const { mutateAsync: deleteFacility, isPending: isDeleting } =
+    useDeleteFacilityMutation();
 
   // ---- Create ----
   const handleOpenCreate = useCallback(() => setIsCreateOpen(true), []);
@@ -112,9 +123,28 @@ export default function FacilitiesPage() {
     [editingFacility, updateFacility]
   );
 
-  const handleDelete = useCallback((id: string) => {
-    // TODO: Abrir modal de confirmación y disparar useMutation de delete.
-  }, []);
+  // ---- Delete ----
+  const handleDelete = useCallback(
+    (id: string) => {
+      const found = facilities.find((f) => f.id === id);
+      if (!found) return;
+      setFacilityToDelete(found);
+      setOpenDelete(true);
+    },
+    [facilities]
+  );
+
+  const confirmDelete = useCallback(async () => {
+    if (!facilityToDelete) return;
+
+    try {
+      await deleteFacility(facilityToDelete.id);
+      setOpenDelete(false);
+      setFacilityToDelete(null);
+    } catch {
+      // El error se podría mostrar con un toast; el modal sigue abierto.
+    }
+  }, [deleteFacility, facilityToDelete]);
 
   // Mapear Facility de dominio → valores del formulario de edición
   const editDefaultValues: Partial<FacilityUpsertValues> | undefined =
@@ -175,6 +205,26 @@ export default function FacilitiesPage() {
         onSubmit={handleEditSubmit}
         loading={isUpdating}
         error={updateError?.message ?? null}
+      />
+
+      {/* Modal de confirmación de borrado */}
+      <ConfirmDialog
+        open={openDelete}
+        onOpenChange={(o) => {
+          setOpenDelete(o);
+          if (!o) setFacilityToDelete(null);
+        }}
+        title={
+          <ConfirmTitle
+            action="delete"
+            subject={facilityToDelete?.name ?? "this facility"}
+          />
+        }
+        description="This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={isDeleting}
+        onConfirm={confirmDelete}
       />
     </>
   );
