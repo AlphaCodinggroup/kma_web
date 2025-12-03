@@ -134,9 +134,22 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
   const isNameInvalid = trimmedName.length === 0;
   const showNameError = nameTouched && isNameInvalid;
 
+  const hasPendingSelection =
+    (pendingAuditorId?.trim().length ?? 0) > 0 ||
+    (pendingFacilityId?.trim().length ?? 0) > 0;
+
+  const pendingSelectionError = hasPendingSelection
+    ? "You have a selected auditor/facility not added yet. Please click the + button to add it before submitting."
+    : null;
+
   const onSubmitInternal = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+
+      // Bloqueo extra por seguridad
+      if (hasPendingSelection) {
+        return;
+      }
 
       const trimmedNameLocal = values.name.trim();
       if (!trimmedNameLocal) {
@@ -155,10 +168,12 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
 
       await onSubmit(payload);
     },
-    [onSubmit, values]
+    [onSubmit, values, hasPendingSelection]
   );
 
-  const disabled = loading === true || isNameInvalid;
+  const isFormControlsDisabled = loading === true;
+  const isSubmitDisabled =
+    loading === true || isNameInvalid || hasPendingSelection;
 
   // Index de opciones para mostrar labels en chips (user.name/email/id)
   const auditorNameById = useMemo<Map<string, string>>(() => {
@@ -190,6 +205,8 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
       (mode === "create" ? "Create Project" : "Update Project"),
   };
 
+  const globalError = pendingSelectionError ?? error ?? null;
+
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className={cn(className)}>
@@ -215,7 +232,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 handleChange("name", e.currentTarget.value);
               }}
               onBlur={() => setNameTouched(true)}
-              disabled={loading === true}
+              disabled={isFormControlsDisabled}
             />
             {showNameError && (
               <p className="mt-1 text-sm text-red-500">
@@ -234,7 +251,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
               onChange={(e) =>
                 handleChange("description", e.currentTarget.value)
               }
-              disabled={disabled}
+              disabled={isFormControlsDisabled}
             />
           </div>
 
@@ -243,7 +260,6 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
             <Label>Assigned Auditors</Label>
 
             <div className="grid grid-cols-[1fr_auto] items-center gap-3">
-              {/* Select ocupa todo */}
               <div className="relative">
                 <select
                   className={cn(
@@ -261,7 +277,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                       addAuditor();
                     }
                   }}
-                  disabled={disabled}
+                  disabled={isFormControlsDisabled}
                   aria-label="Select an auditor to add"
                 >
                   <option value="">Select an auditor</option>
@@ -274,19 +290,17 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
               </div>
 
-              {/* Botón chico a la derecha */}
               <Button
                 type="button"
                 aria-label="Add auditor"
                 onClick={addAuditor}
-                disabled={disabled || !pendingAuditorId}
+                disabled={isFormControlsDisabled || !pendingAuditorId}
                 className="h-10 w-10 p-0 rounded-xl shrink-0"
               >
                 <Plus className="h-5 w-5" />
               </Button>
             </div>
 
-            {/* chips */}
             {values.auditorIds && values.auditorIds.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-2">
                 {values.auditorIds.map((id) => (
@@ -300,7 +314,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                       onClick={() => removeAuditor(id)}
                       className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200"
                       aria-label={`Remove ${auditorNameById.get(id) ?? id}`}
-                      disabled={disabled}
+                      disabled={isFormControlsDisabled}
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -332,7 +346,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                       addFacility();
                     }
                   }}
-                  disabled={disabled}
+                  disabled={isFormControlsDisabled}
                   aria-label="Select a facility to add"
                 >
                   <option value="">Select a facility</option>
@@ -349,7 +363,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 type="button"
                 aria-label="Add facility"
                 onClick={addFacility}
-                disabled={disabled || !pendingFacilityId}
+                disabled={isFormControlsDisabled || !pendingFacilityId}
                 className="h-10 w-10 p-0 rounded-xl shrink-0"
               >
                 <Plus className="h-5 w-5" />
@@ -369,7 +383,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                       onClick={() => removeFacility(id)}
                       className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200"
                       aria-label={`Remove ${facilityNameById.get(id) ?? id}`}
-                      disabled={disabled}
+                      disabled={isFormControlsDisabled}
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -379,13 +393,17 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
             )}
           </div>
 
-          {error ? <ErrorText>{error}</ErrorText> : <HelpText>&nbsp;</HelpText>}
+          {globalError ? (
+            <ErrorText>{globalError}</ErrorText>
+          ) : (
+            <HelpText>&nbsp;</HelpText>
+          )}
 
           <ModalFooter>
             <Button
               type="submit"
               isLoading={loading === true}
-              disabled={disabled}
+              disabled={isSubmitDisabled}
             >
               {copy.submit}
             </Button>
