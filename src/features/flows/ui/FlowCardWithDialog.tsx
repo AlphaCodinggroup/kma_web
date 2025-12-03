@@ -29,13 +29,8 @@ export const FlowCardWithDialog: React.FC<FlowCardWithDialogDataProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  // Trae el flow desde la lista cacheada.
-  //! MOMENTANEAMENTE FORZAMOS UN FLOW FIJO PARA TESTING
-  const { flow, isLoading, error } = useFlowById(
-    "flow_ramp_accessibility_verification_20251009190307",
-    open
-  );
-  //? const { flow, isLoading, error } = useFlowById(flowId, open);
+  const { flow, isLoading, error } = useFlowById(flowId, open);
+
 
   // Fallback visual mínimo mientras carga/errores.
   const placeholder: FlowDetailVM = useMemo(
@@ -44,10 +39,10 @@ export const FlowCardWithDialog: React.FC<FlowCardWithDialogDataProps> = ({
       description: isLoading
         ? "Loading…"
         : error
-        ? error.status === 401
-          ? "Unauthorized"
-          : "Failed to load"
-        : cardProps.description ?? "",
+          ? error.status === 401
+            ? "Unauthorized"
+            : "Failed to load"
+          : cardProps.description ?? "",
       questions: [],
     }),
     [cardProps.title, cardProps.description, isLoading, error]
@@ -59,7 +54,7 @@ export const FlowCardWithDialog: React.FC<FlowCardWithDialogDataProps> = ({
   }, [flow, mapOptions, placeholder]);
   return (
     <>
-      <FlowCard {...cardProps} onViewQuestions={() => setOpen(true)} />
+      <FlowCard {...cardProps} flowId={flowId} onViewQuestions={() => setOpen(true)} />
 
       <FlowQuestionsDialog
         open={open}
