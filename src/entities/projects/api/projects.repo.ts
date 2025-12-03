@@ -5,6 +5,8 @@ import type {
   Project,
   CreateProjectParams,
   CreateProjectResult,
+  UpdateProjectParams,
+  UpdateProjectResult,
 } from "../model";
 
 export interface ProjectsRepo {
@@ -17,6 +19,14 @@ export interface ProjectsRepo {
   /** Crea un nuevo proyecto */
   create(params: CreateProjectParams): Promise<CreateProjectResult>;
 
+  /** Actualiza un proyecto existente */
+  update(params: UpdateProjectParams): Promise<UpdateProjectResult>;
+
   /** Elimina un proyecto */
   deleteProject(id: ProjectId): Promise<void>;
+
+  /**
+   * Archiva un proyecto (por ejemplo, status → ARCHIVED).
+   */
+  archive(id: ProjectId): Promise<Project>;
 }

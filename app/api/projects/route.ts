@@ -14,6 +14,24 @@ export async function GET(req: NextRequest) {
 
   const upstreamUrl = new URL(`${PublicEnv.apiBaseUrl}/projects`);
 
+  const searchParams = req.nextUrl.searchParams;
+
+  const limit = searchParams.get("limit");
+  const cursor = searchParams.get("cursor");
+  const status = searchParams.get("status");
+  const search = searchParams.get("search");
+  const sortBy = searchParams.get("sortBy");
+  const sortOrder = searchParams.get("sortOrder");
+
+  if (limit) upstreamUrl.searchParams.set("limit", limit);
+  if (cursor) upstreamUrl.searchParams.set("cursor", cursor);
+  if (status) upstreamUrl.searchParams.set("status", status);
+  if (search) upstreamUrl.searchParams.set("search", search);
+
+  // Convención: el backend suele usar snake_case para sort
+  if (sortBy) upstreamUrl.searchParams.set("sort_by", sortBy);
+  if (sortOrder) upstreamUrl.searchParams.set("sort_order", sortOrder);
+
   try {
     const res = await fetch(upstreamUrl, {
       method: "GET",

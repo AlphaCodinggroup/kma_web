@@ -35,7 +35,6 @@ export default function FacilitiesPage() {
 
   const debouncedQuery = useDebouncedSearch(query);
 
-  // 🔹 Backend: solo filtra por estado ACTIVE
   const filters = useMemo<FacilityListFilter>(() => {
     return {
       status: "ACTIVE",

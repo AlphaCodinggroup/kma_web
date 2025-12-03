@@ -45,8 +45,8 @@ export interface CreateProjectParams {
   name: string;
   code?: string;
   description?: string;
-  userIds?: string[];
-  facilityIds?: string[];
+  users?: Options[];
+  facilities?: Options[];
   status?: ProjectStatus;
 }
 
@@ -54,3 +54,21 @@ export interface CreateProjectParams {
  * Resultado de creación en dominio: el Project creado.
  */
 export type CreateProjectResult = Project;
+
+/**
+ * Parámetros de actualización de un proyecto existente.
+ */
+export interface UpdateProjectParams {
+  id: ProjectId;
+  name?: string;
+  code?: string;
+  description?: string;
+  users?: Options[];
+  facilities?: Options[];
+  status?: ProjectStatus;
+}
+
+/**
+ * Resultado de actualización en dominio: el Project actualizado.
+ */
+export type UpdateProjectResult = Project;

@@ -20,8 +20,9 @@ import { ProjectStatusBadge } from "@shared/ui/badge";
 
 export interface ProjectsTableProps {
   items: Project[];
-  onEdit?: ((id: string) => void) | undefined;
-  onDelete?: ((id: string) => void) | undefined;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  onArchive: (id: string) => void;
   emptyMessage?: string | undefined;
   className?: string | undefined;
   isLoading: boolean;
@@ -33,6 +34,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   items,
   onEdit,
   onDelete,
+  onArchive,
   emptyMessage = "No projects found",
   className,
   isLoading = false,
@@ -138,19 +140,19 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                     <RowActionButton
                       icon={Pencil}
                       ariaLabel="Edit project"
-                      onClick={() => onEdit?.(row.id)}
+                      onClick={() => onEdit(row.id)}
                       size="md"
                     />
                     <RowActionButton
                       icon={Archive}
                       ariaLabel="Archive project"
-                      onClick={() => onDelete?.(row.id)}
+                      onClick={() => onArchive(row.id)}
                       size="md"
                     />
                     <RowActionButton
                       icon={Trash2}
                       ariaLabel="Delete project"
-                      onClick={() => onDelete?.(row.id)}
+                      onClick={() => onDelete(row.id)}
                       variant="danger"
                       size="md"
                     />

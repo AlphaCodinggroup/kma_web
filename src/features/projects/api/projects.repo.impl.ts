@@ -7,6 +7,8 @@ import type {
   Project,
   CreateProjectParams,
   CreateProjectResult,
+  UpdateProjectParams,
+  UpdateProjectResult,
 } from "@entities/projects/model";
 import {
   mapProjectsListFromDTO,
@@ -16,13 +18,34 @@ import {
 } from "@entities/projects/lib/mappers";
 import type { ApiError } from "@shared/interceptors/error";
 
+/** DTOs para creación/actualización */
+type ProjectUserDTO = {
+  id: string;
+  name: string;
+};
+
+type ProjectFacilityDTO = {
+  id: string;
+  name: string;
+};
+
 /** Body esperado por el upstream para crear un proyecto */
 type CreateProjectRequestDTO = {
   name: string;
   code?: string;
   description?: string;
-  user_ids?: string[];
-  facility_ids?: string[];
+  users?: ProjectUserDTO[];
+  facilities?: ProjectFacilityDTO[];
+  status?: "ACTIVE" | "ARCHIVED";
+};
+
+/** Body esperado por el upstream para actualizar un proyecto */
+type UpdateProjectRequestDTO = {
+  name?: string;
+  code?: string;
+  description?: string;
+  users?: ProjectUserDTO[];
+  facilities?: ProjectFacilityDTO[];
   status?: "ACTIVE" | "ARCHIVED";
 };
 
@@ -45,6 +68,7 @@ function toApiError(err: unknown): ApiError {
 export class ProjectsRepoHttp implements ProjectsRepo {
   constructor(private readonly basePath = "/api/projects") {}
 
+  /** Listado paginado de proyectos */
   async getProjects(params?: ProjectListFilter): Promise<ProjectListPage> {
     try {
       const res = await httpClient.get<ProjectsResponseDTO>(this.basePath, {
@@ -63,43 +87,152 @@ export class ProjectsRepoHttp implements ProjectsRepo {
     }
   }
 
+  /** Detalle de proyecto por id */
   async getById(id: ProjectId): Promise<Project> {
     try {
-      const res = await httpClient.get<{ data: ProjectDTO; status: string }>(
-        `${this.basePath}/${id}`
-      );
-      return mapProjectFromDTO(res.data.data);
+      const res = await httpClient.get<
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
+      >(`${this.basePath}/${id}`);
+
+      const raw = res.data as
+        | ProjectDTO
+        | { project: ProjectDTO }
+        | { data: ProjectDTO };
+
+      const dto: ProjectDTO =
+        (raw as { project?: ProjectDTO }).project ??
+        (raw as { data?: ProjectDTO }).data ??
+        (raw as ProjectDTO);
+
+      return mapProjectFromDTO(dto);
     } catch (err) {
       throw toApiError(err);
     }
   }
 
+  /** Crea un nuevo proyecto */
   async create(params: CreateProjectParams): Promise<CreateProjectResult> {
     try {
       const body: CreateProjectRequestDTO = {
         name: params.name,
         ...(params.code ? { code: params.code } : {}),
         ...(params.description ? { description: params.description } : {}),
-        ...(params.userIds ? { user_ids: params.userIds } : {}),
-        ...(params.facilityIds ? { facility_ids: params.facilityIds } : {}),
+        ...(params.users && params.users.length
+          ? {
+              users: params.users.map((u) => ({
+                id: u.id,
+                name: u.name,
+              })),
+            }
+          : {}),
+        ...(params.facilities && params.facilities.length
+          ? {
+              facilities: params.facilities.map((f) => ({
+                id: f.id,
+                name: f.name,
+              })),
+            }
+          : {}),
         ...(params.status ? { status: params.status } : {}),
       };
 
-      const res = await httpClient.post<{ data: ProjectDTO; status: string }>(
-        this.basePath,
-        body,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const res = await httpClient.post<
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
+      >(this.basePath, body, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-      return mapProjectFromDTO(res.data.data);
+      const raw = res.data as
+        | ProjectDTO
+        | { project: ProjectDTO }
+        | { data: ProjectDTO };
+
+      const dto: ProjectDTO =
+        (raw as { project?: ProjectDTO }).project ??
+        (raw as { data?: ProjectDTO }).data ??
+        (raw as ProjectDTO);
+
+      return mapProjectFromDTO(dto);
     } catch (err) {
       throw toApiError(err);
     }
   }
 
+  /** Actualiza un proyecto existente */
+  async update(params: UpdateProjectParams): Promise<UpdateProjectResult> {
+    try {
+      const body: UpdateProjectRequestDTO = {
+        ...(params.name ? { name: params.name } : {}),
+        ...(params.code ? { code: params.code } : {}),
+        ...(params.description ? { description: params.description } : {}),
+        ...(params.users && params.users.length
+          ? {
+              users: params.users.map((u) => ({
+                id: u.id,
+                name: u.name,
+              })),
+            }
+          : {}),
+        ...(params.facilities && params.facilities.length
+          ? {
+              facilities: params.facilities.map((f) => ({
+                id: f.id,
+                name: f.name,
+              })),
+            }
+          : {}),
+        ...(params.status ? { status: params.status } : {}),
+      };
+
+      const res = await httpClient.put<
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
+      >(`${this.basePath}/${params.id}`, body, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const raw = res.data as
+        | ProjectDTO
+        | { project: ProjectDTO }
+        | { data: ProjectDTO };
+
+      const dto: ProjectDTO =
+        (raw as { project?: ProjectDTO }).project ??
+        (raw as { data?: ProjectDTO }).data ??
+        (raw as ProjectDTO);
+
+      return mapProjectFromDTO(dto);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  /** Elimina un proyecto */
   async deleteProject(id: ProjectId): Promise<void> {
     try {
       await httpClient.delete<void>(`${this.basePath}/${id}`);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  /** Archiva un proyecto (status → ARCHIVED, etc.) */
+  async archive(id: ProjectId): Promise<Project> {
+    try {
+      const res = await httpClient.post<
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
+      >(`${this.basePath}/${id}/archive`);
+
+      const raw = res.data as
+        | ProjectDTO
+        | { project: ProjectDTO }
+        | { data: ProjectDTO };
+
+      const dto: ProjectDTO =
+        (raw as { project?: ProjectDTO }).project ??
+        (raw as { data?: ProjectDTO }).data ??
+        (raw as ProjectDTO);
+
+      return mapProjectFromDTO(dto);
     } catch (err) {
       throw toApiError(err);
     }

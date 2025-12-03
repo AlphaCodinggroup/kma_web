@@ -18,18 +18,20 @@ function createFacilitiesQueryKey(filters?: FacilityListFilter) {
 
 /**
  * Hook React Query para obtener la lista de Facilities.
- *
- * - Encapsula la llamada al repositorio (axios + proxy interno).
+
  * - Soporta filtros: limit, cursor, status, search, projectId.
  * - Configura staleTime y retry de forma conservadora.
+ * - `enabled` permite controlar cuándo se ejecuta la query (por defecto true).
  */
 export function useFacilitiesQuery(
-  filters?: FacilityListFilter
+  filters?: FacilityListFilter,
+  enabled: boolean = true
 ): UseQueryResult<FacilityListPage, ApiError> {
   return useQuery<FacilityListPage, ApiError>({
     queryKey: createFacilitiesQueryKey(filters),
     queryFn: () => facilitiesRepoImpl.getFacilities(filters),
-    staleTime: 1000 * 60 * 5, // 5 minutos
+    enabled,
+    staleTime: 1000 * 60 * 5,
     retry: 2,
   });
 }

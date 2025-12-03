@@ -75,12 +75,14 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
   const [values, setValues] = useState<ProjectUpsertValues>(initial);
   const [pendingAuditorId, setPendingAuditorId] = useState<string>("");
   const [pendingFacilityId, setPendingFacilityId] = useState<string>("");
+  const [nameTouched, setNameTouched] = useState(false);
 
   useEffect(() => {
     if (open) {
       setValues(initial);
       setPendingAuditorId("");
       setPendingFacilityId("");
+      setNameTouched(false);
     }
   }, [open, initial]);
 
@@ -128,18 +130,27 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
     }));
   }, []);
 
+  const trimmedName = values.name.trim();
+  const isNameInvalid = trimmedName.length === 0;
+  const showNameError = nameTouched && isNameInvalid;
+
   const onSubmitInternal = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
 
-      const trimmedName = values.name.trim();
+      const trimmedNameLocal = values.name.trim();
+      if (!trimmedNameLocal) {
+        setNameTouched(true);
+        return;
+      }
+
       const trimmedDescription = values.description?.trim();
 
       const payload: ProjectUpsertValues = {
-        name: trimmedName,
+        name: trimmedNameLocal,
         facilityIds: values.facilityIds ?? [],
         auditorIds: values.auditorIds ?? [],
-        ...(trimmedDescription ? { description: trimmedDescription } : {}), // 🔹 opcional
+        ...(trimmedDescription ? { description: trimmedDescription } : {}),
       };
 
       await onSubmit(payload);
@@ -147,7 +158,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
     [onSubmit, values]
   );
 
-  const disabled = loading === true;
+  const disabled = loading === true || isNameInvalid;
 
   // Index de opciones para mostrar labels en chips (user.name/email/id)
   const auditorNameById = useMemo<Map<string, string>>(() => {
@@ -199,10 +210,18 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 mode === "create" ? "Enter project name" : "Project name"
               }
               value={values.name}
-              onChange={(e) => handleChange("name", e.currentTarget.value)}
-              disabled={disabled}
-              required
+              onChange={(e) => {
+                if (!nameTouched) setNameTouched(true);
+                handleChange("name", e.currentTarget.value);
+              }}
+              onBlur={() => setNameTouched(true)}
+              disabled={loading === true}
             />
+            {showNameError && (
+              <p className="mt-1 text-sm text-red-500">
+                Project name is required.
+              </p>
+            )}
           </div>
 
           {/* Project Description (opcional) */}
@@ -363,7 +382,11 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
           {error ? <ErrorText>{error}</ErrorText> : <HelpText>&nbsp;</HelpText>}
 
           <ModalFooter>
-            <Button type="submit" isLoading={disabled} disabled={disabled}>
+            <Button
+              type="submit"
+              isLoading={loading === true}
+              disabled={disabled}
+            >
               {copy.submit}
             </Button>
           </ModalFooter>
