@@ -71,7 +71,7 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function PUT(req: NextRequest, { params }: RouteContext) {
+export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const { cookies: cookieCfg } = serverEnv();
   const cookieStore = await cookies();
   const token = cookieStore.get(cookieCfg.accessName)?.value;
@@ -103,7 +103,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 
   try {
     const res = await fetch(upstreamUrl, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -140,7 +140,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
   } catch (err) {
-    console.error("[api/projects/:id] upstream PUT error:", err);
+    console.error("[api/projects/:id] upstream PATCH error:", err);
     return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
   }
 }
@@ -197,7 +197,6 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
       );
     }
 
-    // DELETE típico → 204 o sin cuerpo
     if (res.status === 204 || !contentType.includes("application/json")) {
       return new NextResponse(null, { status: res.status });
     }

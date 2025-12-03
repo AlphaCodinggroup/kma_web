@@ -15,6 +15,7 @@ import type { UserSummary } from "@entities/user/list.model";
 import { useDeleteProjectMutation } from "@features/projects/ui/hooks/useDeleteProjectMutation";
 import { useArchiveProjectMutation } from "@features/projects/ui/hooks/useArchiveProjectMutation";
 import { useCreateProjectMutation } from "@features/projects/ui/hooks/useCreateProjectMutation";
+import { useUpdateProjectMutation } from "@features/projects/ui/hooks/useUpdateProjectMutation";
 import { useDebouncedSearch } from "@shared/lib/useDebouncedSearch";
 import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
 import type { FacilityListFilter } from "@entities/facility/model";
@@ -24,12 +25,7 @@ const ProjectsPage: React.FC = () => {
   const [query, setQuery] = useState<string>("");
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
-  const [selectedProject, setSelectedProject] = useState<{
-    id: string;
-    name: string;
-    auditorId?: string | undefined;
-    buildingId?: string | undefined;
-  } | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [projectToDelete, setProjectToDelete] = useState<{
@@ -54,32 +50,53 @@ const ProjectsPage: React.FC = () => {
 
   const projects = useMemo<Project[]>(() => data?.items ?? [], [data]);
 
-  // Auditors para el selector del modal
-  const { data: auditorsData } = useUsersQuery({ role: "auditor" }, openCreate);
+  // Flag común para cargar lookups cuando está abierto create o edit
+  const lookupEnabled = openCreate || openEdit;
+
+  // Auditors para los modales
+  const { data: auditorsData } = useUsersQuery(
+    { role: "auditor" },
+    lookupEnabled
+  );
 
   const auditors = useMemo<UserSummary[]>(
     () => auditorsData?.items ?? [],
     [auditorsData]
   );
 
-  // Facilities activas para el selector del modal
+  // Facilities activas para los modales
   const facilitiesFilters = useMemo<FacilityListFilter>(() => {
     return { status: "ACTIVE" };
   }, []);
 
   const { data: facilitiesData } = useFacilitiesQuery(
     facilitiesFilters,
-    openCreate
+    lookupEnabled
   );
 
-  const facilityOptions = useMemo(
-    () =>
-      (facilitiesData?.items ?? []).map((f) => ({
+  const facilityOptions = useMemo(() => {
+    const fromQuery =
+      facilitiesData?.items?.map((f) => ({
         id: f.id,
         name: f.name,
-      })),
-    [facilitiesData]
-  );
+      })) ?? [];
+
+    const fromProjects = projects.flatMap((p) =>
+      (p.facilities ?? []).map((f) => ({
+        id: f.id,
+        name: f.name,
+      }))
+    );
+
+    const map = new Map<string, string>();
+    for (const f of [...fromQuery, ...fromProjects]) {
+      if (!map.has(f.id)) {
+        map.set(f.id, f.name);
+      }
+    }
+
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [facilitiesData, projects]);
 
   // Índices para mapear IDs → objetos { id, name }
   const auditorById = useMemo(() => {
@@ -104,6 +121,12 @@ const ProjectsPage: React.FC = () => {
     isPending: isCreating,
     error: createError,
   } = useCreateProjectMutation();
+
+  const {
+    mutateAsync: updateProject,
+    isPending: isUpdating,
+    error: updateError,
+  } = useUpdateProjectMutation();
 
   const { mutate: deleteProject, isPending: isDeleting } =
     useDeleteProjectMutation({
@@ -151,7 +174,7 @@ const ProjectsPage: React.FC = () => {
             .filter((u): u is UserSummary => Boolean(u))
             .map((u) => ({
               id: u.id,
-              name: u.name?.trim(),
+              name: u.name?.trim() || u.email || u.id,
             })) ?? [];
 
         const facilities =
@@ -192,6 +215,48 @@ const ProjectsPage: React.FC = () => {
       setOpenEdit(true);
     },
     [projects]
+  );
+
+  const handleEditSubmit = useCallback(
+    async (values: ProjectUpsertValues & { id: string }) => {
+      try {
+        const users =
+          values.auditorIds
+            ?.map((id) => auditorById.get(id))
+            .filter((u): u is UserSummary => Boolean(u))
+            .map((u) => ({
+              id: u.id,
+              name: u.name?.trim() || u.email || u.id,
+            })) ?? [];
+
+        const facilities =
+          values.facilityIds
+            ?.map((id) => facilityById.get(id))
+            .filter(
+              (
+                f
+              ): f is {
+                id: string;
+                name: string;
+              } => Boolean(f)
+            ) ?? [];
+
+        await updateProject({
+          id: values.id,
+          name: values.name,
+          description: values.description,
+          users,
+          facilities,
+        });
+
+        setOpenEdit(false);
+        setSelectedProject(null);
+        await refetch();
+      } catch (err) {
+        console.error("Failed to update project", err);
+      }
+    },
+    [updateProject, refetch, auditorById, facilityById]
   );
 
   // ---- Delete ----
@@ -282,18 +347,12 @@ const ProjectsPage: React.FC = () => {
             setOpenEdit(o);
             if (!o) setSelectedProject(null);
           }}
-          project={{
-            id: selectedProject.id,
-            name: selectedProject.name,
-            auditorId: selectedProject.auditorId ?? null,
-            buildingId: selectedProject.buildingId ?? null,
-          }}
+          project={selectedProject}
           auditors={auditors}
-          buildings={[]}
-          onSubmit={() => {
-            setOpenEdit(false);
-            setSelectedProject(null);
-          }}
+          facilities={facilityOptions}
+          onSubmit={handleEditSubmit}
+          loading={isUpdating}
+          error={updateError?.message ?? null}
         />
       )}
 

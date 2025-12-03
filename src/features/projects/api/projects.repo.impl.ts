@@ -25,7 +25,7 @@ type ProjectUserDTO = {
 };
 
 type ProjectFacilityDTO = {
-  id: string;
+  facility_id: string;
   name: string;
 };
 
@@ -128,7 +128,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
         ...(params.facilities && params.facilities.length
           ? {
               facilities: params.facilities.map((f) => ({
-                id: f.id,
+                facility_id: f.id,
                 name: f.name,
               })),
             }
@@ -176,7 +176,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
         ...(params.facilities && params.facilities.length
           ? {
               facilities: params.facilities.map((f) => ({
-                id: f.id,
+                facility_id: f.id,
                 name: f.name,
               })),
             }
@@ -184,7 +184,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
         ...(params.status ? { status: params.status } : {}),
       };
 
-      const res = await httpClient.put<
+      const res = await httpClient.patch<
         ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
       >(`${this.basePath}/${params.id}`, body, {
         headers: { "Content-Type": "application/json" },

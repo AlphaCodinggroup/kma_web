@@ -63,19 +63,19 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[45%] px-4 py-3 text-black">
+            <TableHead className="w-[30%] px-4 py-3 text-black">
               Project Name
             </TableHead>
             <TableHead className="w-[20%] px-4 py-3 text-black">
               Auditors
             </TableHead>
-            <TableHead className="w-[23%] px-4 py-3 text-black">
+            <TableHead className="w-[25%] px-4 py-3 text-black">
               Facilities
             </TableHead>
             <TableHead className="w-[5%] px-4 py-3 text-black">
               Status
             </TableHead>
-            <TableHead className="w-[10%] px-4 py-3 text-black">
+            <TableHead className="w-[15%] px-4 py-3 text-black">
               Created At
             </TableHead>
             <TableHead className="w-[7%] px-4 py-3 text-black">
@@ -95,10 +95,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   {row.users?.length ? (
                     <div className="flex flex-col gap-1">
                       {row.users.map((user) => (
-                        <span
-                          key={user.id}
-                          className="text-sm border rounded-xl text-center"
-                        >
+                        <span key={user.id} className="text-sm">
                           {user.name}
                         </span>
                       ))}
@@ -112,10 +109,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   {row.facilities?.length ? (
                     <div className="flex flex-col gap-1">
                       {row.facilities.map((facility) => (
-                        <span
-                          key={facility.id}
-                          className="text-sm border rounded-2xl text-center"
-                        >
+                        <span key={facility.id} className="text-sm">
                           {facility.name}
                         </span>
                       ))}
@@ -143,12 +137,12 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                       onClick={() => onEdit(row.id)}
                       size="md"
                     />
-                    <RowActionButton
+                    {/* <RowActionButton
                       icon={Archive}
                       ariaLabel="Archive project"
                       onClick={() => onArchive(row.id)}
                       size="md"
-                    />
+                    /> */}
                     <RowActionButton
                       icon={Trash2}
                       ariaLabel="Delete project"
