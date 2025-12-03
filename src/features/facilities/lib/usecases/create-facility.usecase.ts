@@ -18,13 +18,18 @@ export async function createFacilityUseCase(
     throw new Error("Facility name is required");
   }
 
+  // Normalizamos campos opcionales
+  const address = rawParams.address?.trim();
+  const city = rawParams.city?.trim();
+  const notes = rawParams.notes?.trim();
+
   const params: CreateFacilityParams = {
     ...rawParams,
     name,
-    address: rawParams.address?.trim() || undefined,
-    city: rawParams.city?.trim() || undefined,
-    notes: rawParams.notes?.trim() || undefined,
     status: "ACTIVE",
+    ...(address ? { address } : {}),
+    ...(city ? { city } : {}),
+    ...(notes ? { notes } : {}),
   };
 
   return repo.create(params);

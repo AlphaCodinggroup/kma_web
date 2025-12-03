@@ -9,7 +9,11 @@ import EditProjectDialog from "@features/projects/ui/EditProjectDialog";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import ConfirmTitle from "@shared/ui/confirm-title";
 import { useProjectsQuery } from "@features/projects/ui/hooks/useProjectsQuery";
-import type { Project, ProjectListFilter } from "@entities/projects/model";
+import type {
+  Project,
+  ProjectListFilter,
+  CreateProjectParams,
+} from "@entities/projects/model";
 import { useUsersQuery } from "@features/users/ui/hooks/useUsersQuery";
 import type { UserSummary } from "@entities/user/list.model";
 import { useDeleteProjectMutation } from "@features/projects/ui/hooks/useDeleteProjectMutation";
@@ -20,6 +24,7 @@ import { useDebouncedSearch } from "@shared/lib/useDebouncedSearch";
 import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
 import type { FacilityListFilter } from "@entities/facility/model";
 import type { ProjectUpsertValues } from "@features/projects/ui/ProjectsUpsertDialog";
+import { buildProjectOptionalFields } from "@features/projects/lib/buildProjectOptionalFields";
 
 const ProjectsPage: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -189,9 +194,11 @@ const ProjectsPage: React.FC = () => {
               } => Boolean(f)
             ) ?? [];
 
+        const optionalFields = buildProjectOptionalFields(values);
+
         await createProject({
           name: values.name,
-          description: values.description,
+          ...optionalFields,
           users,
           facilities,
           status: "ACTIVE",
@@ -241,10 +248,12 @@ const ProjectsPage: React.FC = () => {
               } => Boolean(f)
             ) ?? [];
 
+        const optionalFields = buildProjectOptionalFields(values);
+
         await updateProject({
           id: values.id,
           name: values.name,
-          description: values.description,
+          ...optionalFields,
           users,
           facilities,
         });

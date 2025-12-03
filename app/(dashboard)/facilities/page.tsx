@@ -14,6 +14,7 @@ import { useCreateFacilityMutation } from "@features/facilities/ui/hooks/useCrea
 import { useUpdateFacilityMutation } from "@features/facilities/ui/hooks/useUpdateFacilityMutation";
 import { useDeleteFacilityMutation } from "@features/facilities/ui/hooks/useDeleteFacilityMutation";
 import { useArchiveFacilityMutation } from "@features/facilities/ui/hooks/useArchiveFacilityMutation";
+import { buildFacilityOptionalFields } from "@features/facilities/lib/buildFacilityOptionalFields";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import ConfirmTitle from "@shared/ui/confirm-title";
 
@@ -86,12 +87,13 @@ export default function FacilitiesPage() {
   const handleCreateSubmit = useCallback(
     async (values: FacilityUpsertValues) => {
       try {
+        const optionalFields = buildFacilityOptionalFields(values);
+
         await createFacility({
           name: values.name,
-          address: values.address,
-          city: values.city,
-          notes: values.notes,
+          ...optionalFields,
         });
+
         setIsCreateOpen(false);
       } catch {
         // El error se refleja en `createError` vía React Query, no cerramos el modal.
@@ -127,13 +129,14 @@ export default function FacilitiesPage() {
       if (!editingFacility) return;
 
       try {
+        const optionalFields = buildFacilityOptionalFields(values);
+
         await updateFacility({
           id: editingFacility.id,
           name: values.name,
-          address: values.address,
-          city: values.city,
-          notes: values.notes,
+          ...optionalFields,
         });
+
         setIsEditOpen(false);
         setEditingFacility(null);
       } catch {
