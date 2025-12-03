@@ -1,19 +1,15 @@
 "use client";
 
 import React from "react";
-import ProjectUpsertDialog, {
-  type Option,
-  type ProjectUpsertValues,
-} from "./ProjectsUpsertDialog";
-import type { UserSummary } from "@entities/user/list.model";
+import FacilityUpsertDialog, {
+  type FacilityUpsertValues,
+} from "./FacilityUpsertDialog";
 
-export interface CreateProjectDialogProps {
+export interface CreateFacilityDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  auditors: UserSummary[];
-  facilities: Option[];
-  defaultValues?: Partial<ProjectUpsertValues> | undefined;
-  onSubmit: (values: ProjectUpsertValues) => void | Promise<void>;
+  defaultValues?: Partial<FacilityUpsertValues> | undefined;
+  onSubmit: (values: FacilityUpsertValues) => void | Promise<void>;
   loading?: boolean | undefined;
   error?: string | null | undefined;
   titleOverride?: string | undefined;
@@ -21,11 +17,12 @@ export interface CreateProjectDialogProps {
   submitLabelOverride?: string | undefined;
 }
 
-const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
+/**
+ * Modal reutilizable para CREAR una Facility.
+ */
+const CreateFacilityDialog: React.FC<CreateFacilityDialogProps> = ({
   open,
   onOpenChange,
-  auditors,
-  facilities,
   defaultValues,
   onSubmit,
   loading,
@@ -35,13 +32,11 @@ const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
   submitLabelOverride,
 }) => {
   return (
-    <ProjectUpsertDialog
+    <FacilityUpsertDialog
       mode="create"
       open={open}
       onOpenChange={onOpenChange}
       defaultValues={defaultValues}
-      auditors={auditors}
-      facilities={facilities}
       loading={loading}
       error={error}
       titleOverride={titleOverride}
@@ -52,4 +47,4 @@ const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
   );
 };
 
-export default CreateProjectDialog;
+export default CreateFacilityDialog;

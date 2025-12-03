@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ChevronDown, Plus, X } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { Label, Input, Button, ErrorText, HelpText } from "@shared/ui/controls";
 import {
@@ -13,13 +13,15 @@ import {
   ModalFooter,
   ModalCloseButton,
 } from "@shared/ui/modal";
+import type { UserSummary } from "@entities/user/list.model";
 
 export type UpsertMode = "create" | "edit";
 
 export type ProjectUpsertValues = {
   name: string;
-  auditorId?: string | undefined;
-  buildingId?: string | undefined;
+  description?: string | undefined;
+  auditorIds?: string[] | undefined;
+  facilityIds?: string[] | undefined;
 };
 
 export type Option = { id: string; name: string };
@@ -29,8 +31,8 @@ export interface ProjectUpsertDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultValues?: Partial<ProjectUpsertValues> | undefined;
-  auditors: Option[];
-  buildings: Option[];
+  auditors: UserSummary[];
+  facilities: Option[];
   onSubmit: (values: ProjectUpsertValues) => void | Promise<void>;
   loading?: boolean | undefined;
   error?: string | null | undefined;
@@ -51,7 +53,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
   onOpenChange,
   defaultValues,
   auditors,
-  buildings,
+  facilities,
   onSubmit,
   loading,
   error,
@@ -63,24 +65,131 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
   const initial: ProjectUpsertValues = useMemo(
     () => ({
       name: defaultValues?.name ?? "",
-      auditorId: defaultValues?.auditorId,
-      buildingId: defaultValues?.buildingId,
+      description: defaultValues?.description ?? "",
+      auditorIds: defaultValues?.auditorIds ?? [],
+      facilityIds: defaultValues?.facilityIds ?? [],
     }),
     [defaultValues]
   );
 
   const [values, setValues] = useState<ProjectUpsertValues>(initial);
+  const [pendingAuditorId, setPendingAuditorId] = useState<string>("");
+  const [pendingFacilityId, setPendingFacilityId] = useState<string>("");
+  const [nameTouched, setNameTouched] = useState(false);
 
   useEffect(() => {
-    if (open) setValues(initial);
+    if (open) {
+      setValues(initial);
+      setPendingAuditorId("");
+      setPendingFacilityId("");
+      setNameTouched(false);
+    }
   }, [open, initial]);
 
-  const handleChange = <K extends keyof ProjectUpsertValues>(
-    key: K,
-    val: ProjectUpsertValues[K]
-  ) => setValues((s) => ({ ...s, [key]: val }));
+  const handleChange = useCallback(
+    <K extends keyof ProjectUpsertValues>(
+      key: K,
+      val: ProjectUpsertValues[K]
+    ) => setValues((s) => ({ ...s, [key]: val })),
+    []
+  );
 
-  const disabled = loading === true;
+  const addAuditor = useCallback(() => {
+    const id = pendingAuditorId.trim();
+    if (!id) return;
+    setValues((s) => {
+      const prev = s.auditorIds ?? [];
+      if (prev.includes(id)) return s;
+      return { ...s, auditorIds: [...prev, id] };
+    });
+    setPendingAuditorId("");
+  }, [pendingAuditorId]);
+
+  const addFacility = useCallback(() => {
+    const id = pendingFacilityId.trim();
+    if (!id) return;
+    setValues((s) => {
+      const prev = s.facilityIds ?? [];
+      if (prev.includes(id)) return s;
+      return { ...s, facilityIds: [...prev, id] };
+    });
+    setPendingFacilityId("");
+  }, [pendingFacilityId]);
+
+  const removeAuditor = useCallback((id: string) => {
+    setValues((s) => ({
+      ...s,
+      auditorIds: (s.auditorIds ?? []).filter((x) => x !== id),
+    }));
+  }, []);
+
+  const removeFacility = useCallback((id: string) => {
+    setValues((s) => ({
+      ...s,
+      facilityIds: (s.facilityIds ?? []).filter((x) => x !== id),
+    }));
+  }, []);
+
+  const trimmedName = values.name.trim();
+  const isNameInvalid = trimmedName.length === 0;
+  const showNameError = nameTouched && isNameInvalid;
+
+  const hasPendingSelection =
+    (pendingAuditorId?.trim().length ?? 0) > 0 ||
+    (pendingFacilityId?.trim().length ?? 0) > 0;
+
+  const pendingSelectionError = hasPendingSelection
+    ? "You have a selected auditor/facility not added yet. Please click the + button to add it before submitting."
+    : null;
+
+  const onSubmitInternal = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      // Bloqueo extra por seguridad
+      if (hasPendingSelection) {
+        return;
+      }
+
+      const trimmedNameLocal = values.name.trim();
+      if (!trimmedNameLocal) {
+        setNameTouched(true);
+        return;
+      }
+
+      const trimmedDescription = values.description?.trim();
+
+      const payload: ProjectUpsertValues = {
+        name: trimmedNameLocal,
+        facilityIds: values.facilityIds ?? [],
+        auditorIds: values.auditorIds ?? [],
+        ...(trimmedDescription ? { description: trimmedDescription } : {}),
+      };
+
+      await onSubmit(payload);
+    },
+    [onSubmit, values, hasPendingSelection]
+  );
+
+  const isFormControlsDisabled = loading === true;
+  const isSubmitDisabled =
+    loading === true || isNameInvalid || hasPendingSelection;
+
+  // Index de opciones para mostrar labels en chips (user.name/email/id)
+  const auditorNameById = useMemo<Map<string, string>>(() => {
+    const map = new Map<string, string>();
+    for (const a of auditors) {
+      const label = a.name?.trim() || a.email || a.id;
+      map.set(a.id, label);
+    }
+    return map;
+  }, [auditors]);
+
+  const facilityNameById = useMemo<Map<string, string>>(() => {
+    const map = new Map<string, string>();
+    for (const f of facilities) map.set(f.id, f.name || f.id);
+    return map;
+  }, [facilities]);
 
   const copy = {
     title:
@@ -96,6 +205,8 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
       (mode === "create" ? "Create Project" : "Update Project"),
   };
 
+  const globalError = pendingSelectionError ?? error ?? null;
+
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className={cn(className)}>
@@ -106,13 +217,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
           <ModalDescription>{copy.description}</ModalDescription>
         </ModalHeader>
 
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            await onSubmit(values);
-          }}
-          className="space-y-5"
-        >
+        <form onSubmit={onSubmitInternal} className="space-y-5">
           {/* Project Name */}
           <div>
             <Label htmlFor="project-name">Project Name</Label>
@@ -122,84 +227,184 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 mode === "create" ? "Enter project name" : "Project name"
               }
               value={values.name}
-              onChange={(e) => handleChange("name", e.currentTarget.value)}
-              disabled={disabled}
-              required
+              onChange={(e) => {
+                if (!nameTouched) setNameTouched(true);
+                handleChange("name", e.currentTarget.value);
+              }}
+              onBlur={() => setNameTouched(true)}
+              disabled={isFormControlsDisabled}
+            />
+            {showNameError && (
+              <p className="mt-1 text-sm text-red-500">
+                Project name is required.
+              </p>
+            )}
+          </div>
+
+          {/* Project Description (opcional) */}
+          <div>
+            <Label htmlFor="project-description">Description</Label>
+            <Input
+              id="project-description"
+              placeholder="Enter a short description (optional)"
+              value={values.description ?? ""}
+              onChange={(e) =>
+                handleChange("description", e.currentTarget.value)
+              }
+              disabled={isFormControlsDisabled}
             />
           </div>
 
-          {/* Assigned Auditor */}
+          {/* Assigned Auditors (multi) */}
           <div>
-            <Label>Assigned Auditor</Label>
-            <div className="relative">
-              <select
-                className={cn(
-                  "w-full appearance-none rounded-xl",
-                  "bg-[var(--kma-input)] text-[var(--kma-input-fg)]",
-                  "border border-[var(--kma-input-border)] h-10 px-3 pr-9",
-                  "outline-none transition focus:bg-[var(--kma-input-focus)]",
-                  "focus:ring-2 focus:ring-[color:oklch(0_0_0_/_0.2)]"
-                )}
-                value={values.auditorId ?? ""}
-                onChange={(e) =>
-                  handleChange("auditorId", e.currentTarget.value || undefined)
-                }
-                disabled={disabled}
-                aria-label="Select an auditor"
+            <Label>Assigned Auditors</Label>
+
+            <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+              <div className="relative">
+                <select
+                  className={cn(
+                    "w-full appearance-none rounded-xl",
+                    "bg-[var(--kma-input)] text-[var(--kma-input-fg)]",
+                    "border border-[var(--kma-input-border)] h-10 px-3 pr-9",
+                    "outline-none transition focus:bg-[var(--kma-input-focus)]",
+                    "focus:ring-2 focus:ring-[color:oklch(0_0_0_/_0.2)]"
+                  )}
+                  value={pendingAuditorId}
+                  onChange={(e) => setPendingAuditorId(e.currentTarget.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addAuditor();
+                    }
+                  }}
+                  disabled={isFormControlsDisabled}
+                  aria-label="Select an auditor to add"
+                >
+                  <option value="">Select an auditor</option>
+                  {auditors.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name?.trim() || a.email || a.id}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+              </div>
+
+              <Button
+                type="button"
+                aria-label="Add auditor"
+                onClick={addAuditor}
+                disabled={isFormControlsDisabled || !pendingAuditorId}
+                className="h-10 w-10 p-0 rounded-xl shrink-0"
               >
-                <option value="">
-                  {mode === "create"
-                    ? "Select an auditor"
-                    : "Select an auditor"}
-                </option>
-                {auditors.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+                <Plus className="h-5 w-5" />
+              </Button>
             </div>
+
+            {values.auditorIds && values.auditorIds.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {values.auditorIds.map((id) => (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800 ring-1 ring-gray-200"
+                  >
+                    {auditorNameById.get(id) ?? id}
+                    <button
+                      type="button"
+                      onClick={() => removeAuditor(id)}
+                      className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200"
+                      aria-label={`Remove ${auditorNameById.get(id) ?? id}`}
+                      disabled={isFormControlsDisabled}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </div>
 
-          {/* Building */}
+          {/* Facilities (multi) */}
           <div>
-            <Label>Building</Label>
-            <div className="relative">
-              <select
-                className={cn(
-                  "w-full appearance-none rounded-xl",
-                  "bg-[var(--kma-input)] text-[var(--kma-input-fg)]",
-                  "border border-[var(--kma-input-border)] h-10 px-3 pr-9",
-                  "outline-none transition focus:bg-[var(--kma-input-focus)]",
-                  "focus:ring-2 focus:ring-[color:oklch(0_0_0_/_0.2)]"
-                )}
-                value={values.buildingId ?? ""}
-                onChange={(e) =>
-                  handleChange("buildingId", e.currentTarget.value || undefined)
-                }
-                disabled={disabled}
-                aria-label="Select a building"
+            <Label>Facilities</Label>
+
+            <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+              <div className="relative">
+                <select
+                  className={cn(
+                    "w-full appearance-none rounded-xl",
+                    "bg-[var(--kma-input)] text-[var(--kma-input-fg)]",
+                    "border border-[var(--kma-input-border)] h-10 px-3 pr-9",
+                    "outline-none transition focus:bg-[var(--kma-input-focus)]",
+                    "focus:ring-2 focus:ring-[color:oklch(0_0_0_/_0.2)]"
+                  )}
+                  value={pendingFacilityId}
+                  onChange={(e) => setPendingFacilityId(e.currentTarget.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addFacility();
+                    }
+                  }}
+                  disabled={isFormControlsDisabled}
+                  aria-label="Select a facility to add"
+                >
+                  <option value="">Select a facility</option>
+                  {facilities.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.name || f.id}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+              </div>
+
+              <Button
+                type="button"
+                aria-label="Add facility"
+                onClick={addFacility}
+                disabled={isFormControlsDisabled || !pendingFacilityId}
+                className="h-10 w-10 p-0 rounded-xl shrink-0"
               >
-                <option value="">
-                  {mode === "create"
-                    ? "Select a building"
-                    : "Select a building"}
-                </option>
-                {buildings.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+                <Plus className="h-5 w-5" />
+              </Button>
             </div>
+
+            {values.facilityIds && values.facilityIds.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {values.facilityIds.map((id) => (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800 ring-1 ring-gray-200"
+                  >
+                    {facilityNameById.get(id) ?? id}
+                    <button
+                      type="button"
+                      onClick={() => removeFacility(id)}
+                      className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200"
+                      aria-label={`Remove ${facilityNameById.get(id) ?? id}`}
+                      disabled={isFormControlsDisabled}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
-          {error ? <ErrorText>{error}</ErrorText> : <HelpText>&nbsp;</HelpText>}
+          {globalError ? (
+            <ErrorText>{globalError}</ErrorText>
+          ) : (
+            <HelpText>&nbsp;</HelpText>
+          )}
 
           <ModalFooter>
-            <Button type="submit" isLoading={disabled} disabled={disabled}>
+            <Button
+              type="submit"
+              isLoading={loading === true}
+              disabled={isSubmitDisabled}
+            >
               {copy.submit}
             </Button>
           </ModalFooter>
