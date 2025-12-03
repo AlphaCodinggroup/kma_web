@@ -10,33 +10,48 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Archive } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
-
-export type ProjectRowVM = {
-  id: string;
-  name: string;
-  auditor: string;
-  building: string;
-  createdISO: string;
-};
+import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
+import type { Project } from "@entities/projects/model";
+import { formatIsoToYmdHm } from "@shared/lib/date";
+import { ProjectStatusBadge } from "@shared/ui/badge";
 
 export interface ProjectsTableProps {
-  items: ProjectRowVM[];
-  onEdit?: ((id: string) => void) | undefined;
-  onDelete?: ((id: string) => void) | undefined;
+  items: Project[];
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  onArchive: (id: string) => void;
   emptyMessage?: string | undefined;
   className?: string | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  onError: () => void;
 }
 
 export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   items,
   onEdit,
   onDelete,
+  onArchive,
   emptyMessage = "No projects found",
   className,
+  isLoading = false,
+  isError = false,
+  onError,
 }) => {
   const hasItems = items.length > 0;
+
+  if (isLoading) return <Loading text="Loading projects…" />;
+
+  if (isError)
+    return (
+      <Retry
+        text="Failed to load projects. Please try again."
+        onClick={onError}
+      />
+    );
 
   return (
     <div
@@ -48,19 +63,22 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[46%] px-4 py-3 text-black">
+            <TableHead className="w-[30%] px-4 py-3 text-black">
               Project Name
             </TableHead>
-            <TableHead className="w-[18%] px-4 py-3 text-black">
-              Auditor
+            <TableHead className="w-[20%] px-4 py-3 text-black">
+              Auditors
             </TableHead>
-            <TableHead className="w-[22%] px-4 py-3 text-black">
-              Building
+            <TableHead className="w-[25%] px-4 py-3 text-black">
+              Facilities
             </TableHead>
-            <TableHead className="w-[10%] px-4 py-3 text-black">
-              Created
+            <TableHead className="w-[5%] px-4 py-3 text-black">
+              Status
             </TableHead>
-            <TableHead className="w-[4%] px-4 py-3 text-right text-black">
+            <TableHead className="w-[15%] px-4 py-3 text-black">
+              Created At
+            </TableHead>
+            <TableHead className="w-[7%] px-4 py-3 text-black">
               Actions
             </TableHead>
           </TableRow>
@@ -74,26 +92,61 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   {row.name}
                 </TableCell>
                 <TableCell className="px-4 py-4 text-black">
-                  {row.auditor}
+                  {row.users?.length ? (
+                    <div className="flex flex-col gap-1">
+                      {row.users.map((user) => (
+                        <span key={user.id} className="text-sm">
+                          {user.name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    "—"
+                  )}
+                </TableCell>
+
+                <TableCell className="px-4 py-4 text-black">
+                  {row.facilities?.length ? (
+                    <div className="flex flex-col gap-1">
+                      {row.facilities.map((facility) => (
+                        <span key={facility.id} className="text-sm">
+                          {facility.name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    "—"
+                  )}
+                </TableCell>
+
+                <TableCell className="px-4 py-4 text-black">
+                  {row.status ? (
+                    <ProjectStatusBadge status={row.status} />
+                  ) : (
+                    "—"
+                  )}
                 </TableCell>
                 <TableCell className="px-4 py-4 text-black">
-                  {row.building}
-                </TableCell>
-                <TableCell className="px-4 py-4 text-black">
-                  {row.createdISO}
+                  {formatIsoToYmdHm(row.createdAt) ?? "—"}
                 </TableCell>
                 <TableCell className="px-4 py-4">
                   <div className="flex items-center justify-end gap-2">
                     <RowActionButton
                       icon={Pencil}
                       ariaLabel="Edit project"
-                      onClick={() => onEdit?.(row.id)}
+                      onClick={() => onEdit(row.id)}
                       size="md"
                     />
+                    {/* <RowActionButton
+                      icon={Archive}
+                      ariaLabel="Archive project"
+                      onClick={() => onArchive(row.id)}
+                      size="md"
+                    /> */}
                     <RowActionButton
                       icon={Trash2}
                       ariaLabel="Delete project"
-                      onClick={() => onDelete?.(row.id)}
+                      onClick={() => onDelete(row.id)}
                       variant="danger"
                       size="md"
                     />
@@ -104,7 +157,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={6}
                 className="px-4 py-10 text-center text-sm text-gray-600"
               >
                 {emptyMessage}
