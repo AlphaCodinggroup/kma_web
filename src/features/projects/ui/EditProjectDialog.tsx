@@ -5,37 +5,31 @@ import ProjectUpsertDialog, {
   type Option,
   type ProjectUpsertValues,
 } from "./ProjectsUpsertDialog";
+import type { Project } from "@entities/projects/model";
+import type { UserSummary } from "@entities/user/list.model";
 
 export interface EditProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  project: {
-    id: string;
-    name: string;
-    auditorId?: string | null | undefined;
-    buildingId?: string | null | undefined;
-  };
-  auditors: Option[];
-  buildings: Option[];
+  project: Project;
+  auditors: UserSummary[];
+  facilities: Option[];
   onSubmit: (
     values: ProjectUpsertValues & { id: string }
   ) => void | Promise<void>;
-  loading?: boolean | undefined;
-  error?: string | null | undefined;
-  titleOverride?: string | undefined;
-  descriptionOverride?: string | undefined;
-  submitLabelOverride?: string | undefined;
+  loading?: boolean;
+  error?: string | null;
+  titleOverride?: string;
+  descriptionOverride?: string;
+  submitLabelOverride?: string;
 }
 
-/**
- * Wrapper fino que fija `mode="edit"` y provee `defaultValues` desde `project`.
- */
 const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
   open,
   onOpenChange,
   project,
   auditors,
-  buildings,
+  facilities,
   onSubmit,
   loading,
   error,
@@ -45,8 +39,9 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
 }) => {
   const defaults: Partial<ProjectUpsertValues> = {
     name: project.name,
-    auditorId: project.auditorId ?? undefined,
-    buildingId: project.buildingId ?? undefined,
+    description: project.description ?? "",
+    auditorIds: project.users?.map((u) => u.id) ?? [],
+    facilityIds: project.facilities?.map((f) => f.id) ?? [],
   };
 
   return (
@@ -56,7 +51,7 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
       onOpenChange={onOpenChange}
       defaultValues={defaults}
       auditors={auditors}
-      buildings={buildings}
+      facilities={facilities}
       loading={loading}
       error={error}
       titleOverride={titleOverride}
