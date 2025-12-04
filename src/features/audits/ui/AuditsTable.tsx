@@ -40,13 +40,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
   error,
   onError,
 }) => {
-  if (loading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-muted/40 backdrop-blur-sm z-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
+  if (loading) return <Loading text="Loading audits…" />;
 
   if (error)
     return (

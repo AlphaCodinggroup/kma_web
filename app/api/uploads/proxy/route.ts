@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(req: Request) {
-    const { searchParams } = new URL(req.url);
-    const targetUrl = searchParams.get("url");
+export async function PUT(req: NextRequest) {
+    const encodedUrl = req.nextUrl.searchParams.get("url");
+    const targetUrl = encodedUrl ? Buffer.from(encodedUrl, "base64").toString("utf8") : null;
 
     if (!targetUrl) {
         return NextResponse.json(
-            { message: "Missing 'url' query parameter" },
+            { message: "Missing url" },
             { status: 400 }
         );
     }
@@ -42,8 +42,4 @@ export async function PUT(req: Request) {
         console.error("[api/uploads/proxy] Proxy error:", err);
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
-}
-
-export async function POST(req: Request) {
-    return PUT(req);
 }

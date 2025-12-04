@@ -5,25 +5,24 @@ import PageHeader from "@shared/ui/page-header";
 import { useFlowById } from "@features/flows/lib/useFlowsQuery";
 import { FlowEditor } from "@features/flows/ui/FlowEditor";
 import { useParams } from "next/navigation";
+import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
+
 
 export default function FlowEditorPage() {
     const params = useParams();
     const id = params?.id as string;
-    const { flow, isLoading, error } = useFlowById(id, true);
+    const { flow, isLoading, error, refetch } = useFlowById(id, true);
 
     if (isLoading) {
         return (
-            <div className="fixed inset-0 flex items-center justify-center bg-muted/40 backdrop-blur-sm z-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
-            </div>
+            <Loading text='Loading Flow' />
         );
     }
 
     if (error || !flow) {
         return (
-            <div className="p-8 text-center text-destructive">
-                Error loading flow: {error?.message ?? "Flow not found"}
-            </div>
+            <Retry text={"Error loading flow: " + (error?.message ?? "Flow not found")} onClick={refetch} />
         );
     }
 

@@ -14,6 +14,7 @@ import { Eye, EyeOff, Image as ImageIcon, MessageSquare } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { Button } from "@shared/ui/controls";
+import { Loading } from "@shared/ui/Loading";
 
 export interface ReportItemsTableProps {
   items: AuditFinding[];
@@ -144,13 +145,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
     [rows]
   );
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-muted/40 backdrop-blur-sm z-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
+  if (loading) return <Loading text="Loading audits…" />;
 
   if (error) {
     return (

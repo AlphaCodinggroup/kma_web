@@ -78,8 +78,8 @@ export class FlowsHttpRepo implements FlowsRepo {
   }
 
   async uploadFile(uploadUrl: string, file: File): Promise<void> {
-    // Usamos el proxy local para evitar CORS en S3
-    const proxyUrl = `/api/uploads/proxy?url=${encodeURIComponent(uploadUrl)}`;
+    const encodedUrl = btoa(uploadUrl);
+    const proxyUrl = `/api/uploads/proxy?url=${encodedUrl}`;
 
     const res = await fetch(proxyUrl, {
       method: "PUT",
