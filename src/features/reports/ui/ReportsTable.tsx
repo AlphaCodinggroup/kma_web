@@ -1,11 +1,9 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import type { Route } from "next";
-import { Eye, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { cn } from "@shared/lib/cn";
-import { Badge } from "@shared/ui/badge";
+import { StatusBadge } from "@shared/ui/badge";
 import {
   Table,
   TableBody,
@@ -18,6 +16,7 @@ import RowActionButton from "@shared/ui/row-action-button";
 import type { ReportListItem } from "@entities/report/model/report-list";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
+import { formatIsoToYmdHm } from "@shared/lib/date";
 
 export interface ReportsTableProps {
   items: ReportListItem[];
@@ -26,13 +25,13 @@ export interface ReportsTableProps {
   emptyMessage?: string;
   isLoading: boolean;
   isError: boolean;
+  isDownloading: boolean;
   onDownload: (id: string) => void;
   onError: () => void;
 }
 
 /**
  * Tabla de Reports: columnas
- * [Report ID, Project Name, Auditor, Reviewer, Generated Date, Findings, Total Cost, Actions]
  */
 const ReportsTable: React.FC<ReportsTableProps> = ({
   items,
@@ -41,6 +40,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   emptyMessage = "No reports found",
   isError,
   isLoading,
+  isDownloading,
   onDownload,
   onError,
 }) => {
@@ -67,13 +67,13 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
         <Table className="min-w-[960px]">
           <TableHeader>
             <TableRow className="bg-white">
-              <TableHead className="w-[120px]">Report ID</TableHead>
+              <TableHead>Report ID</TableHead>
               <TableHead>Project Name</TableHead>
               <TableHead>Auditor</TableHead>
               <TableHead>Reviewer</TableHead>
-              <TableHead>Generated Date</TableHead>
-              <TableHead className="text-right">Findings</TableHead>
-              <TableHead className="text-right">Total Cost</TableHead>
+              <TableHead>Created At</TableHead>
+              <TableHead>Findings</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -90,7 +90,6 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               </TableRow>
             ) : (
               items.map((r) => {
-                const viewHref = `/audits/${r.id}/report` as Route;
                 return (
                   <TableRow key={r.id}>
                     <TableCell className="font-medium">{r.id}</TableCell>
@@ -98,7 +97,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                     <TableCell>{/* {r.auditor} */}</TableCell>
                     <TableCell>{/* {r.reviewer} */}</TableCell>
                     <TableCell>
-                      {/* {new Date(r.generatedDate).toLocaleDateString()} */}
+                      {formatIsoToYmdHm(r.createdAt) ?? "—"}
                     </TableCell>
                     <TableCell className="text-right">
                       {/* <Badge
@@ -109,33 +108,20 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                         {r.totalFindings}
                       </Badge> */}
                     </TableCell>
-                    <TableCell className="text-right">
-                      {/* ${r.totalCost.toLocaleString()} */}
+                    <TableCell>
+                      <StatusBadge status={r.status} />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {/* View */}
-                        {/* <Link href={viewHref}>
+                        {r.reportUrl && (
                           <RowActionButton
-                            icon={Eye}
-                            ariaLabel="Delete project"
-                            onClick={(e) => {
-                              if (onView) {
-                                e.preventDefault();
-                                onView(r.auditId);
-                              }
-                            }}
+                            icon={Download}
+                            ariaLabel="Delete report"
+                            onClick={() => onDownload(r.id)}
                             size="md"
+                            disabled={isDownloading}
                           />
-                        </Link> */}
-
-                        {/* Download */}
-                        <RowActionButton
-                          icon={Download}
-                          ariaLabel="Delete report"
-                          onClick={() => onDownload(r.id)}
-                          size="md"
-                        />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

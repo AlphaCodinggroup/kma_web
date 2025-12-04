@@ -1,4 +1,4 @@
-import type { ReportStatus } from "./audit-report";
+import type { AuditStatus } from "@entities/audit/model";
 
 /**
  * Item de listado de reports en dominio.
@@ -8,7 +8,7 @@ export interface ReportListItem {
   flowId: string;
   userId: string | null;
   projectId: string | null;
-  status: ReportStatus;
+  status: AuditStatus;
   reportUrl: string | null;
   createdAt: string;
   updatedAt: string;
@@ -31,7 +31,7 @@ export interface ReportListPage {
 export interface ReportListFilter {
   projectId?: string;
   userId?: string;
-  status?: ReportStatus;
+  status?: AuditStatus;
   limit?: number;
   lastEvalId?: string;
 }

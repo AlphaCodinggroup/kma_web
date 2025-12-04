@@ -1,7 +1,5 @@
-import type {
-  AuditReport,
-  ReportStatus,
-} from "@entities/report/model/audit-report";
+import type { AuditStatus } from "@entities/audit/model";
+import type { AuditReport } from "@entities/report/model/audit-report";
 
 export type AuditReportDTO = {
   id: string;
@@ -13,7 +11,7 @@ export type AuditReportDTO = {
   updated_at: string;
 };
 
-const toStatus = (raw: string): ReportStatus => raw as ReportStatus;
+const toStatus = (raw: string): AuditStatus => raw as AuditStatus;
 
 const toNullIfEmpty = (v: unknown): string | null => {
   if (typeof v !== "string") return null;

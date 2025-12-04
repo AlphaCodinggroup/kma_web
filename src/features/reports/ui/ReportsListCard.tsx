@@ -14,6 +14,7 @@ export interface ReportsListCardProps {
   rightSlot?: React.ReactNode;
   isLoading: boolean;
   isError: boolean;
+  isDownloading: boolean;
   onDownload: (id: string) => void;
   onError: () => void;
 }
@@ -27,6 +28,7 @@ const ReportsListCard: React.FC<ReportsListCardProps> = ({
   rightSlot,
   isLoading,
   isError,
+  isDownloading,
   onDownload,
   onError,
 }) => {
@@ -59,6 +61,7 @@ const ReportsListCard: React.FC<ReportsListCardProps> = ({
         isLoading={isLoading}
         onError={onError}
         isError={isError}
+        isDownloading={isDownloading}
       />
     </section>
   );
