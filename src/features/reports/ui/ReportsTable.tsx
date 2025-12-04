@@ -15,27 +15,19 @@ import {
   TableRow,
 } from "@shared/ui/table";
 import RowActionButton from "@shared/ui/row-action-button";
-
-/** ViewModel mínimo para la tabla (visual-only). */
-export interface ReportRowVM {
-  id: string; // e.g. RPT-001
-  auditId: string; // para link a /audits/[id]/report
-  projectName: string;
-  auditor: string;
-  reviewer: string;
-  generatedDate: string; // ISO string
-  totalFindings: number;
-  totalCost: number; // monto total
-}
+import type { ReportListItem } from "@entities/report/model/report-list";
+import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
 
 export interface ReportsTableProps {
-  items: ReportRowVM[];
+  items: ReportListItem[];
   className?: string;
-  onView?: (auditId: string) => void;
-  onDownload?: (reportId: string) => void;
-  /** Limitar altura para scroll interno (opcional) */
   bodyMaxHeightClassName?: string;
   emptyMessage?: string;
+  isLoading: boolean;
+  isError: boolean;
+  onDownload: (id: string) => void;
+  onError: () => void;
 }
 
 /**
@@ -45,12 +37,24 @@ export interface ReportsTableProps {
 const ReportsTable: React.FC<ReportsTableProps> = ({
   items,
   className,
-  onView,
-  onDownload,
   bodyMaxHeightClassName,
   emptyMessage = "No reports found",
+  isError,
+  isLoading,
+  onDownload,
+  onError,
 }) => {
   const hasItems = items.length > 0;
+
+  if (isLoading) return <Loading text="Loading reports" />;
+
+  if (isError)
+    return (
+      <Retry
+        text="Failed to load reports. Please try again."
+        onClick={onError}
+      />
+    );
 
   return (
     <div
@@ -86,32 +90,32 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               </TableRow>
             ) : (
               items.map((r) => {
-                const viewHref = `/audits/${r.auditId}/report` as Route;
+                const viewHref = `/audits/${r.id}/report` as Route;
                 return (
                   <TableRow key={r.id}>
                     <TableCell className="font-medium">{r.id}</TableCell>
-                    <TableCell className="truncate">{r.projectName}</TableCell>
-                    <TableCell>{r.auditor}</TableCell>
-                    <TableCell>{r.reviewer}</TableCell>
+                    <TableCell className="truncate">{r.projectId}</TableCell>
+                    <TableCell>{/* {r.auditor} */}</TableCell>
+                    <TableCell>{/* {r.reviewer} */}</TableCell>
                     <TableCell>
-                      {new Date(r.generatedDate).toLocaleDateString()}
+                      {/* {new Date(r.generatedDate).toLocaleDateString()} */}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Badge
+                      {/* <Badge
                         variant="soft"
                         tone="neutral"
                         className="font-medium"
                       >
                         {r.totalFindings}
-                      </Badge>
+                      </Badge> */}
                     </TableCell>
                     <TableCell className="text-right">
-                      ${r.totalCost.toLocaleString()}
+                      {/* ${r.totalCost.toLocaleString()} */}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {/* View */}
-                        <Link href={viewHref}>
+                        {/* <Link href={viewHref}>
                           <RowActionButton
                             icon={Eye}
                             ariaLabel="Delete project"
@@ -123,13 +127,13 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                             }}
                             size="md"
                           />
-                        </Link>
+                        </Link> */}
 
                         {/* Download */}
                         <RowActionButton
                           icon={Download}
-                          ariaLabel="Delete project"
-                          onClick={() => onDownload?.(r.id)}
+                          ariaLabel="Delete report"
+                          onClick={() => onDownload(r.id)}
                           size="md"
                         />
                       </div>
