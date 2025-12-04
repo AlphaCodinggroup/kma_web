@@ -4,6 +4,7 @@ import { z } from "zod";
 export const StepBaseDTOSchema = z.object({
   id: z.string(),
   type: z.enum(["Question", "Form", "Select", "End"]),
+  image: z.string().optional(),
 });
 
 export const QuestionStepDTOSchema = StepBaseDTOSchema.extend({
@@ -18,6 +19,8 @@ export const FormFieldDTOSchema = z.object({
   id: z.string(),
   type: z.enum(["text", "number", "photo", "button"]),
   label: z.string(),
+  placeholder: z.string().optional(),
+  unit: z.string().optional(),
 });
 
 export const FormStepDTOSchema = StepBaseDTOSchema.extend({

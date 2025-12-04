@@ -25,6 +25,7 @@ export type FlowStep = QuestionStep | FormStep | SelectStep | EndStep;
 export interface BaseStep {
   id: string;
   type: "Question" | "Form" | "Select" | "End";
+  image?: string | null;
 }
 
 export interface QuestionStep extends BaseStep {
@@ -39,6 +40,8 @@ export interface FormField {
   id: string;
   type: "text" | "number" | "photo" | "button";
   label: string;
+  placeholder?: string;
+  unit?: string;
 }
 
 export interface FormStep extends BaseStep {

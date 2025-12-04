@@ -41,8 +41,8 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-800 animate-pulse text-2xl text-center">
-        Loading audits…
+      <div className="fixed inset-0 flex items-center justify-center bg-muted/40 backdrop-blur-sm z-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
       </div>
     );
   }

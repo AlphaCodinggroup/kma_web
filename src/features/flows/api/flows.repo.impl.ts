@@ -62,6 +62,52 @@ export class FlowsHttpRepo implements FlowsRepo {
     const list = await this.list();
     return list.flows.find((f) => f.id === id) ?? null;
   }
+
+  async getPresignedUrl(fileName: string, fileType: string): Promise<{ uploadUrl: string; publicUrl: string }> {
+    const res = await fetch("/api/uploads/presigned", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName, fileType }),
+    });
+
+    if (!res.ok) {
+      throw new FlowsApiError("Failed to get presigned URL", res.status);
+    }
+
+    return (await res.json()) as { uploadUrl: string; publicUrl: string };
+  }
+
+  async uploadFile(uploadUrl: string, file: File): Promise<void> {
+    // Usamos el proxy local para evitar CORS en S3
+    const proxyUrl = `/api/uploads/proxy?url=${encodeURIComponent(uploadUrl)}`;
+
+    const res = await fetch(proxyUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    if (!res.ok) {
+      throw new FlowsApiError("Failed to upload file via proxy", res.status);
+    }
+  }
+
+  async update(id: FlowId, flow: Flow): Promise<Flow> {
+    const res = await fetch(`${INTERNAL_API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(flow),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new FlowsApiError(text || "Failed to update flow", res.status);
+    }
+
+    return (await res.json()) as Flow;
+  }
 }
 
 /** Instancia por defecto para inyección simple */

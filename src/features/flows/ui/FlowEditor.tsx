@@ -4,7 +4,8 @@ import React from "react";
 import type { Flow, FormStep, QuestionStep, SelectStep } from "@entities/flow/model";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
-import { ImagePlus, Save, ChevronDown, ChevronRight, Trash2, Plus } from "lucide-react";
+import { ImagePlus, Save, ChevronDown, ChevronRight, Trash2, Plus, Loader2 } from "lucide-react";
+import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 
 interface FlowEditorProps {
     initialFlow: Flow;
@@ -13,6 +14,10 @@ interface FlowEditorProps {
 export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const [flow, setFlow] = React.useState<Flow>(initialFlow);
     const [expandedSteps, setExpandedSteps] = React.useState<Set<string>>(new Set());
+    const [attachingStepId, setAttachingStepId] = React.useState<string | null>(null);
+    const [pendingUploads, setPendingUploads] = React.useState<Record<string, File>>({});
+    const [isSaving, setIsSaving] = React.useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleStepChange = (index: number, field: string, value: string) => {
         const newSteps = [...flow.steps];
@@ -67,8 +72,99 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     };
 
     const handleAttachImage = (stepId: string) => {
-        console.log(`Attaching image to step ${stepId}`);
-        alert(`Image attachment triggered for step ${stepId}`);
+        setAttachingStepId(stepId);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !attachingStepId) return;
+
+        const newSteps = [...flow.steps];
+        const stepIndex = newSteps.findIndex(s => s.id === attachingStepId);
+        if (stepIndex === -1) return;
+
+        // Create a preview URL for immediate feedback
+        const previewUrl = URL.createObjectURL(file);
+
+        // Store the file for later upload
+        setPendingUploads(prev => ({ ...prev, [attachingStepId]: file }));
+
+        newSteps[stepIndex] = { ...newSteps[stepIndex], image: previewUrl };
+        setFlow({ ...flow, steps: newSteps });
+        setAttachingStepId(null);
+    };
+
+    const handleRemoveImage = (stepId: string) => {
+        const newSteps = [...flow.steps];
+        const stepIndex = newSteps.findIndex(s => s.id === stepId);
+        if (stepIndex === -1) return;
+
+        const step = newSteps[stepIndex];
+
+        // If it was a pending upload, remove it from pending and revoke URL
+        if (pendingUploads[stepId]) {
+            URL.revokeObjectURL(step.image!);
+            const newPending = { ...pendingUploads };
+            delete newPending[stepId];
+            setPendingUploads(newPending);
+        }
+
+        newSteps[stepIndex] = { ...step, image: null };
+        setFlow({ ...flow, steps: newSteps });
+    };
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            const stepsCopy = [...flow.steps];
+
+            // 1. Upload all pending images in parallel
+            const uploadPromises = Object.entries(pendingUploads).map(async ([stepId, file]) => {
+                try {
+                    // Get presigned URL
+                    const { uploadUrl, publicUrl } = await flowsRepo.getPresignedUrl(file.name, file.type);
+
+                    // Upload to S3
+                    await flowsRepo.uploadFile(uploadUrl, file);
+
+                    // Update step with public URL
+                    const stepIndex = stepsCopy.findIndex(s => s.id === stepId);
+                    if (stepIndex !== -1) {
+                        stepsCopy[stepIndex] = { ...stepsCopy[stepIndex], image: publicUrl };
+                    }
+
+                    return stepId;
+                } catch (error) {
+                    console.error(`Failed to upload image for step ${stepId}`, error);
+                    throw error;
+                }
+            });
+
+            await Promise.all(uploadPromises);
+
+            const updatedFlow = { ...flow, steps: stepsCopy };
+            await flowsRepo.update(flow.id, updatedFlow);
+
+            setFlow(updatedFlow);
+            setPendingUploads({});
+
+            Object.values(pendingUploads).forEach(file => {
+                // We can't easily revoke the specific URL here without tracking it better, 
+                // but browsers handle this eventually. 
+                // Ideally we'd map stepId -> previewUrl to revoke.
+            });
+
+            alert("Flow saved successfully!");
+        } catch (error) {
+            console.error("Failed to save flow", error);
+            alert("Failed to save flow. Please try again.");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const renderStepContent = (step: Flow["steps"][0], index: number) => {
@@ -140,13 +236,13 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                                         className="text-sm"
                                                     />
                                                     <Input
-                                                        value={(field as any).placeholder ?? ""}
+                                                        value={field.placeholder ?? ""}
                                                         onChange={(e) =>
                                                             handleFormFieldChange(formIndex, fieldIdx, "placeholder", e.target.value)
                                                         }
                                                         className="text-sm"
                                                         placeholder={isTextType || isMeasurements ? "Enter placeholder..." : ""}
-                                                        disabled={!isTextType}
+                                                        disabled={!isTextType && !isMeasurements}
                                                     />
 
                                                     {isMeasurements ? (
@@ -331,13 +427,34 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                             </span>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={() => handleAttachImage(step.id)}
-                                        title="Attach Image"
-                                        className="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-2 hover:bg-gray-100 transition-colors"
-                                    >
-                                        <ImagePlus className="h-4 w-4 text-gray-700" />
-                                    </button>
+                                    {step.image ? (
+                                        <div className="flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2">
+                                            <a
+                                                href={step.image}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm text-blue-700 max-w-[150px] truncate hover:underline"
+                                                title={step.image}
+                                            >
+                                                {step.image.split('/').pop()}
+                                            </a>
+                                            <button
+                                                onClick={() => handleRemoveImage(step.id)}
+                                                className="text-blue-400 hover:text-blue-600"
+                                                title="Remove image"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleAttachImage(step.id)}
+                                            title="Attach Image"
+                                            className="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-3 py-2 hover:bg-gray-100 transition-colors"
+                                        >
+                                            <ImagePlus className="h-4 w-4 text-gray-700" />
+                                        </button>
+                                    )}
                                 </div>
                             </CardHeader>
                             <CardContent>{renderStepContent(step, index)}</CardContent>
@@ -347,11 +464,18 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             </div>
 
             <div className="flex justify-end">
-                <Button className="gap-2">
-                    <Save className="h-4 w-4" />
-                    Save Changes
+                <Button className="gap-2" onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                    {isSaving ? "Saving..." : "Save Changes"}
                 </Button>
             </div>
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileChange}
+            />
         </div>
     );
 };

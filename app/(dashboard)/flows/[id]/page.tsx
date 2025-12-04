@@ -13,8 +13,8 @@ export default function FlowEditorPage() {
 
     if (isLoading) {
         return (
-            <div className="p-8 text-center text-muted-foreground">
-                Loading flow...
+            <div className="fixed inset-0 flex items-center justify-center bg-muted/40 backdrop-blur-sm z-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
             </div>
         );
     }

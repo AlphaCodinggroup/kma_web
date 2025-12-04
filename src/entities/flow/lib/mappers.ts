@@ -29,6 +29,7 @@ function mapQuestionStep(dto: QuestionStepDTO): QuestionStep {
     yesNext: dto.yes_next ?? "",
     noNext: dto.no_next ?? "",
     barrierId: dto.barrier_id ?? "",
+    image: dto.image ?? "",
   };
 }
 
@@ -37,6 +38,8 @@ function mapFormField(dto: FormFieldDTO): FormStep["fields"][number] {
     id: dto.id,
     type: dto.type, // "text" | "number" | "photo" | "button"
     label: dto.label,
+    unit: dto.unit ?? "",
+    placeholder: dto.placeholder ?? "",
   };
 }
 
