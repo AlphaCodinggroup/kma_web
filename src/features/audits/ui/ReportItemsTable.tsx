@@ -17,11 +17,11 @@ import { Button } from "@shared/ui/controls";
 
 export interface ReportItemsTableProps {
   items: AuditFinding[];
-  // onAddComment?: (row: ReportBarrierRowVM) => void;
+  onAddComment: (finding: AuditFinding) => void;
   className?: string;
-  loading?: boolean;
-  error?: boolean;
-  onError?: () => void;
+  loading: boolean;
+  error: boolean;
+  onError: () => void;
 }
 
 type PhotoInput =
@@ -122,7 +122,7 @@ function PhotosColumn({ photos }: { photos: PhotoInput[] }) {
 
 const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
   items,
-  // onAddComment,
+  onAddComment,
   className,
   loading = false,
   error = false,
@@ -250,7 +250,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                     <RowActionButton
                       icon={MessageSquare}
                       ariaLabel="Delete project"
-                      onClick={undefined}
+                      onClick={() => onAddComment(r)}
                       size="md"
                     />
                   </TableCell>

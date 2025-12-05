@@ -14,6 +14,7 @@ import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
 import { useCompleteReviewAuditMutation } from "../lib/hooks/useCompleteReviewAuditMutation";
+import { useAuditComments } from "../lib/hooks/useAuditComments";
 
 export type ReportSeverity = "high" | "medium" | "low";
 
@@ -69,6 +70,15 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const status = reviewDetail?.status;
   const hasSidebar = Boolean(selectedCommentTarget);
 
+  const {
+    isLoading: isCommentsLoading,
+    isError: isCommentsError,
+    refetch: refetchComments,
+  } = useAuditComments({
+    auditId: hasSidebar ? id : "",
+    stepId: selectedCommentTarget?.id,
+  });
+
   const handleChangeTab = useCallback((tab: AuditEditTab) => {
     setInternalTab(tab);
   }, []);
@@ -77,8 +87,23 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     setInternalFilter((prev) => (prev === "no" ? "all" : "no"));
   }, []);
 
-  const handleCloseSidebar = useCallback(() => {
-    setSelectedCommentTarget(undefined);
+  const handleCloseSidebar = useCallback(
+    () => setSelectedCommentTarget(undefined),
+    []
+  );
+
+  /**
+   * Abre el sidebar de comentarios para un ítem del reporte.
+   * Usamos questionCode como stepId para el endpoint de comments.
+   */
+  const handleOpenCommentSidebar = useCallback((finding: AuditFinding) => {
+    setSelectedCommentTarget({
+      id: finding.questionCode,
+      title:
+        finding.barrierStatement ??
+        finding.proposedMitigation ??
+        "Selected item",
+    });
   }, []);
 
   const handleExport = useCallback(async () => {
@@ -160,15 +185,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
                 loading={isLoading}
                 error={isError}
                 onError={refetchReviewDetail}
-                // onAddComment={(row) => {
-                //   setSelectedCommentTarget({
-                //     id: row.id,
-                //     title:
-                //       (row as any).barrierStatement ??
-                //       (row as any).title ??
-                //       "Selected item",
-                //   });
-                // }}
+                onAddComment={handleOpenCommentSidebar}
               />
             </div>
 
@@ -176,7 +193,10 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
               <CommentsSidebar
                 selected={selectedCommentTarget}
                 onClose={handleCloseSidebar}
-                className="md:w-[380px]"
+                className="md:w-full"
+                isLoading={isCommentsLoading}
+                isError={isCommentsError}
+                onError={refetchComments}
               />
             )}
           </div>

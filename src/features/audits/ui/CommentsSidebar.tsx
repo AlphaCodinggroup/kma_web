@@ -5,6 +5,8 @@ import { cn } from "@shared/lib/cn";
 import { MessageSquare, X, Trash2 } from "lucide-react";
 import { Button } from "@shared/ui/controls";
 import RowActionButton from "@shared/ui/row-action-button";
+import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
 
 export interface CommentTarget {
   id: string;
@@ -19,14 +21,20 @@ type LocalComment = {
 
 export interface CommentsSidebarProps {
   selected?: CommentTarget | undefined;
-  onClose?: (() => void) | undefined;
+  onClose: () => void;
   className?: string;
+  isLoading: boolean;
+  isError: boolean;
+  onError: () => void; // usado como handler de "Retry"
 }
 
 const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
   selected,
   onClose,
   className,
+  isLoading,
+  isError,
+  onError,
 }) => {
   if (!selected) return null;
 
@@ -41,11 +49,13 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
   const handlePost = () => {
     const text = value.trim();
     if (!text) return;
+
     const newComment: LocalComment = {
       id: `${selected!.id}-${Date.now()}`,
       text,
       createdAt: new Date().toISOString(),
     };
+
     setComments((prev) => [newComment, ...prev]);
     setValue("");
   };
@@ -82,9 +92,17 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
       </header>
 
       <div className="p-4 sm:p-5">
-        {/* Lista de comentarios */}
+        {/* Lista de comentarios / estados de carga / error */}
         <div>
-          {comments.length === 0 ? (
+          {isLoading ? (
+            <Loading text="Loading comments…" />
+          ) : isError ? (
+            <Retry
+              text="Failed to load comments. Please try again."
+              textButton="Retry"
+              onClick={onError}
+            />
+          ) : comments.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
               <MessageSquare className="h-8 w-8 text-muted-foreground/60" />
               <p className="max-w-[24ch] text-sm text-muted-foreground">
@@ -104,7 +122,7 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
 
                     <RowActionButton
                       icon={Trash2}
-                      ariaLabel="Delete project"
+                      ariaLabel="Delete comment"
                       onClick={() => handleDelete(c.id)}
                       variant="danger"
                       size="md"

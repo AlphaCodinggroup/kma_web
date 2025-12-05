@@ -1,5 +1,7 @@
 export type IsoDateString = string;
 
+export type AuditId = string;
+
 export type AuditStatus =
   | "draft_report_pending_review"
   | "draft_report_in_review"
@@ -7,7 +9,7 @@ export type AuditStatus =
   | "completed";
 
 export interface Audit {
-  id: string;
+  id: AuditId;
   flowId: string;
   version: number;
   projectId: string | null;
