@@ -1,7 +1,7 @@
 import type { FlowsRepo } from "@entities/flow/api/flows.repo";
 import type { Flow, FlowId, FlowList } from "@entities/flow/model";
-import { parseFlowListDTO } from "./flows.dto";
-import { mapFlowListDTO } from "@entities/flow/lib/mappers";
+import { parseFlowListDTO, FlowDTOSchema } from "./flows.dto";
+import { mapFlowListDTO, mapFlowDTO, mapFlowToDTO } from "@entities/flow/lib/mappers";
 
 /**
  * Error normalizado de API.
@@ -56,11 +56,73 @@ export class FlowsHttpRepo implements FlowsRepo {
   }
 
   async getById(id: FlowId): Promise<Flow | null> {
-    // La API actual expone solo GET /flows (listado).
-    // Estrategia: reutilizar list() y seleccionar el flow por id.
-    // Si en el futuro se agrega GET /flows/:id, reemplazar por llamada directa.
-    const list = await this.list();
-    return list.flows.find((f) => f.id === id) ?? null;
+    const res = await fetch(`${INTERNAL_API_URL}/${id}`, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      if (res.status === 404) {
+        return null;
+      }
+      if (res.status === 401) {
+        throw new FlowsApiError("Unauthorized", 401);
+      }
+      const text = await res.text();
+      throw new FlowsApiError(text || "Upstream error", res.status);
+    }
+
+    const raw = (await res.json()) as unknown;
+    const dto = FlowDTOSchema.parse(raw);
+    return mapFlowDTO(dto);
+  }
+
+  async getPresignedUrl(fileName: string, fileType: string): Promise<{ uploadUrl: string; publicUrl: string }> {
+    const res = await fetch("/api/uploads/presigned", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName, fileType }),
+    });
+
+    if (!res.ok) {
+      throw new FlowsApiError("Failed to get presigned URL", res.status);
+    }
+
+    return (await res.json()) as { uploadUrl: string; publicUrl: string };
+  }
+
+  async uploadFile(uploadUrl: string, file: File): Promise<void> {
+    const encodedUrl = btoa(uploadUrl);
+    const proxyUrl = `/api/uploads/proxy?url=${encodedUrl}`;
+
+    const res = await fetch(proxyUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    if (!res.ok) {
+      throw new FlowsApiError("Failed to upload file via proxy", res.status);
+    }
+  }
+
+  async update(id: FlowId, flow: Flow): Promise<Flow> {
+    const dto = mapFlowToDTO(flow);
+    const res = await fetch(`${INTERNAL_API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dto),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new FlowsApiError(text || "Failed to update flow", res.status);
+    }
+
+    return (await res.json()) as Flow;
   }
 }
 

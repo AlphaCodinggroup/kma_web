@@ -7,8 +7,13 @@ import {
   mapAuditDtoToDomain,
   type AuditDTO,
 } from "@entities/audit/lib/mappers";
+import {
+  mapAuditDetailDTOToDomain,
+  type AuditDetailDTO,
+} from "@entities/audit/lib/audit-detail.mappers";
 import type { AuditType } from "@entities/audit/model";
 import type { CompleteReviewResult } from "@entities/audit/model/completeReview";
+import type { AuditDetail } from "@entities/audit/model/audit-detail";
 
 export class AuditsApiError extends Error {
   status?: number;
@@ -31,6 +36,16 @@ function extractDtos(data: unknown): AuditDTO[] {
   if (Array.isArray(d?.items)) return d.items as AuditDTO[];
   if (Array.isArray(d?.data)) return d.data as AuditDTO[];
   return [];
+}
+
+function extractDetailDto(data: unknown): AuditDetailDTO | null {
+  const d = data as any;
+  if (d && typeof d === "object") {
+    if (d.audit && typeof d.audit === "object") return d.audit as AuditDetailDTO;
+    if (d.data && typeof d.data === "object") return d.data as AuditDetailDTO;
+    if (d.id && d.status) return d as AuditDetailDTO;
+  }
+  return null;
 }
 
 // Helper común para manejar errores HTTP de forma consistente
@@ -68,6 +83,28 @@ async function ensureOk(res: Response): Promise<void> {
 }
 
 class AuditRepoHttp implements AuditRepo {
+  async getById(auditId: string): Promise<AuditDetail> {
+    const res = await fetch(
+      `${INTERNAL_API_URL}/${encodeURIComponent(auditId)}`,
+      {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      }
+    );
+
+    await ensureOk(res);
+
+    const data = await res.json();
+    const dto = extractDetailDto(data);
+
+    if (!dto) {
+      throw new AuditsApiError("Invalid audit detail response", res.status);
+    }
+
+    return mapAuditDetailDTOToDomain(dto);
+  }
+
   async list(): Promise<AuditType> {
     const res = await fetch(INTERNAL_API_URL, {
       method: "GET",

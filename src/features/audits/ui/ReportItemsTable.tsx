@@ -10,10 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import { Eye, EyeOff, Image as ImageIcon, MessageSquare } from "lucide-react";
+import { Eye, EyeOff, MessageSquare } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { Button } from "@shared/ui/controls";
+import { Loading } from "@shared/ui/Loading";
 
 export interface ReportItemsTableProps {
   items: AuditFinding[];
@@ -57,16 +58,6 @@ function PhotosColumn({ photos }: { photos: PhotoInput[] }) {
   }, []);
 
   const srcs = useMemo<string[]>(() => extractPhotoUrls(photos), [photos]);
-
-  if (!srcs.length) {
-    return (
-      <div className="relative h-[160px] w-[260px] overflow-hidden rounded-xl border bg-muted/30">
-        <div className="flex h-full items-center justify-center">
-          <ImageIcon className="h-6 w-6 opacity-60" aria-hidden="true" />
-        </div>
-      </div>
-    );
-  }
 
   const stack = srcs.slice(0, 3);
   return (
@@ -144,13 +135,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
     [rows]
   );
 
-  if (loading) {
-    return (
-      <div className="mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-800 animate-pulse text-2xl text-center">
-        Loading audits…
-      </div>
-    );
-  }
+  if (loading) return <Loading text="Loading audits…" />;
 
   if (error) {
     return (

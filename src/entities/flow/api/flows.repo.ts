@@ -18,6 +18,21 @@ export interface FlowsRepo {
    * salvo que la API provea un GET /flows/:id (entonces se usa ese endpoint).
    */
   getById(id: FlowId): Promise<Flow | null>;
+
+  /**
+   * Obtiene una URL presignada para subir archivos.
+   */
+  getPresignedUrl(fileName: string, fileType: string): Promise<{ uploadUrl: string; publicUrl: string }>;
+
+  /**
+   * Sube un archivo a la URL presignada.
+   */
+  uploadFile(uploadUrl: string, file: File): Promise<void>;
+
+  /**
+   * Actualiza un Flow existente.
+   */
+  update(id: FlowId, flow: Flow): Promise<Flow>;
 }
 
 /** Identificador (token) útil para DI si usás contenedores o factories. */

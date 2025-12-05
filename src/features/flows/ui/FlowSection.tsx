@@ -48,27 +48,3 @@ export const FlowsSection: React.FC<FlowsSectionProps> = ({
 };
 
 export default FlowsSection;
-
-/** --------- Helper de demo opcional ----------
- * Podés eliminarlo cuando conectemos API real.
- */
-export const DUMMY_FLOWS_SECTION_ITEMS: FlowItemVM[] = [
-  {
-    id: "fire-safety",
-    title: "Fire Safety Audit Flow",
-    description: "Comprehensive fire safety inspection checklist",
-    questionsCount: 5,
-  },
-  {
-    id: "emergency-exits",
-    title: "Emergency Exits Verification",
-    description: "Check signage, lighting and obstruction",
-    questionsCount: 4,
-  },
-  {
-    id: "equipment-room",
-    title: "Equipment Room Compliance",
-    description: "Ventilation, access and maintenance",
-    questionsCount: 6,
-  },
-];

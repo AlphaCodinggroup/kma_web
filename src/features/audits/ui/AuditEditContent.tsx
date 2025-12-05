@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { cn } from "@shared/lib/cn";
 import AuditEditTabsBar, { type AuditEditTab } from "./AuditEditTabsBar";
 import AuditQuestionsList, { type QuestionItemVM } from "./AuditQuestionsList";
@@ -14,6 +14,8 @@ import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
 import { useCompleteReviewAuditMutation } from "../lib/hooks/useCompleteReviewAuditMutation";
+import { Loading } from "@shared/ui/Loading";
+import type { AuditDetail } from "@entities/audit/model/audit-detail";
 
 export type ReportSeverity = "high" | "medium" | "low";
 
@@ -28,7 +30,8 @@ export interface ReportItemVM {
 
 export interface AuditEditContentProps {
   id: string;
-  questions: QuestionItemVM[];
+  auditDetail: AuditDetail | undefined;
+  isAuditDetailLoading?: boolean;
 }
 
 type CommentTarget = {
@@ -41,7 +44,8 @@ const POLL_MAX_ATTEMPTS = 15; // ~30 segundos
 
 const AuditEditContent: React.FC<AuditEditContentProps> = ({
   id,
-  questions,
+  auditDetail,
+  isAuditDetailLoading,
 }) => {
   const [internalTab, setInternalTab] = useState<AuditEditTab>("questions");
   const [internalFilter, setInternalFilter] =
@@ -68,6 +72,11 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const findings: AuditFinding[] = reviewDetail?.findings ?? [];
   const status = reviewDetail?.status;
   const hasSidebar = Boolean(selectedCommentTarget);
+  const questionsToRender = useMemo(
+    () => (auditDetail?.questions ?? []) as unknown as QuestionItemVM[],
+    [auditDetail?.questions]
+  );
+  const showLoadingOverlay = isLoading || isAuditDetailLoading;
 
   const handleChangeTab = useCallback((tab: AuditEditTab) => {
     setInternalTab(tab);
@@ -127,6 +136,8 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     }
   }, [id, status, mutateAsync, refetchReviewDetail, refetchReport]);
 
+  if (showLoadingOverlay) return <Loading />;
+
   return (
     <div className="space-y-4 sm:space-y-5" data-testid="audit-edit-content">
       <AuditEditTabsBar activeTab={internalTab} onChangeTab={handleChangeTab} />
@@ -138,7 +149,10 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             onToggleFilter={handleToggleFilter}
             className="mt-2"
           />
-          <AuditQuestionsList items={questions} filterMode={internalFilter} />
+          <AuditQuestionsList
+            items={questionsToRender}
+            filterMode={internalFilter}
+          />
         </>
       ) : (
         <section className="w-full px-4 sm:px-6 lg:px-8" aria-live="polite">
