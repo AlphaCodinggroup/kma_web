@@ -1,11 +1,9 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import type { Route } from "next";
-import { Eye, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { cn } from "@shared/lib/cn";
-import { Badge } from "@shared/ui/badge";
+import { StatusBadge } from "@shared/ui/badge";
 import {
   Table,
   TableBody,
@@ -15,42 +13,48 @@ import {
   TableRow,
 } from "@shared/ui/table";
 import RowActionButton from "@shared/ui/row-action-button";
-
-/** ViewModel mínimo para la tabla (visual-only). */
-export interface ReportRowVM {
-  id: string; // e.g. RPT-001
-  auditId: string; // para link a /audits/[id]/report
-  projectName: string;
-  auditor: string;
-  reviewer: string;
-  generatedDate: string; // ISO string
-  totalFindings: number;
-  totalCost: number; // monto total
-}
+import type { ReportListItem } from "@entities/report/model/report-list";
+import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
+import { formatIsoToYmdHm } from "@shared/lib/date";
 
 export interface ReportsTableProps {
-  items: ReportRowVM[];
+  items: ReportListItem[];
   className?: string;
-  onView?: (auditId: string) => void;
-  onDownload?: (reportId: string) => void;
-  /** Limitar altura para scroll interno (opcional) */
   bodyMaxHeightClassName?: string;
   emptyMessage?: string;
+  isLoading: boolean;
+  isError: boolean;
+  isDownloading: boolean;
+  onDownload: (id: string) => void;
+  onError: () => void;
 }
 
 /**
- * Tabla de Reports: columnas
- * [Report ID, Project Name, Auditor, Reviewer, Generated Date, Findings, Total Cost, Actions]
+ * Tabla de Reports: solo columnas requeridas.
  */
 const ReportsTable: React.FC<ReportsTableProps> = ({
   items,
   className,
-  onView,
-  onDownload,
   bodyMaxHeightClassName,
   emptyMessage = "No reports found",
+  isError,
+  isLoading,
+  isDownloading,
+  onDownload,
+  onError,
 }) => {
   const hasItems = items.length > 0;
+
+  if (isLoading) return <Loading text="Loading reports" />;
+
+  if (isError)
+    return (
+      <Retry
+        text="Failed to load reports. Please try again."
+        onClick={onError}
+      />
+    );
 
   return (
     <div
@@ -60,16 +64,12 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
       )}
     >
       <div className={cn("overflow-auto", bodyMaxHeightClassName)}>
-        <Table className="min-w-[960px]">
+        <Table className="min-w-[720px]">
           <TableHeader>
             <TableRow className="bg-white">
-              <TableHead className="w-[120px]">Report ID</TableHead>
-              <TableHead>Project Name</TableHead>
-              <TableHead>Auditor</TableHead>
-              <TableHead>Reviewer</TableHead>
-              <TableHead>Generated Date</TableHead>
-              <TableHead className="text-right">Findings</TableHead>
-              <TableHead className="text-right">Total Cost</TableHead>
+              <TableHead>Report</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created At</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -78,7 +78,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
             {!hasItems ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={4}
                   className="py-10 text-center text-sm text-gray-500"
                 >
                   {emptyMessage}
@@ -86,52 +86,30 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               </TableRow>
             ) : (
               items.map((r) => {
-                const viewHref = `/audits/${r.auditId}/report` as Route;
                 return (
                   <TableRow key={r.id}>
-                    <TableCell className="font-medium">{r.id}</TableCell>
-                    <TableCell className="truncate">{r.projectName}</TableCell>
-                    <TableCell>{r.auditor}</TableCell>
-                    <TableCell>{r.reviewer}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex flex-col">
+                        <span className="truncate">{r.reportName ?? "—"}</span>
+                      </div>
+                    </TableCell>
                     <TableCell>
-                      {new Date(r.generatedDate).toLocaleDateString()}
+                      <StatusBadge status={r.status} />
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Badge
-                        variant="soft"
-                        tone="neutral"
-                        className="font-medium"
-                      >
-                        {r.totalFindings}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      ${r.totalCost.toLocaleString()}
+                    <TableCell>
+                      {formatIsoToYmdHm(r.createdAt) ?? "—"}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {/* View */}
-                        <Link href={viewHref}>
+                        {r.reportUrl && (
                           <RowActionButton
-                            icon={Eye}
-                            ariaLabel="Delete project"
-                            onClick={(e) => {
-                              if (onView) {
-                                e.preventDefault();
-                                onView(r.auditId);
-                              }
-                            }}
+                            icon={Download}
+                            ariaLabel="Download report"
+                            onClick={() => onDownload(r.id)}
                             size="md"
+                            disabled={isDownloading}
                           />
-                        </Link>
-
-                        {/* Download */}
-                        <RowActionButton
-                          icon={Download}
-                          ariaLabel="Delete project"
-                          onClick={() => onDownload?.(r.id)}
-                          size="md"
-                        />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
