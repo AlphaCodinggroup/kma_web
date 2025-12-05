@@ -2,13 +2,13 @@
 
 import React from "react";
 import { cn } from "@shared/lib/cn";
+import { formatIsoToYmdHm } from "@shared/lib/date";
 
 export interface AuditInfoPanelProps {
   auditDate: string;
   completedDate?: string | null;
   className?: string;
   containerPaddingClassName?: string;
-  formatDate?: (d: string | Date) => string;
   ariaLabelledById?: string;
 }
 
@@ -26,19 +26,8 @@ export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
   completedDate,
   className,
   containerPaddingClassName = "px-4 sm:px-6 lg:px-8",
-  formatDate,
   ariaLabelledById,
 }) => {
-  const fmt = (d: string | Date) =>
-    formatDate
-      ? formatDate(d)
-      : typeof d === "string"
-      ? d
-      : d.toLocaleDateString();
-
-  const auditIso = toIso(auditDate);
-  const completedIso = completedDate != null ? toIso(completedDate) : undefined;
-
   return (
     <section
       className={cn("w-full", containerPaddingClassName, className)}
@@ -56,11 +45,7 @@ export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
               Audit Date
             </dt>
             <dd className="mt-1 text-sm" data-testid="audit-date">
-              {auditIso ? (
-                <time dateTime={auditIso}>{fmt(auditDate)}</time>
-              ) : (
-                fmt(auditDate)
-              )}
+              {formatIsoToYmdHm(auditDate)}
             </dd>
           </div>
 
@@ -69,13 +54,7 @@ export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
               Completed Date
             </dt>
             <dd className="mt-1 text-sm" data-testid="completed-date">
-              {completedDate == null || completedDate === "" ? (
-                <span aria-hidden="true">-</span>
-              ) : completedIso ? (
-                <time dateTime={completedIso}>{fmt(completedDate)}</time>
-              ) : (
-                fmt(completedDate as string | Date)
-              )}
+              {formatIsoToYmdHm(completedDate)}
             </dd>
           </div>
         </dl>

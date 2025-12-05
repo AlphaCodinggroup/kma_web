@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import { Eye, EyeOff, Image as ImageIcon, MessageSquare } from "lucide-react";
+import { Eye, EyeOff, MessageSquare } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { Button } from "@shared/ui/controls";
@@ -58,16 +58,6 @@ function PhotosColumn({ photos }: { photos: PhotoInput[] }) {
   }, []);
 
   const srcs = useMemo<string[]>(() => extractPhotoUrls(photos), [photos]);
-
-  if (!srcs.length) {
-    return (
-      <div className="relative h-[160px] w-[260px] overflow-hidden rounded-xl border bg-muted/30">
-        <div className="flex h-full items-center justify-center">
-          <ImageIcon className="h-6 w-6 opacity-60" aria-hidden="true" />
-        </div>
-      </div>
-    );
-  }
 
   const stack = srcs.slice(0, 3);
   return (
@@ -137,7 +127,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
         (acc, r) =>
           acc +
           (typeof r.calculatedCost === "number" &&
-            Number.isFinite(r.calculatedCost)
+          Number.isFinite(r.calculatedCost)
             ? r.calculatedCost
             : 0),
         0
@@ -209,7 +199,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                   {/* Code References */}
                   <TableCell>
                     {typeof r.adasReference === "string" &&
-                      r.adasReference.trim() ? (
+                    r.adasReference.trim() ? (
                       <ul className="list-inside list-disc space-y-1 text-sm">
                         <li>{r.adasReference.trim()}</li>
                       </ul>
@@ -235,7 +225,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                   {/* Cost */}
                   <TableCell className="text-left font-semibold">
                     {typeof r.calculatedCost === "number" &&
-                      Number.isFinite(r.calculatedCost)
+                    Number.isFinite(r.calculatedCost)
                       ? r.calculatedCost
                       : "—"}
                   </TableCell>

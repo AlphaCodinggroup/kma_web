@@ -11,9 +11,11 @@ import type { AuditStatus } from "@entities/audit/model";
 
 export interface AuditEditHeaderProps {
   title: string;
-  auditId: string;
   auditor: string;
   status: AuditStatus;
+  flowName?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
   backHref?: Route;
   backLabel?: string;
   onBack?: () => void;
@@ -25,7 +27,6 @@ export interface AuditEditHeaderProps {
 
 export const AuditEditHeader: React.FC<AuditEditHeaderProps> = ({
   title,
-  auditId,
   auditor,
   status,
   backHref,
@@ -35,9 +36,18 @@ export const AuditEditHeader: React.FC<AuditEditHeaderProps> = ({
   containerPaddingClassName = "px-4 sm:px-6 lg:px-8",
   rightActions,
   headingId = "audit-edit-heading",
+  flowName,
+  createdAt,
+  updatedAt,
 }) => {
   const router = useRouter();
   const label = backLabel ?? (backHref ? "Back" : "Go back");
+  const fmtDate = (value?: string | null) => {
+    if (!value) return null;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    return d.toLocaleDateString();
+  };
 
   const handleBack = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onBack) {
@@ -83,8 +93,6 @@ export const AuditEditHeader: React.FC<AuditEditHeaderProps> = ({
               {title}
             </h1>
             <p className="truncate text-base text-muted-foreground">
-              <span className="font-medium">Audit ID:</span> {auditId}
-              <span className="mx-2">•</span>
               <span className="font-medium">Auditor:</span> {auditor}
             </p>
           </div>
