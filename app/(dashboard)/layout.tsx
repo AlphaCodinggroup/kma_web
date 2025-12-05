@@ -20,7 +20,7 @@ const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
           <AppHeader />
           <div className="flex h-[calc(100dvh-64px)] min-h-0">
             <SidebarNav />
-            <main className="flex-1 overflow-y-hidden">
+            <main className="flex-1 overflow-y-auto">
               <div className="mx-auto p-6">{children}</div>
             </main>
           </div>

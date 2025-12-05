@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Eye, GitBranch } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button } from "@shared/ui/controls";
+
+import Link from "next/link";
 
 export interface FlowCardProps {
   title: string;
@@ -13,6 +15,7 @@ export interface FlowCardProps {
   className?: string;
   onViewQuestions?: () => void;
   "data-testid"?: string;
+  flowId: string;
 }
 
 export const FlowCard: React.FC<FlowCardProps> = ({
@@ -22,6 +25,7 @@ export const FlowCard: React.FC<FlowCardProps> = ({
   className,
   onViewQuestions,
   "data-testid": dataTestId,
+  flowId,
 }) => {
   return (
     <Card
@@ -29,7 +33,6 @@ export const FlowCard: React.FC<FlowCardProps> = ({
       className={cn(
         "relative h-full overflow-hidden rounded-2xl border bg-white",
         "shadow-[0_1px_2px_rgba(0,0,0,0.06)]",
-        // La card es un contenedor flex-col para poder empujar el botón al fondo
         "flex flex-col",
         className
       )}
@@ -40,16 +43,16 @@ export const FlowCard: React.FC<FlowCardProps> = ({
             {title}
           </CardTitle>
 
-          {/* Ícono discreto arriba derecha */}
-          <div
-            aria-label="Flow actions"
+          <Link
+            href={`/flows/${flowId}` as any}
+            aria-label="Edit flow"
             className={cn(
               "absolute right-0 top-0 inline-flex h-6 w-6 items-center justify-center",
               "text-muted-foreground hover:text-foreground"
             )}
           >
-            <GitBranch className="h-5 w-5" stroke="#6a7282" />
-          </div>
+            <Pencil className="h-5 w-5 cursor-pointer" stroke="#6a7282" />
+          </Link>
         </div>
 
         {description ? (
