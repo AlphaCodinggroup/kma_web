@@ -7,6 +7,7 @@ pnpm-debug.log*
 *.tsbuildinfo
 package-lock.json
 pnpm-lock.yaml
+AGENTS.md
 
 # Next.js
 .next/
