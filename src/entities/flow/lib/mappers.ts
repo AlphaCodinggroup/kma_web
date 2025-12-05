@@ -115,3 +115,90 @@ export function mapFlowListDTO(dto: FlowListDTO): FlowList {
     offset: dto.offset,
   };
 }
+
+/** ------------------------
+ *  Flow: Dominio -> DTO
+ *  -----------------------*/
+function mapQuestionStepToDTO(step: QuestionStep): QuestionStepDTO {
+  return {
+    id: step.id,
+    type: "Question",
+    text: step.text,
+    yes_next: step.yesNext || undefined,
+    no_next: step.noNext || undefined,
+    barrier_id: step.barrierId || undefined,
+    image: step.image || undefined,
+  };
+}
+
+function mapFormFieldToDTO(field: FormStep["fields"][number]): FormFieldDTO {
+  return {
+    id: field.id,
+    type: field.type,
+    label: field.label,
+    unit: field.unit || undefined,
+    placeholder: field.placeholder || undefined,
+  };
+}
+
+function mapFormStepToDTO(step: FormStep): FormStepDTO {
+  return {
+    id: step.id,
+    type: "Form",
+    title: step.title,
+    next: step.next || undefined,
+    barrier_id: step.barrierId || undefined,
+    fields: step.fields.map(mapFormFieldToDTO),
+    image: step.image || undefined,
+  };
+}
+
+function mapSelectStepToDTO(step: SelectStep): SelectStepDTO {
+  return {
+    id: step.id,
+    type: "Select",
+    title: step.title || undefined,
+    text: step.text || undefined,
+    options: step.options.map((o) => ({ label: o.label, next: o.next })),
+    next: step.next || undefined,
+    image: step.image || undefined,
+  };
+}
+
+function mapEndStepToDTO(step: EndStep): EndStepDTO {
+  return {
+    id: step.id,
+    type: "End",
+    image: step.image || undefined,
+  };
+}
+
+export function mapFlowStepToDTO(step: FlowStep): FlowStepDTO {
+  switch (step.type) {
+    case "Question":
+      return mapQuestionStepToDTO(step);
+    case "Form":
+      return mapFormStepToDTO(step);
+    case "Select":
+      return mapSelectStepToDTO(step);
+    case "End":
+      return mapEndStepToDTO(step);
+    default: {
+      const _exhaustive: never = step;
+      return _exhaustive;
+    }
+  }
+}
+
+export function mapFlowToDTO(flow: Flow): FlowDTO {
+  return {
+    id: flow.id,
+    title: flow.title,
+    description: flow.description || undefined,
+    steps: flow.steps.map(mapFlowStepToDTO),
+    flow_type: flow.flowType || undefined,
+    version: flow.version,
+    is_active: flow.isActive,
+    updated_at: flow.updatedAt,
+  };
+}

@@ -1,30 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs"; // por las dudas, para usar Buffer
+
 export async function PUT(req: NextRequest) {
     const encodedUrl = req.nextUrl.searchParams.get("url");
-    const targetUrl = encodedUrl ? Buffer.from(encodedUrl, "base64").toString("utf8") : null;
+    const targetUrl = encodedUrl
+        ? Buffer.from(encodedUrl, "base64").toString("utf8")
+        : null;
 
     if (!targetUrl) {
-        return NextResponse.json(
-            { message: "Missing url" },
-            { status: 400 }
-        );
+        return NextResponse.json({ message: "Missing url" }, { status: 400 });
     }
 
     try {
-        // Forward the request body (file stream) directly to S3
-        // We preserve the Content-Type header from the client request
-        const contentType = req.headers.get("content-type") || "application/octet-stream";
+        const contentType =
+            req.headers.get("content-type") ?? "application/octet-stream";
+
+        const bodyArrayBuffer = await req.arrayBuffer();
+        const body = Buffer.from(bodyArrayBuffer);
+        const contentLength = String(body.byteLength);
 
         const res = await fetch(targetUrl, {
             method: "PUT",
-            body: req.body,
+            body,
             headers: {
                 "Content-Type": contentType,
+                "Content-Length": contentLength,
             },
-            // Important: prevent Next.js from parsing the body or caching
-            // @ts-ignore - duplex is needed for streaming bodies in node fetch
-            duplex: "half",
             cache: "no-store",
         });
 
@@ -40,6 +42,9 @@ export async function PUT(req: NextRequest) {
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (err) {
         console.error("[api/uploads/proxy] Proxy error:", err);
-        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json(
+            { message: "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }

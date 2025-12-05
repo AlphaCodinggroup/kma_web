@@ -1,12 +1,13 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { PublicEnv, serverEnv } from "@shared/config/env";
+import { NextRequest } from "next/server";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(req: NextRequest, { params }: RouteContext) {
+export async function GET(_: NextRequest, { params }: RouteContext) {
   const { cookies: cookieCfg } = serverEnv();
 
   const cookieStore = await cookies();
@@ -17,16 +18,15 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
   }
 
   const { id } = await params;
-  const facilityId = id;
 
-  if (!facilityId) {
+  if (!id) {
     return NextResponse.json(
-      { message: "Facility id is required" },
+      { message: "Flow id is required" },
       { status: 400 }
     );
   }
 
-  const upstreamUrl = `${PublicEnv.apiBaseUrl}/facilities/${facilityId}`;
+  const upstreamUrl = `${PublicEnv.apiBaseUrl}/flows/${id}`;
 
   try {
     const res = await fetch(upstreamUrl, {
@@ -76,34 +76,34 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
   }
 
   const { id } = await params;
-  const facilityId = id;
 
-  if (!facilityId) {
+  if (!id) {
     return NextResponse.json(
-      { message: "Facility id is required" },
+      { message: "Flow id is required" },
       { status: 400 }
     );
   }
 
-  let body: unknown;
+  let body;
   try {
     body = await req.json();
-  } catch {
+  } catch (e) {
     return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
   }
 
-  const upstreamUrl = `${PublicEnv.apiBaseUrl}/facilities/${facilityId}`;
+  console.log(JSON.stringify(body, null, 2));
+
+  const upstreamUrl = `${PublicEnv.apiBaseUrl}/flows/${id}`;
 
   try {
     const res = await fetch(upstreamUrl, {
       method: "PUT",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
+        Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
-      cache: "no-store",
     });
 
     const contentType = res.headers.get("content-type") ?? "";
@@ -114,8 +114,8 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       }
 
       if (contentType.includes("application/json")) {
-        const errorBody = await res.json();
-        return NextResponse.json(errorBody, { status: res.status });
+        const errBody = await res.json();
+        return NextResponse.json(errBody, { status: res.status });
       }
 
       const text = await res.text();
@@ -123,84 +123,12 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
         { message: text || "Upstream error" },
         { status: res.status }
       );
-    }
-
-    if (contentType.includes("application/json")) {
-      const data = await res.json();
-      return NextResponse.json(data, { status: res.status });
-    }
-
-    return NextResponse.json(null, { status: res.status });
-  } catch (err) {
-    console.error("[api/facilities/:id] upstream PUT error:", err);
-    return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
-  }
-}
-
-export async function DELETE(req: NextRequest, { params }: RouteContext) {
-  const { cookies: cookieCfg } = serverEnv();
-
-  const cookieStore = await cookies();
-  const token = cookieStore.get(cookieCfg.accessName)?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  const { id } = await params;
-  const facilityId = id;
-
-  if (!facilityId) {
-    return NextResponse.json(
-      { message: "Facility id is required" },
-      { status: 400 }
-    );
-  }
-
-  const upstreamUrl = `${PublicEnv.apiBaseUrl}/facilities/${facilityId}`;
-
-  try {
-    const res = await fetch(upstreamUrl, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
-
-    const contentType = res.headers.get("content-type") ?? "";
-
-    if (!res.ok) {
-      if (res.status === 401) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-      }
-
-      if (contentType.includes("application/json")) {
-        const errorBody = await res.json();
-        return NextResponse.json(errorBody, { status: res.status });
-      }
-
-      const text = await res.text();
-      return NextResponse.json(
-        { message: text || "Upstream error" },
-        { status: res.status }
-      );
-    }
-
-    if (res.status === 204) {
-      return new NextResponse(null, { status: 204 });
-    }
-
-    if (!contentType.includes("application/json")) {
-      const text = await res.text();
-      return new NextResponse(text, { status: res.status });
     }
 
     const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    return NextResponse.json(data, { status: 200 });
   } catch (err) {
-    console.error("[api/facilities/:id] upstream DELETE error:", err);
+    console.error("[api/flows/:id] upstream PUT error:", err);
     return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
   }
 }

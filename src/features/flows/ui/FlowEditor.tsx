@@ -113,7 +113,9 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             setPendingUploads(newPending);
         }
 
-        newSteps[stepIndex] = { ...step, image: null };
+        const stepCopy = { ...step };
+        delete stepCopy.image;
+        newSteps[stepIndex] = stepCopy;
         setFlow({ ...flow, steps: newSteps });
     };
 
