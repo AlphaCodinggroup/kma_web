@@ -70,6 +70,19 @@ function YesNoPill({ value }: { value: boolean }) {
   );
 }
 
+function SelectionPill({ label }: { label: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-lg px-3 py-1 text-sm font-semibold",
+        "bg-black text-white"
+      )}
+    >
+      {label}
+    </span>
+  );
+}
+
 function NotesSection({ notes }: { notes?: string | null }) {
   const hasNotes = typeof notes === "string" && notes.trim().length > 0;
   if (!hasNotes) return null;
@@ -179,6 +192,12 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
 }) => {
   const stylesContainerCard =
     "rounded-2xl border border-gray-100 bg-card p-6 shadow-sm sm:p-7";
+  const hasChoice =
+    type === "multiple_choice" &&
+    answerValue !== undefined &&
+    answerValue !== null &&
+    String(answerValue).trim().length > 0;
+
   /* ===== YES ===== */
   if (answeredYes === true) {
     return (
@@ -199,6 +218,19 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
           attachments={attachments}
           {...(onViewAttachment ? { onViewAttachment } : {})}
         />
+      </article>
+    );
+  }
+
+  /* ===== MULTIPLE CHOICE (estética YES, muestra opción) ===== */
+  if (hasChoice) {
+    return (
+      <article className={cn(stylesContainerCard, className)}>
+        <HeroSection
+          text={text}
+          pill={<SelectionPill label={String(answerValue)} />}
+        />
+        <NotesSection {...(notes === undefined ? {} : { notes })} />
       </article>
     );
   }

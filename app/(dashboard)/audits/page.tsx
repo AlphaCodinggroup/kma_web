@@ -50,9 +50,16 @@ const AuditsPage: React.FC = () => {
         setPendingAuditId(audit.id);
         return;
       }
-      const href = `/audits/${encodeURIComponent(
+      const auditorName = audit.auditorName ?? audit.createdBy ?? "";
+      const baseHref = `/audits/${encodeURIComponent(
         audit.id
       )}/edit` as Route<`/audits/${string}/edit`>;
+      const href =
+        auditorName.trim().length > 0
+          ? (`${baseHref}?auditor=${encodeURIComponent(
+              auditorName
+            )}` as Route<`/audits/${string}/edit`>)
+          : baseHref;
       router.push(href);
     },
     [router, startSendForReview]
