@@ -33,17 +33,8 @@ const AuditsToolbar: React.FC<AuditsToolbarProps> = ({
           placeholder={searchPlaceholder}
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
-          containerClassName="col-span-9"
+          containerClassName="col-span-10"
         />
-        <Button
-          type="button"
-          onClick={onFiltersClick}
-          className="col-span-1 w-full justify-center inline-flex items-center gap-2"
-          aria-label="Open filters"
-        >
-          <FilterIcon className="h-4 w-4" aria-hidden />
-          <span>Filters</span>
-        </Button>
       </div>
     </section>
   );
