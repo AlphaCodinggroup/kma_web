@@ -14,6 +14,7 @@ import { Eye, EyeOff, Image as ImageIcon, MessageSquare } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { Button } from "@shared/ui/controls";
+import { Loading } from "@shared/ui/Loading";
 
 export interface ReportItemsTableProps {
   items: AuditFinding[];
@@ -136,7 +137,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
         (acc, r) =>
           acc +
           (typeof r.calculatedCost === "number" &&
-          Number.isFinite(r.calculatedCost)
+            Number.isFinite(r.calculatedCost)
             ? r.calculatedCost
             : 0),
         0
@@ -144,13 +145,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
     [rows]
   );
 
-  if (loading) {
-    return (
-      <div className="mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-800 animate-pulse text-2xl text-center">
-        Loading audits…
-      </div>
-    );
-  }
+  if (loading) return <Loading text="Loading audits…" />;
 
   if (error) {
     return (
@@ -214,7 +209,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                   {/* Code References */}
                   <TableCell>
                     {typeof r.adasReference === "string" &&
-                    r.adasReference.trim() ? (
+                      r.adasReference.trim() ? (
                       <ul className="list-inside list-disc space-y-1 text-sm">
                         <li>{r.adasReference.trim()}</li>
                       </ul>
@@ -240,7 +235,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                   {/* Cost */}
                   <TableCell className="text-left font-semibold">
                     {typeof r.calculatedCost === "number" &&
-                    Number.isFinite(r.calculatedCost)
+                      Number.isFinite(r.calculatedCost)
                       ? r.calculatedCost
                       : "—"}
                   </TableCell>
