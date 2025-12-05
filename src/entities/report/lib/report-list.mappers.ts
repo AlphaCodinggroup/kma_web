@@ -10,13 +10,10 @@ import {
 /**
  * DTO de cada item en el listado de reports.
  */
-export type ReportListItemDTO = AuditReportDTO & {
-  completed_at?: string | null;
-  project_id?: string | null;
-};
+export type ReportListItemDTO = AuditReportDTO;
 
 /**
- * DTO de respuesta del endpoint GET /reports
+ * DTO de respuesta del endpoint GET /reports.
  */
 export type ReportsListResponseDTO = {
   reports: ReportListItemDTO[];
@@ -26,36 +23,21 @@ export type ReportsListResponseDTO = {
 };
 
 /**
- * Normaliza strings vacíos a null.
- */
-const toNullableString = (value: string | null | undefined): string | null => {
-  if (value == null) return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-};
-
-/**
- * Mapea un DTO de report de listado → modelo de dominio ReportListItem.
+ * Mapea un DTO de report de listado a modelo de dominio ReportListItem.
  */
 export const mapReportListItemFromDTO = (
   dto: ReportListItemDTO
 ): ReportListItem => {
-  const base = mapAuditReportDTO(dto);
-
-  return {
-    ...base,
-    projectId: toNullableString(dto.project_id ?? null),
-    completedAt: dto.completed_at ?? null,
-  };
+  return mapAuditReportDTO(dto);
 };
 
 /**
- * Mapea la respuesta completa del endpoint → ReportListPage de dominio.
+ * Mapea la respuesta completa del endpoint a ReportListPage de dominio.
  */
 export const mapReportsListFromDTO = (
   response: ReportsListResponseDTO
 ): ReportListPage => {
-  const { reports, count, last_eval_id, has_more } = response;
+  const { reports, count, has_more, last_eval_id } = response;
 
   const total =
     typeof count === "number" && !Number.isNaN(count) ? count : reports.length;

@@ -30,12 +30,9 @@ const ReportsPage: React.FC = () => {
 
     return items.filter((r) => {
       const fields = [
-        r.id,
-        r.flowId,
-        r.userId ?? "",
-        r.projectId ?? "",
+        r.reportName ?? "",
+        new Date(r.createdAt).toLocaleDateString(),
         r.status,
-        new Date(r.completedAt ?? r.createdAt).toLocaleDateString(),
       ]
         .filter(Boolean)
         .map((value) => String(value).toLowerCase());

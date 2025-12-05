@@ -41,7 +41,6 @@ export class ReportsRepoHttp implements ReportsRepo {
         this.basePath,
         {
           params: {
-            project_id: filter?.projectId,
             user_id: filter?.userId,
             status: filter?.status,
             limit: filter?.limit,

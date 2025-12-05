@@ -31,7 +31,7 @@ export interface ReportsTableProps {
 }
 
 /**
- * Tabla de Reports: columnas
+ * Tabla de Reports: solo columnas requeridas.
  */
 const ReportsTable: React.FC<ReportsTableProps> = ({
   items,
@@ -64,16 +64,12 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
       )}
     >
       <div className={cn("overflow-auto", bodyMaxHeightClassName)}>
-        <Table className="min-w-[960px]">
+        <Table className="min-w-[720px]">
           <TableHeader>
             <TableRow className="bg-white">
-              <TableHead>Report ID</TableHead>
-              <TableHead>Project Name</TableHead>
-              <TableHead>Auditor</TableHead>
-              <TableHead>Reviewer</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Findings</TableHead>
+              <TableHead>Report</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Created At</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -82,7 +78,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
             {!hasItems ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={4}
                   className="py-10 text-center text-sm text-gray-500"
                 >
                   {emptyMessage}
@@ -92,31 +88,23 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               items.map((r) => {
                 return (
                   <TableRow key={r.id}>
-                    <TableCell className="font-medium">{r.id}</TableCell>
-                    <TableCell className="truncate">{r.projectId}</TableCell>
-                    <TableCell>{/* {r.auditor} */}</TableCell>
-                    <TableCell>{/* {r.reviewer} */}</TableCell>
-                    <TableCell>
-                      {formatIsoToYmdHm(r.createdAt) ?? "—"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {/* <Badge
-                        variant="soft"
-                        tone="neutral"
-                        className="font-medium"
-                      >
-                        {r.totalFindings}
-                      </Badge> */}
+                    <TableCell className="font-medium">
+                      <div className="flex flex-col">
+                        <span className="truncate">{r.reportName ?? "—"}</span>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={r.status} />
+                    </TableCell>
+                    <TableCell>
+                      {formatIsoToYmdHm(r.createdAt) ?? "—"}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {r.reportUrl && (
                           <RowActionButton
                             icon={Download}
-                            ariaLabel="Delete report"
+                            ariaLabel="Download report"
                             onClick={() => onDownload(r.id)}
                             size="md"
                             disabled={isDownloading}

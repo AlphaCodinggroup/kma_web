@@ -5,13 +5,13 @@ import type { AuditStatus } from "@entities/audit/model";
  */
 export interface ReportListItem {
   id: string;
-  flowId: string;
+  flowId: string | null;
   userId: string | null;
-  projectId: string | null;
+  reportName: string | null;
   status: AuditStatus;
   reportUrl: string | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string | null;
   completedAt: string | null;
 }
 
@@ -29,7 +29,6 @@ export interface ReportListPage {
  * Filtros de búsqueda en dominio para listar reports.
  */
 export interface ReportListFilter {
-  projectId?: string;
   userId?: string;
   status?: AuditStatus;
   limit?: number;
