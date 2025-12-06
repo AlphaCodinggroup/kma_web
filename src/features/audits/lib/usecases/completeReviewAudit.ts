@@ -1,13 +1,13 @@
-import type { AuditRepo } from "@entities/audit/api/audit.repo";
+import type { AuditReviewDetailRepo } from "@entities/audit/api/audit-review.repo";
 import type { CompleteReviewResult } from "@entities/audit/model/completeReview";
-import auditRepoImpl from "@features/audits/api/audit.repo.impl";
+import { auditReviewDetailRepo } from "@features/audits/api/audit-review.repo.impl";
 
 export interface CompleteReviewAuditDeps {
-  auditRepo: AuditRepo;
+  auditReviewRepo: AuditReviewDetailRepo;
 }
 
 const defaultDeps: CompleteReviewAuditDeps = {
-  auditRepo: auditRepoImpl,
+  auditReviewRepo: auditReviewDetailRepo,
 };
 
 /**
@@ -22,5 +22,5 @@ export async function completeReviewAudit(
     throw new Error("completeReviewAudit: auditId is required");
   }
 
-  return deps.auditRepo.completeReview(auditId);
+  return deps.auditReviewRepo.completeReview(auditId);
 }
