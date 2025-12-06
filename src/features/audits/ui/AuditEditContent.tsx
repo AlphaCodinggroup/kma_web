@@ -158,6 +158,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         <section className="w-full px-4 sm:px-6 lg:px-8" aria-live="polite">
           <FinalReportHeader
             onExport={handleExport}
+            disabled={!findings.length}
             exporting={isFetchingReport || isPending || isPollingReport}
             className="mb-3"
           />
