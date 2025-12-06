@@ -7,12 +7,14 @@ import { Button } from "@shared/ui/controls";
 export interface FinalReportHeaderProps {
   onExport?: (() => void) | undefined;
   exporting?: boolean | undefined;
+  disabled:boolean
   className?: string;
 }
 
 const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
   onExport,
   exporting,
+  disabled=true,
   className,
 }) => {
   const isDisabled = !onExport || !!exporting;
@@ -28,7 +30,7 @@ const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
           <Button
             type="button"
             onClick={onExport}
-            disabled={isDisabled}
+            disabled={isDisabled ||disabled}
             className={cn(
               "h-9 rounded-xl border bg-background px-3 text-sm",
               "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"

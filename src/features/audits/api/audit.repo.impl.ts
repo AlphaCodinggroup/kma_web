@@ -1,9 +1,5 @@
 import type { AuditRepo } from "@entities/audit/api/audit.repo";
 import {
-  mapCompleteReviewResponseDTOToDomain,
-  type CompleteReviewResponseDTO,
-} from "@entities/audit/lib/completeReview.mappers";
-import {
   mapAuditDtoToDomain,
   type AuditDTO,
 } from "@entities/audit/lib/mappers";
@@ -12,7 +8,6 @@ import {
   type AuditDetailDTO,
 } from "@entities/audit/lib/audit-detail.mappers";
 import type { AuditType } from "@entities/audit/model";
-import type { CompleteReviewResult } from "@entities/audit/model/completeReview";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
 
 export class AuditsApiError extends Error {
@@ -123,22 +118,6 @@ class AuditRepoHttp implements AuditRepo {
       total: (data as any).total,
     };
     return resp;
-  }
-
-  async completeReview(auditId: string): Promise<CompleteReviewResult> {
-    const res = await fetch(
-      `${INTERNAL_API_URL}/${encodeURIComponent(auditId)}/complete-review`,
-      {
-        method: "POST",
-        credentials: "include",
-        cache: "no-store",
-      }
-    );
-
-    await ensureOk(res);
-
-    const data = (await res.json()) as CompleteReviewResponseDTO;
-    return mapCompleteReviewResponseDTOToDomain(data);
   }
 }
 
