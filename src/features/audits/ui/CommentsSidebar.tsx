@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import { cn } from "@shared/lib/cn";
-import { MessageSquare, X, Trash2 } from "lucide-react";
+import { MessageSquare, X /*, Trash2*/ } from "lucide-react";
 import { Button } from "@shared/ui/controls";
-import RowActionButton from "@shared/ui/row-action-button";
+// import RowActionButton from "@shared/ui/row-action-button";
+import { useCreateAuditCommentMutation } from "../lib/hooks/useCreateAuditCommentMutation";
 
 export interface CommentTarget {
   id: string;
@@ -19,12 +20,14 @@ type LocalComment = {
 
 export interface CommentsSidebarProps {
   selected?: CommentTarget | undefined;
+  auditId: string;
   onClose?: (() => void) | undefined;
   className?: string;
 }
 
 const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
   selected,
+  auditId,
   onClose,
   className,
 }) => {
@@ -32,27 +35,39 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
 
   const [value, setValue] = React.useState<string>("");
   const [comments, setComments] = React.useState<LocalComment[]>([]);
+  const { mutateAsync, isPending } = useCreateAuditCommentMutation();
 
   React.useEffect(() => {
     setValue("");
     setComments([]);
   }, [selected?.id]);
 
-  const handlePost = () => {
+  const handlePost = async () => {
+    if (!selected) return;
     const text = value.trim();
     if (!text) return;
-    const newComment: LocalComment = {
-      id: `${selected!.id}-${Date.now()}`,
-      text,
-      createdAt: new Date().toISOString(),
-    };
-    setComments((prev) => [newComment, ...prev]);
-    setValue("");
+    try {
+      const created = await mutateAsync({
+        auditId,
+        stepId: selected.id,
+        content: text,
+      });
+
+      const newComment: LocalComment = {
+        id: created.id,
+        text: created.content,
+        createdAt: created.createdAt,
+      };
+      setComments((prev) => [newComment, ...prev]);
+      setValue("");
+    } catch (err) {
+      console.error("[CommentsSidebar] Error creating comment", err);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setComments((prev) => prev.filter((c) => c.id !== id));
-  };
+  // const handleDelete = (id: string) => {
+  //   setComments((prev) => prev.filter((c) => c.id !== id));
+  // };
 
   return (
     <aside
@@ -102,13 +117,13 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                   <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
                     <span>{new Date(c.createdAt).toLocaleString()}</span>
 
-                    <RowActionButton
+                    {/* <RowActionButton
                       icon={Trash2}
-                      ariaLabel="Delete project"
+                      ariaLabel="Delete comment"
                       onClick={() => handleDelete(c.id)}
                       variant="danger"
                       size="md"
-                    />
+                    /> */}
                   </div>
 
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">
@@ -138,6 +153,7 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             )}
             placeholder="Write your comment…"
+            disabled={isPending}
           />
           <div className="flex items-center justify-end gap-2">
             <Button
@@ -150,8 +166,8 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
             <Button
               type="button"
               className="h-8 rounded-lg px-3 text-xs"
-              disabled={!value.trim()}
-              aria-disabled={!value.trim()}
+              disabled={!value.trim() || isPending}
+              aria-disabled={!value.trim() || isPending}
               onClick={handlePost}
             >
               Comment
