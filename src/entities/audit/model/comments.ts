@@ -6,6 +6,10 @@ export interface CreateAuditCommentInput {
   content: string;
 }
 
+export interface UpdateAuditCommentInput extends CreateAuditCommentInput {
+  commentId: string;
+}
+
 export interface AuditReviewComment {
   id: string;
   auditId: string;

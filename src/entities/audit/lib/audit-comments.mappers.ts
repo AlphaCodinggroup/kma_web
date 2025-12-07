@@ -2,6 +2,7 @@ import type { IsoDateString } from "@entities/audit/model";
 import type {
   AuditReviewComment,
   CreateAuditCommentInput,
+  UpdateAuditCommentInput,
 } from "@entities/audit/model/comments";
 
 export type CreateAuditCommentDTO = {
@@ -9,6 +10,8 @@ export type CreateAuditCommentDTO = {
   step_id: string;
   content: string;
 };
+
+export type UpdateAuditCommentDTO = CreateAuditCommentDTO;
 
 export type AuditCommentResponseDTO = {
   id: string;
@@ -67,5 +70,15 @@ export const mapAuditCommentResponseDTOToDomain = (
     version: toNumber(dto.version, 1),
     createdAt: toIso(created),
     updatedAt: toIso(updated),
+  };
+};
+
+export const mapUpdateAuditCommentInputToDTO = (
+  input: UpdateAuditCommentInput
+): UpdateAuditCommentDTO => {
+  return {
+    audit_id: input.auditId,
+    step_id: input.stepId,
+    content: input.content.trim(),
   };
 };
