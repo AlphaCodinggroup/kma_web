@@ -4,10 +4,12 @@ import type { AuditCommentsRepo } from "@entities/audit/api/audit-comments.repo"
 import type {
   AuditReviewComment,
   CreateAuditCommentInput,
+  UpdateAuditCommentInput,
 } from "@entities/audit/model/comments";
 import {
   mapAuditCommentResponseDTOToDomain,
   mapCreateAuditCommentInputToDTO,
+  mapUpdateAuditCommentInputToDTO,
   type AuditCommentResponseDTO,
 } from "@entities/audit/lib/audit-comments.mappers";
 
@@ -16,6 +18,8 @@ const apiBase = sameOrigin ? `${sameOrigin}/api` : "/api";
 
 const routes = {
   createComment: () => `${apiBase}/comments`,
+  updateComment: (commentId: string) =>
+    `${apiBase}/comments/${encodeURIComponent(commentId)}`,
 };
 
 export class AuditCommentsRepoHttp implements AuditCommentsRepo {
@@ -31,6 +35,17 @@ export class AuditCommentsRepoHttp implements AuditCommentsRepo {
     const payload = mapCreateAuditCommentInputToDTO(input);
     const { data } = await this.client.post<AuditCommentResponseDTO>(
       routes.createComment(),
+      payload
+    );
+    return mapAuditCommentResponseDTOToDomain(data);
+  }
+
+  async updateComment(
+    input: UpdateAuditCommentInput
+  ): Promise<AuditReviewComment> {
+    const payload = mapUpdateAuditCommentInputToDTO(input);
+    const { data } = await this.client.patch<AuditCommentResponseDTO>(
+      routes.updateComment(input.commentId),
       payload
     );
     return mapAuditCommentResponseDTOToDomain(data);

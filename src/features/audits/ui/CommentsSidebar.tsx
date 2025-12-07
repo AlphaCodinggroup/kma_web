@@ -1,11 +1,12 @@
 "use client";
 
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@shared/lib/cn";
-import { MessageSquare, X /*, Trash2*/ } from "lucide-react";
+import { MessageSquare, X, Pencil } from "lucide-react";
 import { Button } from "@shared/ui/controls";
-// import RowActionButton from "@shared/ui/row-action-button";
+import RowActionButton from "@shared/ui/row-action-button";
 import { useCreateAuditCommentMutation } from "../lib/hooks/useCreateAuditCommentMutation";
+import { useUpdateAuditCommentMutation } from "../lib/hooks/useUpdateAuditCommentMutation";
 
 export interface CommentTarget {
   id: string;
@@ -33,41 +34,67 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
 }) => {
   if (!selected) return null;
 
-  const [value, setValue] = React.useState<string>("");
-  const [comments, setComments] = React.useState<LocalComment[]>([]);
-  const { mutateAsync, isPending } = useCreateAuditCommentMutation();
+  const [value, setValue] = useState<string>("");
+  const [comments, setComments] = useState<LocalComment[]>([]);
+  const { mutateAsync: createComment, isPending: isCreating } =
+    useCreateAuditCommentMutation();
+  const { mutateAsync: updateComment, isPending: isUpdating } =
+    useUpdateAuditCommentMutation();
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("");
     setComments([]);
+    setEditingId(null);
   }, [selected?.id]);
+
+  const isSaving = isCreating || isUpdating;
 
   const handlePost = async () => {
     if (!selected) return;
     const text = value.trim();
     if (!text) return;
     try {
-      const created = await mutateAsync({
-        auditId,
-        stepId: selected.id,
-        content: text,
-      });
+      if (editingId) {
+        const updated = await updateComment({
+          commentId: editingId,
+          auditId,
+          stepId: selected.id,
+          content: text,
+        });
 
-      const newComment: LocalComment = {
-        id: created.id,
-        text: created.content,
-        createdAt: created.createdAt,
-      };
-      setComments((prev) => [newComment, ...prev]);
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === updated.id
+              ? { ...c, text: updated.content, createdAt: updated.updatedAt }
+              : c
+          )
+        );
+      } else {
+        const created = await createComment({
+          auditId,
+          stepId: selected.id,
+          content: text,
+        });
+
+        const newComment: LocalComment = {
+          id: created.id,
+          text: created.content,
+          createdAt: created.createdAt,
+        };
+        setComments((prev) => [newComment, ...prev]);
+      }
       setValue("");
+      setEditingId(null);
     } catch (err) {
-      console.error("[CommentsSidebar] Error creating comment", err);
+      console.error("[CommentsSidebar] Error saving comment", err);
     }
   };
 
-  // const handleDelete = (id: string) => {
-  //   setComments((prev) => prev.filter((c) => c.id !== id));
-  // };
+  const handleStartEdit = (comment: LocalComment) => {
+    setEditingId(comment.id);
+    setValue(comment.text);
+  };
 
   return (
     <aside
@@ -117,13 +144,12 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                   <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
                     <span>{new Date(c.createdAt).toLocaleString()}</span>
 
-                    {/* <RowActionButton
-                      icon={Trash2}
-                      ariaLabel="Delete comment"
-                      onClick={() => handleDelete(c.id)}
-                      variant="danger"
+                    <RowActionButton
+                      icon={Pencil}
+                      ariaLabel="Edit comment"
+                      onClick={() => handleStartEdit(c)}
                       size="md"
-                    /> */}
+                    />
                   </div>
 
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">
@@ -153,7 +179,7 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             )}
             placeholder="Write your comment…"
-            disabled={isPending}
+            disabled={isSaving}
           />
           <div className="flex items-center justify-end gap-2">
             <Button
@@ -166,8 +192,8 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
             <Button
               type="button"
               className="h-8 rounded-lg px-3 text-xs"
-              disabled={!value.trim() || isPending}
-              aria-disabled={!value.trim() || isPending}
+              disabled={!value.trim() || isSaving}
+              aria-disabled={!value.trim() || isSaving}
               onClick={handlePost}
             >
               Comment
