@@ -1,4 +1,5 @@
 import type {
+  AuditCommentsList,
   AuditReviewComment,
   CreateAuditCommentInput,
   UpdateAuditCommentInput,
@@ -7,4 +8,5 @@ import type {
 export interface AuditCommentsRepo {
   createComment(input: CreateAuditCommentInput): Promise<AuditReviewComment>;
   updateComment(input: UpdateAuditCommentInput): Promise<AuditReviewComment>;
+  listByAudit(auditId: string): Promise<AuditCommentsList>;
 }

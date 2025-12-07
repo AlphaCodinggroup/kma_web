@@ -20,3 +20,7 @@ export interface AuditReviewComment {
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
 }
+
+export interface AuditCommentsList {
+  comments: AuditReviewComment[];
+}

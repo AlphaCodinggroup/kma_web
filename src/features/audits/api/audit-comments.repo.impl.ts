@@ -10,7 +10,9 @@ import {
   mapAuditCommentResponseDTOToDomain,
   mapCreateAuditCommentInputToDTO,
   mapUpdateAuditCommentInputToDTO,
+  mapAuditCommentsListDTOToDomain,
   type AuditCommentResponseDTO,
+  type AuditCommentsListDTO,
 } from "@entities/audit/lib/audit-comments.mappers";
 
 const sameOrigin = typeof window !== "undefined" ? window.location.origin : "";
@@ -20,6 +22,8 @@ const routes = {
   createComment: () => `${apiBase}/comments`,
   updateComment: (commentId: string) =>
     `${apiBase}/comments/${encodeURIComponent(commentId)}`,
+  listComments: (auditId: string) =>
+    `${apiBase}/comments?audit_id=${encodeURIComponent(auditId)}`,
 };
 
 export class AuditCommentsRepoHttp implements AuditCommentsRepo {
@@ -49,6 +53,13 @@ export class AuditCommentsRepoHttp implements AuditCommentsRepo {
       payload
     );
     return mapAuditCommentResponseDTOToDomain(data);
+  }
+
+  async listByAudit(auditId: string) {
+    const { data } = await this.client.get<AuditCommentsListDTO>(
+      routes.listComments(auditId)
+    );
+    return mapAuditCommentsListDTOToDomain(data);
   }
 }
 

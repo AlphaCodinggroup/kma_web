@@ -11,12 +11,11 @@ import type {
 } from "@entities/audit/model/comments";
 import type { ApiError } from "@shared/interceptors/error";
 import { createAuditComment } from "@features/audits/lib/usecases/createAuditComment";
-import { auditReviewDetailKey } from "./useAuditReviewDetail";
-import { auditDetailKey } from "./useAuditDetail";
+import { auditCommentsKey } from "./useAuditComments";
 
 /**
  * Hook React Query para crear un comentario en una auditoría en revisión.
- * Invalida el detalle de auditoría y el detalle de revisión para refrescar la UI.
+ * Invalida solo la lista de comentarios (evitamos refrescar otros detalles).
  */
 export function useCreateAuditCommentMutation(): UseMutationResult<
   AuditReviewComment,
@@ -30,14 +29,9 @@ export function useCreateAuditCommentMutation(): UseMutationResult<
     mutationFn: (input) => createAuditComment(input),
     async onSuccess(_data, variables) {
       const { auditId } = variables;
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: auditReviewDetailKey(auditId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: auditDetailKey(auditId),
-        }),
-      ]);
+      await queryClient.invalidateQueries({
+        queryKey: auditCommentsKey(auditId),
+      });
     },
   });
 }

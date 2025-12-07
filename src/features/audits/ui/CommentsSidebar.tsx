@@ -7,6 +7,7 @@ import { Button } from "@shared/ui/controls";
 import RowActionButton from "@shared/ui/row-action-button";
 import { useCreateAuditCommentMutation } from "../lib/hooks/useCreateAuditCommentMutation";
 import { useUpdateAuditCommentMutation } from "../lib/hooks/useUpdateAuditCommentMutation";
+import { useAuditComments } from "../lib/hooks/useAuditComments";
 
 export interface CommentTarget {
   id: string;
@@ -40,6 +41,12 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     useCreateAuditCommentMutation();
   const { mutateAsync: updateComment, isPending: isUpdating } =
     useUpdateAuditCommentMutation();
+  const { data: fetchedComments, isLoading: isFetching } = useAuditComments(
+    auditId,
+    {
+      enabled: Boolean(selected),
+    }
+  );
   const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,7 +55,22 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     setEditingId(null);
   }, [selected?.id]);
 
+  useEffect(() => {
+    if (!selected) return;
+    if (fetchedComments?.comments) {
+      const filtered = fetchedComments.comments
+        .filter((c) => c.stepId === selected.id)
+        .map((c) => ({
+          id: c.id,
+          text: c.content,
+          createdAt: c.updatedAt || c.createdAt,
+        }));
+      setComments(filtered);
+    }
+  }, [fetchedComments?.comments, selected]);
+
   const isSaving = isCreating || isUpdating;
+  const isBusy = isFetching || isSaving;
 
   const handlePost = async () => {
     if (!selected) return;
@@ -126,7 +148,14 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
       <div className="p-4 sm:p-5">
         {/* Lista de comentarios */}
         <div>
-          {comments.length === 0 ? (
+          {isFetching ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+              <MessageSquare className="h-8 w-8 animate-pulse text-muted-foreground/60" />
+              <p className="max-w-[24ch] text-sm text-muted-foreground">
+                Loading comments…
+              </p>
+            </div>
+          ) : comments.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
               <MessageSquare className="h-8 w-8 text-muted-foreground/60" />
               <p className="max-w-[24ch] text-sm text-muted-foreground">
@@ -140,7 +169,7 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                   key={c.id}
                   className="rounded-lg border border-gray-200 bg-white p-3"
                 >
-                  {/* fila superior: fecha + botón eliminar (compacto) */}
+                  {/* fila superior: fecha + botón editar (compacto) */}
                   <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
                     <span>{new Date(c.createdAt).toLocaleString()}</span>
 
@@ -179,7 +208,7 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             )}
             placeholder="Write your comment…"
-            disabled={isSaving}
+            disabled={isBusy}
           />
           <div className="flex items-center justify-end gap-2">
             <Button
@@ -192,8 +221,8 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
             <Button
               type="button"
               className="h-8 rounded-lg px-3 text-xs"
-              disabled={!value.trim() || isSaving}
-              aria-disabled={!value.trim() || isSaving}
+              disabled={!value.trim() || isBusy}
+              aria-disabled={!value.trim() || isBusy}
               onClick={handlePost}
             >
               Comment
