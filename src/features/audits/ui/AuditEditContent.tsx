@@ -14,6 +14,7 @@ import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
 import { useCompleteReviewAuditMutation } from "../lib/hooks/useCompleteReviewAuditMutation";
+import { useCreateAuditCommentMutation } from "../lib/hooks/useCreateAuditCommentMutation";
 import { Loading } from "@shared/ui/Loading";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
 
@@ -65,6 +66,8 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   } = useAuditReviewDetail(id);
 
   const { mutateAsync, isPending } = useCompleteReviewAuditMutation();
+  // Hook de creación de comentarios (se integrará en UI en el siguiente paso)
+  useCreateAuditCommentMutation();
 
   const { isFetching: isFetchingReport, refetch: refetchReport } =
     useAuditReport(id, { enabled: false });
