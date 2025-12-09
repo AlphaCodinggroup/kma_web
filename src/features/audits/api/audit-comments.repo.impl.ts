@@ -48,7 +48,7 @@ export class AuditCommentsRepoHttp implements AuditCommentsRepo {
     input: UpdateAuditCommentInput
   ): Promise<AuditReviewComment> {
     const payload = mapUpdateAuditCommentInputToDTO(input);
-    const { data } = await this.client.patch<AuditCommentResponseDTO>(
+    const { data } = await this.client.put<AuditCommentResponseDTO>(
       routes.updateComment(input.commentId),
       payload
     );

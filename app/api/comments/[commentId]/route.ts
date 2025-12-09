@@ -5,10 +5,13 @@ import { PublicEnv, serverEnv } from "@shared/config/env";
 type RouteContext = { params: Promise<{ commentId: string }> };
 
 /**
- * Proxy interno para actualizar un comentario de auditoría.
- * PATCH /api/comments/:commentId -> PATCH {apiBaseUrl}/comments/:commentId
+ * Proxy interno para actualizar un comentario de auditoria.
+ * PUT /api/comments/:commentId -> PUT {apiBaseUrl}/comments/:commentId
  */
-export async function PATCH(req: NextRequest, { params }: RouteContext) {
+export async function PUT(
+  req: NextRequest,
+  { params }: RouteContext
+): Promise<NextResponse> {
   const { commentId } = await params;
 
   if (!commentId) {
@@ -40,7 +43,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 
   try {
     const res = await fetch(upstreamUrl, {
-      method: "PATCH",
+      method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -58,7 +61,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 
     return NextResponse.json(responseBody, { status: res.status });
   } catch (err) {
-    console.error("[api/comments/:id] upstream PATCH error:", err);
+    console.error("[api/comments/:id] upstream PUT error:", err);
     return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
   }
 }
