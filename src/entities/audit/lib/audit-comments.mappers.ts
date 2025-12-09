@@ -12,7 +12,10 @@ export type CreateAuditCommentDTO = {
   content: string;
 };
 
-export type UpdateAuditCommentDTO = CreateAuditCommentDTO;
+export type UpdateAuditCommentDTO = {
+  step_id: string;
+  content: string;
+};
 
 export type AuditCommentResponseDTO = {
   id: string;
@@ -82,7 +85,6 @@ export const mapUpdateAuditCommentInputToDTO = (
   input: UpdateAuditCommentInput
 ): UpdateAuditCommentDTO => {
   return {
-    audit_id: input.auditId,
     step_id: input.stepId,
     content: input.content.trim(),
   };
