@@ -74,12 +74,14 @@ Badge.displayName = "Badge";
 
 /* -------------------------- Badge de dominio --------------------------- */
 
-const STATUS_LABELS: Record<AuditStatus, string> = {
+export const AUDIT_STATUS_LABELS: Record<AuditStatus, string> = {
   draft_report_pending_review: "Draft Report Pending Review",
   draft_report_in_review: "Draft Report In Review",
   final_report_sent_to_client: "Final Report Sent to Client",
   completed: "Completed",
 };
+
+const STATUS_LABELS = AUDIT_STATUS_LABELS;
 
 export function StatusBadge({
   status,
