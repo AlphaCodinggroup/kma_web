@@ -90,6 +90,16 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     setSelectedCommentTarget(undefined);
   }, []);
 
+  const handleOpenComments = useCallback((row: AuditFinding, index: number) => {
+    setSelectedCommentTarget({
+      id: row.questionCode ?? `report-item-${index + 1}`,
+      title:
+        row.barrierStatement ??
+        row.proposedMitigation ??
+        `Item ${index + 1}`,
+    });
+  }, []);
+
   const handleExport = useCallback(async () => {
     try {
       // Si está en revisión, cerramos la revisión primero
@@ -175,20 +185,13 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
                 loading={isLoading}
                 error={isError}
                 onError={refetchReviewDetail}
-                // onAddComment={(row) => {
-                //   setSelectedCommentTarget({
-                //     id: row.id,
-                //     title:
-                //       (row as any).barrierStatement ??
-                //       (row as any).title ??
-                //       "Selected item",
-                //   });
-                // }}
+                onAddComment={handleOpenComments}
               />
             </div>
 
             {hasSidebar && (
               <CommentsSidebar
+                auditId={id}
                 selected={selectedCommentTarget}
                 onClose={handleCloseSidebar}
                 className="md:w-[380px]"

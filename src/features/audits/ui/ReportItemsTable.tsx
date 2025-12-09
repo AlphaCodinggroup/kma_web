@@ -18,7 +18,7 @@ import { Loading } from "@shared/ui/Loading";
 
 export interface ReportItemsTableProps {
   items: AuditFinding[];
-  // onAddComment?: (row: ReportBarrierRowVM) => void;
+  onAddComment: (row: AuditFinding, index: number) => void;
   className?: string;
   loading?: boolean;
   error?: boolean;
@@ -113,7 +113,7 @@ function PhotosColumn({ photos }: { photos: PhotoInput[] }) {
 
 const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
   items,
-  // onAddComment,
+  onAddComment,
   className,
   loading = false,
   error = false,
@@ -234,8 +234,8 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                   <TableCell className="text-left">
                     <RowActionButton
                       icon={MessageSquare}
-                      ariaLabel="Delete project"
-                      onClick={undefined}
+                      ariaLabel="Comments"
+                      onClick={() => onAddComment(r, idx)}
                       size="md"
                     />
                   </TableCell>
