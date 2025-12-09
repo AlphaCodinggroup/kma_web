@@ -5,12 +5,12 @@ import {
   type UseMutationResult,
   useQueryClient,
 } from "@tanstack/react-query";
-import type {
-  UpdateFacilityParams,
-  UpdateFacilityResult,
-} from "@entities/facility/model";
+import type { UpdateFacilityResult } from "@entities/facility/model";
 import type { ApiError } from "@shared/interceptors/error";
-import { updateFacilityUseCase } from "@features/facilities/lib/usecases/update-facility.usecase";
+import {
+  updateFacilityUseCase,
+  type UpdateFacilityInput,
+} from "@features/facilities/lib/usecases/update-facility.usecase";
 
 /**
  * Hook React Query para actualizar una Facility.
@@ -18,11 +18,11 @@ import { updateFacilityUseCase } from "@features/facilities/lib/usecases/update-
 export function useUpdateFacilityMutation(): UseMutationResult<
   UpdateFacilityResult,
   ApiError,
-  UpdateFacilityParams
+  UpdateFacilityInput
 > {
   const queryClient = useQueryClient();
 
-  return useMutation<UpdateFacilityResult, ApiError, UpdateFacilityParams>({
+  return useMutation<UpdateFacilityResult, ApiError, UpdateFacilityInput>({
     mutationFn: (params) => updateFacilityUseCase(params),
     onSuccess: async (updated) => {
       // Refrescar listados de facilities

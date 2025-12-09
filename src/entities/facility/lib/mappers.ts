@@ -14,6 +14,7 @@ export interface FacilityDTO {
   address?: string | null;
   city?: string | null;
   description?: string | null;
+  notes?: string | null;
   photo_url?: string | null;
   geo?: { lat: number; lng: number } | null;
 
@@ -25,6 +26,8 @@ export interface FacilityDTO {
   project_id?: string | null;
   user_ids?: string[];
   updated_by?: string | null;
+  archived_at?: string | null;
+  archived_by?: string | null;
 }
 
 /**
@@ -62,7 +65,7 @@ export interface UpdateFacilityRequestDTO {
   address?: string;
   city?: string;
   description?: string;
-  photo_url?: string;
+  photo_url?: string | null;
   status?: "ACTIVE" | "ARCHIVED";
   geo?: {
     lat: number;
@@ -93,8 +96,14 @@ export function mapCreateFacilityParamsToDTO(
     dto.city = params.city;
   }
 
-  if (params.notes) {
+  if (params.description) {
+    dto.description = params.description;
+  } else if (params.notes) {
     dto.description = params.notes;
+  }
+
+  if (params.photoUrl) {
+    dto.photo_url = params.photoUrl;
   }
 
   if (params.geo) {
@@ -130,8 +139,16 @@ export function mapUpdateFacilityParamsToDTO(
     dto.city = params.city;
   }
 
-  if (params.notes != null) {
+  if (params.description != null) {
+    dto.description = params.description;
+  } else if (params.notes != null) {
     dto.description = params.notes;
+  }
+
+  if (params.clearPhoto === true) {
+    dto.photo_url = null;
+  } else if (params.photoUrl != null) {
+    dto.photo_url = params.photoUrl;
   }
 
   if (params.status != null) {
@@ -173,6 +190,12 @@ export function mapFacilityFromDTO(dto: FacilityDTO): Facility {
   }
 
   if (dto.description != null) {
+    facility.description = dto.description;
+  }
+
+  if (dto.notes != null) {
+    facility.notes = dto.notes;
+  } else if (dto.description != null) {
     facility.notes = dto.description;
   }
 
@@ -183,8 +206,20 @@ export function mapFacilityFromDTO(dto: FacilityDTO): Facility {
     };
   }
 
+  if (dto.photo_url != null) {
+    facility.photoUrl = dto.photo_url;
+  }
+
   if (dto.updated_by != null) {
     facility.updatedBy = dto.updated_by;
+  }
+
+  if (dto.archived_at !== undefined) {
+    facility.archivedAt = dto.archived_at;
+  }
+
+  if (dto.archived_by !== undefined) {
+    facility.archivedBy = dto.archived_by;
   }
 
   return facility;
