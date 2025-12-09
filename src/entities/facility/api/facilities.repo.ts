@@ -9,6 +9,13 @@ import type {
   UpdateFacilityResult,
 } from "../model";
 
+export interface FacilityUploadSignature {
+  uploadUrl: string;
+  key: string;
+  expiresIn: number;
+  publicUrl: string;
+}
+
 /**
  * Puerto de dominio para Facilities.
  *
@@ -48,4 +55,17 @@ export interface FacilitiesRepo {
    * Archiva una facility por su ID..
    */
   archive(facilityId: FacilityId): Promise<Facility>;
+
+  /**
+   * Firma una URL de subida para la foto de la facility.
+   */
+  getUploadSignedUrl(
+    filename: string,
+    contentType: string
+  ): Promise<FacilityUploadSignature>;
+
+  /**
+   * Sube un archivo (foto) a la URL presignada.
+   */
+  uploadFile(uploadUrl: string, file: File): Promise<void>;
 }

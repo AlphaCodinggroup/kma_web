@@ -17,6 +17,8 @@ export interface Facility {
   address?: string;
   city?: string;
   geo?: GeoPoint;
+  description?: string;
+  photoUrl?: string;
   notes?: string;
   status: FacilityStatus;
   userIds: string[];
@@ -24,6 +26,8 @@ export interface Facility {
   updatedAt: string;
   createdBy: string;
   updatedBy?: string;
+  archivedAt?: string | null;
+  archivedBy?: string | null;
 }
 
 /** Página de resultados de Facilities (paginación por limit + cursor). */
@@ -52,6 +56,8 @@ export interface CreateFacilityParams {
   projectId?: ProjectId;
   address?: string;
   city?: string;
+  description?: string;
+  photoUrl?: string;
   notes?: string;
   status?: FacilityStatus;
   geo?: GeoPoint;
@@ -72,6 +78,8 @@ export interface UpdateFacilityParams {
   name?: string;
   address?: string;
   city?: string;
+  description?: string;
+  photoUrl?: string;
   notes?: string;
   status?: FacilityStatus;
   geo?: GeoPoint;
