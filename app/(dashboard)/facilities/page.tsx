@@ -200,7 +200,9 @@ export default function FacilitiesPage() {
         name: editingFacility.name,
         address: editingFacility.address ?? "",
         city: editingFacility.city ?? "",
-        notes: editingFacility.notes ?? "",
+        description:
+          editingFacility.description ?? editingFacility.notes ?? "",
+        photoUrl: editingFacility.photoUrl ?? "",
       };
     }, [editingFacility]);
 

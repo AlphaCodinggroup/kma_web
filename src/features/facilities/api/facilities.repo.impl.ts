@@ -1,5 +1,8 @@
 import { httpClient } from "@shared/api/http.client";
-import type { FacilitiesRepo } from "@entities/facility/api/facilities.repo";
+import type {
+  FacilitiesRepo,
+  FacilityUploadSignature,
+} from "@entities/facility/api/facilities.repo";
 import type {
   FacilityListFilter,
   FacilityListPage,
@@ -21,6 +24,12 @@ import {
   mapUpdateFacilityParamsToDTO,
 } from "@entities/facility/lib/mappers";
 import type { ApiError } from "@shared/interceptors/error";
+
+interface UploadImageResponseDTO {
+  upload_url: string;
+  key: string;
+  expires_in: number;
+}
 
 /** Utilidad defensiva: normaliza a ApiError en edge cases */
 function toApiError(err: unknown): ApiError {
@@ -181,6 +190,69 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
         (raw as FacilityDTO);
 
       return mapFacilityFromDTO(dto);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  /**
+   * Solicita URL presignada para foto de facility.
+   */
+  async getUploadSignedUrl(
+    filename: string,
+    contentType: string
+  ): Promise<FacilityUploadSignature> {
+    try {
+      const res = await httpClient.post<
+        UploadImageResponseDTO | { data: UploadImageResponseDTO }
+      >(`${this.basePath}/upload-img`, {
+        filename,
+        content_type: contentType,
+      });
+
+      const raw =
+        (res.data as { data?: UploadImageResponseDTO }).data ??
+        (res.data as UploadImageResponseDTO);
+
+      const publicUrl = raw.upload_url.includes("?")
+        ? raw.upload_url.split("?")[0]
+        : raw.upload_url;
+
+      return {
+        uploadUrl: raw.upload_url,
+        key: raw.key,
+        expiresIn: raw.expires_in,
+        publicUrl,
+      };
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  /**
+   * Sube la foto al S3 mediante proxy interno.
+   */
+  async uploadFile(uploadUrl: string, file: File): Promise<void> {
+    try {
+      const encodedUrl = btoa(uploadUrl);
+      const proxyUrl = `/api/uploads/proxy?url=${encodedUrl}`;
+
+      const res = await fetch(proxyUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type || "application/octet-stream",
+        },
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw {
+          code: "UPLOAD_FAILED",
+          message: "Failed to upload facility photo",
+          details: { status: res.status, body: text },
+        };
+      }
     } catch (err) {
       throw toApiError(err);
     }
