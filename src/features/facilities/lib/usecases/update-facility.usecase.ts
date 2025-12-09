@@ -8,6 +8,7 @@ import { facilitiesRepoImpl } from "@features/facilities/api/facilities.repo.imp
 export type UpdateFacilityInput = UpdateFacilityParams & {
   photoFile?: File | null;
   photoUrl?: string | null;
+  clearPhoto?: boolean;
 };
 
 function assertValidUrl(url: string): void {
@@ -94,12 +95,13 @@ export async function updateFacilityUseCase(
     const signature = await repo.getUploadSignedUrl(file.name, contentType);
     await repo.uploadFile(signature.uploadUrl, file);
     photoUrl = signature.publicUrl;
+    payload.photoUrl = photoUrl;
+    payload.clearPhoto = false;
   } else if (photoUrl) {
     assertValidUrl(photoUrl);
-  }
-
-  if (photoUrl) {
     payload.photoUrl = photoUrl;
+  } else if (rawParams.clearPhoto) {
+    payload.clearPhoto = true;
   }
 
   if (rawParams.status !== undefined) {

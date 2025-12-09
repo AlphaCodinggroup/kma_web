@@ -1,13 +1,16 @@
-import type { CreateFacilityParams } from "@entities/facility/model";
 import type { FacilityUpsertValues } from "@features/facilities/ui/FacilityUpsertDialog";
 
 /**
  * Campos opcionales que pueden enviarse al dominio al crear/editar una Facility.
- * La forma de los tipos viene del modelo de dominio (CreateFacilityParams).
  */
-type FacilityOptionalFields = Partial<
-  Pick<CreateFacilityParams, "address" | "city" | "notes">
->;
+interface FacilityOptionalFields {
+  address?: string;
+  city?: string;
+  description?: string;
+  photoFile?: File | null;
+  photoUrl?: string;
+  clearPhoto?: boolean;
+}
 
 /**
  * Mapea los valores del formulario (UI) a los campos opcionales
@@ -26,8 +29,21 @@ export function buildFacilityOptionalFields(
     result.city = values.city;
   }
 
-  if (values.notes && values.notes.trim().length > 0) {
-    result.notes = values.notes;
+  if (values.description && values.description.trim().length > 0) {
+    result.description = values.description;
+  }
+
+  if (values.clearPhoto && !values.photoFile) {
+    result.clearPhoto = true;
+  }
+
+  if (values.photoFile) {
+    result.photoFile = values.photoFile;
+  }
+
+  const trimmedPhotoUrl = values.photoUrl?.trim();
+  if (!values.photoFile && trimmedPhotoUrl) {
+    result.photoUrl = trimmedPhotoUrl;
   }
 
   return result;

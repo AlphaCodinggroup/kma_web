@@ -65,7 +65,7 @@ export interface UpdateFacilityRequestDTO {
   address?: string;
   city?: string;
   description?: string;
-  photo_url?: string;
+  photo_url?: string | null;
   status?: "ACTIVE" | "ARCHIVED";
   geo?: {
     lat: number;
@@ -145,7 +145,9 @@ export function mapUpdateFacilityParamsToDTO(
     dto.description = params.notes;
   }
 
-  if (params.photoUrl != null) {
+  if (params.clearPhoto === true) {
+    dto.photo_url = null;
+  } else if (params.photoUrl != null) {
     dto.photo_url = params.photoUrl;
   }
 

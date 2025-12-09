@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@shared/lib/cn";
 import { Label, Input, Button, ErrorText, HelpText } from "@shared/ui/controls";
 import {
@@ -19,7 +19,10 @@ export type FacilityUpsertValues = {
   name: string;
   address?: string | undefined;
   city?: string | undefined;
-  notes?: string | undefined;
+  description?: string | undefined;
+  photoUrl?: string | undefined;
+  photoFile?: File | null;
+  clearPhoto?: boolean;
 };
 
 export interface FacilityUpsertDialogProps {
@@ -57,16 +60,28 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
       name: defaultValues?.name ?? "",
       address: defaultValues?.address ?? "",
       city: defaultValues?.city ?? "",
-      notes: defaultValues?.notes ?? "",
+      description: defaultValues?.description ?? "",
+      photoUrl: defaultValues?.photoUrl ?? "",
+      photoFile: null,
+      clearPhoto: false,
     }),
     [defaultValues]
   );
 
   const [values, setValues] = useState<FacilityUpsertValues>(initial);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(
+    initial.photoUrl || null
+  );
+  const objectUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (open) {
       setValues(initial);
+      setPhotoPreview(initial.photoUrl || null);
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
     }
   }, [open, initial]);
 
@@ -89,13 +104,19 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
       const trimmedName = values.name.trim();
       const trimmedAddress = values.address?.trim();
       const trimmedCity = values.city?.trim();
-      const trimmedNotes = values.notes?.trim();
+      const trimmedDescription = values.description?.trim();
+      const trimmedPhotoUrl = values.photoUrl?.trim();
 
       const payload: FacilityUpsertValues = {
         name: trimmedName,
         ...(trimmedAddress ? { address: trimmedAddress } : {}),
         ...(trimmedCity ? { city: trimmedCity } : {}),
-        ...(trimmedNotes ? { notes: trimmedNotes } : {}),
+        ...(trimmedDescription ? { description: trimmedDescription } : {}),
+        ...(values.photoFile ? { photoFile: values.photoFile } : {}),
+        ...(trimmedPhotoUrl && !values.photoFile && !values.clearPhoto
+          ? { photoUrl: trimmedPhotoUrl }
+          : {}),
+        ...(values.clearPhoto && !values.photoFile ? { clearPhoto: true } : {}),
       };
 
       await onSubmit(payload);
@@ -103,7 +124,54 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
     [onSubmit, values]
   );
 
-  const disabled = loading === true;
+  const isSubmitting = loading === true;
+  const isNameValid = values.name.trim().length > 0;
+  const disableSubmit = isSubmitting || !isNameValid;
+
+  const handlePhotoChange = useCallback(
+    (file: File | null) => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
+
+      if (file) {
+        const preview = URL.createObjectURL(file);
+        objectUrlRef.current = preview;
+        setPhotoPreview(preview);
+        handleChange("photoFile", file);
+        handleChange("photoUrl", "");
+        handleChange("clearPhoto", false);
+      } else {
+        setPhotoPreview(values.photoUrl?.trim() || null);
+        handleChange("photoFile", null);
+        handleChange("clearPhoto", false);
+      }
+    },
+    [handleChange, values.photoUrl]
+  );
+
+  const handleRemovePhoto = useCallback(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+    setPhotoPreview(null);
+    setValues((s) => ({
+      ...s,
+      photoFile: null,
+      photoUrl: "",
+      clearPhoto: true,
+    }));
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, []);
 
   const copy = {
     title:
@@ -140,12 +208,16 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               }
               value={values.name}
               onChange={(e) => handleChange("name", e.currentTarget.value)}
-              disabled={disabled}
+              disabled={isSubmitting}
               required
             />
-            <HelpText>
-              Required – this identifies the facility in the system.
-            </HelpText>
+            {isNameValid ? (
+              <HelpText>
+                Required - this identifies the facility in the system.
+              </HelpText>
+            ) : (
+              <ErrorText>Facility name is required</ErrorText>
+            )}
           </div>
 
           {/* Address */}
@@ -156,7 +228,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               placeholder="Enter facility address (optional)"
               value={values.address ?? ""}
               onChange={(e) => handleChange("address", e.currentTarget.value)}
-              disabled={disabled}
+              disabled={isSubmitting}
             />
           </div>
 
@@ -168,29 +240,67 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               placeholder="Enter city (optional)"
               value={values.city ?? ""}
               onChange={(e) => handleChange("city", e.currentTarget.value)}
-              disabled={disabled}
+              disabled={isSubmitting}
             />
           </div>
 
-          {/* Notes */}
+          {/* Description */}
           <div>
-            <Label htmlFor="facility-notes">Notes</Label>
+            <Label htmlFor="facility-description">Description</Label>
             <Input
-              id="facility-notes"
-              placeholder="Enter notes (optional)"
-              value={values.notes ?? ""}
-              onChange={(e) => handleChange("notes", e.currentTarget.value)}
-              disabled={disabled}
+              id="facility-description"
+              placeholder="Enter description (optional)"
+              value={values.description ?? ""}
+              onChange={(e) => handleChange("description", e.currentTarget.value)}
+              disabled={isSubmitting}
             />
             <HelpText>
-              Internal notes or a short description of this facility (optional).
+              Short description of this facility (optional).
             </HelpText>
+          </div>
+
+          {/* Photo upload */}
+          <div>
+            <Label htmlFor="facility-photo">Photo</Label>
+            <Input
+              id="facility-photo"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handlePhotoChange(e.currentTarget.files?.[0] ?? null)}
+              disabled={isSubmitting}
+            />
+            {photoPreview ? (
+              <div className="mt-2 flex items-center gap-3">
+                <img
+                  src={photoPreview}
+                  alt="Facility photo preview"
+                  className="h-20 w-28 rounded-md object-cover border"
+                />
+                <div className="w-fit">
+                  <Button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    disabled={isSubmitting}
+                    className="w-auto px-3 py-1 text-sm"
+                    style={{ width: "auto" }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <HelpText>Optional image.</HelpText>
+            )}
           </div>
 
           {error ? <ErrorText>{error}</ErrorText> : <HelpText>&nbsp;</HelpText>}
 
           <ModalFooter>
-            <Button type="submit" isLoading={disabled} disabled={disabled}>
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              disabled={disableSubmit}
+            >
               {copy.submit}
             </Button>
           </ModalFooter>

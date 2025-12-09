@@ -80,6 +80,7 @@ export interface UpdateFacilityParams {
   city?: string;
   description?: string;
   photoUrl?: string;
+  clearPhoto?: boolean;
   notes?: string;
   status?: FacilityStatus;
   geo?: GeoPoint;
