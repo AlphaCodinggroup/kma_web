@@ -9,9 +9,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { cookies } from "next/headers";
 import { serverEnv } from "@shared/config/env";
 import type { ApiError } from "@shared/interceptors/error";
-import { initiateAuthWithPassword } from "@features/auth/api/cognito.repo.impl";
+import {
+  initiateAuthWithPassword,
+  globalSignOut,
+} from "@features/auth/api/cognito.repo.impl";
 
 // -----------------------------
 // Schema de entrada
@@ -174,6 +178,17 @@ export async function POST(req: Request) {
  */
 export async function DELETE() {
   const res = new NextResponse(null, { status: 204 });
-  clearSessionCookiesOnResponse(res);
+  try {
+    const env = serverEnv();
+    const jar = await cookies();
+    const access = jar.get(env.cookies.accessName)?.value;
+    if (access) {
+      await globalSignOut(access);
+    }
+  } catch (err) {
+    console.error("[api/session] global sign out failed:", err);
+  } finally {
+    clearSessionCookiesOnResponse(res);
+  }
   return res;
 }
