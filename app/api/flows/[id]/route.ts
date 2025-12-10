@@ -91,8 +91,6 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
   }
 
-  console.log(JSON.stringify(body, null, 2));
-
   const upstreamUrl = `${PublicEnv.apiBaseUrl}/flows/${id}`;
 
   try {

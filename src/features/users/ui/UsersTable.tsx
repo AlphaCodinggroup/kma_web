@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import {
   Table,
@@ -14,6 +14,7 @@ import {
 import type { UserSummary } from "@entities/user/list.model";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
+import RowActionButton from "@shared/ui/row-action-button";
 
 export type UserStatus = "active" | "inactive";
 
@@ -21,7 +22,8 @@ export interface UsersTableProps {
   items: UserSummary[];
   emptyMessage?: string;
   bodyMaxHeightClassName?: string;
-  onOpenActions?: (userId: string) => void;
+  onEdit?: (userId: string) => void;
+  onDelete?: (userId: string) => void;
   className?: string | undefined;
   isLoading: boolean;
   isError: boolean;
@@ -32,7 +34,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   items,
   emptyMessage = "No users found",
   bodyMaxHeightClassName,
-  onOpenActions,
+  onEdit,
+  onDelete,
   className,
   isLoading = false,
   isError = false,
@@ -90,23 +93,23 @@ export const UsersTable: React.FC<UsersTableProps> = ({
 
                   {/* Role */}
                   <TableCell className="align-middle">
-                    -{/* <RolePill>{u.role}</RolePill> */}
+                    {u.role && <RolePill>{u.role}</RolePill>}
                   </TableCell>
 
                   {/* Actions */}
                   <TableCell className="align-middle">
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        aria-label="Open actions"
-                        onClick={() => onOpenActions?.(u.id)}
-                        className={cn(
-                          "inline-flex h-8 w-8 items-center justify-center",
-                          "rounded-md hover:bg-muted/60 transition-colors"
-                        )}
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </button>
+                    <div className="flex justify-end gap-2">
+                      <RowActionButton
+                        icon={Pencil}
+                        ariaLabel="Edit user"
+                        onClick={() => onEdit?.(u.id)}
+                      />
+                      <RowActionButton
+                        icon={Trash2}
+                        ariaLabel="Delete user"
+                        variant="danger"
+                        onClick={() => onDelete?.(u.id)}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>
