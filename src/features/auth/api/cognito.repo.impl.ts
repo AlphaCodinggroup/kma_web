@@ -48,6 +48,10 @@ type CognitoInitiateAuthRefreshBody = Readonly<{
   };
 }>;
 
+type CognitoGlobalSignOutBody = Readonly<{
+  AccessToken: string;
+}>;
+
 // Modelo de dominio que exponemos a capas superiores
 export type AuthTokens = Readonly<{
   accessToken: string;
@@ -108,6 +112,11 @@ function buildRefreshBody(
       REFRESH_TOKEN: refreshToken,
     },
   };
+}
+
+/** Construye body para GlobalSignOut */
+function buildGlobalSignOutBody(accessToken: string): CognitoGlobalSignOutBody {
+  return { AccessToken: accessToken };
 }
 
 // -----------------------------
@@ -209,6 +218,48 @@ export async function initiateAuthWithRefreshToken(
     }
 
     return mapDtoToDomain(res.data);
+  } catch (err) {
+    throw createApiError(err);
+  }
+}
+
+/**
+ * Ejecuta GlobalSignOut en Cognito invalidando todos los tokens del usuario.
+ * Requiere AccessToken vigente.
+ */
+export async function globalSignOut(accessToken: string): Promise<void> {
+  try {
+    if (!accessToken) {
+      throw <ApiError>{
+        code: "VALIDATION_ERROR",
+        message: "Access token is required for global sign out.",
+      };
+    }
+
+    const body = buildGlobalSignOutBody(accessToken);
+    const http = cognitoHttp();
+
+    const res = await http.post("/", body, {
+      headers: {
+        "X-Amz-Target": "AWSCognitoIdentityProviderService.GlobalSignOut",
+      },
+    });
+
+    if (res.status < 200 || res.status >= 300) {
+      const data = res.data as unknown as { __type?: string; message?: string };
+      if (data && (data.__type || data.message)) {
+        throw createApiErrorFromAwsLike(
+          data,
+          res.status,
+          "Global sign out failed."
+        );
+      }
+      throw <ApiError>{
+        code: "BAD_RESPONSE_STATUS",
+        message: `Global sign out failed with HTTP ${res.status}.`,
+        details: { status: res.status, body: res.data },
+      };
+    }
   } catch (err) {
     throw createApiError(err);
   }

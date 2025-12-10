@@ -5,12 +5,14 @@ import type { Role } from "@entities/user/model/sessions";
 
 type AppHeaderProps = {
   title?: string;
-  role?: Role | undefined;
+  role?: Role|undefined;
+  userName?: string | undefined;
 };
 
 const AppHeader: React.FC<AppHeaderProps> = ({
   title = "Audit Management System",
   role,
+  userName,
 }) => {
   const displayRole = role ?? "Guest";
 
@@ -22,6 +24,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
+          {userName && (
+            <span className="text-sm font-semibold text-gray-900">
+              {userName}
+            </span>
+          ) }
           <span
             className={[
               "inline-flex items-center rounded-full ",

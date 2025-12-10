@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import AppHeader from "@widgets/shell/AppHeader";
 import SidebarNav from "@widgets/shell/SidebarNav";
-import AuthGuard from "@processes/auth/guard";
+import AuthGuard from "@processes/auth/guard"
 import { getServerSession } from "@processes/auth/session";
 import QueryProvider from "@shared/providers/query-provider";
 
@@ -21,7 +21,7 @@ const PrivateLayout = async ({ children }: PrivateLayoutProps) => {
     <AuthGuard>
       <QueryProvider>
         <div className="bg-white text-black">
-          <AppHeader role={user?.role}  />
+          <AppHeader role={user?.role} userName={user?.name} />
           <div className="flex h-[calc(100dvh-64px)] min-h-0">
             <SidebarNav role={user?.role} />
             <main className="flex-1 overflow-y-auto">
