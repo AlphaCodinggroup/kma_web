@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
 import { ImagePlus, Save, ChevronDown, ChevronRight, Trash2, Plus, Loader2 } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
+import { Loading } from "@shared/ui/Loading";
+import { useRouter } from "next/navigation";
 
 interface FlowEditorProps {
     initialFlow: Flow;
@@ -18,6 +20,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const [pendingUploads, setPendingUploads] = React.useState<Record<string, File>>({});
     const [isSaving, setIsSaving] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const router = useRouter();
 
     const handleStepChange = (index: number, field: string, value: string) => {
         const newSteps = [...flow.steps];
@@ -160,11 +163,14 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                 // Ideally we'd map stepId -> previewUrl to revoke.
             });
 
-            alert("Flow saved successfully!");
+            setIsSaving(false);
+            setTimeout(() => {
+                alert("Flow saved successfully!");
+                router.push("/flows");
+            }, 100);
         } catch (error) {
             console.error("Failed to save flow", error);
             alert("Failed to save flow. Please try again.");
-        } finally {
             setIsSaving(false);
         }
     };
@@ -389,6 +395,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
     return (
         <div className="space-y-6">
+            {isSaving && <Loading text="Saving changes..." />}
             <Card>
                 <CardHeader>
                     <CardTitle>Flow Details</CardTitle>
