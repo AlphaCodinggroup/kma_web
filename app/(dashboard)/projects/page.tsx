@@ -9,11 +9,7 @@ import EditProjectDialog from "@features/projects/ui/EditProjectDialog";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import ConfirmTitle from "@shared/ui/confirm-title";
 import { useProjectsQuery } from "@features/projects/ui/hooks/useProjectsQuery";
-import type {
-  Project,
-  ProjectListFilter,
-  CreateProjectParams,
-} from "@entities/projects/model";
+import type { Project, ProjectListFilter } from "@entities/projects/model";
 import { useUsersQuery } from "@features/users/ui/hooks/useUsersQuery";
 import type { UserSummary } from "@entities/user/list.model";
 import { useDeleteProjectMutation } from "@features/projects/ui/hooks/useDeleteProjectMutation";

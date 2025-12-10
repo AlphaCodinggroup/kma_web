@@ -7,12 +7,16 @@ import { Button } from "@shared/ui/controls";
 export interface FinalReportHeaderProps {
   onExport?: (() => void) | undefined;
   exporting?: boolean | undefined;
+  disabled: boolean;
+  rightAddon?: React.ReactNode;
   className?: string;
 }
 
 const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
   onExport,
   exporting,
+  disabled = true,
+  rightAddon,
   className,
 }) => {
   const isDisabled = !onExport || !!exporting;
@@ -24,11 +28,12 @@ const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
           <h2 className="text-base font-bold leading-none">Final Report</h2>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {rightAddon}
           <Button
             type="button"
             onClick={onExport}
-            disabled={isDisabled}
+            disabled={isDisabled || disabled}
             className={cn(
               "h-9 rounded-xl border bg-background px-3 text-sm",
               "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"

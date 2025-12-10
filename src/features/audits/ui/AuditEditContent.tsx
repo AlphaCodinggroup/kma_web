@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { cn } from "@shared/lib/cn";
 import AuditEditTabsBar, { type AuditEditTab } from "./AuditEditTabsBar";
 import AuditQuestionsList, { type QuestionItemVM } from "./AuditQuestionsList";
@@ -16,6 +16,9 @@ import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
 import { useCompleteReviewAuditMutation } from "../lib/hooks/useCompleteReviewAuditMutation";
 import { Loading } from "@shared/ui/Loading";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
+import type { AuditStatus } from "@entities/audit/model";
+import { useUpdateAuditReviewStatus } from "../lib/hooks/useUpdateAuditReviewStatus";
+import AuditStatusSelector from "./AuditStatusSelector";
 
 export type ReportSeverity = "high" | "medium" | "low";
 
@@ -65,6 +68,8 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   } = useAuditReviewDetail(id);
 
   const { mutateAsync, isPending } = useCompleteReviewAuditMutation();
+  const { mutate: mutateStatus, isPending: isUpdatingStatus } =
+    useUpdateAuditReviewStatus();
 
   const { isFetching: isFetchingReport, refetch: refetchReport } =
     useAuditReport(id, { enabled: false });
@@ -77,6 +82,15 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     [auditDetail?.questions]
   );
   const showLoadingOverlay = isLoading || isAuditDetailLoading;
+  const [selectedStatus, setSelectedStatus] = useState<AuditStatus | undefined>(
+    status
+  );
+
+  useEffect(() => {
+    if (status) {
+      setSelectedStatus(status);
+    }
+  }, [status]);
 
   const handleChangeTab = useCallback((tab: AuditEditTab) => {
     setInternalTab(tab);
@@ -89,6 +103,31 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const handleCloseSidebar = useCallback(() => {
     setSelectedCommentTarget(undefined);
   }, []);
+
+  const handleOpenComments = useCallback((row: AuditFinding, index: number) => {
+    setSelectedCommentTarget({
+      id: row.questionCode ?? `report-item-${index + 1}`,
+      title:
+        row.barrierStatement ??
+        row.proposedMitigation ??
+        `Item ${index + 1}`,
+    });
+  }, []);
+
+  const handleChangeStatus = useCallback(
+    (next: AuditStatus) => {
+      if (!id || !status) return;
+      const previous = selectedStatus ?? status;
+      setSelectedStatus(next);
+      mutateStatus(
+        { auditId: id, status: next },
+        {
+          onError: () => setSelectedStatus(previous),
+        }
+      );
+    },
+    [id, mutateStatus, selectedStatus, status]
+  );
 
   const handleExport = useCallback(async () => {
     try {
@@ -156,11 +195,21 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         </>
       ) : (
         <section className="w-full px-4 sm:px-6 lg:px-8" aria-live="polite">
-          <FinalReportHeader
-            onExport={handleExport}
-            exporting={isFetchingReport || isPending || isPollingReport}
-            className="mb-3"
-          />
+          <div className="mb-3">
+            <FinalReportHeader
+              onExport={handleExport}
+              disabled={!findings.length}
+              exporting={isFetchingReport || isPending || isPollingReport}
+              rightAddon={
+                <AuditStatusSelector
+                  value={selectedStatus}
+                  onChange={handleChangeStatus}
+                  disabled={!status || isLoading || isAuditDetailLoading}
+                  isLoading={isUpdatingStatus}
+                />
+              }
+            />
+          </div>
 
           <div className={cn("flex gap-4", "flex-col md:flex-row")}>
             <div
@@ -174,20 +223,13 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
                 loading={isLoading}
                 error={isError}
                 onError={refetchReviewDetail}
-                // onAddComment={(row) => {
-                //   setSelectedCommentTarget({
-                //     id: row.id,
-                //     title:
-                //       (row as any).barrierStatement ??
-                //       (row as any).title ??
-                //       "Selected item",
-                //   });
-                // }}
+                onAddComment={handleOpenComments}
               />
             </div>
 
             {hasSidebar && (
               <CommentsSidebar
+                auditId={id}
                 selected={selectedCommentTarget}
                 onClose={handleCloseSidebar}
                 className="md:w-[380px]"
