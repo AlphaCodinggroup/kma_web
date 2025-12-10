@@ -4,6 +4,7 @@ export interface UserDTO {
   id: string;
   name: string;
   email: string;
+  role: string;
 }
 
 /** Mapea un usuario del DTO al dominio */
@@ -12,6 +13,7 @@ export function mapUserFromDTO(dto: UserDTO): UserSummary {
     id: dto.id,
     name: dto.name,
     email: dto.email,
+    role: dto.role,
   };
 }
 

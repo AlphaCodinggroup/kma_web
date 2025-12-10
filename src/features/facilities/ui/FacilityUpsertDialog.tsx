@@ -189,7 +189,12 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className={cn(className)}>
+      <ModalContent
+        className={cn(
+          "max-h-[calc(100vh-2rem)] overflow-y-auto",
+          className
+        )}
+      >
         <ModalCloseButton onClick={() => onOpenChange(false)} />
 
         <ModalHeader>
