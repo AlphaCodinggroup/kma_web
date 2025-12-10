@@ -12,6 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import type { Route } from "next";
+import type { Role } from "@entities/user/model/sessions";
 
 export type NavItem = {
   label: string;
@@ -34,11 +35,13 @@ const DEFAULT_NAV: NavItem[] = [
 type SidebarNavProps = {
   items?: NavItem[];
   widthClassName?: string;
+  role?: Role | undefined;
 };
 
 const SidebarNav: React.FC<SidebarNavProps> = ({
   items = DEFAULT_NAV,
   widthClassName = "w-65",
+  role,
 }) => {
   const pathname = usePathname();
 
@@ -49,6 +52,17 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       return pathname === href || pathname.startsWith(`${href}/`);
     },
     [pathname]
+  );
+
+  const canAccess = useCallback(
+    (item: NavItem) => {
+      if (item.href === ("/users" as Route)) {
+        const normalized = role?.toLowerCase();
+        return normalized === "administrator" || normalized === "admin";
+      }
+      return true;
+    },
+    [role]
   );
 
   return (
@@ -63,6 +77,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         <ul className="space-y-2">
           {items
             .filter((it) => !it.hidden)
+            .filter((it) => canAccess(it))
             .map((it) => {
               const active = isActive(it.href);
               const Icon = it.icon;

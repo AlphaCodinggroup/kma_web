@@ -11,13 +11,14 @@ export type UserDTO = {
   lastLoginAt?: string | null;
 };
 
-/** Mapea string del backend a Role de dominio */
-function mapRole(input?: string | null): Role {
-  const v = String(input ?? "").toLowerCase();
-  if (v === "administrator" || v === "admin") return "administrator";
-  if (v === "auditor") return "auditor";
-  return "viewer";
-}
+export type CognitoAccessTokenClaims = {
+  sub?: string;
+  username?: string;
+  email?: string;
+  name?: string;
+  "cognito:groups"?: string[];
+  exp?: number;
+};
 
 /** DTO → Dominio (User) con saneamiento y defaults */
 export function mapUserDTOtoDomain(dto: unknown): User {
@@ -28,8 +29,30 @@ export function mapUserDTOtoDomain(dto: unknown): User {
     name: (u.name ?? u.username ?? "User").toString(),
     username: (u.username ?? u.name ?? "user").toString(),
     email: u.email ?? null,
-    role: mapRole(u.role),
+    role: (u.role ?? "viewer") as Role,
     avatarUrl: u.avatarUrl ?? null,
     lastLoginAt: u.lastLoginAt ?? null,
+  };
+}
+
+/** Claims (JWT Cognito access token) → Dominio (User) */
+export function mapCognitoClaimsToUser(
+  claims: CognitoAccessTokenClaims
+): User {
+  const group = Array.isArray(claims["cognito:groups"])
+    ? claims["cognito:groups"]?.[0]
+    : undefined;
+
+  const role = (group ?? "viewer") as Role;
+  const username = claims.username || claims.sub || "user";
+
+  return {
+    id: claims.sub ?? "unknown",
+    name: claims.name || username,
+    username,
+    email: claims.email ?? null,
+    role,
+    avatarUrl: null,
+    lastLoginAt: null,
   };
 }
