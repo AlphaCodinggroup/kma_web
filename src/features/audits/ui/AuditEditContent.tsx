@@ -19,6 +19,7 @@ import type { AuditDetail } from "@entities/audit/model/audit-detail";
 import type { AuditStatus } from "@entities/audit/model";
 import { useUpdateAuditReviewStatus } from "../lib/hooks/useUpdateAuditReviewStatus";
 import AuditStatusSelector from "./AuditStatusSelector";
+import AuditFindingEditDialog from "./AuditFindingEditDialog";
 
 export type ReportSeverity = "high" | "medium" | "low";
 
@@ -59,6 +60,11 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const [selectedCommentTarget, setSelectedCommentTarget] = useState<
     CommentTarget | undefined
   >(undefined);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedFinding, setSelectedFinding] = useState<AuditFinding | null>(
+    null
+  );
 
   const {
     data: reviewDetail,
@@ -112,6 +118,18 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         row.proposedMitigation ??
         `Item ${index + 1}`,
     });
+  }, []);
+
+  const handleOpenEditFinding = useCallback((row: AuditFinding) => {
+    setSelectedFinding(row);
+    setEditOpen(true);
+  }, []);
+
+  const handleEditDialogOpenChange = useCallback((open: boolean) => {
+    setEditOpen(open);
+    if (!open) {
+      setSelectedFinding(null);
+    }
   }, []);
 
   const handleChangeStatus = useCallback(
@@ -224,6 +242,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
                 error={isError}
                 onError={refetchReviewDetail}
                 onAddComment={handleOpenComments}
+                onEditFinding={handleOpenEditFinding}
               />
             </div>
 
@@ -238,6 +257,21 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
           </div>
         </section>
       )}
+
+      <AuditFindingEditDialog
+        open={editOpen}
+        onOpenChange={handleEditDialogOpenChange}
+        auditId={id}
+        questionCode={selectedFinding?.questionCode ?? ""}
+        defaultValues={{
+          quantity:
+            typeof selectedFinding?.quantity === "number" &&
+            Number.isFinite(selectedFinding.quantity)
+              ? selectedFinding.quantity
+              : null,
+          notes: selectedFinding?.notes ?? null,
+        }}
+      />
     </div>
   );
 };

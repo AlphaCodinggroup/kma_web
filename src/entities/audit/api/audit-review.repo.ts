@@ -1,4 +1,10 @@
-import type { AuditReviewDetail } from "@entities/audit/model/audit-review";
+import type {
+  AuditReviewDetail,
+} from "@entities/audit/model/audit-review";
+import type {
+  AuditFindingUpdateResult,
+  UpdateAuditFindingInput,
+} from "@entities/audit/model/audit-review-finding-update";
 import type { CompleteReviewResult } from "@entities/audit/model/completeReview";
 import type {
   AuditReviewStatusChange,
@@ -11,4 +17,7 @@ export interface AuditReviewDetailRepo {
   updateStatus(
     input: UpdateAuditReviewStatusInput
   ): Promise<AuditReviewStatusChange>;
+  updateFinding(
+    input: UpdateAuditFindingInput
+  ): Promise<AuditFindingUpdateResult>;
 }
