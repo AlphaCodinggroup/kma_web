@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import { Eye, EyeOff, MessageSquare } from "lucide-react";
+import { Eye, EyeOff, MessageSquare, Pencil } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { Button } from "@shared/ui/controls";
@@ -19,6 +19,7 @@ import { Loading } from "@shared/ui/Loading";
 export interface ReportItemsTableProps {
   items: AuditFinding[];
   onAddComment: (row: AuditFinding, index: number) => void;
+  onEditFinding?: (row: AuditFinding, index: number) => void;
   className?: string;
   loading?: boolean;
   error?: boolean;
@@ -114,6 +115,7 @@ function PhotosColumn({ photos }: { photos: PhotoInput[] }) {
 const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
   items,
   onAddComment,
+  onEditFinding,
   className,
   loading = false,
   error = false,
@@ -232,12 +234,20 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
 
                   {/* Actions */}
                   <TableCell className="text-left">
-                    <RowActionButton
-                      icon={MessageSquare}
-                      ariaLabel="Comments"
-                      onClick={() => onAddComment(r, idx)}
-                      size="md"
-                    />
+                    <div className="flex items-center gap-2">
+                      <RowActionButton
+                        icon={Pencil}
+                        ariaLabel="Editar hallazgo"
+                        onClick={() => onEditFinding?.(r, idx)}
+                        size="md"
+                      />
+                      <RowActionButton
+                        icon={MessageSquare}
+                        ariaLabel="Comments"
+                        onClick={() => onAddComment(r, idx)}
+                        size="md"
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

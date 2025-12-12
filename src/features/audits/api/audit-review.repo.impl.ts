@@ -1,12 +1,21 @@
 import type { AxiosInstance } from "axios";
 import { httpClient } from "@shared/api/http.client";
 import type { AuditReviewDetail } from "@entities/audit/model/audit-review";
+import type {
+  AuditFindingUpdateResult,
+  UpdateAuditFindingInput,
+} from "@entities/audit/model/audit-review-finding-update";
 import type { CompleteReviewResult } from "@entities/audit/model/completeReview";
 import {
   mapAuditReviewDTO,
   type AuditReviewDTO,
 } from "@entities/audit/lib/audit-review.mappers";
 import type { AuditReviewDetailRepo } from "@entities/audit/api/audit-review.repo";
+import {
+  mapAuditFindingUpdateResponseDTOToDomain,
+  mapUpdateAuditFindingInputToDTO,
+  type AuditFindingUpdateResponseDTO,
+} from "@entities/audit/lib/audit-review-finding-update.mappers";
 import {
   mapCompleteReviewResponseDTOToDomain,
   type CompleteReviewResponseDTO,
@@ -31,6 +40,10 @@ const routes = {
     `${apiBase}/audits-review/${encodeURIComponent(auditId)}/complete-review`,
   updateStatus: (auditId: string) =>
     `${apiBase}/audits-review/${encodeURIComponent(auditId)}/status`,
+  updateFinding: (auditId: string, questionCode: string) =>
+    `${apiBase}/audits-review/${encodeURIComponent(
+      auditId
+    )}/findings/${encodeURIComponent(questionCode)}`,
 };
 
 export function createAuditReviewDetailRepo(
@@ -58,6 +71,16 @@ export function createAuditReviewDetailRepo(
         payload
       );
       return mapAuditReviewStatusChangeDTOToDomain(data);
+    },
+    async updateFinding(
+      input: UpdateAuditFindingInput
+    ): Promise<AuditFindingUpdateResult> {
+      const payload = mapUpdateAuditFindingInputToDTO(input);
+      const { data } = await client.patch<AuditFindingUpdateResponseDTO>(
+        routes.updateFinding(input.auditId, input.questionCode),
+        payload
+      );
+      return mapAuditFindingUpdateResponseDTOToDomain(data);
     },
   };
 }
