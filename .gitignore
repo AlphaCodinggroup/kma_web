@@ -5,8 +5,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.tsbuildinfo
-package-lock.json
-pnpm-lock.yaml
 AGENTS.md
 
 # Next.js
