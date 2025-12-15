@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Eye, Pencil } from "lucide-react";
+import { Eye, Pencil, Loader2 } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button } from "@shared/ui/controls";
-
+import { Loading } from "@shared/ui/Loading";
 import Link from "next/link";
 
 export interface FlowCardProps {
@@ -27,6 +27,12 @@ export const FlowCard: React.FC<FlowCardProps> = ({
   "data-testid": dataTestId,
   flowId,
 }) => {
+  const [isNavigating, setIsNavigating] = React.useState(false);
+
+  if (isNavigating) {
+    return <Loading text="Navigating to flow..." />;
+  }
+
   return (
     <Card
       data-testid={dataTestId}
@@ -46,12 +52,17 @@ export const FlowCard: React.FC<FlowCardProps> = ({
           <Link
             href={`/flows/${flowId}` as any}
             aria-label="Edit flow"
+            onClick={() => setIsNavigating(true)}
             className={cn(
               "absolute right-0 top-0 inline-flex h-6 w-6 items-center justify-center",
               "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Pencil className="h-5 w-5 cursor-pointer" stroke="#6a7282" />
+            {isNavigating ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Pencil className="h-5 w-5 cursor-pointer" stroke="#6a7282" />
+            )}
           </Link>
         </div>
 

@@ -8,6 +8,7 @@ import {
 } from "@features/flows/ui/FlowSection";
 import SearchInput from "@shared/ui/search-input";
 import { useFlowsQuery } from "@features/flows/lib/useFlowsQuery";
+import { Loading } from "@shared/ui/Loading";
 
 export default function FlowsPage() {
   const [search, setSearch] = React.useState<string>("");
@@ -43,13 +44,7 @@ export default function FlowsPage() {
     );
   }, [search, flows]);
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-muted/40 backdrop-blur-sm z-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
+  if (isLoading) return <Loading text="Loading flows…" />;
 
   if (error) {
     return (

@@ -16,6 +16,8 @@ import type { Route } from "next";
 import type { Role } from "@entities/user/model/sessions";
 import { logout } from "@features/auth/lib/usecases/login";
 
+import { Loading } from "@shared/ui/Loading";
+
 export type NavItem = {
   label: string;
   href: Route;
@@ -48,6 +50,11 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    setNavigatingTo(null);
+  }, [pathname]);
 
   const isActive = useCallback(
     (href: string) => {
@@ -91,49 +98,60 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       aria-label="Primary"
     >
       <div className="flex h-full w-full flex-col">
-        <nav className="w-full flex-1 p-4">
-          <ul className="space-y-2">
-            {items
-              .filter((it) => !it.hidden)
-              .filter((it) => canAccess(it))
-              .map((it) => {
-                const active = isActive(it.href);
-                const Icon = it.icon;
-                return (
-                  <li key={it.href}>
-                    <Link
-                      href={it.href}
-                      className={[
-                        "flex items-center gap-4 rounded-md px-3 py-2 text-sm transition-colors font-bold",
-                        active
-                          ? "bg-black text-white shadow-sm"
-                          : "text-gray-700 hover:bg-gray-100",
-                      ].join(" ")}
-                      aria-current={active ? "page" : undefined}
-                    >
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                      <span className="truncate">{it.label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-          </ul>
-        </nav>
+        {navigatingTo ? (
+          <Loading text="Navigating..." />
+        ) : (
+          <>
+            <nav className="w-full flex-1 p-4">
+              <ul className="space-y-2">
+                {items
+                  .filter((it) => !it.hidden)
+                  .filter((it) => canAccess(it))
+                  .map((it) => {
+                    const active = isActive(it.href);
+                    const Icon = it.icon;
+                    return (
+                      <li key={it.href}>
+                        <Link
+                          href={it.href}
+                          onClick={() => {
+                            if (pathname !== it.href) {
+                              setNavigatingTo(it.href);
+                            }
+                          }}
+                          className={[
+                            "flex items-center gap-4 rounded-md px-3 py-2 text-sm transition-colors font-bold",
+                            active
+                              ? "bg-black text-white shadow-sm"
+                              : "text-gray-700 hover:bg-gray-100",
+                          ].join(" ")}
+                          aria-current={active ? "page" : undefined}
+                        >
+                          <Icon className="h-4 w-4" aria-hidden="true" />
+                          <span className="truncate">{it.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </nav>
 
-        <div className="border-t border-gray-200 p-4">
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={isSigningOut}
-            className={[
-              "w-full flex items-center gap-4 rounded-md px-3 py-2 text-sm font-bold transition-colors",
-              "text-gray-700 hover:bg-gray-100 disabled:opacity-60 disabled:cursor-not-allowed",
-            ].join(" ")}
-          >
-            <LogOut className="h-4 w-4" aria-hidden="true" />
-            <span className="truncate">Logout</span>
-          </button>
-        </div>
+            <div className="border-t border-gray-200 p-4">
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isSigningOut}
+                className={[
+                  "w-full flex items-center gap-4 rounded-md px-3 py-2 text-sm font-bold transition-colors",
+                  "text-gray-700 hover:bg-gray-100 disabled:opacity-60 disabled:cursor-not-allowed",
+                ].join(" ")}
+              >
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+                <span className="truncate">Logout</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </aside>
   );

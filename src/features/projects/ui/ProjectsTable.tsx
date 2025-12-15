@@ -94,8 +94,8 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 <TableCell className="px-4 py-4 text-black">
                   {row.users?.length ? (
                     <div className="flex flex-col gap-1">
-                      {row.users.map((user) => (
-                        <span key={user.id} className="text-sm">
+                      {row.users.map((user, i) => (
+                        <span key={i} className="text-sm">
                           {user.name}
                         </span>
                       ))}
@@ -108,8 +108,8 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 <TableCell className="px-4 py-4 text-black">
                   {row.facilities?.length ? (
                     <div className="flex flex-col gap-1">
-                      {row.facilities.map((facility) => (
-                        <span key={facility.id} className="text-sm">
+                      {row.facilities.map((facility, i) => (
+                        <span key={i} className="text-sm">
                           {facility.name}
                         </span>
                       ))}
