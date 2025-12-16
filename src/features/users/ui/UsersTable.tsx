@@ -61,7 +61,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         <Table className="min-w-full table-fixed">
           <TableHeader className="sticky top-0 z-10 bg-muted/40">
             <TableRow>
-              <TableHead>User</TableHead>
+              <TableHead>Username</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead className=" text-right">Actions</TableHead>
@@ -81,7 +82,12 @@ export const UsersTable: React.FC<UsersTableProps> = ({
             ) : (
               items.map((u) => (
                 <TableRow key={u.id} className="hover:bg-muted/30">
-                  {/* User */}
+                  {/* Username */}
+                  <TableCell className="align-middle truncate">
+                    {u.id ?? "-"}
+                  </TableCell>
+
+                  {/* Name */}
                   <TableCell className="align-middle truncate">
                     {u.name ?? "-"}
                   </TableCell>
