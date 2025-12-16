@@ -55,6 +55,7 @@ export interface FormStep extends BaseStep {
 export interface SelectOption {
   label: string;
   next: string;
+  barrierId?: string;
 }
 
 export interface SelectStep extends BaseStep {

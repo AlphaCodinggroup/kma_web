@@ -32,6 +32,7 @@ export interface FlowsRepo {
   /**
    * Actualiza un Flow existente.
    */
+  create(flow: Flow): Promise<Flow>;
   update(id: FlowId, flow: Flow): Promise<Flow>;
 }
 

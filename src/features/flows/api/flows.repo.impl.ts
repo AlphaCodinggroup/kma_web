@@ -109,6 +109,22 @@ export class FlowsHttpRepo implements FlowsRepo {
     }
   }
 
+  async create(flow: Flow): Promise<Flow> {
+    const dto = mapFlowToDTO(flow);
+    const res = await fetch(INTERNAL_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dto),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new FlowsApiError(text || "Failed to create flow", res.status);
+    }
+
+    return (await res.json()) as Flow;
+  }
+
   async update(id: FlowId, flow: Flow): Promise<Flow> {
     const dto = mapFlowToDTO(flow);
     const res = await fetch(`${INTERNAL_API_URL}/${id}`, {

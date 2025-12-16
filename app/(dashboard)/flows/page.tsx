@@ -2,6 +2,8 @@
 
 import React from "react";
 import PageHeader from "@shared/ui/page-header";
+import { Button } from "@shared/ui/controls";
+import { Plus } from "lucide-react";
 import {
   FlowsSection,
   type FlowItemVM,
@@ -13,6 +15,7 @@ import { Loading } from "@shared/ui/Loading";
 export default function FlowsPage() {
   const [search, setSearch] = React.useState<string>("");
   const { data, isLoading, error } = useFlowsQuery(true);
+  const [isNavigating, setIsNavigating] = React.useState(false);
 
   const handleSearchChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +47,7 @@ export default function FlowsPage() {
     );
   }, [search, flows]);
 
-  if (isLoading) return <Loading text="Loading flows…" />;
+  if (isLoading || isNavigating) return <Loading text={isNavigating ? "Navigating to create a new flow..." : "Loading flows…"} />;
 
   if (error) {
     return (
@@ -61,12 +64,24 @@ export default function FlowsPage() {
         subtitle="View all audit flow templates used in the system"
       />
 
-      <div className="max-w-full">
-        <SearchInput
-          placeholder="Search flows..."
-          value={search}
-          onChange={handleSearchChange}
-        />
+      <div className="max-w-full flex items-center gap-4">
+        <div className="flex-1">
+          <SearchInput
+            placeholder="Search flows..."
+            value={search}
+            onChange={handleSearchChange}
+          />
+        </div>
+        <Button
+          onClick={() => {
+            setIsNavigating(true);
+            window.location.href = "/flows/new";
+          }}
+          className="bg-black text-white hover:bg-gray-800 shadow-md gap-2 !w-auto px-6"
+        >
+          <Plus className="h-4 w-4" />
+          Create Flow
+        </Button>
       </div>
 
       <FlowsSection items={filtered} />
