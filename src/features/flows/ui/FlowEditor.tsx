@@ -4,7 +4,8 @@ import React from "react";
 import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, EndStep } from "@entities/flow/model";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
-import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X } from "lucide-react";
+import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
+import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2 } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { cn } from "@shared/lib/cn";
 import { useRouter } from "next/navigation";
@@ -25,6 +26,51 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const [searchTerm, setSearchTerm] = React.useState("");
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const router = useRouter();
+
+    // Feedback Modal State
+    const [feedback, setFeedback] = React.useState<{
+        open: boolean;
+        type: "success" | "error";
+        title: string;
+        messages: string[];
+    }>({ open: false, type: "success", title: "", messages: [] });
+
+    const validateFlow = (currentFlow: Flow): string[] => {
+        const errors: string[] = [];
+
+        if (!currentFlow.title.trim()) errors.push("Flow Title is required.");
+        if (!currentFlow.description?.trim()) errors.push("Flow Description is required.");
+
+        if (currentFlow.steps.length === 0) {
+            errors.push("Flow must have at least one step.");
+        }
+
+        currentFlow.steps.forEach(step => {
+            if (step.type === "Question") {
+                const s = step as QuestionStep;
+                if (!s.text.trim()) errors.push(`Step ${s.id}: Question text is required.`);
+                if (!s.yesNext) errors.push(`Step ${s.id}: 'Yes Next' step is required.`);
+                if (!s.noNext) errors.push(`Step ${s.id}: 'No Next' step is required.`);
+            }
+            if (step.type === "Form") {
+                const s = step as FormStep;
+                if (!s.title.trim()) errors.push(`Step ${s.id}: Form title is required.`);
+                if (!s.next) errors.push(`Step ${s.id}: 'Next Step' is required.`);
+                if (s.fields.length === 0) errors.push(`Step ${s.id}: At least one field is required.`);
+            }
+            if (step.type === "Select") {
+                const s = step as SelectStep;
+                const title = s.title || s.text || "";
+                if (!title.trim()) errors.push(`Step ${s.id}: Title/Text is required.`);
+                if (s.options.length === 0) errors.push(`Step ${s.id}: At least one option is required.`);
+                s.options.forEach((opt, idx) => {
+                    if (!opt.next) errors.push(`Step ${s.id} (Option ${idx + 1}): 'Next Step' is required.`);
+                });
+            }
+        });
+
+        return errors;
+    };
 
     const selectedStep = flow.steps.find(s => s.id === selectedStepId);
 
@@ -205,6 +251,17 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     // -- Save --
 
     const handleSave = async () => {
+        const errors = validateFlow(flow);
+        if (errors.length > 0) {
+            setFeedback({
+                open: true,
+                type: "error",
+                title: "Validation Error",
+                messages: errors
+            });
+            return;
+        }
+
         setIsSaving(true);
         try {
             const stepsCopy = [...flow.steps];
@@ -221,23 +278,39 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             const updatedFlow = { ...flow, steps: stepsCopy };
 
             if (initialFlow.id === "new" || flow.id === "new") {
-                // Create
                 await flowsRepo.create(updatedFlow);
-                alert("Flow created successfully!");
             } else {
-                // Update
                 await flowsRepo.update(flow.id, updatedFlow);
-                alert("Flow saved successfully!");
             }
 
             setFlow(updatedFlow);
             setPendingUploads({});
             setIsSaving(false);
-            router.push("/flows"); // Optional: stay on page to continue editing
+
+            // Show Success Modal
+            setFeedback({
+                open: true,
+                type: "success",
+                title: "Flow Saved",
+                messages: ["The flow has been successfully saved."]
+            });
+
         } catch (error) {
             console.error("Failed to save flow", error);
-            alert("Failed to save flow. Please try again.");
             setIsSaving(false);
+            setFeedback({
+                open: true,
+                type: "error",
+                title: "Save Failed",
+                messages: ["An unexpected error occurred while saving. Please try again."]
+            });
+        }
+    };
+
+    const handleCloseFeedback = () => {
+        setFeedback(prev => ({ ...prev, open: false }));
+        if (feedback.type === "success") {
+            router.push("/flows");
         }
     };
 
@@ -601,6 +674,39 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     )}
                 </div>
             </div>
+
+            {/* Feedback Modal */}
+            <Modal open={feedback.open} onOpenChange={(open) => !open && handleCloseFeedback()}>
+                <ModalContent className="max-w-md p-6">
+                    <ModalHeader className="flex flex-col items-center gap-4 text-center">
+                        <div className={cn("p-3 rounded-full", feedback.type === "success" ? "bg-green-100" : "bg-red-100")}>
+                            {feedback.type === "success" ? (
+                                <CheckCircle2 className="w-8 h-8 text-green-600" />
+                            ) : (
+                                <AlertCircle className="w-8 h-8 text-red-600" />
+                            )}
+                        </div>
+                        <ModalTitle className={cn("text-xl", feedback.type === "success" ? "text-green-700" : "text-red-700")}>
+                            {feedback.title}
+                        </ModalTitle>
+                    </ModalHeader>
+
+                    <div className="space-y-3">
+                        {feedback.messages.map((msg, i) => (
+                            <div key={i} className={cn("text-sm p-2 rounded-md flex items-start gap-2", feedback.type === "error" ? "bg-red-50 text-red-800" : "text-gray-600 text-center justify-center")}>
+                                {feedback.type === "error" && <span className="opacity-70">•</span>}
+                                {msg}
+                            </div>
+                        ))}
+                    </div>
+
+                    <ModalFooter className="justify-center mt-6">
+                        <Button onClick={handleCloseFeedback} className={cn("w-full", feedback.type === "error" ? "bg-red-600 hover:bg-red-700" : "bg-black hover:bg-gray-800")}>
+                            {feedback.type === "success" ? "Continue" : "Fix Errors"}
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
 
             <input
                 type="file"
