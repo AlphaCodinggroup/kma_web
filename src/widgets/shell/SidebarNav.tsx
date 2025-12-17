@@ -11,6 +11,7 @@ import {
   Building2,
   Users,
   LogOut,
+  Loader2 as LoadingSpinner,
 } from "lucide-react";
 import type { Route } from "next";
 import type { Role } from "@entities/user/model/sessions";
@@ -98,60 +99,62 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       aria-label="Primary"
     >
       <div className="flex h-full w-full flex-col">
-        {navigatingTo ? (
-          <Loading text="Navigating..." />
-        ) : (
-          <>
-            <nav className="w-full flex-1 p-4">
-              <ul className="space-y-2">
-                {items
-                  .filter((it) => !it.hidden)
-                  .filter((it) => canAccess(it))
-                  .map((it) => {
-                    const active = isActive(it.href);
-                    const Icon = it.icon;
-                    return (
-                      <li key={it.href}>
-                        <Link
-                          href={it.href}
-                          onClick={() => {
-                            if (pathname !== it.href) {
-                              setNavigatingTo(it.href);
-                            }
-                          }}
-                          className={[
-                            "flex items-center gap-4 rounded-md px-3 py-2 text-sm transition-colors font-bold",
-                            active
-                              ? "bg-black text-white shadow-sm"
-                              : "text-gray-700 hover:bg-gray-100",
-                          ].join(" ")}
-                          aria-current={active ? "page" : undefined}
-                        >
+        <>
+          <nav className="w-full flex-1 p-4">
+            <ul className="space-y-2">
+              {items
+                .filter((it) => !it.hidden)
+                .filter((it) => canAccess(it))
+                .map((it) => {
+                  const active = isActive(it.href);
+                  const isNavigatingThis = navigatingTo === it.href;
+                  const Icon = it.icon;
+                  return (
+                    <li key={it.href}>
+                      <Link
+                        href={it.href}
+                        onClick={() => {
+                          if (pathname !== it.href) {
+                            setNavigatingTo(it.href);
+                          }
+                        }}
+                        className={[
+                          "flex items-center gap-4 rounded-md px-3 py-2 text-sm transition-colors font-bold",
+                          active
+                            ? "bg-black text-white shadow-sm"
+                            : "text-gray-700 hover:bg-gray-100",
+                          isNavigatingThis || (navigatingTo && !isNavigatingThis) ? "pointer-events-none opacity-80" : ""
+                        ].join(" ")}
+                        aria-current={active ? "page" : undefined}
+                      >
+                        {isNavigatingThis ? (
+                          <LoadingSpinner className="h-4 w-4 animate-spin" />
+                        ) : (
                           <Icon className="h-4 w-4" aria-hidden="true" />
-                          <span className="truncate">{it.label}</span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-              </ul>
-            </nav>
+                        )}
+                        <span className="truncate">{it.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+            </ul>
+          </nav>
 
-            <div className="border-t border-gray-200 p-4">
-              <button
-                type="button"
-                onClick={handleLogout}
-                disabled={isSigningOut}
-                className={[
-                  "w-full flex items-center gap-4 rounded-md px-3 py-2 text-sm font-bold transition-colors",
-                  "text-gray-700 hover:bg-gray-100 disabled:opacity-60 disabled:cursor-not-allowed",
-                ].join(" ")}
-              >
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-                <span className="truncate">Logout</span>
-              </button>
-            </div>
-          </>
-        )}
+          <div className="border-t border-gray-200 p-4">
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={isSigningOut}
+              className={[
+                "w-full flex items-center gap-4 rounded-md px-3 py-2 text-sm font-bold transition-colors",
+                "text-gray-700 hover:bg-gray-100 disabled:opacity-60 disabled:cursor-not-allowed",
+              ].join(" ")}
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              <span className="truncate">Logout</span>
+            </button>
+          </div>
+        </>
       </div>
     </aside>
   );

@@ -8,6 +8,7 @@ import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownR
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { cn } from "@shared/lib/cn";
 import { useRouter } from "next/navigation";
+import { Loading } from "@shared/ui/Loading";
 
 interface FlowEditorProps {
     initialFlow: Flow;
@@ -26,6 +27,10 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const router = useRouter();
 
     const selectedStep = flow.steps.find(s => s.id === selectedStepId);
+
+    if (isSaving) {
+        return <Loading text="Saving..." />;
+    }
 
     // -- Step Management --
 
@@ -48,13 +53,13 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
         switch (type) {
             case "Question":
-                newStep = { ...baseProps, type: "Question", text: "New Question" };
+                newStep = { ...baseProps, type: "Question", text: "" };
                 break;
             case "Form":
-                newStep = { ...baseProps, type: "Form", title: "New Form", fields: [] };
+                newStep = { ...baseProps, type: "Form", title: "", fields: [] };
                 break;
             case "Select":
-                newStep = { ...baseProps, type: "Select", text: "New Selection", options: [] };
+                newStep = { ...baseProps, type: "Select", text: "", options: [] };
                 break;
             case "End":
                 newStep = { ...baseProps, type: "End" };
@@ -81,6 +86,11 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const handleUpdateStep = (stepId: string, updates: Partial<FlowStep>) => {
         const newSteps = flow.steps.map(s => s.id === stepId ? { ...s, ...updates } as FlowStep : s);
         setFlow({ ...flow, steps: newSteps });
+
+        // If we are renaming the currently selected step, keep it selected
+        if (updates.id && stepId === selectedStepId) {
+            setSelectedStepId(updates.id);
+        }
     };
 
     // -- Field Management (for Forms) --
@@ -240,20 +250,66 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             : true
     );
 
-    const StepSelector = ({ value, onChange, placeholder = "Select next step..." }: { value?: string | null | undefined, onChange: (val: string) => void, placeholder?: string }) => (
-        <select
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-full rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-        >
-            <option value="">{placeholder}</option>
-            {flow.steps.map(s => (
-                <option key={s.id} value={s.id}>
-                    {s.id} ({s.type})
-                </option>
-            ))}
-        </select>
-    );
+    const StepSelector = ({ value, onChange, placeholder = "Select next step..." }: { value?: string | null | undefined, onChange: (val: string) => void, placeholder?: string }) => {
+        // Calculate usage of steps to filter allowed options
+        // Rule: A Form step can only be used by ONE parent step.
+        // Rule: Self-referencing is not allowed.
+
+        const isOptionDisabled = (step: FlowStep) => {
+            // 1. Prevent Self-Loop
+            if (selectedStep && step.id === selectedStep.id) return true;
+
+            // 2. Unique Form Assignment
+            if (step.type === "Form") {
+                // Check if this form is used by ANY OTHER step (not the current one)
+                const isUsedByOther = flow.steps.some(parent => {
+                    if (!selectedStep || parent.id === selectedStep.id) return false; // Ignore current step or if no selection
+
+                    // Check if parent refers to 'step.id'
+                    if (parent.type === "Question") {
+                        if ((parent as QuestionStep).yesNext === step.id) return true;
+                        if ((parent as QuestionStep).noNext === step.id) return true;
+                    }
+                    if (parent.type === "Select") {
+                        if ((parent as SelectStep).options.some(o => o.next === step.id)) return true;
+                    }
+                    if (parent.type === "Form") {
+                        if ((parent as FormStep).next === step.id) return true;
+                    }
+                    return false;
+                });
+
+                if (isUsedByOther) return true;
+            }
+
+            return false;
+        };
+
+        return (
+            <select
+                value={value || ""}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-full rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+            >
+                <option value="">{placeholder}</option>
+                {flow.steps.map(s => {
+                    const disabled = isOptionDisabled(s);
+                    // If it's disabled, verify if we should hide it or show it disabled.
+                    // Generally simpler to hide invalid options or show them disabled. User asked "traer como opciones", implies filtering.
+                    // But if it's currently selected (value === s.id), we MUST show it, even if momentarily invalid? 
+                    // Actually my logic for isUsedByOther explicitly ignores current step, so it shouldn't be disabled if WE are the ones using it.
+
+                    if (disabled) return null; // Hide option
+
+                    return (
+                        <option key={s.id} value={s.id}>
+                            {s.id} ({s.type})
+                        </option>
+                    );
+                })}
+            </select>
+        )
+    };
 
     return (
         <div className="h-[calc(100vh-100px)] flex flex-col gap-4">
@@ -380,7 +436,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <Button onClick={handleImageClick} className="h-9 px-3 gap-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50">
+                                            <Button onClick={handleImageClick} className="w-full h-8 px-3 gap-2 bg-black text-white hover:bg-gray-800 shadow-sm border-none">
                                                 <ImagePlus className="h-4 w-4" /> Add Image
                                             </Button>
                                         )}
@@ -401,6 +457,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                             <Label className="mt-2 text-right text-gray-500">Question Text</Label>
                                             <Textarea
                                                 value={(selectedStep as QuestionStep).text}
+                                                placeholder="Enter question text"
                                                 onChange={(e) => handleUpdateStep(selectedStep.id, { text: e.target.value })}
                                                 rows={3}
                                             />

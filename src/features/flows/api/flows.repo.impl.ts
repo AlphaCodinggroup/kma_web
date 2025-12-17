@@ -111,6 +111,7 @@ export class FlowsHttpRepo implements FlowsRepo {
 
   async create(flow: Flow): Promise<Flow> {
     const dto = mapFlowToDTO(flow);
+    console.log(JSON.stringify(dto));
     const res = await fetch(INTERNAL_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -139,6 +140,17 @@ export class FlowsHttpRepo implements FlowsRepo {
     }
 
     return (await res.json()) as Flow;
+  }
+
+  async delete(id: FlowId): Promise<void> {
+    const res = await fetch(`${INTERNAL_API_URL}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new FlowsApiError(text || "Failed to delete flow", res.status);
+    }
   }
 }
 

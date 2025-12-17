@@ -130,3 +130,49 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
   }
 }
+
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
+  const { cookies: cookieCfg } = serverEnv();
+  const cookieStore = await cookies();
+  const token = cookieStore.get(cookieCfg.accessName)?.value;
+
+  if (!token) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+
+  if (!id) {
+    return NextResponse.json(
+      { message: "Flow id is required" },
+      { status: 400 }
+    );
+  }
+
+  const upstreamUrl = `${PublicEnv.apiBaseUrl}/flows/${id}`;
+
+  try {
+    const res = await fetch(upstreamUrl, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
+      const text = await res.text();
+      return NextResponse.json(
+        { message: text || "Upstream error" },
+        { status: res.status }
+      );
+    }
+
+    return new NextResponse(null, { status: 204 });
+  } catch (err) {
+    console.error("[api/flows/:id] upstream DELETE error:", err);
+    return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
+  }
+}

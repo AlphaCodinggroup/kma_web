@@ -28,7 +28,7 @@ export const FormStepDTOSchema = StepBaseDTOSchema.extend({
   title: z.string(),
   next: z.string().optional(),
   barrier_id: z.string().optional(),
-  fields: z.array(FormFieldDTOSchema),
+  fields: z.array(FormFieldDTOSchema).optional().default([]),
 });
 
 export const SelectOptionDTOSchema = z.object({

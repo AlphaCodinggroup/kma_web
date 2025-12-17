@@ -9,7 +9,7 @@ const EMPTY_FLOW: Flow = {
     id: "new",
     title: "",
     description: "",
-    flowType: "Question", // Default
+    flowType: "Navigation",
     isActive: true,
     version: 1,
     steps: []

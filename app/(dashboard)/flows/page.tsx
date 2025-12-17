@@ -12,7 +12,10 @@ import SearchInput from "@shared/ui/search-input";
 import { useFlowsQuery } from "@features/flows/lib/useFlowsQuery";
 import { Loading } from "@shared/ui/Loading";
 
+import { useRouter } from "next/navigation";
+
 export default function FlowsPage() {
+  const router = useRouter();
   const [search, setSearch] = React.useState<string>("");
   const { data, isLoading, error } = useFlowsQuery(true);
   const [isNavigating, setIsNavigating] = React.useState(false);
@@ -75,7 +78,7 @@ export default function FlowsPage() {
         <Button
           onClick={() => {
             setIsNavigating(true);
-            window.location.href = "/flows/new";
+            router.push("/flows/new");
           }}
           className="bg-black text-white hover:bg-gray-800 shadow-md gap-2 !w-auto px-6"
         >

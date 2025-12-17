@@ -34,6 +34,7 @@ export interface FlowsRepo {
    */
   create(flow: Flow): Promise<Flow>;
   update(id: FlowId, flow: Flow): Promise<Flow>;
+  delete(id: FlowId): Promise<void>;
 }
 
 /** Identificador (token) útil para DI si usás contenedores o factories. */

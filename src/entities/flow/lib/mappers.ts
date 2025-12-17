@@ -101,7 +101,7 @@ export function mapFlowDTO(dto: FlowDTO): Flow {
     steps: dto.steps.map(mapFlowStepDTO),
     flowType: dto.flow_type ?? null,
     version: dto.version,
-    isActive: dto.is_active ?? false,
+    isActive: dto.is_active ?? true,
     createdAt: dto.created_at ?? "",
     updatedAt: dto.updated_at ?? "",
   };
@@ -196,7 +196,7 @@ export function mapFlowToDTO(flow: Flow): FlowDTO {
     title: flow.title,
     description: flow.description || undefined,
     steps: flow.steps.map(mapFlowStepToDTO),
-    flow_type: flow.flowType || undefined,
+    flow_type: flow.flowType || "Navigation",
     version: flow.version,
     is_active: flow.isActive,
     updated_at: flow.updatedAt,
