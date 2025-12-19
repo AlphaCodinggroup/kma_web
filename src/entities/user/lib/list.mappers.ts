@@ -2,6 +2,7 @@ import type { UserSummary, UsersListResult } from "../../user/list.model";
 
 export interface UserDTO {
   id: string;
+  cognito_id?: string;
   name: string;
   email: string;
   role: string;
@@ -11,6 +12,7 @@ export interface UserDTO {
 export function mapUserFromDTO(dto: UserDTO): UserSummary {
   return {
     id: dto.id,
+    cognitoId: dto.cognito_id ?? "",
     name: dto.name,
     email: dto.email,
     role: dto.role,

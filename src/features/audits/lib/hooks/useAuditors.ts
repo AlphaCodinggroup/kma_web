@@ -10,13 +10,13 @@ export interface AuditorOption {
  * Utiliza useUsersQuery con filtro role=auditor.
  */
 export function useAuditors() {
-    const { data, isLoading, isError } = useUsersQuery({ role: "auditor" });
+    const { data, isLoading, isError } = useUsersQuery();
 
     const auditors: AuditorOption[] =
         data?.items
             .filter((user) => Boolean(user.name))
             .map((user) => ({
-                id: user.id,
+                id: user.cognitoId,
                 name: user.name,
             }))
             .sort((a, b) => a.name.localeCompare(b.name)) ?? [];
