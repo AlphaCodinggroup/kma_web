@@ -10,7 +10,13 @@ export async function GET(req: NextRequest) {
   if (!token)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
+  // Extract query parameters from request
+  const { searchParams } = new URL(req.url);
+  const role = searchParams.get("role");
+
+  // Build upstream URL with query parameters
   const upstreamUrl = new URL(`${PublicEnv.apiBaseUrl}/users`);
+  if (role) upstreamUrl.searchParams.set("role", role);
 
   try {
     const res = await fetch(upstreamUrl, {

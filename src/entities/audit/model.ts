@@ -25,4 +25,5 @@ export interface Audit {
 export type AuditType = {
   audits: Audit[];
   total: number;
+  last_eval_id?: string; // Present if there are more pages available
 };

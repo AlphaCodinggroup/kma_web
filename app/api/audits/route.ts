@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { PublicEnv, serverEnv } from "@shared/config/env";
 
-export async function GET() {
+export async function GET(request: Request) {
   const { cookies: cookieCfg } = serverEnv();
 
   const cookieStore = await cookies();
@@ -11,7 +11,23 @@ export async function GET() {
   if (!token)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  const upstreamUrl = `${PublicEnv.apiBaseUrl}/audits`;
+  // Extract query parameters from request URL
+  const { searchParams } = new URL(request.url);
+  const status = searchParams.get("status");
+  const auditor = searchParams.get("auditor");
+  const limit = searchParams.get("limit");
+  const last_eval_id = searchParams.get("last_eval_id");
+
+  // Build upstream URL with query parameters
+  const upstreamParams = new URLSearchParams();
+  if (status) upstreamParams.set("status", status);
+  if (auditor) upstreamParams.set("auditor", auditor);
+  if (limit) upstreamParams.set("limit", limit);
+  if (last_eval_id) upstreamParams.set("last_eval_id", last_eval_id);
+
+  const upstreamUrl = upstreamParams.toString()
+    ? `${PublicEnv.apiBaseUrl}/audits?${upstreamParams.toString()}`
+    : `${PublicEnv.apiBaseUrl}/audits`;
 
   try {
     const res = await fetch(upstreamUrl, {

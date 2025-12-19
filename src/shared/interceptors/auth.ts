@@ -89,10 +89,26 @@ const refreshClient = axios.create({
 // -----------------------------
 
 /**
+ * Opciones para el interceptor de autenticación.
+ */
+export type AuthInterceptorOptions = {
+  /**
+   * Callback que se ejecuta cuando la sesión expira definitivamente
+   * (i.e., cuando el refresh falla).
+   */
+  onSessionExpired?: () => void | Promise<void>;
+};
+
+/**
  * Instala el auth interceptor en una instancia de Axios (cliente).
  * - Debe llamarse una sola vez sobre httpClient.
+ * @param instance - Instancia de Axios donde instalar el interceptor
+ * @param options - Opciones del interceptor (ej. callback de sesión expirada)
  */
-export function installAuthInterceptor(instance: AxiosInstance): void {
+export function installAuthInterceptor(
+  instance: AxiosInstance,
+  options?: AuthInterceptorOptions
+): void {
   instance.interceptors.response.use(
     // Pasamos 2xx sin cambios
     (res: AxiosResponse) => res,
@@ -145,7 +161,15 @@ export function installAuthInterceptor(instance: AxiosInstance): void {
               // OK → resolvemos la cola
               flushQueue(true);
             } catch (e) {
-              // Error de refresh → rechazamos la cola y propagamos
+              // Error de refresh → invocar callback de sesión expirada
+              // Fire-and-forget para no bloquear la propagación del error
+              if (options?.onSessionExpired) {
+                Promise.resolve(options.onSessionExpired()).catch((cbErr) => {
+                  console.error("[AuthInterceptor] onSessionExpired callback failed:", cbErr);
+                });
+              }
+
+              // Rechazamos la cola y propagamos
               flushQueue(false, e);
               throw e;
             } finally {

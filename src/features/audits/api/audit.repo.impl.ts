@@ -64,9 +64,9 @@ async function ensureOk(res: Response): Promise<void> {
 
     const msg =
       body &&
-      typeof body === "object" &&
-      "message" in body &&
-      (body as any).message
+        typeof body === "object" &&
+        "message" in body &&
+        (body as any).message
         ? (body as any).message
         : "Upstream error";
 
@@ -100,8 +100,28 @@ class AuditRepoHttp implements AuditRepo {
     return mapAuditDetailDTOToDomain(dto);
   }
 
-  async list(): Promise<AuditType> {
-    const res = await fetch(INTERNAL_API_URL, {
+  async list(params?: import("@entities/audit/api/audit.repo").AuditListParams): Promise<AuditType> {
+    // Build query parameters
+    const searchParams = new URLSearchParams();
+
+    if (params?.status) {
+      searchParams.set('status', params.status);
+    }
+    if (params?.auditor) {
+      searchParams.set('auditor', params.auditor);
+    }
+    if (params?.limit) {
+      searchParams.set('limit', params.limit.toString());
+    }
+    if (params?.last_eval_id) {
+      searchParams.set('last_eval_id', params.last_eval_id);
+    }
+
+    const url = searchParams.toString()
+      ? `${INTERNAL_API_URL}?${searchParams.toString()}`
+      : INTERNAL_API_URL;
+
+    const res = await fetch(url, {
       method: "GET",
       credentials: "include",
       cache: "no-store",
@@ -115,9 +135,22 @@ class AuditRepoHttp implements AuditRepo {
     // Mapeo DTO → Dominio (status queda tal cual viene del backend)
     const resp: AuditType = {
       audits: dtos.map(mapAuditDtoToDomain),
-      total: (data as any).total,
+      total: (data as any).total ?? dtos.length,
+      last_eval_id: (data as any).last_eval_id,
     };
     return resp;
+  }
+
+  async delete(auditId: string): Promise<void> {
+    const url = `${INTERNAL_API_URL}/${auditId}`;
+
+    const res = await fetch(url, {
+      method: "DELETE",
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    await ensureOk(res);
   }
 }
 
