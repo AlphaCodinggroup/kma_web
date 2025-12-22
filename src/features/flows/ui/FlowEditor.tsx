@@ -5,7 +5,7 @@ import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, End
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
-import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2 } from "lucide-react";
+import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { cn } from "@shared/lib/cn";
 import { useRouter } from "next/navigation";
@@ -34,6 +34,17 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         title: string;
         messages: string[];
     }>({ open: false, type: "success", title: "", messages: [] });
+
+    // Auto-link Modal State
+    const [autoLinkModal, setAutoLinkModal] = React.useState<{
+        open: boolean;
+        newStepId: string;
+        newStepType: FlowStep["type"];
+        availableFields: Array<{ field: string; label: string }>; // All available empty fields to link to
+    } | null>(null);
+
+    // Help Modal State
+    const [showHelpModal, setShowHelpModal] = React.useState(false);
 
     const validateFlow = (currentFlow: Flow): string[] => {
         const errors: string[] = [];
@@ -74,13 +85,56 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
     const selectedStep = flow.steps.find(s => s.id === selectedStepId);
 
+    // Helper: Check if a step has incomplete references
+    const isStepIncomplete = (step: FlowStep): boolean => {
+        if (step.type === "Question") {
+            const q = step as QuestionStep;
+            return !q.yesNext || !q.noNext;
+        }
+        if (step.type === "Form") {
+            const f = step as FormStep;
+            return !f.next;
+        }
+        if (step.type === "Select") {
+            const s = step as SelectStep;
+            return s.options.some(opt => !opt.next);
+        }
+        return false;
+    };
+
     if (isSaving) {
         return <Loading text="Saving..." />;
     }
 
     // -- Step Management --
 
-    const handleAddStep = (type: FlowStep["type"]) => {
+    // Helper: Find all empty fields in selected step that can link to new step
+    const findEmptyLinkFields = (step: FlowStep | undefined): Array<{ field: string; label: string }> => {
+        if (!step) return [];
+
+        const fields: Array<{ field: string; label: string }> = [];
+
+        if (step.type === "Question") {
+            const q = step as QuestionStep;
+            if (!q.yesNext) fields.push({ field: "yesNext", label: "Yes" });
+            if (!q.noNext) fields.push({ field: "noNext", label: "No" });
+        }
+        if (step.type === "Form") {
+            const f = step as FormStep;
+            if (!f.next) fields.push({ field: "next", label: "Next" });
+        }
+        if (step.type === "Select") {
+            const s = step as SelectStep;
+            s.options.forEach((opt, idx) => {
+                if (!opt.next) {
+                    fields.push({ field: `option:${idx}`, label: `Option ${idx + 1}: "${opt.label}"` });
+                }
+            });
+        }
+        return fields;
+    };
+
+    const handleAddStep = (type: FlowStep["type"], autoLinkTo?: { stepId: string; field: string }) => {
         const prefix = flow.steps.length > 0 ? flow.steps[0].id.split("-")[0] : "NEW";
         const count = flow.steps.filter(s => s.type === type).length + 1;
         const typeCode = type === "Question" ? "Q" : type === "Form" ? "F" : type === "Select" ? "S" : "E";
@@ -115,8 +169,54 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         }
 
         const newSteps: FlowStep[] = [...flow.steps, newStep];
-        setFlow({ ...flow, steps: newSteps });
-        setSelectedStepId(newId);
+
+        // If autoLinkTo is provided, link immediately (inline create)
+        if (autoLinkTo) {
+            const { stepId, field } = autoLinkTo;
+            const targetStep = newSteps.find(s => s.id === stepId);
+
+            if (targetStep) {
+                // Update the target step with the new link in the same state update
+                const updatedSteps = newSteps.map(s => {
+                    if (s.id !== stepId) return s;
+
+                    if (field === "yesNext" || field === "noNext") {
+                        return { ...s, [field]: newId } as QuestionStep;
+                    } else if (field === "next") {
+                        return { ...s, next: newId } as FormStep;
+                    } else if (field.startsWith("option:")) {
+                        const optionIdx = parseInt(field.split(":")[1]);
+                        const selectStep = s as SelectStep;
+                        const newOptions = [...selectStep.options];
+                        newOptions[optionIdx] = { ...newOptions[optionIdx], next: newId };
+                        return { ...selectStep, options: newOptions };
+                    }
+                    return s;
+                });
+
+                setFlow({ ...flow, steps: updatedSteps });
+            } else {
+                setFlow({ ...flow, steps: newSteps });
+            }
+
+            // Select the new step immediately
+            setSelectedStepId(newId);
+        } else {
+            setFlow({ ...flow, steps: newSteps });
+
+            // Check if we should offer auto-linking (existing behavior for sidebar create)
+            const emptyFields = findEmptyLinkFields(selectedStep);
+            if (emptyFields.length > 0 && selectedStep) {
+                setAutoLinkModal({
+                    open: true,
+                    newStepId: newId,
+                    newStepType: type,
+                    availableFields: emptyFields
+                });
+            } else {
+                setSelectedStepId(newId);
+            }
+        }
     };
 
     const handleDeleteStep = (stepId: string) => {
@@ -314,6 +414,41 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         }
     };
 
+    // Auto-link handlers
+    const handleConfirmAutoLink = (targetField: string) => {
+        if (!autoLinkModal || !selectedStep) return;
+
+        const { newStepId } = autoLinkModal;
+
+        // Special case: "both" for Questions - link to both yesNext and noNext
+        if (targetField === "both" && selectedStep.type === "Question") {
+            handleUpdateStep(selectedStep.id, {
+                yesNext: newStepId,
+                noNext: newStepId
+            } as Partial<QuestionStep>);
+        } else if (targetField === "yesNext" || targetField === "noNext") {
+            handleUpdateStep(selectedStep.id, { [targetField]: newStepId } as Partial<QuestionStep>);
+        } else if (targetField === "next") {
+            handleUpdateStep(selectedStep.id, { next: newStepId } as Partial<FormStep>);
+        } else if (targetField.startsWith("option:")) {
+            const optionIdx = parseInt(targetField.split(":")[1]);
+            const selectStep = selectedStep as SelectStep;
+            const newOptions = [...selectStep.options];
+            newOptions[optionIdx] = { ...newOptions[optionIdx], next: newStepId };
+            handleUpdateStep(selectedStep.id, { options: newOptions } as Partial<SelectStep>);
+        }
+
+        setSelectedStepId(newStepId);
+        setAutoLinkModal(null);
+    };
+
+    const handleCancelAutoLink = () => {
+        if (autoLinkModal) {
+            setSelectedStepId(autoLinkModal.newStepId);
+        }
+        setAutoLinkModal(null);
+    };
+
     // -- Render Helpers --
 
     const filteredSteps = flow.steps.filter(s =>
@@ -323,7 +458,34 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             : true
     );
 
-    const StepSelector = ({ value, onChange, placeholder = "Select next step..." }: { value?: string | null | undefined, onChange: (val: string) => void, placeholder?: string }) => {
+    const StepSelector = ({ value, onChange, placeholder = "Select next step...", stepId, field }: {
+        value?: string | null | undefined,
+        onChange: (val: string) => void,
+        placeholder?: string,
+        stepId?: string,
+        field?: string
+    }) => {
+        const [showCreateMenu, setShowCreateMenu] = React.useState(false);
+        const createButtonRef = React.useRef<HTMLDivElement>(null);
+
+        // Close menu when clicking outside
+        React.useEffect(() => {
+            const handleClickOutside = (event: MouseEvent) => {
+                if (createButtonRef.current && !createButtonRef.current.contains(event.target as Node)) {
+                    setShowCreateMenu(false);
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }, []);
+
+        const handleCreateAndLink = (type: FlowStep["type"]) => {
+            if (stepId && field) {
+                handleAddStep(type, { stepId, field });
+            }
+            setShowCreateMenu(false);
+        };
+
         // Calculate usage of steps to filter allowed options
         // Rule: A Form step can only be used by ONE parent step.
         // Rule: Self-referencing is not allowed.
@@ -359,28 +521,57 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         };
 
         return (
-            <select
-                value={value || ""}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-full rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-            >
-                <option value="">{placeholder}</option>
-                {flow.steps.map(s => {
-                    const disabled = isOptionDisabled(s);
-                    // If it's disabled, verify if we should hide it or show it disabled.
-                    // Generally simpler to hide invalid options or show them disabled. User asked "traer como opciones", implies filtering.
-                    // But if it's currently selected (value === s.id), we MUST show it, even if momentarily invalid? 
-                    // Actually my logic for isUsedByOther explicitly ignores current step, so it shouldn't be disabled if WE are the ones using it.
+            <div className="flex items-center gap-2">
+                <select
+                    value={value || ""}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="flex-1 rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                >
+                    <option value="">{placeholder}</option>
+                    {flow.steps.map(s => {
+                        const disabled = isOptionDisabled(s);
+                        if (disabled) return null; // Hide option
 
-                    if (disabled) return null; // Hide option
+                        return (
+                            <option key={s.id} value={s.id}>
+                                {s.id} ({s.type})
+                            </option>
+                        );
+                    })}
+                </select>
 
-                    return (
-                        <option key={s.id} value={s.id}>
-                            {s.id} ({s.type})
-                        </option>
-                    );
-                })}
-            </select>
+                {/* Create & Link Button */}
+                {stepId && field && (
+                    <div className="relative" ref={createButtonRef}>
+                        <button
+                            onClick={() => setShowCreateMenu(!showCreateMenu)}
+                            className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                            title="Create new step and link here"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Create
+                        </button>
+
+                        {showCreateMenu && (
+                            <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50 min-w-[160px]">
+                                {STEP_TYPES.map(type => (
+                                    <button
+                                        key={type}
+                                        onClick={() => handleCreateAndLink(type)}
+                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                    >
+                                        {type === "Question" && <HelpCircle className="h-4 w-4 text-blue-500" />}
+                                        {type === "Form" && <FileText className="h-4 w-4 text-green-500" />}
+                                        {type === "Select" && <List className="h-4 w-4 text-purple-500" />}
+                                        {type === "End" && <CheckCircle2 className="h-4 w-4 text-gray-500" />}
+                                        {type}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         )
     };
 
@@ -389,12 +580,21 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             {/* Header */}
             <div className="flex items-start justify-between gap-4 px-1 group/header">
                 <div className="flex-1 space-y-2">
-                    <input
-                        value={flow.title}
-                        onChange={(e) => setFlow({ ...flow, title: e.target.value })}
-                        className="text-2xl font-bold bg-transparent border border-gray-200 focus:border-gray-300 focus:bg-white rounded-md p-2 -ml-2 w-full placeholder:text-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-gray-100"
-                        placeholder="Untitled Flow"
-                    />
+                    <div className="flex items-center gap-2">
+                        <input
+                            value={flow.title}
+                            onChange={(e) => setFlow({ ...flow, title: e.target.value })}
+                            className="text-2xl font-bold bg-transparent border border-gray-200 focus:border-gray-300 focus:bg-white rounded-md p-2 -ml-2 flex-1 placeholder:text-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-gray-100"
+                            placeholder="Untitled Flow"
+                        />
+                        <button
+                            onClick={() => setShowHelpModal(true)}
+                            className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="How to create a flow"
+                        >
+                            <Info className="h-5 w-5" />
+                        </button>
+                    </div>
                     <input
                         value={flow.description ?? ""}
                         onChange={(e) => setFlow({ ...flow, description: e.target.value })}
@@ -431,38 +631,47 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         </div>
                     </CardHeader>
                     <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                        {filteredSteps.map((step) => (
-                            <div
-                                key={step.id}
-                                onClick={() => setSelectedStepId(step.id)}
-                                className={cn(
-                                    "p-3 rounded-lg border cursor-pointer transition-all hover:bg-gray-50 group relative",
-                                    selectedStepId === step.id ? "bg-blue-50 border-blue-200 ring-1 ring-blue-200" : "border-gray-100 bg-white"
-                                )}
-                            >
-                                <div className="flex items-center gap-2 mb-1">
-                                    {step.type === "Question" && <HelpCircle className="h-3.5 w-3.5 text-blue-500" />}
-                                    {step.type === "Form" && <FileText className="h-3.5 w-3.5 text-green-500" />}
-                                    {step.type === "Select" && <List className="h-3.5 w-3.5 text-purple-500" />}
-                                    {step.type === "End" && <X className="h-3.5 w-3.5 text-gray-500" />}
-                                    <span className="text-xs font-bold text-gray-700">{step.id}</span>
-                                    <span className="text-[10px] uppercase text-gray-400 ml-auto">{step.type}</span>
-                                </div>
-                                <div className="text-sm text-gray-600 line-clamp-2 leading-tight">
-                                    {step.type === "Question" ? (step as QuestionStep).text
-                                        : step.type === "Form" ? (step as FormStep).title
-                                            : step.type === "Select" ? ((step as SelectStep).title || (step as SelectStep).text)
-                                                : "End of flow"}
-                                </div>
-                                {/* Quick delete on hover */}
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); handleDeleteStep(step.id); }}
-                                    className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 bg-white shadow-sm p-1 rounded-md text-red-500 hover:bg-red-50"
+                        {filteredSteps.map((step) => {
+                            const incomplete = isStepIncomplete(step);
+                            return (
+                                <div
+                                    key={step.id}
+                                    onClick={() => setSelectedStepId(step.id)}
+                                    className={cn(
+                                        "p-3 rounded-lg border cursor-pointer transition-all hover:bg-gray-50 group relative",
+                                        selectedStepId === step.id ? "bg-blue-50 border-blue-200 ring-1 ring-blue-200" : "border-gray-100 bg-white",
+                                        incomplete && "border-amber-200 bg-amber-50/30"
+                                    )}
                                 >
-                                    <Trash2 className="h-3 w-3" />
-                                </button>
-                            </div>
-                        ))}
+                                    <div className="flex items-center gap-2 mb-1">
+                                        {step.type === "Question" && <HelpCircle className="h-3.5 w-3.5 text-blue-500" />}
+                                        {step.type === "Form" && <FileText className="h-3.5 w-3.5 text-green-500" />}
+                                        {step.type === "Select" && <List className="h-3.5 w-3.5 text-purple-500" />}
+                                        {step.type === "End" && <X className="h-3.5 w-3.5 text-gray-500" />}
+                                        <span className="text-xs font-bold text-gray-700">{step.id}</span>
+                                        {incomplete && (
+                                            <div className="ml-auto flex items-center gap-1 text-amber-600" title="Incomplete: missing step references">
+                                                <AlertTriangle className="h-3 w-3" />
+                                            </div>
+                                        )}
+                                        {!incomplete && <span className="text-[10px] uppercase text-gray-400 ml-auto">{step.type}</span>}
+                                    </div>
+                                    <div className="text-sm text-gray-600 line-clamp-2 leading-tight">
+                                        {step.type === "Question" ? (step as QuestionStep).text
+                                            : step.type === "Form" ? (step as FormStep).title
+                                                : step.type === "Select" ? ((step as SelectStep).title || (step as SelectStep).text)
+                                                    : "End of flow"}
+                                    </div>
+                                    {/* Quick delete on hover */}
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); handleDeleteStep(step.id); }}
+                                        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 bg-white shadow-sm p-1 rounded-md text-red-500 hover:bg-red-50"
+                                    >
+                                        <Trash2 className="h-3 w-3" />
+                                    </button>
+                                </div>
+                            );
+                        })}
 
                         <div className="pt-4 border-t mt-4 px-2">
                             <Label className="text-xs text-center block mb-2 text-gray-400 uppercase font-semibold">Add New Step</Label>
@@ -540,6 +749,8 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                             <StepSelector
                                                 value={(selectedStep as QuestionStep).yesNext}
                                                 onChange={(id) => handleUpdateStep(selectedStep.id, { ...selectedStep, yesNext: id } as QuestionStep)}
+                                                stepId={selectedStep.id}
+                                                field="yesNext"
                                             />
                                         </div>
                                         <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
@@ -547,6 +758,8 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                             <StepSelector
                                                 value={(selectedStep as QuestionStep).noNext}
                                                 onChange={(id) => handleUpdateStep(selectedStep.id, { ...selectedStep, noNext: id } as QuestionStep)}
+                                                stepId={selectedStep.id}
+                                                field="noNext"
                                             />
                                         </div>
                                         <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
@@ -588,6 +801,8 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                                             <StepSelector
                                                                 value={option.next}
                                                                 onChange={(val) => handleUpdateOption(selectedStep.id, idx, "next", val)}
+                                                                stepId={selectedStep.id}
+                                                                field={`option:${idx}`}
                                                             />
                                                         </div>
                                                         <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
@@ -628,6 +843,8 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                             <StepSelector
                                                 value={(selectedStep as FormStep).next}
                                                 onChange={(id) => handleUpdateStep(selectedStep.id, { ...selectedStep, next: id } as FormStep)}
+                                                stepId={selectedStep.id}
+                                                field="next"
                                             />
                                         </div>
                                         <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
@@ -703,6 +920,178 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     <ModalFooter className="justify-center mt-6">
                         <Button onClick={handleCloseFeedback} className={cn("w-full", feedback.type === "error" ? "bg-red-600 hover:bg-red-700" : "bg-black hover:bg-gray-800")}>
                             {feedback.type === "success" ? "Continue" : "Fix Errors"}
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            {/* Auto-Link Modal */}
+            <Modal open={autoLinkModal?.open ?? false} onOpenChange={(open) => !open && handleCancelAutoLink()}>
+                <ModalContent className="max-w-md p-6">
+                    <ModalHeader className="flex flex-col items-center gap-4 text-center">
+                        <div className="p-3 rounded-full bg-blue-100">
+                            <ArrowRight className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <ModalTitle className="text-xl text-blue-700">
+                            Link New Step?
+                        </ModalTitle>
+                        <ModalDescription className="text-sm text-gray-600">
+                            {autoLinkModal && selectedStep && (
+                                <>
+                                    Connect <span className="font-semibold text-gray-900">{autoLinkModal.newStepId}</span> ({autoLinkModal.newStepType}) to <span className="font-semibold text-gray-900">{selectedStep.id}</span>
+                                </>
+                            )}
+                        </ModalDescription>
+                    </ModalHeader>
+
+                    <ModalFooter className="flex flex-col gap-2 mt-6">
+                        {/* Special "Both" button for Questions with both fields empty */}
+                        {selectedStep?.type === "Question" &&
+                            autoLinkModal?.availableFields.length === 2 &&
+                            autoLinkModal.availableFields.some(f => f.field === "yesNext") &&
+                            autoLinkModal.availableFields.some(f => f.field === "noNext") && (
+                                <Button
+                                    onClick={() => handleConfirmAutoLink("both")}
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-between"
+                                >
+                                    <span>Link to:</span>
+                                    <span className="font-mono text-sm bg-green-700/50 px-2 py-0.5 rounded">
+                                        Both (Yes & No)
+                                    </span>
+                                </Button>
+                            )}
+
+                        {/* Individual field buttons */}
+                        {autoLinkModal?.availableFields.map((fieldOption) => (
+                            <Button
+                                key={fieldOption.field}
+                                onClick={() => handleConfirmAutoLink(fieldOption.field)}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-between"
+                            >
+                                <span>Link to:</span>
+                                <span className="font-mono text-sm bg-blue-700/50 px-2 py-0.5 rounded">
+                                    {fieldOption.label}
+                                </span>
+                            </Button>
+                        ))}
+                        <Button onClick={handleCancelAutoLink} className="w-full bg-gray-700 text-white hover:bg-gray-800 mt-2">
+                            Skip
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            {/* Help Modal */}
+            <Modal open={showHelpModal} onOpenChange={setShowHelpModal}>
+                <ModalContent className="max-w-2xl p-6 max-h-[80vh] overflow-y-auto">
+                    <ModalHeader className="flex flex-col items-center gap-4 text-center pb-4 border-b">
+                        <div className="p-3 rounded-full bg-blue-100">
+                            <Info className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <ModalTitle className="text-2xl text-blue-700">
+                            How to Create a Flow
+                        </ModalTitle>
+                        <ModalDescription className="text-sm text-gray-600">
+                            Step-by-step guide to building audit flows
+                        </ModalDescription>
+                    </ModalHeader>
+
+                    <div className="space-y-6 mt-6">
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span>
+                                Set Flow Details
+                            </h3>
+                            <p className="text-sm text-gray-600 ml-8">
+                                Enter a title and description for your flow. This helps identify the purpose of the audit.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
+                                Create Steps (Two Ways)
+                            </h3>
+                            <div className="ml-8 space-y-3">
+                                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <p className="font-medium text-sm text-green-800 mb-1 flex items-center gap-1">
+                                        <span className="text-lg">🎯</span> Recommended: Inline Create & Link
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                        Click the green <span className="font-mono bg-emerald-600 text-white px-1 rounded text-xs">+ Create</span> button next to any step selector → Choose step type → Automatically created and linked!
+                                    </p>
+                                </div>
+                                <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                                    <p className="font-medium text-sm text-gray-800 mb-1">Alternative: Sidebar Creation</p>
+                                    <p className="text-sm text-gray-600">
+                                        Use "Add New Step" buttons in the sidebar → Modal will help you link it
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
+                                Step Types
+                            </h3>
+                            <div className="ml-8 space-y-2 text-sm">
+                                <div className="flex items-start gap-2">
+                                    <HelpCircle className="h-4 w-4 text-blue-500 mt-0.5" />
+                                    <div>
+                                        <span className="font-medium">Question:</span> Yes/No branching (e.g., "Is barrier present?")
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <FileText className="h-4 w-4 text-green-500 mt-0.5" />
+                                    <div>
+                                        <span className="font-medium">Form:</span> Collect data (quantity, measurements, photos, notes)
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <List className="h-4 w-4 text-purple-500 mt-0.5" />
+                                    <div>
+                                        <span className="font-medium">Select:</span> Multiple choice with custom options
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <CheckCircle2 className="h-4 w-4 text-gray-500 mt-0.5" />
+                                    <div>
+                                        <span className="font-medium">End:</span> Terminates the flow
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">4</span>
+                                Visual Indicators
+                            </h3>
+                            <div className="ml-8 space-y-2 text-sm">
+                                <div className="flex items-start gap-2">
+                                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
+                                    <div>
+                                        <span className="font-medium text-amber-700">Amber badge:</span> Step has incomplete references (missing Yes/No/Next links)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">5</span>
+                                Save Your Flow
+                            </h3>
+                            <p className="text-sm text-gray-600 ml-8">
+                                Click <span className="font-semibold">Save Flow</span> when done. All steps must have valid connections.
+                            </p>
+                        </div>
+                    </div>
+
+                    <ModalFooter className="justify-center mt-6 pt-4 border-t">
+                        <Button onClick={() => setShowHelpModal(false)} className="bg-blue-600 hover:bg-blue-700 text-white">
+                            Got it!
                         </Button>
                     </ModalFooter>
                 </ModalContent>
