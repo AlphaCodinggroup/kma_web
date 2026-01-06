@@ -28,12 +28,28 @@ export interface BaseStep {
   image?: string | null;
 }
 
+/** Condition for checking previous step answers */
+export interface Condition {
+  step_id: string;
+  answer?: "YES" | "NO";        // For Question steps
+  selected_option?: string;      // For Select steps
+}
+
+/** Conditional navigation - alternate next step based on conditions */
+export interface ConditionalNext {
+  conditions: Condition[];
+  next: string;
+  match_any?: boolean;  // Default: false (AND logic)
+}
+
 export interface QuestionStep extends BaseStep {
   type: "Question";
   text: string;
   yesNext?: string;
   noNext?: string;
   barrierId?: string;
+  conditionalYesNext?: ConditionalNext | undefined;
+  conditionalNoNext?: ConditionalNext | undefined;
 }
 
 export interface FormField {
@@ -55,7 +71,7 @@ export interface FormStep extends BaseStep {
 export interface SelectOption {
   label: string;
   next: string;
-  barrierId?: string;
+  barrierId?: string | undefined;
 }
 
 export interface SelectStep extends BaseStep {

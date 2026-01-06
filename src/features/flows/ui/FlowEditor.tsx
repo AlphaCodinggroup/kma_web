@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, EndStep } from "@entities/flow/model";
+import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, EndStep, Condition, ConditionalNext } from "@entities/flow/model";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
-import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info } from "lucide-react";
+import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info, ChevronDown, ChevronUp } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { cn } from "@shared/lib/cn";
 import { useRouter } from "next/navigation";
@@ -449,6 +449,213 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         setAutoLinkModal(null);
     };
 
+    // -- Conditional Navigation Component --
+
+    const ConditionalNavEditor: React.FC<{
+        label: string;
+        description: string;
+        conditional: ConditionalNext | undefined;
+        onChange: (conditional: ConditionalNext | undefined) => void;
+        currentStepId: string;
+        flow: Flow;
+    }> = ({ label, description, conditional, onChange, currentStepId, flow }) => {
+        const [isExpanded, setIsExpanded] = React.useState(!!conditional);
+        const [isEnabled, setIsEnabled] = React.useState(!!conditional);
+
+        // Get steps that appear before current step (can be referenced in conditions)
+        const currentStepIndex = flow.steps.findIndex(s => s.id === currentStepId);
+        const availableSteps = flow.steps.slice(0, currentStepIndex);
+
+        // Get select options for a given step
+        const getSelectOptions = (stepId: string): string[] => {
+            const step = flow.steps.find(s => s.id === stepId);
+            if (step && step.type === "Select") {
+                return (step as SelectStep).options.map(opt => opt.label);
+            }
+            return [];
+        };
+
+        const handleToggle = (enabled: boolean) => {
+            setIsEnabled(enabled);
+            if (enabled) {
+                onChange({ conditions: [], next: "", match_any: false });
+            } else {
+                onChange(undefined);
+            }
+        };
+
+        const handleAddCondition = () => {
+            const newCondition: Condition = { step_id: "" };
+            onChange({
+                ...conditional,
+                conditions: [...(conditional?.conditions || []), newCondition],
+                next: conditional?.next || "",
+                match_any: conditional?.match_any || false
+            });
+        };
+
+        const handleUpdateCondition = (index: number, updates: Partial<Condition>) => {
+            const newConditions = [...(conditional?.conditions || [])];
+            newConditions[index] = { ...newConditions[index], ...updates };
+            onChange({
+                ...conditional,
+                conditions: newConditions,
+                next: conditional?.next || "",
+                match_any: conditional?.match_any || false
+            });
+        };
+
+        const handleDeleteCondition = (index: number) => {
+            const newConditions = (conditional?.conditions || []).filter((_, i) => i !== index);
+            onChange({
+                ...conditional,
+                conditions: newConditions,
+                next: conditional?.next || "",
+                match_any: conditional?.match_any || false
+            });
+        };
+
+        return (
+            <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
+                <Label className="mt-2 text-right text-gray-500">{label}</Label>
+                <div className="space-y-3">
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="w-full flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition-colors"
+                    >
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={isEnabled}
+                                onChange={(e) => handleToggle(e.target.checked)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="rounded"
+                            />
+                            <span className="text-sm font-medium text-purple-900">{label}</span>
+                            {isEnabled && conditional && (
+                                <span className="text-xs bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full">
+                                    {conditional.conditions.length} condition(s)
+                                </span>
+                            )}
+                        </div>
+                        {isExpanded ? <ChevronUp className="h-4 w-4 text-purple-600" /> : <ChevronDown className="h-4 w-4 text-purple-600" />}
+                    </button>
+
+                    {isExpanded && isEnabled && conditional && (
+                        <div className="p-4 border border-purple-200 rounded-lg bg-purple-50/30 space-y-4">
+                            <p className="text-xs text-gray-600">{description}</p>
+
+                            {/* Target Step */}
+                            <div>
+                                <Label className="text-sm mb-1 block">Target Step (when conditions match)</Label>
+                                <select
+                                    value={conditional.next || ""}
+                                    onChange={(e) => onChange({ ...conditional, next: e.target.value })}
+                                    className="w-full rounded-lg bg-white border border-gray-300 text-gray-900 text-sm focus:ring-purple-500 focus:border-purple-500 p-2"
+                                >
+                                    <option value="">Select target step...</option>
+                                    {flow.steps.map(s => (
+                                        <option key={s.id} value={s.id}>
+                                            {s.id} ({s.type})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Match Logic */}
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id={`match-any-${label}`}
+                                    checked={conditional.match_any || false}
+                                    onChange={(e) => onChange({ ...conditional, match_any: e.target.checked })}
+                                    className="rounded"
+                                />
+                                <Label htmlFor={`match-any-${label}`} className="text-sm cursor-pointer">
+                                    Match ANY condition (OR logic) - default is ALL (AND logic)
+                                </Label>
+                            </div>
+
+                            {/* Conditions List */}
+                            <div>
+                                <Label className="text-sm mb-2 block">Conditions</Label>
+                                <div className="space-y-2">
+                                    {conditional.conditions.map((condition, idx) => {
+                                        const selectedStep = flow.steps.find(s => s.id === condition.step_id);
+                                        return (
+                                            <div key={idx} className="p-3 bg-white border border-gray-200 rounded-lg space-y-2">
+                                                <div className="flex items-start gap-2">
+                                                    <div className="flex-1 space-y-2">
+                                                        {/* Step Selection */}
+                                                        <select
+                                                            value={condition.step_id}
+                                                            onChange={(e) => {
+                                                                const stepId = e.target.value;
+                                                                // Reset answer/option when changing step by only passing step_id
+                                                                handleUpdateCondition(idx, { step_id: stepId });
+                                                            }}
+                                                            className="w-full rounded-md bg-gray-50 border border-gray-300 text-sm p-1.5"
+                                                        >
+                                                            <option value="">Select step...</option>
+                                                            {availableSteps.map(s => (
+                                                                <option key={s.id} value={s.id}>
+                                                                    {s.id} ({s.type})
+                                                                </option>
+                                                            ))}
+                                                        </select>
+
+                                                        {/* Question Answer Selection */}
+                                                        {selectedStep?.type === "Question" && (
+                                                            <select
+                                                                value={condition.answer || ""}
+                                                                onChange={(e) => handleUpdateCondition(idx, { answer: e.target.value as "YES" | "NO" })}
+                                                                className="w-full rounded-md bg-gray-50 border border-gray-300 text-sm p-1.5"
+                                                            >
+                                                                <option value="">Select answer...</option>
+                                                                <option value="YES">YES</option>
+                                                                <option value="NO">NO</option>
+                                                            </select>
+                                                        )}
+
+                                                        {/* Select Option Selection */}
+                                                        {selectedStep?.type === "Select" && (
+                                                            <select
+                                                                value={condition.selected_option || ""}
+                                                                onChange={(e) => handleUpdateCondition(idx, { selected_option: e.target.value })}
+                                                                className="w-full rounded-md bg-gray-50 border border-gray-300 text-sm p-1.5"
+                                                            >
+                                                                <option value="">Select option...</option>
+                                                                {getSelectOptions(condition.step_id).map(opt => (
+                                                                    <option key={opt} value={opt}>{opt}</option>
+                                                                ))}
+                                                            </select>
+                                                        )}
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleDeleteCondition(idx)}
+                                                        className="p-1 text-red-500 hover:bg-red-50 rounded"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                    <Button
+                                        onClick={handleAddCondition}
+                                        className="w-full h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white"
+                                    >
+                                        <Plus className="h-3 w-3 mr-1" /> Add Condition
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
     // -- Render Helpers --
 
     const filteredSteps = flow.steps.filter(s =>
@@ -770,6 +977,26 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                                 placeholder="e.g. AR-B01"
                                             />
                                         </div>
+
+                                        {/* Conditional YES Navigation */}
+                                        <ConditionalNavEditor
+                                            label="Conditional YES Navigation"
+                                            description="Alternate navigation when YES is answered AND conditions are met"
+                                            conditional={(selectedStep as QuestionStep).conditionalYesNext}
+                                            onChange={(conditionalYesNext) => handleUpdateStep(selectedStep.id, { ...selectedStep, conditionalYesNext } as QuestionStep)}
+                                            currentStepId={selectedStep.id}
+                                            flow={flow}
+                                        />
+
+                                        {/* Conditional NO Navigation */}
+                                        <ConditionalNavEditor
+                                            label="Conditional NO Navigation"
+                                            description="Alternate navigation when NO is answered AND conditions are met"
+                                            conditional={(selectedStep as QuestionStep).conditionalNoNext}
+                                            onChange={(conditionalNoNext) => handleUpdateStep(selectedStep.id, { ...selectedStep, conditionalNoNext } as QuestionStep)}
+                                            currentStepId={selectedStep.id}
+                                            flow={flow}
+                                        />
                                     </>
                                 )}
 
@@ -1081,6 +1308,32 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         <div>
                             <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
                                 <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">5</span>
+                                Advanced: Conditional Navigation
+                            </h3>
+                            <div className="ml-8 space-y-2 text-sm">
+                                <p className="text-gray-600 mb-2">
+                                    For complex flows like "double dipping", use conditional navigation to direct to different steps based on previous answers.
+                                </p>
+                                <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg space-y-2">
+                                    <p className="font-medium text-purple-900">When to use:</p>
+                                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                                        <li>Route to shared forms based on earlier choices</li>
+                                        <li>Skip steps when certain conditions are met</li>
+                                        <li>Capture barriers before early termination</li>
+                                    </ul>
+                                </div>
+                                <div className="flex items-start gap-2 mt-2">
+                                    <Info className="h-4 w-4 text-purple-500 mt-0.5 shrink-0" />
+                                    <div className="text-gray-600">
+                                        Enable <span className="font-mono text-xs bg-purple-100 px-1 rounded">Conditional YES/NO Navigation</span> in Question steps to set conditions checking previous Question answers or Select options
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">6</span>
                                 Save Your Flow
                             </h3>
                             <p className="text-sm text-gray-600 ml-8">

@@ -6,6 +6,8 @@ import type {
   FormStep,
   SelectStep,
   EndStep,
+  Condition,
+  ConditionalNext,
 } from "../model";
 import type {
   FlowDTO,
@@ -21,6 +23,22 @@ import type {
 /** ------------------------
  *  Pasos: DTO -> Dominio
  *  -----------------------*/
+function mapConditionDTO(dto: any): Condition {
+  return {
+    step_id: dto.step_id,
+    answer: dto.answer,
+    selected_option: dto.selected_option,
+  };
+}
+
+function mapConditionalNextDTO(dto: any): ConditionalNext {
+  return {
+    conditions: dto.conditions.map(mapConditionDTO),
+    next: dto.next,
+    match_any: dto.match_any,
+  };
+}
+
 function mapQuestionStep(dto: QuestionStepDTO): QuestionStep {
   return {
     id: dto.id,
@@ -30,6 +48,8 @@ function mapQuestionStep(dto: QuestionStepDTO): QuestionStep {
     noNext: dto.no_next ?? "",
     barrierId: dto.barrier_id ?? "",
     image: dto.image ?? "",
+    conditionalYesNext: dto.conditional_yes_next ? mapConditionalNextDTO(dto.conditional_yes_next) : undefined,
+    conditionalNoNext: dto.conditional_no_next ? mapConditionalNextDTO(dto.conditional_no_next) : undefined,
   };
 }
 
@@ -47,7 +67,7 @@ function mapFormStep(dto: FormStepDTO): FormStep {
   return {
     id: dto.id,
     type: "Form",
-    title: dto.title,
+    title: dto.title ?? "",
     next: dto.next ?? "",
     barrierId: dto.barrier_id ?? "",
     fields: dto.fields.map(mapFormField),
@@ -60,7 +80,7 @@ function mapSelectStep(dto: SelectStepDTO): SelectStep {
     type: "Select",
     title: dto.title ?? "", // puede venir undefined; mantenemos ambos campos
     text: dto.text ?? "",
-    options: dto.options.map((o) => ({ label: o.label, next: o.next })),
+    options: dto.options.map((o) => ({ label: o.label, next: o.next, barrierId: o.barrier_id ?? undefined })),
     next: dto.next ?? "",
   };
 }
@@ -119,6 +139,22 @@ export function mapFlowListDTO(dto: FlowListDTO): FlowList {
 /** ------------------------
  *  Flow: Dominio -> DTO
  *  -----------------------*/
+function mapConditionToDTO(condition: Condition): any {
+  return {
+    step_id: condition.step_id,
+    answer: condition.answer,
+    selected_option: condition.selected_option,
+  };
+}
+
+function mapConditionalNextToDTO(conditional: ConditionalNext): any {
+  return {
+    conditions: conditional.conditions.map(mapConditionToDTO),
+    next: conditional.next,
+    match_any: conditional.match_any,
+  };
+}
+
 function mapQuestionStepToDTO(step: QuestionStep): QuestionStepDTO {
   return {
     id: step.id,
@@ -128,6 +164,8 @@ function mapQuestionStepToDTO(step: QuestionStep): QuestionStepDTO {
     no_next: step.noNext || undefined,
     barrier_id: step.barrierId || undefined,
     image: step.image || undefined,
+    conditional_yes_next: step.conditionalYesNext ? mapConditionalNextToDTO(step.conditionalYesNext) : undefined,
+    conditional_no_next: step.conditionalNoNext ? mapConditionalNextToDTO(step.conditionalNoNext) : undefined,
   };
 }
 
@@ -159,7 +197,7 @@ function mapSelectStepToDTO(step: SelectStep): SelectStepDTO {
     type: "Select",
     title: step.title || undefined,
     text: step.text || undefined,
-    options: step.options.map((o) => ({ label: o.label, next: o.next })),
+    options: step.options.map((o) => ({ label: o.label, next: o.next, barrier_id: o.barrierId })),
     next: step.next || undefined,
     image: step.image || undefined,
   };
