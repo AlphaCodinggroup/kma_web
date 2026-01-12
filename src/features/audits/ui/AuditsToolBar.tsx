@@ -41,7 +41,11 @@ const AuditsToolbar: React.FC<AuditsToolbarProps> = ({
     onAuditorFilterChange && onStatusFilterChange && onClearFilters;
 
   return (
-    <section className={cn("space-y-6 mb-4", className)}>
+    <section className={cn("space-y-4 mb-4", className)}>
+      <div>
+        <h2 className="text-base font-semibold text-gray-900">Search Audit</h2>
+        <p className="text-sm text-gray-600">Find audits by project, facility, flow, or auditor</p>
+      </div>
       <div className="flex items-center gap-3">
         <SearchInput
           placeholder={searchPlaceholder}

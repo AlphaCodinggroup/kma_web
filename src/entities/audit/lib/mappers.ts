@@ -3,6 +3,7 @@ import type { Audit, AuditStatus, IsoDateString } from "@entities/audit/model";
 export type AuditDTO = {
   id: string;
   flow_id: string;
+  flow_name?: string | null;
   flow_version?: number;
   project_id?: string | null;
   facility_id?: string | null;
@@ -36,6 +37,7 @@ export const mapAuditDtoToDomain = (dto: AuditDTO): Audit => {
   return {
     id: dto.id,
     flowId: dto.flow_id ?? "",
+    flowName: dto.flow_name ?? null,
     version: dto.flow_version ?? 1,
     projectId: emptyToNull(dto.project_id),
     projectName: dto.project_name ?? "",

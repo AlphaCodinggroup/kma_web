@@ -10,7 +10,7 @@ type PrivateLayoutProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Dashboard — KMA",
+  title: "KMApp Web Application",
 };
 
 const PrivateLayout = async ({ children }: PrivateLayoutProps) => {

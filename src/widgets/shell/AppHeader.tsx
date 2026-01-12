@@ -5,12 +5,12 @@ import type { Role } from "@entities/user/model/sessions";
 
 type AppHeaderProps = {
   title?: string;
-  role?: Role|undefined;
+  role?: Role | undefined;
   userName?: string | undefined;
 };
 
 const AppHeader: React.FC<AppHeaderProps> = ({
-  title = "Audit Management System",
+  title = "KMApp Web Application",
   role,
   userName,
 }) => {
@@ -28,7 +28,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             <span className="text-sm font-semibold text-gray-900">
               {userName}
             </span>
-          ) }
+          )}
           <span
             className={[
               "inline-flex items-center rounded-full ",

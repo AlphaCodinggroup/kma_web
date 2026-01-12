@@ -1,20 +1,23 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, use } from "react";
 import AuditEditHeader from "@features/audits/ui/AuditEditHeader";
 import AuditInfoPanel from "@features/audits/ui/AuditInfoPanel";
 import AuditEditContent from "@features/audits/ui/AuditEditContent";
 import { useAuditDetail } from "@features/audits/lib/hooks/useAuditDetail";
 
 export default function AuditEditPage(props: PageProps<"/audits/[id]/edit">) {
-  const params = props.params as { id: string } | Promise<{ id: string }>;
-  const searchParams =
-    ((props as any).searchParams as
-      | Record<string, string | string[] | undefined>
-      | undefined) ?? {};
+  // Handle params and searchParams - they might be Promises in Next.js 15
+  const params = props.params instanceof Promise
+    ? use(props.params)
+    : props.params;
+  const searchParams = (props as any).searchParams instanceof Promise
+    ? use((props as any).searchParams)
+    : ((props as any).searchParams || {});
+
   const auditorFromQuery =
     typeof searchParams.auditor === "string" ? searchParams.auditor : undefined;
-  const auditId = (params as any).id;
+  const auditId = params.id;
   const { data: auditDetail, isLoading: isAuditDetailLoading } =
     useAuditDetail(auditId);
 
@@ -49,6 +52,8 @@ export default function AuditEditPage(props: PageProps<"/audits/[id]/edit">) {
         <AuditInfoPanel
           auditDate={memoed.createdAt}
           completedDate={memoed.updatedAt}
+          projectName={auditDetail?.projectName}
+          facilityName={auditDetail?.facilityName}
         />
       </div>
 

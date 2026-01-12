@@ -22,34 +22,34 @@ const DashboardPage: React.FC = () => {
 
     return [
       {
-        title: "Projects",
+        title: "Total Projects",
         value: fmt(metrics.totalProjects),
-        subtitle: "Total projects",
+        subtitle: "All projects",
         icon: "brief-case",
       },
       {
-        title: "Completed projects",
-        value: fmt(metrics.totalProjectsComplete),
-        subtitle: "Finished projects",
-        icon: "check-circle-2",
-      },
-      {
-        title: "Completed reports",
-        value: fmt(metrics.totalReportsComplete),
-        subtitle: "Reports closed",
-        icon: "file-text",
-      },
-      {
-        title: "Reports sent to client",
+        title: "Total Final Reports Sent to Client",
         value: fmt(metrics.totalReportsSentToClient),
         subtitle: "Delivered to client",
         icon: "badge-check",
       },
       {
-        title: "Reports ready for QC",
+        title: "Total Audit Reports Pending Review",
         value: fmt(metrics.totalReportsReadyForQc),
-        subtitle: "Pending QC",
+        subtitle: "Pending QC review",
         icon: "shield-check",
+      },
+      {
+        title: "Total Reports Completed",
+        value: fmt(metrics.totalReportsComplete),
+        subtitle: "Reports closed",
+        icon: "file-text",
+      },
+      {
+        title: "Completed Projects",
+        value: fmt(metrics.totalProjectsComplete),
+        subtitle: "Finished projects",
+        icon: "check-circle-2",
       },
     ];
   }, [data?.metrics]);
@@ -68,7 +68,6 @@ const DashboardPage: React.FC = () => {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-extrabold">Dashboard</h1>
-          <p className="text-sm text-gray-700">Audit dashboard overview</p>
         </div>
         <button
           type="button"

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { memo } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import React, { memo, useState, useMemo } from "react";
+import { Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import type { Audit } from "@entities/audit/model";
 import {
   Table,
@@ -27,7 +27,7 @@ export interface AuditsTableProps {
   emptyMessage?: string;
   bodyMaxHeightClassName?: string;
   loading?: boolean;
-  fetching?: boolean; // NEW: for showing loading state during filter changes
+  fetching?: boolean;
   error?: boolean;
   onError: () => void;
   // Pagination props
@@ -39,8 +39,11 @@ export interface AuditsTableProps {
   onPageSizeChange?: (size: number) => void;
 }
 
+type SortColumn = "project" | "facility" | "flow" | "auditor" | "status" | "date";
+type SortDirection = "asc" | "desc" | null;
+
 /**
- * Tabla de auditorías: columnas [Project, Auditor, Status, Audit Date, Actions]
+ * Tabla de auditorías con columnas ordenables
  */
 const AuditsTable: React.FC<AuditsTableProps> = ({
   items,
@@ -60,6 +63,81 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
   onPageChange,
   onPageSizeChange,
 }) => {
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      // Cycle through: asc -> desc -> null
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortDirection(null);
+        setSortColumn(null);
+      } else {
+        setSortDirection("asc");
+      }
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedItems = useMemo(() => {
+    if (!sortColumn || !sortDirection) return items;
+
+    const sorted = [...items].sort((a, b) => {
+      let aVal: string | number = "";
+      let bVal: string | number = "";
+
+      switch (sortColumn) {
+        case "project":
+          aVal = a.projectName?.toLowerCase() ?? "";
+          bVal = b.projectName?.toLowerCase() ?? "";
+          break;
+        case "facility":
+          aVal = a.facilityName?.toLowerCase() ?? "";
+          bVal = b.facilityName?.toLowerCase() ?? "";
+          break;
+        case "flow":
+          aVal = a.flowName?.toLowerCase() ?? "";
+          bVal = b.flowName?.toLowerCase() ?? "";
+          break;
+        case "auditor":
+          aVal = a.auditorName?.toLowerCase() ?? "";
+          bVal = b.auditorName?.toLowerCase() ?? "";
+          break;
+        case "status":
+          aVal = a.status?.toLowerCase() ?? "";
+          bVal = b.status?.toLowerCase() ?? "";
+          break;
+        case "date":
+          aVal = new Date(a.createdAt).getTime();
+          bVal = new Date(b.createdAt).getTime();
+          break;
+      }
+
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  }, [items, sortColumn, sortDirection]);
+
+  const SortIcon = ({ column }: { column: SortColumn }) => {
+    if (sortColumn !== column) {
+      return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    }
+    if (sortDirection === "asc") {
+      return <ArrowUp className="h-4 w-4 text-black" />;
+    }
+    if (sortDirection === "desc") {
+      return <ArrowDown className="h-4 w-4 text-black" />;
+    }
+    return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+  };
+
   if (loading) return <Loading text="Loading audits…" />;
 
   if (error)
@@ -70,7 +148,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
       />
     );
 
-  const hasItems = items.length > 0;
+  const hasItems = sortedItems.length > 0;
   const showPagination = onPageChange && onPageSizeChange && totalItems > 0;
 
   return (
@@ -91,12 +169,61 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
-              <TableHead>Project</TableHead>
-              <TableHead>Facility</TableHead>
-              <TableHead>Auditor</TableHead>
-              <TableHead className="w-[20%]">Status</TableHead>
-              <TableHead className="w-[15%]">Audit Date</TableHead>
-              <TableHead className="w-[5%] text-right pr-6">Actions</TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("project")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Project
+                  <SortIcon column="project" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("facility")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Facility
+                  <SortIcon column="facility" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("flow")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Flow
+                  <SortIcon column="flow" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("auditor")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Auditor
+                  <SortIcon column="auditor" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[18%]">
+                <button
+                  onClick={() => handleSort("status")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Status
+                  <SortIcon column="status" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[15%]">
+                <button
+                  onClick={() => handleSort("date")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Audit Date
+                  <SortIcon column="date" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[5%] text-right pr-6 font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -104,7 +231,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
             {!hasItems && (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="py-10 text-center text-sm text-gray-500"
                 >
                   {emptyMessage}
@@ -112,10 +239,11 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               </TableRow>
             )}
 
-            {items.map((row) => (
+            {sortedItems.map((row) => (
               <TableRow key={`${row.id}-${row.version}`}>
                 <TableCell>{row.projectName ?? "—"}</TableCell>
                 <TableCell>{row.facilityName ?? "—"}</TableCell>
+                <TableCell>{row.flowName ?? "—"}</TableCell>
                 <TableCell>{row.auditorName ?? "—"}</TableCell>
                 <TableCell>
                   <StatusBadge status={row.status} />

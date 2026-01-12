@@ -8,7 +8,6 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { PublicEnv } from "@shared/config/env";
 import { isApiError } from "@shared/interceptors/error";
 
 type Props = { children: ReactNode };
@@ -16,7 +15,7 @@ type Props = { children: ReactNode };
 /**
  * QueryProvider
  * - Provee un QueryClient único por sesión de UI.
- * - Configura defaults (staleTime desde env, retry conservador, sin refetch en focus).
+ * - Configura defaults optimizados para performance (staleTime 2min, gcTime 5min).
  * - No depende de UI ni estilos.
  */
 export function QueryProvider({ children }: Props) {
@@ -44,7 +43,8 @@ export function QueryProvider({ children }: Props) {
         }),
         defaultOptions: {
           queries: {
-            staleTime: PublicEnv.queryStaleTimeMs,
+            staleTime: 2 * 60 * 1000, // 2 minutes - industry standard
+            gcTime: 5 * 60 * 1000,    // 5 minutes garbage collection
             retry: 2,
             refetchOnWindowFocus: false,
             refetchOnReconnect: true,

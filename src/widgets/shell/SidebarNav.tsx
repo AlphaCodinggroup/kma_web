@@ -8,7 +8,6 @@ import {
   FileText,
   GitBranch,
   FolderClosed,
-  Building2,
   Users,
   LogOut,
   Loader2 as LoadingSpinner,
@@ -32,8 +31,7 @@ const DEFAULT_NAV: NavItem[] = [
   { label: "Audits", href: "/audits" as Route, icon: FileText },
   { label: "Reports", href: "/reports" as Route, icon: FileText },
   { label: "Flows", href: "/flows" as Route, icon: GitBranch },
-  { label: "Projects", href: "/projects" as Route, icon: FolderClosed },
-  { label: "Facilities", href: "/facilities" as Route, icon: Building2 },
+  { label: "Projects & Facilities", href: "/projects" as Route, icon: FolderClosed },
   { label: "User Management", href: "/users" as Route, icon: Users },
 ];
 
@@ -113,6 +111,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                     <li key={it.href}>
                       <Link
                         href={it.href}
+                        prefetch={true}
+                        onMouseEnter={() => router.prefetch(it.href)}
                         onClick={() => {
                           if (pathname !== it.href) {
                             setNavigatingTo(it.href);
@@ -136,7 +136,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                       </Link>
                     </li>
                   );
-                })}
+                })
+              }
             </ul>
           </nav>
 

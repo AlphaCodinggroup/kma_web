@@ -9,6 +9,7 @@ export type AuditStatus =
 export interface Audit {
   id: string;
   flowId: string;
+  flowName?: string | null;
   version: number;
   projectId: string | null;
   facilityId: string | null;

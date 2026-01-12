@@ -71,11 +71,13 @@ const AuditsPage: React.FC = () => {
       const projectId = row.projectId?.toLowerCase?.() ?? "";
       const projectName = row.projectName?.toLowerCase?.() ?? "";
       const facilityName = row.facilityName?.toLowerCase?.() ?? "";
+      const flowName = row.flowName?.toLowerCase?.() ?? "";
       const createdAt = row.createdAt?.toLowerCase?.() ?? "";
       return (
         projectId.includes(q) ||
         projectName.includes(q) ||
         facilityName.includes(q) ||
+        flowName.includes(q) ||
         createdAt.includes(q)
       );
     });
@@ -171,7 +173,7 @@ const AuditsPage: React.FC = () => {
 
   return (
     <main className={cn("min-h-dv hoverflow-hidden bg-white")}>
-      <PageHeader title="Audits" subtitle="Manage all system audits" />
+      <PageHeader title="Audits" />
       <div
         className={cn(
           "w-full rounded-xl border border-gray-200 bg-white px-4 py-3"

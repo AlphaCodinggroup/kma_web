@@ -7,6 +7,8 @@ import { formatIsoToYmdHm } from "@shared/lib/date";
 export interface AuditInfoPanelProps {
   auditDate: string;
   completedDate?: string | null;
+  projectName?: string | null | undefined;
+  facilityName?: string | null | undefined;
   className?: string;
   containerPaddingClassName?: string;
   ariaLabelledById?: string;
@@ -24,6 +26,8 @@ function toIso(d: string | Date): string | undefined {
 export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
   auditDate,
   completedDate,
+  projectName,
+  facilityName,
   className,
   containerPaddingClassName = "px-4 sm:px-6 lg:px-8",
   ariaLabelledById,
@@ -39,7 +43,7 @@ export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
           Audit Information
         </h3>
 
-        <dl className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
           <div>
             <dt className="text-sm font-semibold text-muted-foreground">
               Audit Date
@@ -55,6 +59,24 @@ export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
             </dt>
             <dd className="mt-1 text-sm" data-testid="completed-date">
               {formatIsoToYmdHm(completedDate)}
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-semibold text-muted-foreground">
+              Project
+            </dt>
+            <dd className="mt-1 text-sm" data-testid="project-name">
+              {projectName || "—"}
+            </dd>
+          </div>
+
+          <div className="sm:justify-self-end">
+            <dt className="text-sm font-semibold text-muted-foreground">
+              Facility
+            </dt>
+            <dd className="mt-1 text-sm" data-testid="facility-name">
+              {facilityName || "—"}
             </dd>
           </div>
         </dl>

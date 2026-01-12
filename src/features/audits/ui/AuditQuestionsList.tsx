@@ -93,20 +93,48 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
     });
   }, [normalizedItems]);
 
-  const filtered = useMemo(
-    () =>
-      filterMode === "no"
-        ? itemsWithAnswer.filter((q) => {
-            if (q.answeredYes === false) return true;
-            const hasNotes =
-              typeof q.notes === "string" && q.notes.trim().length > 0;
-            return q.answeredYes === undefined && (hasAnswerValue(q) || hasNotes);
-          })
-        : itemsWithAnswer,
-    [itemsWithAnswer, filterMode]
-  );
+  const filtered = useMemo(() => {
+    if (filterMode === "all") {
+      return itemsWithAnswer;
+    }
+
+    if (filterMode === "no") {
+      return itemsWithAnswer.filter((q) => {
+        if (q.answeredYes === false) return true;
+        const hasNotes =
+          typeof q.notes === "string" && q.notes.trim().length > 0;
+        return q.answeredYes === undefined && (hasAnswerValue(q) || hasNotes);
+      });
+    }
+
+    if (filterMode === "yes") {
+      return itemsWithAnswer.filter((q) => q.answeredYes === true);
+    }
+
+    if (filterMode === "unsure") {
+      return itemsWithAnswer.filter((q) => {
+        // Unsure means: not clearly yes/no, or has notes indicating review needed
+        const isUnclear = q.answeredYes === undefined || q.answeredYes === null;
+        const hasReviewNotes =
+          typeof q.notes === "string" &&
+          (q.notes.toLowerCase().includes("review") ||
+            q.notes.toLowerCase().includes("unsure") ||
+            q.notes.toLowerCase().includes("unclear"));
+        return isUnclear || hasReviewNotes;
+      });
+    }
+
+    return itemsWithAnswer;
+  }, [itemsWithAnswer, filterMode]);
 
   const hasItems = filtered.length > 0;
+
+  const getEmptyMessage = () => {
+    if (filterMode === "no") return "No questions with NO answer found.";
+    if (filterMode === "yes") return "No questions with YES answer found.";
+    if (filterMode === "unsure") return "No questions requiring further review found.";
+    return "No questions available.";
+  };
 
   return (
     <section
@@ -143,9 +171,7 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
           data-testid="audit-questions-empty"
         >
           <p className="text-sm text-muted-foreground">
-            {filterMode === "no"
-              ? "No questions with NO answer found."
-              : "No questions available."}
+            {getEmptyMessage()}
           </p>
         </div>
       )}

@@ -2,8 +2,8 @@
 
 import React from "react";
 import PageHeader from "@shared/ui/page-header";
-import { Button } from "@shared/ui/controls";
-import { Plus } from "lucide-react";
+// import { Button } from "@shared/ui/controls";
+// import { Plus } from "lucide-react";
 import {
   FlowsSection,
   type FlowItemVM,
@@ -75,7 +75,7 @@ export default function FlowsPage() {
             onChange={handleSearchChange}
           />
         </div>
-        <Button
+        {/* <Button
           onClick={() => {
             setIsNavigating(true);
             router.push("/flows/new");
@@ -84,7 +84,7 @@ export default function FlowsPage() {
         >
           <Plus className="h-4 w-4" />
           Create Flow
-        </Button>
+        </Button> */}
       </div>
 
       <FlowsSection items={filtered} />

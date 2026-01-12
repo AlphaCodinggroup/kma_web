@@ -53,7 +53,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
 }) => {
   const [internalTab, setInternalTab] = useState<AuditEditTab>("questions");
   const [internalFilter, setInternalFilter] =
-    useState<QuestionsFilterMode>("no");
+    useState<QuestionsFilterMode>("all");
   const [isPollingReport, setIsPollingReport] = useState(false);
 
   // Estado del panel de comentarios (cuando es undefined NO se muestra)
@@ -102,8 +102,8 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     setInternalTab(tab);
   }, []);
 
-  const handleToggleFilter = useCallback(() => {
-    setInternalFilter((prev) => (prev === "no" ? "all" : "no"));
+  const handleFilterChange = useCallback((mode: QuestionsFilterMode) => {
+    setInternalFilter(mode);
   }, []);
 
   const handleCloseSidebar = useCallback(() => {
@@ -203,7 +203,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         <>
           <AuditQuestionsHeader
             filterMode={internalFilter}
-            onToggleFilter={handleToggleFilter}
+            onFilterChange={handleFilterChange}
             className="mt-2"
           />
           <AuditQuestionsList
@@ -266,7 +266,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         defaultValues={{
           quantity:
             typeof selectedFinding?.quantity === "number" &&
-            Number.isFinite(selectedFinding.quantity)
+              Number.isFinite(selectedFinding.quantity)
               ? selectedFinding.quantity
               : null,
           notes: selectedFinding?.notes ?? null,
