@@ -202,9 +202,9 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                   <TableCell>
                     {typeof r.adasReference === "string" &&
                     r.adasReference.trim() ? (
-                      <ul className="list-inside list-disc space-y-1 text-sm">
-                        <li>{r.adasReference.trim()}</li>
-                      </ul>
+                      <div className="text-sm">
+                        {r.adasReference.trim()}
+                      </div>
                     ) : (
                       <span className="text-sm text-muted-foreground">—</span>
                     )}

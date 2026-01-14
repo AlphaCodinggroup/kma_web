@@ -84,7 +84,8 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
       setPendingFacilityId("");
       setNameTouched(false);
     }
-  }, [open, initial]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]); // Removed 'initial' to prevent reset when adding items during edit
 
   const handleChange = useCallback(
     <K extends keyof ProjectUpsertValues>(
@@ -195,11 +196,6 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
     title:
       titleOverride ??
       (mode === "create" ? "Create New Project" : "Edit Project"),
-    description:
-      descriptionOverride ??
-      (mode === "create"
-        ? "Add a new audit project to the system"
-        : "Update project information"),
     submit:
       submitLabelOverride ??
       (mode === "create" ? "Create Project" : "Update Project"),
@@ -214,7 +210,6 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
 
         <ModalHeader>
           <ModalTitle>{copy.title}</ModalTitle>
-          <ModalDescription>{copy.description}</ModalDescription>
         </ModalHeader>
 
         <form onSubmit={onSubmitInternal} className="space-y-5">
@@ -239,20 +234,6 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 Project name is required.
               </p>
             )}
-          </div>
-
-          {/* Project Description (opcional) */}
-          <div>
-            <Label htmlFor="project-description">Description</Label>
-            <Input
-              id="project-description"
-              placeholder="Enter a short description (optional)"
-              value={values.description ?? ""}
-              onChange={(e) =>
-                handleChange("description", e.currentTarget.value)
-              }
-              disabled={isFormControlsDisabled}
-            />
           </div>
 
           {/* Assigned Auditors (multi) */}
@@ -350,8 +331,8 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                   aria-label="Select a facility to add"
                 >
                   <option value="">Select a facility</option>
-                  {facilities.map((f) => (
-                    <option key={f.id} value={f.id}>
+                  {facilities.map((f, i) => (
+                    <option key={i} value={f.id}>
                       {f.name || f.id}
                     </option>
                   ))}
@@ -372,9 +353,9 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
 
             {values.facilityIds && values.facilityIds.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
-                {values.facilityIds.map((id) => (
+                {values.facilityIds.map((id, i) => (
                   <span
-                    key={id}
+                    key={i}
                     className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800 ring-1 ring-gray-200"
                   >
                     {facilityNameById.get(id) ?? id}

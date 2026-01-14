@@ -9,6 +9,7 @@ import { useReportByIdQuery } from "@features/reports/lib/hooks/useReportByIdQue
 import PageHeader from "@shared/ui/page-header";
 import { useDebouncedSearch } from "@shared/lib/useDebouncedSearch";
 import { cn } from "@shared/lib/cn";
+import { useDeleteReport } from "@features/reports/lib/hooks/useDeleteReport";
 
 const ReportsPage: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -98,18 +99,42 @@ const ReportsPage: React.FC = () => {
     downloadError,
   ]);
 
+  // Delete report functionality
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const deleteMutation = useDeleteReport();
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this report? This action cannot be undone."
+      );
+
+      if (!confirmed) return;
+
+      try {
+        setDeletingId(id);
+        await deleteMutation.mutateAsync(id);
+      } catch (err) {
+        console.error("[ReportsPage] Error deleting report:", err);
+        alert("Error deleting the report. Please try again.");
+      } finally {
+        setDeletingId(null);
+      }
+    },
+    [deleteMutation]
+  );
+
   return (
     <main className={cn("min-h-dvh overflow-hidden bg-white")}>
       <PageHeader
-        title="Generated Reports"
-        subtitle="View and download all audit reports"
+        title="Reports"
       />
 
       <div className="mb-6">
         <ReportsSearchCard
           query={query}
           onQueryChange={setQuery}
-          placeholder="Search by project name, auditor, or report ID…"
+          placeholder="Search reports..."
         />
       </div>
 
@@ -122,6 +147,8 @@ const ReportsPage: React.FC = () => {
         isError={isListError}
         onError={refetch}
         onDownload={handleDownload}
+        onDelete={handleDelete}
+        deletingId={deletingId}
         isDownloading={isDownloadLoading}
       />
     </main>

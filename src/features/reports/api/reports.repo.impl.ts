@@ -33,7 +33,7 @@ function toApiError(err: unknown): ApiError {
  * que a su vez proxyea al upstream real.
  */
 export class ReportsRepoHttp implements ReportsRepo {
-  constructor(private readonly basePath: string = "/api/reports") {}
+  constructor(private readonly basePath: string = "/api/reports") { }
 
   async list(filter?: ReportListFilter): Promise<ReportListPage> {
     try {
@@ -68,6 +68,14 @@ export class ReportsRepoHttp implements ReportsRepo {
       );
 
       return mapReportListItemFromDTO(data);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    try {
+      await httpClient.delete(`${this.basePath}/${encodeURIComponent(id)}`);
     } catch (err) {
       throw toApiError(err);
     }

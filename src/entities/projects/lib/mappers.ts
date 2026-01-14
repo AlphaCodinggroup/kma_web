@@ -7,7 +7,7 @@ export interface ProjectDTO {
   description?: string;
   status: "ACTIVE" | "ARCHIVED";
   users: Options[];
-  facilities: Options[];
+  facilities: Array<{ facility_id: string; project_id?: string; name: string }>;
   created_at: string;
   updated_at: string;
   created_by: string;
@@ -31,7 +31,7 @@ export function mapProjectFromDTO(dto: ProjectDTO): Project {
     description: dto.description ?? "",
     status: dto.status,
     users: dto.users?.map((u) => ({ id: u.id, name: u.name })) ?? [],
-    facilities: dto.facilities?.map((f) => ({ id: f.id, name: f.name })) ?? [],
+    facilities: dto.facilities?.map((f) => ({ id: f.facility_id, name: f.name })) ?? [],
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
     createdBy: dto.created_by,

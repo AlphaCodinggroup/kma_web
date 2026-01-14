@@ -17,4 +17,9 @@ export interface ReportsRepo {
    * Obtiene un reporte por ID de auditoría.
    */
   getById(id: string): Promise<ReportListItem>;
+
+  /**
+   * Elimina un reporte por ID de auditoría.
+   */
+  delete(id: string): Promise<void>;
 }

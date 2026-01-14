@@ -69,7 +69,7 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
           <TableRow className="[&_th]:h-12">
             <TableHead className="w-[44%]">Facility</TableHead>
             <TableHead className="w-[36%]">Address</TableHead>
-            <TableHead className="w-[12%]">Created</TableHead>
+            <TableHead className="w-[12%]">Created At</TableHead>
             <TableHead className="w-[8%] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>

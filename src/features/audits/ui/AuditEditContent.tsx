@@ -149,11 +149,12 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
 
   const handleExport = useCallback(async () => {
     try {
-      // Si está en revisión, cerramos la revisión primero
-      if (status === "draft_report_in_review") {
-        await mutateAsync({ auditId: id });
-        await refetchReviewDetail(); // refresca detalle para que status cambie
-      }
+      // COMENTADO: Ya no cambiamos el estado automáticamente al exportar PDF
+      // El estado se puede cambiar manualmente en cualquier momento usando el selector
+      // if (status === "draft_report_in_review") {
+      //   await mutateAsync({ auditId: id });
+      //   await refetchReviewDetail(); // refresca detalle para que status cambie
+      // }
 
       // Empezamos el polling del reporte
       setIsPollingReport(true);

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Download } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { StatusBadge } from "@shared/ui/badge";
 import {
@@ -27,7 +27,9 @@ export interface ReportsTableProps {
   isError: boolean;
   isDownloading: boolean;
   onDownload: (id: string) => void;
+  onDelete: (id: string) => void;
   onError: () => void;
+  deletingId?: string | null | undefined;
 }
 
 /**
@@ -42,7 +44,9 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   isLoading,
   isDownloading,
   onDownload,
+  onDelete,
   onError,
+  deletingId,
 }) => {
   const hasItems = items.length > 0;
 
@@ -67,10 +71,10 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
         <Table className="min-w-[720px]">
           <TableHeader>
             <TableRow className="bg-white">
-              <TableHead>Report</TableHead>
+              <TableHead>Project</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Created At</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>Export to PDF</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -101,15 +105,25 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {r.reportUrl && (
-                          <RowActionButton
-                            icon={Download}
-                            ariaLabel="Download report"
-                            onClick={() => onDownload(r.id)}
-                            size="md"
-                            disabled={isDownloading}
-                          />
-                        )}
+                        {/* Download button - always shown but disabled if no reportUrl */}
+                        <RowActionButton
+                          icon={Download}
+                          ariaLabel={
+                            r.reportUrl
+                              ? "Download report"
+                              : "Report not available yet"
+                          }
+                          onClick={() => onDownload(r.id)}
+                          size="md"
+                          disabled={!r.reportUrl || isDownloading}
+                        />
+                        <RowActionButton
+                          icon={Trash2}
+                          ariaLabel="Delete report"
+                          onClick={() => onDelete(r.id)}
+                          size="md"
+                          disabled={deletingId === r.id}
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

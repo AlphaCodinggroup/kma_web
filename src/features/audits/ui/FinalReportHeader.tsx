@@ -25,7 +25,7 @@ const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
     <div className={cn("bg-card/50 px-4 py-3 sm:px-5 sm:py-4", className)}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-base font-bold leading-none">Final Report</h2>
+          <h2 className="text-base font-bold leading-none">Draft Report</h2>
         </div>
 
         <div className="flex items-center gap-3">

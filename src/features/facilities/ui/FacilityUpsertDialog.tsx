@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@shared/lib/cn";
-import { Label, Input, Button, ErrorText, HelpText } from "@shared/ui/controls";
+import { Label, Input, Button, ErrorText, HelpText, Textarea } from "@shared/ui/controls";
 import {
   Modal,
   ModalContent,
@@ -177,11 +177,6 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
     title:
       titleOverride ??
       (mode === "create" ? "Create New Facility" : "Edit Facility"),
-    description:
-      descriptionOverride ??
-      (mode === "create"
-        ? "Add a new facility location to the system"
-        : "Update facility information"),
     submit:
       submitLabelOverride ??
       (mode === "create" ? "Create Facility" : "Update Facility"),
@@ -199,13 +194,12 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
 
         <ModalHeader>
           <ModalTitle>{copy.title}</ModalTitle>
-          <ModalDescription>{copy.description}</ModalDescription>
         </ModalHeader>
 
         <form onSubmit={onSubmitInternal} className="space-y-5">
           {/* Facility Name */}
           <div>
-            <Label htmlFor="facility-name">Facility Name</Label>
+            <Label htmlFor="facility-name">Name</Label>
             <Input
               id="facility-name"
               placeholder={
@@ -216,13 +210,6 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               disabled={isSubmitting}
               required
             />
-            {isNameValid ? (
-              <HelpText>
-                Required - this identifies the facility in the system.
-              </HelpText>
-            ) : (
-              <ErrorText>Facility name is required</ErrorText>
-            )}
           </div>
 
           {/* Address */}
@@ -230,38 +217,39 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
             <Label htmlFor="facility-address">Address</Label>
             <Input
               id="facility-address"
-              placeholder="Enter facility address (optional)"
+              placeholder="Enter facility address"
               value={values.address ?? ""}
               onChange={(e) => handleChange("address", e.currentTarget.value)}
               disabled={isSubmitting}
+              required
             />
           </div>
 
-          {/* City */}
+          {/* City, State */}
           <div>
-            <Label htmlFor="facility-city">City</Label>
+            <Label htmlFor="facility-city">City, State</Label>
             <Input
               id="facility-city"
-              placeholder="Enter city (optional)"
+              placeholder="Enter city, state"
               value={values.city ?? ""}
               onChange={(e) => handleChange("city", e.currentTarget.value)}
               disabled={isSubmitting}
+              required
             />
           </div>
 
           {/* Description */}
           <div>
             <Label htmlFor="facility-description">Description</Label>
-            <Input
+            <Textarea
               id="facility-description"
-              placeholder="Enter description (optional)"
+              placeholder="Enter description"
               value={values.description ?? ""}
               onChange={(e) => handleChange("description", e.currentTarget.value)}
               disabled={isSubmitting}
+              required
+              rows={4}
             />
-            <HelpText>
-              Short description of this facility (optional).
-            </HelpText>
           </div>
 
           {/* Photo upload */}
@@ -293,9 +281,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
                   </Button>
                 </div>
               </div>
-            ) : (
-              <HelpText>Optional image.</HelpText>
-            )}
+            ) : null}
           </div>
 
           {error ? <ErrorText>{error}</ErrorText> : <HelpText>&nbsp;</HelpText>}

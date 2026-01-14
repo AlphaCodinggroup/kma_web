@@ -63,7 +63,7 @@ export default function FlowsPage() {
   return (
     <main className="flex w-full flex-col gap-6">
       <PageHeader
-        title="Audit Flows"
+        title="Flows"
         subtitle="View all audit flow templates used in the system"
       />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useCallback, useImperativeHandle } from "react";
-import { ProjectsTable } from "@features/projects/ui/ProjectsTable";
+import { ProjectsTable, type SortField, type SortOrder } from "@features/projects/ui/ProjectsTable";
 import ProjectsSearchCard from "@features/projects/ui/ProjectsSearchCard";
 import CreateProjectDialog from "@features/projects/ui/CreateProjectDialog";
 import EditProjectDialog from "@features/projects/ui/EditProjectDialog";
@@ -43,6 +43,10 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     const [projectToArchive, setProjectToArchive] = useState<Project | null>(
         null
     );
+
+    // Sorting state
+    const [sortField, setSortField] = useState<SortField | null>(null);
+    const [sortOrder, setSortOrder] = useState<SortOrder>(null);
 
     const debouncedQuery = useDebouncedSearch(query);
 
@@ -169,6 +173,61 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
             return scalarMatch || usersMatch || facilitiesMatch;
         });
     }, [projects, debouncedQuery]);
+
+    // Sort function
+    const handleSort = useCallback((field: SortField) => {
+        if (sortField === field) {
+            // Cycle through: asc -> desc -> null
+            if (sortOrder === "asc") {
+                setSortOrder("desc");
+            } else if (sortOrder === "desc") {
+                setSortOrder(null);
+                setSortField(null);
+            }
+        } else {
+            setSortField(field);
+            setSortOrder("asc");
+        }
+    }, [sortField, sortOrder]);
+
+    // Apply sorting to filtered data
+    const sorted = useMemo<Project[]>(() => {
+        if (!sortField || !sortOrder) return filtered;
+
+        return [...filtered].sort((a, b) => {
+            let aVal: any;
+            let bVal: any;
+
+            switch (sortField) {
+                case "name":
+                    aVal = a.name?.toLowerCase() ?? "";
+                    bVal = b.name?.toLowerCase() ?? "";
+                    break;
+                case "auditor":
+                    aVal = a.users?.[0]?.name?.toLowerCase() ?? "";
+                    bVal = b.users?.[0]?.name?.toLowerCase() ?? "";
+                    break;
+                case "facility":
+                    aVal = a.facilities?.[0]?.name?.toLowerCase() ?? "";
+                    bVal = b.facilities?.[0]?.name?.toLowerCase() ?? "";
+                    break;
+                case "status":
+                    aVal = a.status ?? "";
+                    bVal = b.status ?? "";
+                    break;
+                case "createdAt":
+                    aVal = a.createdAt ?? "";
+                    bVal = b.createdAt ?? "";
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+            if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+            return 0;
+        });
+    }, [filtered, sortField, sortOrder]);
 
     // ---- Create ----
     const handleCreateSubmit = useCallback(
@@ -332,13 +391,16 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
                 onCreateClick={handleOpenCreate}
             >
                 <ProjectsTable
-                    items={filtered}
+                    items={sorted}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     onArchive={handleArchive}
                     isError={isError}
                     isLoading={isLoading}
                     onError={refetch}
+                    sortField={sortField}
+                    sortOrder={sortOrder}
+                    onSort={handleSort}
                 />
             </ProjectsSearchCard>
 
