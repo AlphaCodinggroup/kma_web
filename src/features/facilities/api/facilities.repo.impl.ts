@@ -49,7 +49,7 @@ function toApiError(err: unknown): ApiError {
  * Implementación HTTP (axios) del repositorio de Facilities.
  */
 export class FacilitiesRepoHttp implements FacilitiesRepo {
-  constructor(private readonly basePath = "/api/facilities") {}
+  constructor(private readonly basePath = "/api/facilities") { }
 
   /**
    * Listado de facilities con filtros opcionales:
@@ -178,6 +178,32 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
       const res = await httpClient.post<
         FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
       >(`${this.basePath}/${facilityId}/archive`);
+
+      const raw = res.data as
+        | FacilityDTO
+        | { facility: FacilityDTO }
+        | { data: FacilityDTO };
+
+      const dto: FacilityDTO =
+        (raw as { facility?: FacilityDTO }).facility ??
+        (raw as { data?: FacilityDTO }).data ??
+        (raw as FacilityDTO);
+
+      return mapFacilityFromDTO(dto);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  /**
+   * Restaura una facility archivada.
+   * POST /api/facilities/:id/restore
+   */
+  async restore(facilityId: FacilityId): Promise<Facility> {
+    try {
+      const res = await httpClient.post<
+        FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
+      >(`${this.basePath}/${facilityId}/restore`);
 
       const raw = res.data as
         | FacilityDTO

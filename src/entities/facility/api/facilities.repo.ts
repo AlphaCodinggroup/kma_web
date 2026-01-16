@@ -57,6 +57,11 @@ export interface FacilitiesRepo {
   archive(facilityId: FacilityId): Promise<Facility>;
 
   /**
+   * Restaura una facility archivada.
+   */
+  restore(facilityId: FacilityId): Promise<Facility>;
+
+  /**
    * Firma una URL de subida para la foto de la facility.
    */
   getUploadSignedUrl(

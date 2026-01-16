@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Pencil, Trash2, MapPin, Archive } from "lucide-react";
+import { Pencil, Trash2, MapPin, Archive, ArchiveRestore } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import {
   Table,
@@ -22,12 +22,14 @@ export interface FacilityTableProps {
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onArchive: (id: string) => void;
+  onRestore?: (id: string) => void;
   bodyMaxHeightClassName?: string | undefined;
   emptyMessage?: string | undefined;
   className?: string | undefined;
   isLoading: boolean;
   isError: boolean;
   onError: () => void;
+  showArchived?: boolean;
 }
 
 const FacilityTable: React.FC<FacilityTableProps> = ({
@@ -35,12 +37,14 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
   onEdit,
   onDelete,
   onArchive,
+  onRestore,
   bodyMaxHeightClassName,
   emptyMessage = "No facilities found",
   className,
   isLoading = false,
   isError = false,
   onError,
+  showArchived = false,
 }) => {
   const hasItems = items.length > 0;
 
@@ -117,19 +121,30 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
                       onClick={() => onEdit(row.id)}
                       size="md"
                     />
-                    <RowActionButton
-                      icon={Archive}
-                      ariaLabel="Archive facility"
-                      onClick={() => onArchive(row.id)}
-                      size="md"
-                    />
-                    <RowActionButton
-                      icon={Trash2}
-                      ariaLabel="Delete facility"
-                      onClick={() => onDelete(row.id)}
-                      variant="danger"
-                      size="md"
-                    />
+                    {showArchived && onRestore ? (
+                      <RowActionButton
+                        icon={ArchiveRestore}
+                        ariaLabel="Restore facility"
+                        onClick={() => onRestore(row.id)}
+                        size="md"
+                      />
+                    ) : (
+                      <>
+                        <RowActionButton
+                          icon={Archive}
+                          ariaLabel="Archive facility"
+                          onClick={() => onArchive(row.id)}
+                          size="md"
+                        />
+                        <RowActionButton
+                          icon={Trash2}
+                          ariaLabel="Delete facility"
+                          onClick={() => onDelete(row.id)}
+                          variant="danger"
+                          size="md"
+                        />
+                      </>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

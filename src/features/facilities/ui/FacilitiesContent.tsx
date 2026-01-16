@@ -13,6 +13,7 @@ import { useCreateFacilityMutation } from "@features/facilities/ui/hooks/useCrea
 import { useUpdateFacilityMutation } from "@features/facilities/ui/hooks/useUpdateFacilityMutation";
 import { useDeleteFacilityMutation } from "@features/facilities/ui/hooks/useDeleteFacilityMutation";
 import { useArchiveFacilityMutation } from "@features/facilities/ui/hooks/useArchiveFacilityMutation";
+import { useRestoreFacilityMutation } from "@features/facilities/ui/hooks/useRestoreFacilityMutation";
 import { buildFacilityOptionalFields } from "@features/facilities/lib/buildFacilityOptionalFields";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import ConfirmTitle from "@shared/ui/confirm-title";
@@ -39,13 +40,20 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         null
     );
 
+    const [showArchived, setShowArchived] = useState(false);
+
+    const [openRestore, setOpenRestore] = useState(false);
+    const [facilityToRestore, setFacilityToRestore] = useState<Facility | null>(
+        null
+    );
+
     const debouncedQuery = useDebouncedSearch(query);
 
     const filters = useMemo<FacilityListFilter>(() => {
         return {
-            status: "ACTIVE",
+            status: showArchived ? "ARCHIVED" : "ACTIVE",
         };
-    }, []);
+    }, [showArchived]);
 
     const { data, isLoading, isError, refetch } = useFacilitiesQuery(filters);
 
@@ -81,6 +89,9 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
 
     const { mutateAsync: archiveFacility, isPending: isArchiving } =
         useArchiveFacilityMutation();
+
+    const { mutateAsync: restoreFacility, isPending: isRestoring } =
+        useRestoreFacilityMutation();
 
     // Expose create trigger to parent via ref
     useImperativeHandle(
@@ -208,6 +219,29 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         }
     }, [archiveFacility, facilityToArchive]);
 
+    // ---- Restore ----
+    const handleRestore = useCallback(
+        (id: string) => {
+            const found = facilities.find((f) => f.id === id);
+            if (!found) return;
+            setFacilityToRestore(found);
+            setOpenRestore(true);
+        },
+        [facilities]
+    );
+
+    const confirmRestore = useCallback(async () => {
+        if (!facilityToRestore) return;
+
+        try {
+            await restoreFacility(facilityToRestore.id);
+            setOpenRestore(false);
+            setFacilityToRestore(null);
+        } catch {
+            // Ideal: mostrar toast de error; el modal sigue abierto.
+        }
+    }, [restoreFacility, facilityToRestore]);
+
     // Mapear Facility de dominio → valores del formulario de edición
     const editDefaultValues: Partial<FacilityUpsertValues> | undefined =
         useMemo(() => {
@@ -229,15 +263,19 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
                 query={query}
                 onQueryChange={setQuery}
                 placeholder="Search facility by name, address or city..."
+                showArchived={showArchived}
+                onToggleArchived={() => setShowArchived(!showArchived)}
             >
                 <FacilityTable
                     items={visibleFacilities}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     onArchive={handleArchive}
+                    onRestore={handleRestore}
                     isError={isError}
                     isLoading={isLoading}
                     onError={refetch}
+                    showArchived={showArchived}
                 />
             </FacilitySearchCard>
 
@@ -298,6 +336,26 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
                 cancelLabel="Cancel"
                 loading={isArchiving}
                 onConfirm={confirmArchive}
+            />
+
+            {/* Modal de confirmación de restore */}
+            <ConfirmDialog
+                open={openRestore}
+                onOpenChange={(o) => {
+                    setOpenRestore(o);
+                    if (!o) setFacilityToRestore(null);
+                }}
+                title={
+                    <ConfirmTitle
+                        action="restore"
+                        subject={facilityToRestore?.name ?? "this facility"}
+                    />
+                }
+                description="This facility will be restored and moved back to the active list."
+                confirmLabel="Restore"
+                cancelLabel="Cancel"
+                loading={isRestoring}
+                onConfirm={confirmRestore}
             />
         </>
     );
