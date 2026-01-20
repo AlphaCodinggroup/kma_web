@@ -3,7 +3,8 @@ import { z } from "zod";
 // -- Conditional Navigation
 export const ConditionDTOSchema = z.object({
   step_id: z.string(),
-  answer: z.enum(["YES", "NO"]).optional(),
+  // Aceptamos minúsculas y transformamos a mayúsculas
+  answer: z.enum(["YES", "NO", "yes", "no"]).transform((v) => v.toUpperCase() as "YES" | "NO").optional(),
   selected_option: z.string().optional(),
 });
 
@@ -13,11 +14,21 @@ export const ConditionalNextDTOSchema = z.object({
   match_any: z.boolean().optional(),
 });
 
+// -- Metadata
+export const SharedQuantityMetadataDTOSchema = z.object({
+  applies_to_barriers: z.array(z.string()),
+});
+
+export const StepMetadataDTOSchema = z.object({
+  shared_quantity: SharedQuantityMetadataDTOSchema.optional(),
+});
+
 // -- Steps
 export const StepBaseDTOSchema = z.object({
   id: z.string(),
   type: z.enum(["Question", "Form", "Select", "End"]),
   image: z.string().optional().nullable(),
+  metadata: StepMetadataDTOSchema.optional().nullable(),
 });
 
 export const QuestionStepDTOSchema = StepBaseDTOSchema.extend({
@@ -85,8 +96,27 @@ export const FlowDTOSchema = z.object({
   updated_at: z.string().optional().nullable(),
 });
 
+// -- Flow Item for List (Relaxed Validation)
+export const FlowListItemDTOSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string().optional().nullable(),
+  // En el listado solo necesitamos saber el tipo para contar las preguntas.
+  // Permitimos passthrough para no romper si faltan campos de detalle.
+  steps: z.array(
+    z.object({
+      type: z.enum(["Question", "Form", "Select", "End"]),
+    }).passthrough()
+  ),
+  flow_type: z.string().optional().nullable(),
+  version: z.number().optional().default(0),
+  is_active: z.boolean().optional(),
+  created_at: z.string().optional().nullable(),
+  updated_at: z.string().optional().nullable(),
+}).passthrough();
+
 export const FlowListDTOSchema = z.object({
-  flows: z.array(FlowDTOSchema),
+  flows: z.array(FlowListItemDTOSchema),
   total: z.number(),
   limit: z.number(),
   offset: z.number(),
@@ -97,12 +127,15 @@ export const FlowListDTOSchema = z.object({
 // ===============================
 export type FlowListDTO = z.infer<typeof FlowListDTOSchema>;
 export type FlowDTO = z.infer<typeof FlowDTOSchema>;
+export type FlowListItemDTO = z.infer<typeof FlowListItemDTOSchema>;
 export type FlowStepDTO = z.infer<typeof FlowStepDTOSchema>;
 export type QuestionStepDTO = z.infer<typeof QuestionStepDTOSchema>;
 export type FormStepDTO = z.infer<typeof FormStepDTOSchema>;
 export type SelectStepDTO = z.infer<typeof SelectStepDTOSchema>;
 export type EndStepDTO = z.infer<typeof EndStepDTOSchema>;
 export type FormFieldDTO = z.infer<typeof FormFieldDTOSchema>;
+export type StepMetadataDTO = z.infer<typeof StepMetadataDTOSchema>;
+export type SharedQuantityMetadataDTO = z.infer<typeof SharedQuantityMetadataDTOSchema>;
 
 // ===============================
 // Helpers de validación

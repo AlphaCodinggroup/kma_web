@@ -14,6 +14,7 @@ import { PublicEnv } from "@shared/config/env";
 export const flowsKeys = {
   all: ["flows"] as const,
   list: () => ["flows", "list"] as const satisfies QueryKey,
+  detail: (id: string) => ["flows", "detail", id] as const satisfies QueryKey,
 } as const;
 
 /**
@@ -38,19 +39,23 @@ export function useFlowsQuery(enabled: boolean) {
 }
 
 /**
- * Deriva un Flow específico desde la lista cacheada (sin refetch adicional).
- * - Útil para modales que necesitan un flow por id.
+ * Obtiene un Flow específico desde el backend.
+ * - Usa el endpoint GET /api/flows/:id
  */
 export function useFlowById(flowId?: string, enabled: boolean = true) {
-  const query = useFlowsQuery(enabled);
-
-  const flow: Flow | undefined = React.useMemo(() => {
-    if (!flowId) return undefined;
-    return query.data?.flows.find((f) => f.id === flowId);
-  }, [flowId, query.data]);
+  const query = useQuery<Flow | null, FlowsApiError>({
+    queryKey: flowId ? flowsKeys.detail(flowId) : ["flows", "detail", "unknown"],
+    queryFn: () => (flowId ? flowsRepo.getById(flowId) : Promise.resolve(null)),
+    staleTime: PublicEnv.queryStaleTimeMs,
+    enabled: !!flowId && enabled,
+    retry(failureCount, error) {
+      if (error instanceof FlowsApiError && error.status === 401) return false;
+      return failureCount < 2;
+    },
+  });
 
   return {
-    flow,
+    flow: query.data,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     isRefetching: query.isRefetching,

@@ -50,9 +50,18 @@ export class FlowsHttpRepo implements FlowsRepo {
     }
 
     const raw = (await res.json()) as unknown;
-    const dto = parseFlowListDTO(raw);
-    const domain = mapFlowListDTO(dto);
-    return domain;
+    try {
+      const dto = parseFlowListDTO(raw);
+      const domain = mapFlowListDTO(dto);
+      return domain;
+    } catch (err) {
+      console.error("[FlowsHttpRepo] Validation Error", {
+        error: err,
+        rawResponse: raw,
+      });
+      // Re-throw para que React Query sepa que falló
+      throw new FlowsApiError("Frontend validation failed. Check console.", 500);
+    }
   }
 
   async getById(id: FlowId): Promise<Flow | null> {

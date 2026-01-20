@@ -20,12 +20,22 @@ export interface Flow {
 /** -----------------------
  *  Pasos del Flow (Dominio)
  *  ----------------------*/
+//  ----------------------*/
 export type FlowStep = QuestionStep | FormStep | SelectStep | EndStep;
+
+export interface SharedQuantityMetadata {
+  appliesToBarriers: string[];
+}
+
+export interface StepMetadata {
+  sharedQuantity?: SharedQuantityMetadata | undefined;
+}
 
 export interface BaseStep {
   id: string;
   type: "Question" | "Form" | "Select" | "End";
   image?: string | null;
+  metadata?: StepMetadata | undefined;
 }
 
 /** Condition for checking previous step answers */

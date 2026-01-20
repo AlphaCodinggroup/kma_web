@@ -8,6 +8,7 @@ import type {
   EndStep,
   Condition,
   ConditionalNext,
+  StepMetadata,
 } from "../model";
 import type {
   FlowDTO,
@@ -18,6 +19,7 @@ import type {
   SelectStepDTO,
   EndStepDTO,
   FormFieldDTO,
+  StepMetadataDTO,
 } from "@features/flows/api/flows.dto";
 
 /** ------------------------
@@ -39,6 +41,15 @@ function mapConditionalNextDTO(dto: any): ConditionalNext {
   };
 }
 
+function mapStepMetadata(dto?: StepMetadataDTO | null): StepMetadata | undefined {
+  if (!dto) return undefined;
+  return {
+    sharedQuantity: dto.shared_quantity
+      ? { appliesToBarriers: dto.shared_quantity.applies_to_barriers }
+      : undefined,
+  };
+}
+
 function mapQuestionStep(dto: QuestionStepDTO): QuestionStep {
   return {
     id: dto.id,
@@ -50,6 +61,7 @@ function mapQuestionStep(dto: QuestionStepDTO): QuestionStep {
     image: dto.image ?? "",
     conditionalYesNext: dto.conditional_yes_next ? mapConditionalNextDTO(dto.conditional_yes_next) : undefined,
     conditionalNoNext: dto.conditional_no_next ? mapConditionalNextDTO(dto.conditional_no_next) : undefined,
+    metadata: mapStepMetadata(dto.metadata),
   };
 }
 
@@ -71,6 +83,8 @@ function mapFormStep(dto: FormStepDTO): FormStep {
     next: dto.next ?? "",
     barrierId: dto.barrier_id ?? "",
     fields: dto.fields.map(mapFormField),
+    image: dto.image ?? "",
+    metadata: mapStepMetadata(dto.metadata),
   };
 }
 
@@ -82,6 +96,8 @@ function mapSelectStep(dto: SelectStepDTO): SelectStep {
     text: dto.text ?? "",
     options: dto.options.map((o) => ({ label: o.label, next: o.next, barrierId: o.barrier_id ?? undefined })),
     next: dto.next ?? "",
+    image: dto.image ?? "",
+    metadata: mapStepMetadata(dto.metadata),
   };
 }
 
@@ -89,6 +105,8 @@ function mapEndStep(dto: EndStepDTO): EndStep {
   return {
     id: dto.id,
     type: "End",
+    image: dto.image ?? "",
+    metadata: mapStepMetadata(dto.metadata),
   };
 }
 
@@ -127,9 +145,59 @@ export function mapFlowDTO(dto: FlowDTO): Flow {
   };
 }
 
+// Mapper resiliente para el listado
+function mapFlowListItemDTO(dto: any): Flow {
+  // Mapeo seguro de steps para el listado (rellena defaults)
+  const safeSteps: FlowStep[] = dto.steps.map((s: any) => {
+    const base = { id: s.id || "unknown", image: s.image || null };
+
+    switch (s.type) {
+      case "Question":
+        return {
+          ...base,
+          type: "Question",
+          text: s.text || "",
+          yesNext: s.yes_next || "",
+          noNext: s.no_next || ""
+        } as QuestionStep;
+      case "Form":
+        return {
+          ...base,
+          type: "Form",
+          title: s.title || "",
+          fields: s.fields || []
+        } as FormStep;
+      case "Select":
+        return {
+          ...base,
+          type: "Select",
+          options: s.options || [],
+          title: s.title || ""
+        } as SelectStep;
+      case "End":
+        return { ...base, type: "End" } as EndStep;
+      default:
+        // Fallback para tipos desconocidos en runtime
+        return { ...base, type: "End" } as EndStep;
+    }
+  });
+
+  return {
+    id: dto.id,
+    title: dto.title,
+    description: dto.description ?? null,
+    steps: safeSteps,
+    flowType: dto.flow_type ?? null,
+    version: dto.version,
+    isActive: dto.is_active ?? true,
+    createdAt: dto.created_at ?? "",
+    updatedAt: dto.updated_at ?? "",
+  };
+}
+
 export function mapFlowListDTO(dto: FlowListDTO): FlowList {
   return {
-    flows: dto.flows.map(mapFlowDTO),
+    flows: dto.flows.map(mapFlowListItemDTO),
     total: dto.total,
     limit: dto.limit,
     offset: dto.offset,
