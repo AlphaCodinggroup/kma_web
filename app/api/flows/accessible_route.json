@@ -1,0 +1,590 @@
+{
+    "title": "Accessible Routes",
+    "description": "Accessibility audit for pedestrian routes per ADA standards.",
+    "flow_type": "Navigation",
+    "is_active": true,
+    "steps": [
+        {
+            "id": "AR-Q01",
+            "type": "Question",
+            "text": "Is the surface stable, firm, and slip resistant?",
+            "yes_next": "AR-Q02",
+            "no_next": "AR-F01",
+            "barrier_id": "AR-B01"
+        },
+        {
+            "id": "AR-F01",
+            "type": "Form",
+            "title": "Surface Condition - Non-compliant surface",
+            "next": "AR-Q02",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                },
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity"
+                }
+            ]
+        },
+        {
+            "id": "AR-Q02",
+            "type": "Select",
+            "text": "Select one of the following running slope conditions",
+            "options": [
+                {
+                    "label": "<5%",
+                    "next": "AR-Q05"
+                },
+                {
+                    "label": "between 5% and 8.3%",
+                    "next": "AR-F02",
+                    "barrier_id": "AR-B02"
+                },
+                {
+                    "label": ">8.3%",
+                    "next": "AR-F03"
+                }
+            ]
+        },
+        {
+            "id": "AR-F02",
+            "type": "Form",
+            "title": "Running slope between 5% and 8.3%",
+            "next": "AR-Q05",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                },
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity"
+                }
+            ]
+        },
+        {
+            "id": "AR-F03",
+            "type": "Select",
+            "text": "Select the best mitigation:",
+            "options": [
+                {
+                    "label": "Build a ramp",
+                    "next": "AR-F05",
+                    "barrier_id": "AR-B03"
+                },
+                {
+                    "label": "Regrade the accessible route",
+                    "next": "AR-F04",
+                    "barrier_id": "AR-B04"
+                }
+            ]
+        },
+        {
+            "id": "AR-F04",
+            "type": "Form",
+            "title": "Regrade the accessible route",
+            "next": "AR-Q05",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "AR-F05",
+            "type": "Form",
+            "title": "Build a ramp",
+            "next": "AR-Q05",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                },
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity",
+                    "placeholder": "# of ramps to build"
+                }
+            ]
+        },
+        {
+            "id": "AR-Q05",
+            "type": "Question",
+            "text": "Is the cross slope less than 2%?",
+            "yes_next": "AR-Q06",
+            "no_next": "AR-F06",
+            "barrier_id": "AR-B05",
+            "conditional_yes_next": {
+                "conditions": [
+                    {
+                        "step_id": "AR-F03",
+                        "selected_option": "Regrade the accessible route"
+                    }
+                ],
+                "next": "AR-QUANTITY-01",
+                "match_any": true
+            }
+        },
+        {
+            "id": "AR-F06",
+            "type": "Form",
+            "title": "Cross slope < 2%",
+            "next": "AR-QUANTITY-01",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "AR-QUANTITY-01",
+            "type": "Form",
+            "title": "Square feet of non-compliant route",
+            "next": "AR-Q06",
+            "metadata": {
+                "shared_quantity": {
+                    "applies_to_barriers": [
+                        "AR-B04",
+                        "AR-B05"
+                    ]
+                }
+            },
+            "fields": [
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity (sq. ft)",
+                    "placeholder": "Square feet of non-compliant route"
+                }
+            ]
+        },
+        {
+            "id": "AR-Q06",
+            "type": "Select",
+            "text": "Select one of the following changes in level conditions",
+            "options": [
+                {
+                    "label": "N / A",
+                    "next": "AR-Q08",
+                    "barrier_id": "AR-B06"
+                },
+                {
+                    "label": "Between 1/4\" and 1/2\" beveled ≤ 1:2",
+                    "next": "AR-F07",
+                    "barrier_id": "AR-B07"
+                },
+                {
+                    "label": "> 1/2\"",
+                    "next": "AR-F08"
+                }
+            ]
+        },
+        {
+            "id": "AR-F07",
+            "type": "Form",
+            "title": "Change in Level between 1/4\" and 1/2\" beveled ≤ 1:2",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/%2306.png",
+            "next": "AR-Q08",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                },
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity"
+                }
+            ]
+        },
+        {
+            "id": "AR-F08",
+            "type": "Form",
+            "title": "Change in Level > 1/2\"",
+            "next": "AR-Q08",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/%2307.png",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                },
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity"
+                }
+            ]
+        },
+        {
+            "id": "AR-Q08",
+            "type": "Question",
+            "text": "Is the route clear width >36\"?",
+            "yes_next": "AR-Q09",
+            "no_next": "AR-Q08A"
+        },
+        {
+            "id": "AR-Q08A",
+            "type": "Question",
+            "text": "Is the route at least 32\" wide for a length <24\"?",
+            "yes_next": "AR-Q09",
+            "no_next": "AR-F09",
+            "barrier_id": "AR-B08",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/%2308.gif"
+        },
+        {
+            "id": "AR-F09",
+            "type": "Form",
+            "title": "Non-compliant route width",
+            "next": "AR-Q09",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                },
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity"
+                }
+            ]
+        },
+        {
+            "id": "AR-Q09",
+            "type": "Select",
+            "text": "Select one of the following turn conditions",
+            "options": [
+                {
+                    "label": "N/A",
+                    "next": "AR-Q11"
+                },
+                {
+                    "label": "90° turn",
+                    "next": "AR-F10",
+                    "barrier_id": "AR-B09"
+                },
+                {
+                    "label": "T-intersection",
+                    "next": "AR-F11",
+                    "barrier_id": "AR-B10"
+                }
+            ]
+        },
+        {
+            "id": "AR-F10",
+            "type": "Form",
+            "title": "90° turn - Non-compliant condition",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/%2309.jpg",
+            "next": "AR-Q11",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "AR-F11",
+            "type": "Form",
+            "title": "T-intersection - Non-compliant condition",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/%2310.jpg",
+            "next": "AR-Q11",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "AR-Q11",
+            "type": "Question",
+            "text": "Is there ≥60\" passing space every 200 ft?",
+            "yes_next": "AR-Q12",
+            "no_next": "AR-F12",
+            "barrier_id": "AR-B11",
+            "conditional_yes_next": {
+                "conditions": [
+                    {
+                        "step_id": "AR-Q09",
+                        "selected_option": "90° turn"
+                    },
+                    {
+                        "step_id": "AR-Q09",
+                        "selected_option": "T-intersection"
+                    }
+                ],
+                "match_any": true,
+                "next": "AR-QUANTITY-02"
+            }
+        },
+        {
+            "id": "AR-F12",
+            "type": "Form",
+            "title": "Missing passing space every 200 ft",
+            "next": "AR-QUANTITY-02",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "AR-QUANTITY-02",
+            "type": "Form",
+            "title": "QUANTITY [sf.]",
+            "next": "AR-Q12",
+            "metadata": {
+                "shared_quantity": {
+                    "applies_to_barriers": [
+                        "AR-B09",
+                        "AR-B10",
+                        "AR-B11"
+                    ]
+                }
+            },
+            "fields": [
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity (sq. ft)",
+                    "placeholder": "Square feet of non-compliant route"
+                }
+            ]
+        },
+        {
+            "id": "AR-Q12",
+            "type": "Question",
+            "text": "Are grates located within the accessible route?",
+            "yes_next": "AR-Q13",
+            "no_next": "END"
+        },
+        {
+            "id": "AR-Q13",
+            "type": "Question",
+            "text": "Are grate openings < 1/2\" wide?",
+            "yes_next": "AR-Q14",
+            "no_next": "AR-F13",
+            "barrier_id": "AR-B12",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/%2312.gif"
+        },
+        {
+            "id": "AR-F13",
+            "type": "Form",
+            "title": "Grate openings < 1/2\" wide",
+            "next": "AR-Q14",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "AR-Q14",
+            "type": "Question",
+            "text": "Are grate openings perpendicular to the dominant direction of travel?",
+            "yes_next": "END",
+            "no_next": "AR-F14",
+            "barrier_id": "AR-B13",
+            "conditional_yes_next": {
+                "conditions": [
+                    {
+                        "step_id": "AR-Q13",
+                        "answer": "no"
+                    }
+                ],
+                "next": "AR-QUANTITY-03"
+            }
+        },
+        {
+            "id": "AR-F14",
+            "type": "Form",
+            "title": "Grate openings not perpendicular to travel direction",
+            "next": "AR-QUANTITY-03",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "AR-QUANTITY-03",
+            "type": "Form",
+            "title": "QUANTITY [ea.]",
+            "next": "END",
+            "metadata": {
+                "shared_quantity": {
+                    "applies_to_barriers": [
+                        "AR-B12",
+                        "AR-B13"
+                    ]
+                }
+            },
+            "fields": [
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity [ea.]",
+                    "placeholder": "# of non-compliant grates"
+                }
+            ]
+        },
+        {
+            "id": "END",
+            "type": "End"
+        }
+    ]
+}

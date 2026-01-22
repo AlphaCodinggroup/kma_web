@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, EndStep, Condition, ConditionalNext } from "@entities/flow/model";
+import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, EndStep, Condition, ConditionalNext, StepMetadata } from "@entities/flow/model";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
@@ -1106,6 +1106,42 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                                 </Button>
                                             </div>
                                         </div>
+
+                                        <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
+                                            <Label className="mt-2 text-right text-gray-500">Barrier ID</Label>
+                                            <Input
+                                                value={(selectedStep as FormStep).barrierId || ""}
+                                                onChange={(e) => handleUpdateStep(selectedStep.id, { ...selectedStep, barrierId: e.target.value } as FormStep)}
+                                                placeholder="e.g. AR-Bxx (Optional)"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
+                                            <Label className="mt-2 text-right text-gray-500">Shared Quantity</Label>
+                                            <div className="space-y-2">
+                                                <Label className="text-xs text-muted-foreground font-normal">
+                                                    If this form captures a quantity shared across multiple barriers (Double Dipping), specify the Barrier IDs here.
+                                                </Label>
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        placeholder="Enter Barrier IDs separated by commas (e.g. AR-B04, AR-B05)"
+                                                        value={(selectedStep as FormStep).metadata?.sharedQuantity?.appliesToBarriers.join(", ") || ""}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            const barriers = val.split(",").map(s => s.trim()).filter(Boolean);
+                                                            const newMetadata = {
+                                                                ...(selectedStep as FormStep).metadata,
+                                                                sharedQuantity: barriers.length > 0 ? { AppliesToBarriers: barriers, appliesToBarriers: barriers } : undefined
+                                                            };
+                                                            // Limpieza si quedó vacío
+                                                            if (!newMetadata.sharedQuantity) newMetadata.sharedQuantity = undefined;
+
+                                                            handleUpdateStep(selectedStep.id, { metadata: newMetadata } as FormStep);
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </>
                                 )}
                             </CardContent>
@@ -1357,6 +1393,6 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                 accept="image/*"
                 onChange={handleFileChange}
             />
-        </div>
+        </div >
     );
 };

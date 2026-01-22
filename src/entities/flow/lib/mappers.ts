@@ -223,6 +223,15 @@ function mapConditionalNextToDTO(conditional: ConditionalNext): any {
   };
 }
 
+function mapStepMetadataToDTO(metadata?: StepMetadata): any {
+  if (!metadata) return undefined;
+  return {
+    shared_quantity: metadata.sharedQuantity
+      ? { applies_to_barriers: metadata.sharedQuantity.appliesToBarriers }
+      : undefined,
+  };
+}
+
 function mapQuestionStepToDTO(step: QuestionStep): QuestionStepDTO {
   return {
     id: step.id,
@@ -234,6 +243,7 @@ function mapQuestionStepToDTO(step: QuestionStep): QuestionStepDTO {
     image: step.image || undefined,
     conditional_yes_next: step.conditionalYesNext ? mapConditionalNextToDTO(step.conditionalYesNext) : undefined,
     conditional_no_next: step.conditionalNoNext ? mapConditionalNextToDTO(step.conditionalNoNext) : undefined,
+    metadata: mapStepMetadataToDTO(step.metadata),
   };
 }
 
@@ -256,6 +266,7 @@ function mapFormStepToDTO(step: FormStep): FormStepDTO {
     barrier_id: step.barrierId || undefined,
     fields: step.fields.map(mapFormFieldToDTO),
     image: step.image || undefined,
+    metadata: mapStepMetadataToDTO(step.metadata),
   };
 }
 
@@ -268,6 +279,7 @@ function mapSelectStepToDTO(step: SelectStep): SelectStepDTO {
     options: step.options.map((o) => ({ label: o.label, next: o.next, barrier_id: o.barrierId })),
     next: step.next || undefined,
     image: step.image || undefined,
+    metadata: mapStepMetadataToDTO(step.metadata),
   };
 }
 
@@ -276,6 +288,7 @@ function mapEndStepToDTO(step: EndStep): EndStepDTO {
     id: step.id,
     type: "End",
     image: step.image || undefined,
+    metadata: mapStepMetadataToDTO(step.metadata),
   };
 }
 

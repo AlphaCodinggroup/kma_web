@@ -7,7 +7,6 @@ export interface FlowItemVM {
   id: string;
   title: string;
   description?: string;
-  questionsCount: number; // ← por ahora lo seguimos recibiendo; más adelante podemos derivarlo del flow real
   flowId?: string;
 }
 
@@ -36,7 +35,6 @@ export const FlowsSection: React.FC<FlowsSectionProps> = ({
               flowId={it.flowId ?? it.id}
               title={it.title}
               description={it.description ?? ""}
-              questionsCount={it.questionsCount}
               data-testid={`flow-card-${it.id}`}
               dialogTestId={`flow-dialog-${it.id}`}
             />

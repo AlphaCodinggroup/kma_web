@@ -132,6 +132,17 @@ export function installAuthInterceptor(
 
         // Evitar reintentos infinitos en la misma request
         if (originalConfig.__isRetry__ === true) {
+          // Si el retry falla nuevamente con 401, significa que el refresh no fue efectivo
+          // o la sesión sigue inválida. Forzamos el flujo de expiración.
+          if (options?.onSessionExpired) {
+            Promise.resolve(options.onSessionExpired()).catch((cbErr) => {
+              console.error(
+                "[AuthInterceptor] onSessionExpired callback failed in retry:",
+                cbErr
+              );
+            });
+          }
+
           // Ya reintentamos una vez y falló → propagamos UNAUTHORIZED
           throw <ApiError>{
             code: "UNAUTHORIZED",

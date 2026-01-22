@@ -21,7 +21,7 @@ const INTERNAL_API_URL = "/api/flows";
 
 export class FlowsHttpRepo implements FlowsRepo {
   async list(): Promise<FlowList> {
-    const res = await fetch(INTERNAL_API_URL, {
+    const res = await fetch(`${INTERNAL_API_URL}/summary`, {
       method: "GET",
       headers: { Accept: "application/json" },
       // importante para no cachear el catálogo si cambia en backend

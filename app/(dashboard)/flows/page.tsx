@@ -33,9 +33,6 @@ export default function FlowsPage() {
       id: f.id,
       title: f.title,
       description: f.description ?? "",
-      questionsCount: f.steps.filter(
-        (s) => s.type === "Question" || s.type === "Select"
-      ).length,
       flowId: f.id,
     }));
   }, [data]);

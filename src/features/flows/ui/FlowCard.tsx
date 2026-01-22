@@ -11,7 +11,6 @@ import Link from "next/link";
 export interface FlowCardProps {
   title: string;
   description?: string;
-  questionsCount: number;
   className?: string;
   onViewQuestions?: () => void;
   "data-testid"?: string;
@@ -22,7 +21,6 @@ export interface FlowCardProps {
 export const FlowCard: React.FC<FlowCardProps> = ({
   title,
   description,
-  questionsCount,
   className,
   onViewQuestions,
   "data-testid": dataTestId,
@@ -114,20 +112,7 @@ export const FlowCard: React.FC<FlowCardProps> = ({
 
       <CardContent className="flex h-full flex-col pt-3">
         <div className="flex-1" />
-        <div className="mb-4 flex items-center justify-between">
-          <span className="text-base font-medium text-muted-foreground text-gray-500">
-            Questions
-          </span>
 
-          <span
-            className={cn(
-              "inline-flex min-w-[2.25rem] items-center justify-center",
-              "rounded-full bg-muted px-3 py-1 text-sm font-semibold text-foreground bg-gray-100"
-            )}
-          >
-            {questionsCount}
-          </span>
-        </div>
         <Button
           type="button"
           onClick={onViewQuestions}
