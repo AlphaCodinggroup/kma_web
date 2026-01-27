@@ -10,6 +10,8 @@ import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { cn } from "@shared/lib/cn";
 import { useRouter } from "next/navigation";
 import { Loading } from "@shared/ui/Loading";
+import { useQueryClient } from "@tanstack/react-query";
+import { flowsKeys } from "@features/flows/lib/useFlowsQuery";
 
 interface FlowEditorProps {
     initialFlow: Flow;
@@ -25,7 +27,9 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const [isSaving, setIsSaving] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState("");
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     // Feedback Modal State
     const [feedback, setFeedback] = React.useState<{
@@ -375,12 +379,77 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             });
 
             await Promise.all(uploadPromises);
-            const updatedFlow = { ...flow, steps: stepsCopy };
+
+            // Auto-calculate shared quantity barriers
+            const finalSteps = stepsCopy.map(step => {
+                if (step.type !== 'Form') return step;
+
+                // For each Form step, check if it's a target of any Conditional Navigation
+                // Logic:
+                // 1. Find all "Source Steps" that point to this 'step.id' via a conditional path
+                // 2. Collect Barrier IDs from:
+                //    a. The Source Step itself (e.g. Question's barrier_id)
+                //    b. The Conditions (e.g. barrier_id from the Select Option referenced in the condition)
+
+                const linkedBarriers = new Set<string>();
+
+                stepsCopy.forEach(sourceStep => {
+                    if (sourceStep.type !== 'Question') return; // Only Questions have conditional navigation currently
+
+                    const qStep = sourceStep as QuestionStep;
+                    const conditionals = [qStep.conditionalYesNext, qStep.conditionalNoNext].filter(Boolean);
+
+                    conditionals.forEach(condNav => {
+                        if (condNav!.next === step.id) {
+                            // Source Step Barrier ID
+                            if (qStep.barrierId) linkedBarriers.add(qStep.barrierId);
+
+                            // Condition Barrier IDs
+                            condNav!.conditions.forEach(condition => {
+                                const refStep = stepsCopy.find(s => s.id === condition.step_id);
+                                if (refStep) {
+                                    if (refStep.type === 'Select') {
+                                        const option = (refStep as SelectStep).options.find(o => o.label === condition.selected_option);
+                                        if (option?.barrierId) linkedBarriers.add(option.barrierId);
+                                    } else if (refStep.type === 'Question') {
+                                        if ((refStep as QuestionStep).barrierId) linkedBarriers.add((refStep as QuestionStep).barrierId!);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+
+                const barriersList = Array.from(linkedBarriers).sort();
+
+                if (barriersList.length > 0) {
+                    return {
+                        ...step,
+                        metadata: {
+                            ...step.metadata,
+                            sharedQuantity: { appliesToBarriers: barriersList }
+                        }
+                    };
+                } else {
+                    // Check if we should clear existing sharedQuantity if no links found? 
+                    // Or keep manual if present?
+                    // User requested full automation "que lo armes por detras", so we rely on this calculation.
+                    // If no links found, we clear it to avoid stale data.
+                    const newMetadata = { ...step.metadata };
+                    if (newMetadata.sharedQuantity) delete newMetadata.sharedQuantity;
+                    return { ...step, metadata: newMetadata };
+                }
+            });
+
+            const updatedFlow = { ...flow, steps: finalSteps };
 
             if (initialFlow.id === "new" || flow.id === "new") {
                 await flowsRepo.create(updatedFlow);
+                queryClient.invalidateQueries({ queryKey: flowsKeys.list() });
             } else {
                 await flowsRepo.update(flow.id, updatedFlow);
+                queryClient.invalidateQueries({ queryKey: flowsKeys.detail(flow.id) });
+                queryClient.invalidateQueries({ queryKey: flowsKeys.list() });
             }
 
             setFlow(updatedFlow);
@@ -1107,38 +1176,19 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
-                                            <Label className="mt-2 text-right text-gray-500">Barrier ID</Label>
-                                            <Input
-                                                value={(selectedStep as FormStep).barrierId || ""}
-                                                onChange={(e) => handleUpdateStep(selectedStep.id, { ...selectedStep, barrierId: e.target.value } as FormStep)}
-                                                placeholder="e.g. AR-Bxx (Optional)"
-                                            />
-                                        </div>
+
 
                                         <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
                                             <Label className="mt-2 text-right text-gray-500">Shared Quantity</Label>
                                             <div className="space-y-2">
                                                 <Label className="text-xs text-muted-foreground font-normal">
-                                                    If this form captures a quantity shared across multiple barriers (Double Dipping), specify the Barrier IDs here.
+                                                    If this form captures a quantity shared across multiple barriers, the system will <strong>automatically detect</strong> the relevant Barrier IDs based on the conditional navigation steps pointing here.
                                                 </Label>
-                                                <div className="flex gap-2">
-                                                    <Input
-                                                        placeholder="Enter Barrier IDs separated by commas (e.g. AR-B04, AR-B05)"
-                                                        value={(selectedStep as FormStep).metadata?.sharedQuantity?.appliesToBarriers.join(", ") || ""}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value;
-                                                            const barriers = val.split(",").map(s => s.trim()).filter(Boolean);
-                                                            const newMetadata = {
-                                                                ...(selectedStep as FormStep).metadata,
-                                                                sharedQuantity: barriers.length > 0 ? { AppliesToBarriers: barriers, appliesToBarriers: barriers } : undefined
-                                                            };
-                                                            // Limpieza si quedó vacío
-                                                            if (!newMetadata.sharedQuantity) newMetadata.sharedQuantity = undefined;
-
-                                                            handleUpdateStep(selectedStep.id, { metadata: newMetadata } as FormStep);
-                                                        }}
-                                                    />
+                                                <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg text-xs text-purple-900">
+                                                    <Info className="h-3 w-3 inline mr-1 mb-0.5" />
+                                                    Barrier IDs will be calculated and saved automatically when you click "Save Flow".
+                                                    <br />
+                                                    Current detected barriers (saved): <span className="font-mono">{(selectedStep as FormStep).metadata?.sharedQuantity?.appliesToBarriers.join(", ") || "(None)"}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1273,21 +1323,18 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         <div>
                             <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
                                 <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
-                                Create Steps (Two Ways)
+                                Create Steps (The Workflow)
                             </h3>
                             <div className="ml-8 space-y-3">
+                                <p className="text-sm text-gray-700">
+                                    A Flow is a sequence of steps. You typically start with a <strong>Select</strong> (to choose what to audit) or a <strong>Question</strong>.
+                                </p>
                                 <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                                     <p className="font-medium text-sm text-green-800 mb-1 flex items-center gap-1">
-                                        <span className="text-lg">🎯</span> Recommended: Inline Create & Link
+                                        <span className="text-lg">⚡</span> Efficient Way: Inline Create
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        Click the green <span className="font-mono bg-emerald-600 text-white px-1 rounded text-xs">+ Create</span> button next to any step selector → Choose step type → Automatically created and linked!
-                                    </p>
-                                </div>
-                                <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                                    <p className="font-medium text-sm text-gray-800 mb-1">Alternative: Sidebar Creation</p>
-                                    <p className="text-sm text-gray-600">
-                                        Use "Add New Step" buttons in the sidebar → Modal will help you link it
+                                        Instead of creating steps one-by-one, just click the green <span className="font-mono bg-emerald-600 text-white px-1 rounded text-xs">+ Create</span> button inside any "Next Step" selector. This creates and links the new step in one go.
                                     </p>
                                 </div>
                             </div>
@@ -1302,25 +1349,25 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                 <div className="flex items-start gap-2">
                                     <HelpCircle className="h-4 w-4 text-blue-500 mt-0.5" />
                                     <div>
-                                        <span className="font-medium">Question:</span> Yes/No branching (e.g., "Is barrier present?")
+                                        <span className="font-medium">Question:</span> Yes/No branching. Use this to verify conditions (e.g. "Is the door width &gt; 32in?").
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <FileText className="h-4 w-4 text-green-500 mt-0.5" />
                                     <div>
-                                        <span className="font-medium">Form:</span> Collect data (quantity, measurements, photos, notes)
+                                        <span className="font-medium">Form:</span> The destination for data collection. Use this to record measurements, photos, or barrier quantities.
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <List className="h-4 w-4 text-purple-500 mt-0.5" />
                                     <div>
-                                        <span className="font-medium">Select:</span> Multiple choice with custom options
+                                        <span className="font-medium">Select:</span> A menu of options. Useful for categorizing the audit area first.
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <CheckCircle2 className="h-4 w-4 text-gray-500 mt-0.5" />
                                     <div>
-                                        <span className="font-medium">End:</span> Terminates the flow
+                                        <span className="font-medium">End:</span> Terminates the flow immediately.
                                     </div>
                                 </div>
                             </div>
@@ -1329,13 +1376,13 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         <div>
                             <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
                                 <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">4</span>
-                                Visual Indicators
+                                Visual Checks
                             </h3>
                             <div className="ml-8 space-y-2 text-sm">
                                 <div className="flex items-start gap-2">
                                     <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
                                     <div>
-                                        <span className="font-medium text-amber-700">Amber badge:</span> Step has incomplete references (missing Yes/No/Next links)
+                                        <span className="font-medium text-amber-700">Incomplete Step:</span> Means a "Next Step" is missing. You must fill all links before saving.
                                     </div>
                                 </div>
                             </div>
@@ -1343,25 +1390,32 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
                         <div>
                             <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">5</span>
-                                Advanced: Conditional Navigation
+                                <span className="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">5</span>
+                                Advanced: Double Dipping & Shared Forms
                             </h3>
-                            <div className="ml-8 space-y-2 text-sm">
-                                <p className="text-gray-600 mb-2">
-                                    For complex flows like "double dipping", use conditional navigation to direct to different steps based on previous answers.
+                            <div className="ml-8 space-y-3 text-sm">
+                                <p className="text-gray-700">
+                                    <strong>"Double Dipping"</strong> allows you to reuse a single Form step for multiple different barriers or scenarios. This is powerful for grouping findings.
                                 </p>
-                                <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg space-y-2">
-                                    <p className="font-medium text-purple-900">When to use:</p>
-                                    <ul className="list-disc list-inside space-y-1 text-gray-700">
-                                        <li>Route to shared forms based on earlier choices</li>
-                                        <li>Skip steps when certain conditions are met</li>
-                                        <li>Capture barriers before early termination</li>
-                                    </ul>
+
+                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 space-y-2">
+                                    <p className="font-semibold text-purple-900 text-xs uppercase">How to setup Double Dipping:</p>
+                                    <ol className="list-decimal list-inside space-y-1 text-gray-700 ml-1">
+                                        <li>Create a single <strong>Form</strong> step (e.g. "Record Barrier Quantity").</li>
+                                        <li>Create your <strong>Questions</strong> (e.g. "Is the door too heavy?", "Is the knob accessible?").</li>
+                                        <li>
+                                            In each Question, enable <span className="font-semibold text-purple-700">Conditional Navigation</span>.
+                                        </li>
+                                        <li>
+                                            Add a condition (e.g. "If Answer is NO") and set the <strong>Target Step</strong> to your Shared Form.
+                                        </li>
+                                    </ol>
                                 </div>
-                                <div className="flex items-start gap-2 mt-2">
+
+                                <div className="flex items-start gap-2 pt-1">
                                     <Info className="h-4 w-4 text-purple-500 mt-0.5 shrink-0" />
-                                    <div className="text-gray-600">
-                                        Enable <span className="font-mono text-xs bg-purple-100 px-1 rounded">Conditional YES/NO Navigation</span> in Question steps to set conditions checking previous Question answers or Select options
+                                    <div className="text-gray-600 text-xs">
+                                        <strong>Auto-Calculation:</strong> When you save, the system automatically detects all the "Double Dippings" and calculates the "Shared Quantity" logic for you. You do not need to manually assign Barrier IDs to the Form.
                                     </div>
                                 </div>
                             </div>

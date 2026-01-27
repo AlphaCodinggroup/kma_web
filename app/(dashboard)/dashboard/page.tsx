@@ -22,41 +22,54 @@ const DashboardPage: React.FC = () => {
 
     return [
       {
-        title: "Total Projects",
+        title: "Totals Projects",
         value: fmt(metrics.totalProjects),
-        subtitle: "All projects",
+        subtitle: "Active Projects",
         icon: "brief-case",
       },
       {
-        title: "Total Final Reports Sent to Client",
-        value: fmt(metrics.totalReportsSentToClient),
-        subtitle: "Delivered to client",
-        icon: "badge-check",
+        title: "Totals Facilities",
+        value: fmt(metrics.totalFacilities),
+        subtitle: "Active Facilities",
+        icon: "building", // You might need to check if this icon exists in MetricCard or lucide
       },
       {
-        title: "Total Audit Reports Pending Review",
-        value: fmt(metrics.totalReportsReadyForQc),
-        subtitle: "Pending QC review",
-        icon: "shield-check",
+        title: "Facilities Unassigned",
+        value: fmt(metrics.totalFacilitiesUnassigned),
+        subtitle: "Without assigned auditors",
+        icon: "alert-circle",
       },
       {
-        title: "Total Reports Completed",
-        value: fmt(metrics.totalReportsComplete),
-        subtitle: "Reports closed",
-        icon: "file-text",
+        title: "Audits Completed",
+        value: fmt(metrics.totalAuditsCompleted),
+        subtitle: "Completed audits",
+        icon: "file-check",
       },
       {
-        title: "Completed Projects",
-        value: fmt(metrics.totalProjectsComplete),
-        subtitle: "Finished projects",
-        icon: "check-circle-2",
+        title: "Reports Pending Review",
+        value: fmt(metrics.totalDraftReportsPendingReview),
+        subtitle: "Drafts waiting for review",
+        icon: "clock",
+      },
+      {
+        title: "Reports In Review",
+        value: fmt(metrics.totalDraftReportsInReview),
+        subtitle: "Currently in review",
+        icon: "eye",
+      },
+      {
+        title: "Reports Sent",
+        value: fmt(metrics.totalFinalReportsSentToClient),
+        subtitle: "Final reports delivered",
+        icon: "send",
       },
     ];
   }, [data?.metrics]);
 
   const activityItems = useMemo<Activity[]>(() => {
     return (data?.recentActivity ?? []).map((item) => ({
-      project: item.projectName || "-",
+      // Let's format it as: Project | Facility - Flow
+      project: `${item.projectName} | ${item.facilityName} - ${item.flowName}`,
       auditor: item.auditorName || "-",
       time: item.completedAt ? formatIsoToYmdHm(item.completedAt) : "-",
       variant: "success",
