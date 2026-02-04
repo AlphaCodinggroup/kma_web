@@ -2,6 +2,8 @@ import type { FlowsRepo } from "@entities/flow/api/flows.repo";
 import type { Flow, FlowId, FlowList } from "@entities/flow/model";
 import { parseFlowListDTO, FlowDTOSchema } from "./flows.dto";
 import { mapFlowListDTO, mapFlowDTO, mapFlowToDTO } from "@entities/flow/lib/mappers";
+import { httpClient } from "@shared/api/http.client";
+import { AxiosError } from "axios";
 
 /**
  * Error normalizado de API.
@@ -19,146 +21,146 @@ export class FlowsApiError extends Error {
 
 const INTERNAL_API_URL = "/api/flows";
 
+/**
+ * Helper to extract error message from Axios errors
+ */
+function extractErrorMessage(err: unknown, fallback: string): string {
+  if (err instanceof AxiosError) {
+    const data = err.response?.data;
+    if (data && typeof data === "object" && "message" in data) {
+      return String((data as { message: unknown }).message);
+    }
+    if (typeof data === "string" && data.length > 0) {
+      return data;
+    }
+  }
+  if (err instanceof Error) {
+    return err.message;
+  }
+  return fallback;
+}
+
+/**
+ * Helper to extract status code from Axios errors
+ */
+function extractStatus(err: unknown): number | undefined {
+  if (err instanceof AxiosError) {
+    return err.response?.status;
+  }
+  return undefined;
+}
+
 export class FlowsHttpRepo implements FlowsRepo {
   async list(): Promise<FlowList> {
-    const res = await fetch(`${INTERNAL_API_URL}/summary`, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      // importante para no cachear el catálogo si cambia en backend
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      if (res.status === 401) {
-        throw new FlowsApiError("Unauthorized", 401);
-      }
-      const maybeJson = res.headers
-        .get("content-type")
-        ?.includes("application/json");
-      if (maybeJson) {
-        const body = (await res.json()) as unknown;
-        const msg =
-          (body &&
-            typeof body === "object" &&
-            "message" in body &&
-            (body as any).message) ||
-          "Upstream error";
-        throw new FlowsApiError(String(msg), res.status);
-      }
-      const text = await res.text();
-      throw new FlowsApiError(text || "Upstream error", res.status);
-    }
-
-    const raw = (await res.json()) as unknown;
     try {
-      const dto = parseFlowListDTO(raw);
-      const domain = mapFlowListDTO(dto);
-      return domain;
+      const res = await httpClient.get<unknown>(`${INTERNAL_API_URL}/summary`);
+
+      const raw = res.data;
+      try {
+        const dto = parseFlowListDTO(raw);
+        const domain = mapFlowListDTO(dto);
+        return domain;
+      } catch (err) {
+        console.error("[FlowsHttpRepo] Validation Error", {
+          error: err,
+          rawResponse: raw,
+        });
+        throw new FlowsApiError("Frontend validation failed. Check console.", 500);
+      }
     } catch (err) {
-      console.error("[FlowsHttpRepo] Validation Error", {
-        error: err,
-        rawResponse: raw,
-      });
-      // Re-throw para que React Query sepa que falló
-      throw new FlowsApiError("Frontend validation failed. Check console.", 500);
+      // If it's already a FlowsApiError, re-throw
+      if (err instanceof FlowsApiError) throw err;
+
+      const status = extractStatus(err);
+      const message = extractErrorMessage(err, "Failed to list flows");
+      throw new FlowsApiError(message, status);
     }
   }
 
   async getById(id: FlowId): Promise<Flow | null> {
-    const res = await fetch(`${INTERNAL_API_URL}/${id}`, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      cache: "no-store",
-    });
+    try {
+      const res = await httpClient.get<unknown>(`${INTERNAL_API_URL}/${id}`);
 
-    if (!res.ok) {
-      if (res.status === 404) {
+      const raw = res.data;
+      const dto = FlowDTOSchema.parse(raw);
+      return mapFlowDTO(dto);
+    } catch (err) {
+      if (err instanceof AxiosError && err.response?.status === 404) {
         return null;
       }
-      if (res.status === 401) {
-        throw new FlowsApiError("Unauthorized", 401);
-      }
-      const text = await res.text();
-      throw new FlowsApiError(text || "Upstream error", res.status);
-    }
+      if (err instanceof FlowsApiError) throw err;
 
-    const raw = (await res.json()) as unknown;
-    const dto = FlowDTOSchema.parse(raw);
-    return mapFlowDTO(dto);
+      const status = extractStatus(err);
+      const message = extractErrorMessage(err, "Failed to get flow");
+      throw new FlowsApiError(message, status);
+    }
   }
 
   async getPresignedUrl(fileName: string, fileType: string): Promise<{ uploadUrl: string; publicUrl: string }> {
-    const res = await fetch("/api/uploads/presigned", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fileName, fileType }),
-    });
-
-    if (!res.ok) {
-      throw new FlowsApiError("Failed to get presigned URL", res.status);
+    try {
+      const res = await httpClient.post<{ uploadUrl: string; publicUrl: string }>(
+        "/api/uploads/presigned",
+        { fileName, fileType }
+      );
+      return res.data;
+    } catch (err) {
+      const status = extractStatus(err);
+      const message = extractErrorMessage(err, "Failed to get presigned URL");
+      throw new FlowsApiError(message, status);
     }
-
-    return (await res.json()) as { uploadUrl: string; publicUrl: string };
   }
 
   async uploadFile(uploadUrl: string, file: File): Promise<void> {
     const encodedUrl = btoa(uploadUrl);
     const proxyUrl = `/api/uploads/proxy?url=${encodedUrl}`;
 
-    const res = await fetch(proxyUrl, {
-      method: "PUT",
-      body: file,
-      headers: {
-        "Content-Type": file.type,
-      },
-    });
-
-    if (!res.ok) {
-      throw new FlowsApiError("Failed to upload file via proxy", res.status);
+    try {
+      await httpClient.put(proxyUrl, file, {
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+    } catch (err) {
+      const status = extractStatus(err);
+      const message = extractErrorMessage(err, "Failed to upload file via proxy");
+      throw new FlowsApiError(message, status);
     }
   }
 
   async create(flow: Flow): Promise<Flow> {
     const dto = mapFlowToDTO(flow);
     console.log(JSON.stringify(dto));
-    const res = await fetch(INTERNAL_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dto),
-    });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new FlowsApiError(text || "Failed to create flow", res.status);
+    try {
+      const res = await httpClient.post<Flow>(INTERNAL_API_URL, dto);
+      return res.data;
+    } catch (err) {
+      const status = extractStatus(err);
+      const message = extractErrorMessage(err, "Failed to create flow");
+      throw new FlowsApiError(message, status);
     }
-
-    return (await res.json()) as Flow;
   }
 
   async update(id: FlowId, flow: Flow): Promise<Flow> {
     const dto = mapFlowToDTO(flow);
-    const res = await fetch(`${INTERNAL_API_URL}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dto),
-    });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new FlowsApiError(text || "Failed to update flow", res.status);
+    try {
+      const res = await httpClient.put<Flow>(`${INTERNAL_API_URL}/${id}`, dto);
+      return res.data;
+    } catch (err) {
+      const status = extractStatus(err);
+      const message = extractErrorMessage(err, "Failed to update flow");
+      throw new FlowsApiError(message, status);
     }
-
-    return (await res.json()) as Flow;
   }
 
   async delete(id: FlowId): Promise<void> {
-    const res = await fetch(`${INTERNAL_API_URL}/${id}`, {
-      method: "DELETE",
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      throw new FlowsApiError(text || "Failed to delete flow", res.status);
+    try {
+      await httpClient.delete(`${INTERNAL_API_URL}/${id}`);
+    } catch (err) {
+      const status = extractStatus(err);
+      const message = extractErrorMessage(err, "Failed to delete flow");
+      throw new FlowsApiError(message, status);
     }
   }
 }

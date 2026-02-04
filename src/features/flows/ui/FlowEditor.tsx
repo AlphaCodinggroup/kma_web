@@ -5,7 +5,7 @@ import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, End
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
-import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info, ChevronDown, ChevronUp } from "lucide-react";
+import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info, ChevronDown, ChevronUp, RotateCcw, History } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { cn } from "@shared/lib/cn";
 import { useRouter } from "next/navigation";
@@ -49,6 +49,105 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
     // Help Modal State
     const [showHelpModal, setShowHelpModal] = React.useState(false);
+
+    // Draft Recovery Modal State
+    const [showDraftRecoveryModal, setShowDraftRecoveryModal] = React.useState(false);
+    const [recoveredDraft, setRecoveredDraft] = React.useState<Flow | null>(null);
+
+    // Track if flow has been saved at least once (to know when to clear draft)
+    const [lastSavedFlow, setLastSavedFlow] = React.useState<Flow>(initialFlow);
+
+    // LocalStorage key for draft
+    const draftKey = `flow-editor-draft-${initialFlow.id}`;
+
+    // Check if there are unsaved changes
+    const hasUnsavedChanges = React.useMemo(() => {
+        return JSON.stringify(flow) !== JSON.stringify(lastSavedFlow);
+    }, [flow, lastSavedFlow]);
+
+    // --- Data Loss Protection: beforeunload ---
+    React.useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [hasUnsavedChanges]);
+
+    // --- Data Loss Protection: localStorage auto-save ---
+    React.useEffect(() => {
+        if (!hasUnsavedChanges) return;
+
+        const timeoutId = setTimeout(() => {
+            try {
+                const draftData = {
+                    flow,
+                    savedAt: new Date().toISOString(),
+                };
+                localStorage.setItem(draftKey, JSON.stringify(draftData));
+                console.log("[FlowEditor] Draft auto-saved to localStorage");
+            } catch (err) {
+                console.warn("[FlowEditor] Failed to save draft to localStorage:", err);
+            }
+        }, 10000); // Auto-save after 10 seconds of inactivity
+
+        return () => clearTimeout(timeoutId);
+    }, [flow, hasUnsavedChanges, draftKey]);
+
+    // --- Data Loss Protection: Check for draft on mount ---
+    React.useEffect(() => {
+        try {
+            const savedDraft = localStorage.getItem(draftKey);
+            if (savedDraft) {
+                const parsed = JSON.parse(savedDraft) as { flow: Flow; savedAt: string };
+                // Only offer recovery if the draft is different from initial flow
+                if (JSON.stringify(parsed.flow) !== JSON.stringify(initialFlow)) {
+                    setRecoveredDraft(parsed.flow);
+                    setShowDraftRecoveryModal(true);
+                }
+            }
+        } catch (err) {
+            console.warn("[FlowEditor] Failed to load draft from localStorage:", err);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Only run on mount
+
+    // --- Clear draft from localStorage ---
+    const clearDraft = () => {
+        try {
+            localStorage.removeItem(draftKey);
+        } catch (err) {
+            console.warn("[FlowEditor] Failed to clear draft:", err);
+        }
+    };
+
+    // --- Handle draft recovery ---
+    const handleRecoverDraft = () => {
+        if (recoveredDraft) {
+            setFlow(recoveredDraft);
+            setShowDraftRecoveryModal(false);
+            setRecoveredDraft(null);
+        }
+    };
+
+    const handleDiscardDraft = () => {
+        clearDraft();
+        setShowDraftRecoveryModal(false);
+        setRecoveredDraft(null);
+    };
+
+    // --- Handle Clear/Reset ---
+    const handleClearFlow = () => {
+        if (confirm("¿Está seguro que desea descartar todos los cambios y volver al estado inicial? Esta acción no se puede deshacer.")) {
+            setFlow(initialFlow);
+            clearDraft();
+            setSelectedStepId(initialFlow.steps[0]?.id || null);
+        }
+    };
+
 
     const validateFlow = (currentFlow: Flow): string[] => {
         const errors: string[] = [];
@@ -453,7 +552,9 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             }
 
             setFlow(updatedFlow);
+            setLastSavedFlow(updatedFlow); // Update last saved state
             setPendingUploads({});
+            clearDraft(); // Clear localStorage draft on successful save
             setIsSaving(false);
 
             // Show Success Modal
@@ -879,6 +980,20 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     />
                 </div>
                 <div className="flex items-center gap-2">
+                    {hasUnsavedChanges && (
+                        <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
+                            Unsaved changes
+                        </span>
+                    )}
+                    <Button
+                        onClick={handleClearFlow}
+                        className="gap-2 shadow-sm bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+                        disabled={isSaving || !hasUnsavedChanges}
+                        title="Descartar cambios y volver al estado inicial"
+                    >
+                        <RotateCcw className="h-4 w-4" />
+                        Clear
+                    </Button>
                     <Button
                         className={cn("gap-2 shadow-sm transition-all", isSaving ? "opacity-80" : "hover:ring-2 hover:ring-offset-1 hover:ring-black")}
                         onClick={handleSave}
@@ -1435,6 +1550,39 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     <ModalFooter className="justify-center mt-6 pt-4 border-t">
                         <Button onClick={() => setShowHelpModal(false)} className="bg-blue-600 hover:bg-blue-700 text-white">
                             Got it!
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            {/* Draft Recovery Modal */}
+            <Modal open={showDraftRecoveryModal} onOpenChange={setShowDraftRecoveryModal}>
+                <ModalContent className="max-w-md p-6">
+                    <ModalHeader className="flex flex-col items-center gap-4 text-center">
+                        <div className="p-3 rounded-full bg-amber-100">
+                            <History className="w-8 h-8 text-amber-600" />
+                        </div>
+                        <ModalTitle className="text-xl text-amber-700">
+                            Borrador encontrado
+                        </ModalTitle>
+                        <ModalDescription className="text-sm text-gray-600">
+                            Se encontró un borrador guardado automáticamente de una sesión anterior.
+                            ¿Desea recuperarlo o descartarlo?
+                        </ModalDescription>
+                    </ModalHeader>
+
+                    <ModalFooter className="flex flex-col gap-2 mt-6">
+                        <Button
+                            onClick={handleRecoverDraft}
+                            className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                        >
+                            Recuperar borrador
+                        </Button>
+                        <Button
+                            onClick={handleDiscardDraft}
+                            className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        >
+                            Descartar y empezar limpio
                         </Button>
                     </ModalFooter>
                 </ModalContent>
