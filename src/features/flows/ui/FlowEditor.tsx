@@ -981,19 +981,21 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                 </div>
                 <div className="flex items-center gap-2">
                     {hasUnsavedChanges && (
-                        <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
-                            Unsaved changes
-                        </span>
+                        <>
+                            <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
+                                Unsaved changes
+                            </span>
+                            <Button
+                                onClick={handleClearFlow}
+                                className="gap-2 shadow-sm bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                                disabled={isSaving}
+                                title="Descartar cambios y volver al estado inicial"
+                            >
+                                <RotateCcw className="h-4 w-4" />
+                                Discard
+                            </Button>
+                        </>
                     )}
-                    <Button
-                        onClick={handleClearFlow}
-                        className="gap-2 shadow-sm bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
-                        disabled={isSaving || !hasUnsavedChanges}
-                        title="Descartar cambios y volver al estado inicial"
-                    >
-                        <RotateCcw className="h-4 w-4" />
-                        Clear
-                    </Button>
                     <Button
                         className={cn("gap-2 shadow-sm transition-all", isSaving ? "opacity-80" : "hover:ring-2 hover:ring-offset-1 hover:ring-black")}
                         onClick={handleSave}
