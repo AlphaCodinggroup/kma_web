@@ -982,12 +982,12 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                 <div className="flex items-center gap-2">
                     {hasUnsavedChanges && (
                         <>
-                            <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
+                            <span className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
                                 Unsaved changes
                             </span>
                             <Button
                                 onClick={handleClearFlow}
-                                className="gap-2 shadow-sm bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                                className="gap-2 shadow-sm bg-red-700 text-white hover:bg-red-800"
                                 disabled={isSaving}
                                 title="Descartar cambios y volver al estado inicial"
                             >
