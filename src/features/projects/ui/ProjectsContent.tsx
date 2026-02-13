@@ -251,7 +251,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
                             ): f is {
                                 id: string;
                                 name: string;
-                            } => Boolean(f)
+                            } => Boolean(f) && Boolean(f!.id)
                         ) ?? [];
 
                 const optionalFields = buildProjectOptionalFields(values);
@@ -305,7 +305,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
                             ): f is {
                                 id: string;
                                 name: string;
-                            } => Boolean(f)
+                            } => Boolean(f) && Boolean(f!.id)
                         ) ?? [];
 
                 const optionalFields = buildProjectOptionalFields(values);

@@ -118,6 +118,7 @@ const AuditsPage: React.FC = () => {
   }, []);
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const handleDelete = useCallback(
     async (audit: Audit) => {
@@ -143,10 +144,12 @@ const AuditsPage: React.FC = () => {
   const handleEdit = useCallback(
     (audit: Audit) => {
       if (audit.status === "draft_report_pending_review") {
+        setEditingId(audit.id);
         startSendForReview(audit.id);
         setPendingAuditId(audit.id);
         return;
       }
+      setEditingId(audit.id);
       const auditorName = audit.auditorName ?? audit.createdBy ?? "";
       const baseHref = `/audits/${encodeURIComponent(
         audit.id
@@ -195,6 +198,7 @@ const AuditsPage: React.FC = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
           deletingId={deletingId}
+          editingId={editingId}
           loading={isLoading}
           fetching={isFetching}
           error={isError}

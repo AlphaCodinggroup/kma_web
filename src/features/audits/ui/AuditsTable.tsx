@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo, useState, useMemo } from "react";
-import { Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 import type { Audit } from "@entities/audit/model";
 import {
   Table,
@@ -24,6 +24,7 @@ export interface AuditsTableProps {
   onEdit?: (audit: Audit) => void;
   onDelete?: (audit: Audit) => void;
   deletingId?: string | null;
+  editingId?: string | null;
   emptyMessage?: string;
   bodyMaxHeightClassName?: string;
   loading?: boolean;
@@ -50,6 +51,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
   onEdit,
   onDelete,
   deletingId,
+  editingId,
   emptyMessage = "No audits found",
   bodyMaxHeightClassName,
   loading = false,
@@ -253,12 +255,18 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                 </TableCell>
                 <TableCell className="text-right pr-6">
                   <div className="flex items-center justify-end gap-2">
-                    <RowActionButton
-                      icon={Pencil}
-                      ariaLabel="Edit audit"
+                    <button
                       onClick={() => onEdit?.(row)}
-                      size="md"
-                    />
+                      disabled={editingId === row.id}
+                      className="inline-flex items-center justify-center h-8 w-8 rounded-md text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Edit audit"
+                    >
+                      {editingId === row.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Pencil className="h-4 w-4" />
+                      )}
+                    </button>
                     {onDelete && (
                       <button
                         onClick={() => onDelete(row)}
