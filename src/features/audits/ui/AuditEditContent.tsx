@@ -44,7 +44,9 @@ type CommentTarget = {
 };
 
 const POLL_INTERVAL_MS = 2000;
-const POLL_MAX_ATTEMPTS = 15; // ~30 segundos
+// El worker (SQS -> ReportsWorker) puede tardar más de 30s en generar/subir el PDF.
+// Subimos el máximo para evitar que el usuario tenga que intentar 2-3 veces.
+const POLL_MAX_ATTEMPTS = 60; // ~2 minutos
 
 const AuditEditContent: React.FC<AuditEditContentProps> = ({
   id,
@@ -149,6 +151,20 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
 
   const handleExport = useCallback(async () => {
     try {
+      // Abrir la pestaña inmediatamente (gesto del usuario) para evitar que el browser
+      // bloquee el popup cuando el URL esté listo (porque el polling es async).
+      // Si el popup es bloqueado, hacemos fallback a navegar en la misma pestaña.
+      const popup = window.open("about:blank", "_blank", "noopener,noreferrer");
+      if (popup) {
+        try {
+          popup.document.title = "Generating PDF...";
+          popup.document.body.innerHTML =
+            "<p style=\"font-family: sans-serif; padding: 16px;\">Generating PDF... please wait.</p>";
+        } catch {
+          // ignore: algunos browsers restringen escribir en el popup
+        }
+      }
+
       // Para que se genere el PDF, primero hay que disparar el proceso en backend.
       // El endpoint `complete-review` encola el trabajo (SQS -> ReportsWorker) y luego
       // `GET /api/reports/{id}` empieza a devolver `reportUrl` cuando esté listo.
@@ -180,11 +196,20 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
       }
 
       if (finalUrl) {
-        window.open(finalUrl, "_blank", "noopener,noreferrer");
+        if (popup && !popup.closed) {
+          popup.location.href = finalUrl;
+          popup.focus();
+        } else {
+          // Fallback cuando el popup fue bloqueado/cerrado.
+          window.location.href = finalUrl;
+        }
       } else {
         console.warn(
           "[FinalReport] No reportUrl available after polling attempts."
         );
+        if (popup && !popup.closed) {
+          popup.close();
+        }
       }
     } catch (err) {
       console.error("[FinalReport] Error al exportar reporte:", err);
