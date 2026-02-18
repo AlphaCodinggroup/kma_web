@@ -149,12 +149,11 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
 
   const handleExport = useCallback(async () => {
     try {
-      // COMENTADO: Ya no cambiamos el estado automáticamente al exportar PDF
-      // El estado se puede cambiar manualmente en cualquier momento usando el selector
-      // if (status === "draft_report_in_review") {
-      //   await mutateAsync({ auditId: id });
-      //   await refetchReviewDetail(); // refresca detalle para que status cambie
-      // }
+      // Para que se genere el PDF, primero hay que disparar el proceso en backend.
+      // El endpoint `complete-review` encola el trabajo (SQS -> ReportsWorker) y luego
+      // `GET /api/reports/{id}` empieza a devolver `reportUrl` cuando esté listo.
+      await mutateAsync({ auditId: id });
+      await refetchReviewDetail(); // refresca status/datos antes de hacer polling
 
       // Empezamos el polling del reporte
       setIsPollingReport(true);
