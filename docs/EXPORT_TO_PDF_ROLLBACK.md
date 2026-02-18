@@ -38,6 +38,13 @@ Cambio:
   2) `await refetchReviewDetail()`
   3) polling a `refetchReport()` (`GET /api/reports/{audit_id}`) hasta que exista `reportUrl`
 
+Mejora adicional (UX / confiabilidad):
+- Se incrementó el tiempo máximo de polling para evitar que el usuario tenga que intentar 2-3 veces:
+  - antes: ~30s
+  - ahora: ~2 minutos
+- Se abre una pestaña `about:blank` inmediatamente al click (gesto del usuario) y luego se redirige a `reportUrl` cuando esté listo.
+  - Esto evita que algunos browsers bloqueen el `window.open()` si se ejecuta luego de esperar async (polling).
+
 Validación esperada:
 - En Network aparece `POST /api/audits-review/{audit_id}/complete-review` (202)
 - Luego aparecen `GET /api/reports/{audit_id}` hasta que vuelva con `report_url` y se abra el PDF.
@@ -72,6 +79,9 @@ Opción B: revert manual (si no hay commit aún)
 1) Volver a comentar/eliminar estas líneas de `handleExport()`:
 - `await mutateAsync({ auditId: id })`
 - `await refetchReviewDetail()`
+2) (Opcional) Revertir la mejora de polling/popup:
+  - Restaurar el límite de polling (~30s).
+  - Volver al comportamiento anterior de abrir el `reportUrl` directamente (sin pre-abrir `about:blank`).
 2) Commit + push a `develop`.
 
 Nota:
