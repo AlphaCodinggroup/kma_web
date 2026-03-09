@@ -12,7 +12,7 @@ import axios, {
   type InternalAxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
-import { createApiError, type ApiError } from "@shared/interceptors/error";
+import { createApiError, isApiError, type ApiError } from "@shared/interceptors/error";
 
 // -----------------------------
 // Config / helpers internos
@@ -100,6 +100,20 @@ export type AuthInterceptorOptions = {
 };
 
 /**
+ * Obtiene el status HTTP del error, soportando tanto AxiosError como ApiError.
+ */
+function getErrorStatus(error: unknown): number | undefined {
+  // AxiosError path (interceptor sees raw error)
+  const axiosStatus = (error as AxiosError)?.response?.status;
+  if (axiosStatus) return axiosStatus;
+
+  // ApiError fallback (in case error was already normalised)
+  if (isApiError(error) && error.code === "UNAUTHORIZED") return 401;
+
+  return undefined;
+}
+
+/**
  * Instala el auth interceptor en una instancia de Axios (cliente).
  * - Debe llamarse una sola vez sobre httpClient.
  * @param instance - Instancia de Axios donde instalar el interceptor
@@ -116,7 +130,7 @@ export function installAuthInterceptor(
     // Manejamos errores
     async (error: AxiosError) => {
       try {
-        const status = error.response?.status;
+        const status = getErrorStatus(error);
         const originalConfig = (error.config || {}) as RetriableConfig;
         const url = originalConfig.url ?? "";
 

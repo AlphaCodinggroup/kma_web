@@ -58,6 +58,7 @@ export interface AuditDetail {
   projectName?: string | null;
   facilityName?: string | null;
   auditorName?: string | null;
+  location?: string | null;
   status: AuditStatus;
   auditDate: IsoDateString;
   completedDate?: IsoDateString | null;

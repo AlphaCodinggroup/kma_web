@@ -247,6 +247,29 @@ function deriveAnswerByStep(answers?: AnswerDTO[]): Map<string, AnswerDTO> {
   return map;
 }
 
+/**
+ * Extracts the location from audit answers.
+ * Priority: first form-type answer with values.location, then any answer with values.location.
+ */
+function extractLocation(answers?: AnswerDTO[]): string | null {
+  if (!Array.isArray(answers) || answers.length === 0) return null;
+
+  // 1. Try the first form-type answer
+  const firstForm = answers.find((a) => a.type === "form");
+  if (firstForm?.values && typeof firstForm.values.location === "string" && firstForm.values.location.trim()) {
+    return firstForm.values.location.trim();
+  }
+
+  // 2. Fallback: search all answers for values.location
+  for (const ans of answers) {
+    if (ans?.values && typeof ans.values.location === "string" && ans.values.location.trim()) {
+      return (ans.values.location as string).trim();
+    }
+  }
+
+  return null;
+}
+
 function toAttachmentsFromPhotos(
   photos?: unknown[],
   code?: string
@@ -323,6 +346,7 @@ export const mapAuditDetailDTOToDomain = (dto: AuditDetailDTO): AuditDetail => {
     facilityId: emptyToNull(dto.facility_id ?? dto.facilityId),
     projectName: dto.project_name ?? null,
     auditorName: dto.auditor_name ?? dto.auditor ?? null,
+    location: extractLocation(dto.answers),
     facilityName: dto.facility_name ?? null,
     status: toAuditStatus(dto.status),
     auditDate: toIso(
@@ -333,8 +357,8 @@ export const mapAuditDetailDTOToDomain = (dto: AuditDetailDTO): AuditDetail => {
       completedRaw === undefined
         ? null
         : completedRaw === null
-        ? null
-        : toIso(completedRaw),
+          ? null
+          : toIso(completedRaw),
     createdAt: dto.created_at ? toIso(dto.created_at) : null,
     updatedAt: dto.updated_at ? toIso(dto.updated_at) : null,
     questions: questionsFromSteps ?? questionsFromDto ?? [],

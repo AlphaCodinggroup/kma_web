@@ -54,6 +54,7 @@ export default function AuditEditPage(props: PageProps<"/audits/[id]/edit">) {
           completedDate={memoed.updatedAt}
           projectName={auditDetail?.projectName}
           facilityName={auditDetail?.facilityName}
+          location={auditDetail?.location}
         />
       </div>
 

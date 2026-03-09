@@ -29,10 +29,13 @@ export const httpClient = axios.create({
   },
 });
 
-installErrorInterceptor(httpClient);
+// ⚠️ Order matters: auth interceptor MUST be installed FIRST so it sees
+// the raw AxiosError with .response.status === 401 before the error
+// interceptor normalises it into a plain ApiError.
 installAuthInterceptor(httpClient, {
   onSessionExpired: handleSessionExpiration,
 });
+installErrorInterceptor(httpClient);
 
 // ---------------------------
 // Interceptores
@@ -76,19 +79,6 @@ httpClient.interceptors.request.use(
         "Request interceptor failed before sending the request."
       )
     );
-  }
-);
-
-// Response: normalización de errores (se mantiene tu lógica)
-httpClient.interceptors.response.use(
-  (res) => res,
-  (err: AxiosError) => {
-    const message =
-      (err.response?.data as any)?.message ||
-      (typeof err.message === "string" && err.message) ||
-      "Network request failed.";
-    const enriched = new Error(message);
-    return Promise.reject(enriched);
   }
 );
 

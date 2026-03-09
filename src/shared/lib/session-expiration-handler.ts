@@ -29,12 +29,8 @@ export async function handleSessionExpiration(): Promise<void> {
     try {
         isHandlingExpiration = true;
 
-        // Mostrar alerta al usuario
-        if (typeof window !== "undefined") {
-            window.alert(
-                "Su sesión ha expirado. Por favor, inicie sesión nuevamente."
-            );
-        }
+        // Log instead of blocking alert — the login page communicates the state
+        console.warn("[SessionExpiration] Session expired — redirecting to login.");
 
         // Ejecutar logout (limpia cookies server-side)
         try {
