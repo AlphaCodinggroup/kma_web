@@ -17,6 +17,7 @@ import { Retry } from "@shared/ui/Retry";
 import type { Project } from "@entities/projects/model";
 import { formatIsoToYmdHm } from "@shared/lib/date";
 import { ProjectStatusBadge } from "@shared/ui/badge";
+import { useSession } from "@processes/auth/hooks";
 
 export type SortField = "name" | "auditor" | "facility" | "status" | "createdAt";
 export type SortOrder = "asc" | "desc" | null;
@@ -50,6 +51,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   sortOrder,
   onSort,
 }) => {
+  const { isAdmin } = useSession();
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return <ArrowUpDown className="h-4 w-4 opacity-30" />;
     if (sortOrder === "asc") return <ArrowUp className="h-4 w-4" />;
@@ -189,6 +191,8 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                       ariaLabel="Edit project"
                       onClick={() => onEdit(row.id)}
                       size="md"
+                      disabled={!isAdmin}
+                      title={!isAdmin ? "Only administrators can edit projects" : "Edit project"}
                     />
                     {/* <RowActionButton
                       icon={Archive}
@@ -202,6 +206,8 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                       onClick={() => onDelete(row.id)}
                       variant="danger"
                       size="md"
+                      disabled={!isAdmin}
+                      title={!isAdmin ? "Only administrators can delete projects" : "Delete project"}
                     />
                   </div>
                 </TableCell>

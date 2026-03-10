@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Pencil, Trash2, MapPin, Archive, ArchiveRestore } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Pencil, Trash2, MapPin, Archive, ArchiveRestore, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import {
   Table,
@@ -16,6 +16,7 @@ import type { Facility } from "@entities/facility/model";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
 import { formatIsoToYmdHm } from "@shared/lib/date";
+import { useSession } from "@processes/auth/hooks";
 
 export interface FacilityTableProps {
   items: Facility[];
@@ -32,6 +33,9 @@ export interface FacilityTableProps {
   showArchived?: boolean;
 }
 
+type SortColumn = "name" | "address" | "date";
+type SortDirection = "asc" | "desc" | null;
+
 const FacilityTable: React.FC<FacilityTableProps> = ({
   items,
   onEdit,
@@ -46,7 +50,59 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
   onError,
   showArchived = false,
 }) => {
-  const hasItems = items.length > 0;
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const { isAdmin } = useSession();
+
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      if (sortDirection === "asc") setSortDirection("desc");
+      else if (sortDirection === "desc") {
+        setSortDirection(null);
+        setSortColumn(null);
+      } else setSortDirection("asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedItems = useMemo(() => {
+    if (!sortColumn || !sortDirection) return items;
+
+    return [...items].sort((a, b) => {
+      let aVal: string | number = "";
+      let bVal: string | number = "";
+
+      switch (sortColumn) {
+        case "name":
+          aVal = a.name.toLowerCase();
+          bVal = b.name.toLowerCase();
+          break;
+        case "address":
+          aVal = (a.address || a.city || "").toLowerCase();
+          bVal = (b.address || b.city || "").toLowerCase();
+          break;
+        case "date":
+          aVal = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          bVal = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          break;
+      }
+
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [items, sortColumn, sortDirection]);
+
+  const SortIcon = ({ column }: { column: SortColumn }) => {
+    if (sortColumn !== column) return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    if (sortDirection === "asc") return <ArrowUp className="h-4 w-4 text-black" />;
+    if (sortDirection === "desc") return <ArrowDown className="h-4 w-4 text-black" />;
+    return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+  };
+
+  const hasItems = sortedItems.length > 0;
 
   if (isLoading) {
     return <Loading text="Loading facilities…" />;
@@ -71,10 +127,34 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
       <Table>
         <TableHeader className="bg-muted/40">
           <TableRow className="[&_th]:h-12">
-            <TableHead className="w-[44%]">Facility</TableHead>
-            <TableHead className="w-[36%]">Address</TableHead>
-            <TableHead className="w-[12%]">Created At</TableHead>
-            <TableHead className="w-[8%] text-right">Actions</TableHead>
+            <TableHead className="w-[44%]">
+              <button
+                onClick={() => handleSort("name")}
+                className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+              >
+                Facility
+                <SortIcon column="name" />
+              </button>
+            </TableHead>
+            <TableHead className="w-[36%]">
+              <button
+                onClick={() => handleSort("address")}
+                className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+              >
+                Address
+                <SortIcon column="address" />
+              </button>
+            </TableHead>
+            <TableHead className="w-[12%]">
+              <button
+                onClick={() => handleSort("date")}
+                className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+              >
+                Created At
+                <SortIcon column="date" />
+              </button>
+            </TableHead>
+            <TableHead className="w-[8%] text-right font-semibold pr-4">Actions</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -86,7 +166,7 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
           )}
         >
           {hasItems ? (
-            items.map((row) => (
+            sortedItems.map((row) => (
               <TableRow key={row.id} className="hover:bg-muted/30">
                 {/* Facility + status */}
                 <TableCell>
@@ -120,6 +200,8 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
                       ariaLabel="Edit facility"
                       onClick={() => onEdit(row.id)}
                       size="md"
+                      disabled={!isAdmin}
+                      title={!isAdmin ? "Only administrators can edit facilities" : "Edit facility"}
                     />
                     {showArchived && onRestore ? (
                       <RowActionButton
@@ -127,6 +209,8 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
                         ariaLabel="Restore facility"
                         onClick={() => onRestore(row.id)}
                         size="md"
+                        disabled={!isAdmin}
+                        title={!isAdmin ? "Only administrators can restore facilities" : "Restore facility"}
                       />
                     ) : (
                       <>
@@ -135,6 +219,8 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
                           ariaLabel="Archive facility"
                           onClick={() => onArchive(row.id)}
                           size="md"
+                          disabled={!isAdmin}
+                          title={!isAdmin ? "Only administrators can archive facilities" : "Archive facility"}
                         />
                         <RowActionButton
                           icon={Trash2}
@@ -142,6 +228,8 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
                           onClick={() => onDelete(row.id)}
                           variant="danger"
                           size="md"
+                          disabled={!isAdmin}
+                          title={!isAdmin ? "Only administrators can delete facilities" : "Delete facility"}
                         />
                       </>
                     )}

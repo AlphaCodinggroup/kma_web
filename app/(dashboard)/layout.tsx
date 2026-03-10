@@ -4,6 +4,7 @@ import SidebarNav from "@widgets/shell/SidebarNav";
 import AuthGuard from "@processes/auth/guard"
 import { getServerSession } from "@processes/auth/session";
 import QueryProvider from "@shared/providers/query-provider";
+import { AuthProvider } from "@processes/auth/context";
 
 type PrivateLayoutProps = {
   children: React.ReactNode;
@@ -19,17 +20,19 @@ const PrivateLayout = async ({ children }: PrivateLayoutProps) => {
 
   return (
     <AuthGuard>
-      <QueryProvider>
-        <div className="bg-white text-black">
-          <AppHeader role={user?.role} userName={user?.name} />
-          <div className="flex h-[calc(100dvh-64px)] min-h-0">
-            <SidebarNav role={user?.role} />
-            <main className="flex-1 overflow-y-auto">
-              <div className="mx-auto p-6">{children}</div>
-            </main>
+      <AuthProvider session={session}>
+        <QueryProvider>
+          <div className="bg-white text-black">
+            <AppHeader role={user?.role} userName={user?.name} />
+            <div className="flex h-[calc(100dvh-64px)] min-h-0">
+              <SidebarNav role={user?.role} />
+              <main className="flex-1 overflow-y-auto">
+                <div className="mx-auto p-6">{children}</div>
+              </main>
+            </div>
           </div>
-        </div>
-      </QueryProvider>
+        </QueryProvider>
+      </AuthProvider>
     </AuthGuard>
   );
 };

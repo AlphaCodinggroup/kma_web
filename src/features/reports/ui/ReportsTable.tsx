@@ -17,6 +17,7 @@ import type { ReportListItem } from "@entities/report/model/report-list";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
 import { formatIsoToYmdHm } from "@shared/lib/date";
+import { useSession } from "@processes/auth/hooks";
 
 export interface ReportsTableProps {
   items: ReportListItem[];
@@ -48,6 +49,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   onError,
   deletingId,
 }) => {
+  const { isAdmin } = useSession();
   const hasItems = items.length > 0;
 
   if (isLoading) return <Loading text="Loading reports" />;
@@ -122,7 +124,8 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                           ariaLabel="Delete report"
                           onClick={() => onDelete(r.id)}
                           size="md"
-                          disabled={deletingId === r.id}
+                          disabled={deletingId === r.id || !isAdmin}
+                          title={!isAdmin ? "Only administrators can delete reports" : "Delete report"}
                         />
                       </div>
                     </TableCell>

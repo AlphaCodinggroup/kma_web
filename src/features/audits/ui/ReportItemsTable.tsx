@@ -13,6 +13,7 @@ import {
 import { Eye, EyeOff, MessageSquare, Pencil } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
+import { useSession } from "@processes/auth/hooks";
 import { Button } from "@shared/ui/controls";
 import { Loading } from "@shared/ui/Loading";
 
@@ -121,6 +122,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
   error = false,
   onError,
 }) => {
+  const { isAdmin } = useSession();
   const rows = useMemo<AuditFinding[]>(() => items, [items]);
 
   const grandTotal = useMemo<number>(
@@ -129,7 +131,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
         (acc, r) =>
           acc +
           (typeof r.calculatedCost === "number" &&
-          Number.isFinite(r.calculatedCost)
+            Number.isFinite(r.calculatedCost)
             ? r.calculatedCost
             : 0),
         0
@@ -201,7 +203,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                   {/* Code References */}
                   <TableCell>
                     {typeof r.adasReference === "string" &&
-                    r.adasReference.trim() ? (
+                      r.adasReference.trim() ? (
                       <div className="text-sm">
                         {r.adasReference.trim()}
                       </div>
@@ -227,7 +229,7 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                   {/* Cost */}
                   <TableCell className="text-left font-semibold">
                     {typeof r.calculatedCost === "number" &&
-                    Number.isFinite(r.calculatedCost)
+                      Number.isFinite(r.calculatedCost)
                       ? r.calculatedCost
                       : "—"}
                   </TableCell>
@@ -240,12 +242,16 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                         ariaLabel="Editar hallazgo"
                         onClick={() => onEditFinding?.(r, idx)}
                         size="md"
+                        disabled={!isAdmin}
+                        title={!isAdmin ? "Only administrators can edit findings" : "Editar hallazgo"}
                       />
                       <RowActionButton
                         icon={MessageSquare}
                         ariaLabel="Comments"
                         onClick={() => onAddComment(r, idx)}
                         size="md"
+                        disabled={!isAdmin}
+                        title={!isAdmin ? "Only administrators can manage comments" : "Comments"}
                       />
                     </div>
                   </TableCell>

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button } from "@shared/ui/controls";
 import { Loading } from "@shared/ui/Loading";
 import Link from "next/link";
+import { useSession } from "@processes/auth/hooks";
 
 export interface FlowCardProps {
   title: string;
@@ -29,6 +30,7 @@ export const FlowCard: React.FC<FlowCardProps> = ({
 }) => {
   const [isNavigating, setIsNavigating] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const { isAdmin } = useSession();
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this flow? This action cannot be undone.")) {
@@ -78,28 +80,37 @@ export const FlowCard: React.FC<FlowCardProps> = ({
           <div className="absolute right-0 top-0 flex items-center gap-2">
             <button
               onClick={handleDelete}
-              disabled={isDeleting}
-              className="text-muted-foreground hover:text-red-600 transition-colors"
-              title="Delete flow"
+              disabled={isDeleting || !isAdmin}
+              className="text-muted-foreground hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title={!isAdmin ? "Only administrators can delete flows" : "Delete flow"}
             >
               {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
             </button>
 
-            <Link
-              href={`/flows/${flowId}` as any}
-              aria-label="Edit flow"
-              onClick={() => setIsNavigating(true)}
-              className={cn(
-                "inline-flex h-6 w-6 items-center justify-center",
-                "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {isNavigating ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Pencil className="h-5 w-5 cursor-pointer" stroke="#6a7282" />
-              )}
-            </Link>
+            {isAdmin ? (
+              <Link
+                href={`/flows/${flowId}` as any}
+                aria-label="Edit flow"
+                onClick={() => setIsNavigating(true)}
+                className={cn(
+                  "inline-flex h-6 w-6 items-center justify-center",
+                  "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {isNavigating ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Pencil className="h-5 w-5 cursor-pointer" stroke="#6a7282" />
+                )}
+              </Link>
+            ) : (
+              <div
+                className="inline-flex h-6 w-6 items-center justify-center text-muted-foreground opacity-50 cursor-not-allowed"
+                title="Only administrators can edit flows"
+              >
+                <Pencil className="h-5 w-5" stroke="#6a7282" />
+              </div>
+            )}
           </div>
         </div>
 

@@ -18,6 +18,7 @@ import { cn } from "@shared/lib/cn";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
 import Pagination from "@shared/ui/Pagination";
+import { useSession } from "@processes/auth/hooks";
 
 export interface AuditsTableProps {
   items: Audit[];
@@ -67,6 +68,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
 }) => {
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const { isAdmin } = useSession();
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -257,9 +259,10 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => onEdit?.(row)}
-                      disabled={editingId === row.id}
+                      disabled={editingId === row.id || !isAdmin}
                       className="inline-flex items-center justify-center h-8 w-8 rounded-md text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       aria-label="Edit audit"
+                      title={!isAdmin ? "Only administrators can edit audits" : "Edit audit"}
                     >
                       {editingId === row.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -270,9 +273,10 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                     {onDelete && (
                       <button
                         onClick={() => onDelete(row)}
-                        disabled={deletingId === row.id}
+                        disabled={deletingId === row.id || !isAdmin}
                         className="inline-flex items-center justify-center h-8 w-8 rounded-md text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Delete audit"
+                        title={!isAdmin ? "Only administrators can delete audits" : "Delete audit"}
                       >
                         {deletingId === row.id ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-red-600" />

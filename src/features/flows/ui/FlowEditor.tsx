@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { Loading } from "@shared/ui/Loading";
 import { useQueryClient } from "@tanstack/react-query";
 import { flowsKeys } from "@features/flows/lib/useFlowsQuery";
+import { useSession } from "@processes/auth/hooks";
 
 interface FlowEditorProps {
     initialFlow: Flow;
@@ -26,6 +27,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const [pendingUploads, setPendingUploads] = React.useState<Record<string, File>>({});
     const [isSaving, setIsSaving] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState("");
+    const { isAdmin } = useSession();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const router = useRouter();
@@ -153,7 +155,6 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         const errors: string[] = [];
 
         if (!currentFlow.title.trim()) errors.push("Flow Title is required.");
-        if (!currentFlow.description?.trim()) errors.push("Flow Description is required.");
 
         if (currentFlow.steps.length === 0) {
             errors.push("Flow must have at least one step.");
@@ -976,7 +977,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         value={flow.description ?? ""}
                         onChange={(e) => setFlow({ ...flow, description: e.target.value })}
                         className="text-sm text-gray-500 bg-transparent border border-gray-200 focus:border-gray-300 focus:bg-white rounded-md p-2 -ml-2 w-full placeholder:text-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-gray-100"
-                        placeholder="Add a description..."
+                        placeholder="Add a description (optional)..."
                     />
                 </div>
                 <div className="flex items-center gap-2">
@@ -987,9 +988,9 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                             </span>
                             <Button
                                 onClick={handleClearFlow}
-                                className="gap-2 shadow-sm bg-red-700 text-white hover:bg-red-800"
-                                disabled={isSaving}
-                                title="Descartar cambios y volver al estado inicial"
+                                className="gap-2 shadow-sm bg-red-700 text-white hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={isSaving || !isAdmin}
+                                title={!isAdmin ? "Only administrators can discard changes" : "Descartar cambios y volver al estado inicial"}
                             >
                                 <RotateCcw className="h-4 w-4" />
                                 Discard
@@ -997,9 +998,10 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         </>
                     )}
                     <Button
-                        className={cn("gap-2 shadow-sm transition-all", isSaving ? "opacity-80" : "hover:ring-2 hover:ring-offset-1 hover:ring-black")}
+                        className={cn("gap-2 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed", isSaving ? "opacity-80" : "hover:ring-2 hover:ring-offset-1 hover:ring-black")}
                         onClick={handleSave}
-                        disabled={isSaving}
+                        disabled={isSaving || !isAdmin}
+                        title={!isAdmin ? "Only administrators can save flows" : "Save Flow"}
                     >
                         {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                         {isSaving ? "Saving..." : "Save Flow"}
@@ -1058,7 +1060,9 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                     {/* Quick delete on hover */}
                                     <button
                                         onClick={(e) => { e.stopPropagation(); handleDeleteStep(step.id); }}
-                                        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 bg-white shadow-sm p-1 rounded-md text-red-500 hover:bg-red-50"
+                                        disabled={!isAdmin}
+                                        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 bg-white shadow-sm p-1 rounded-md text-red-500 hover:bg-red-50 disabled:cursor-not-allowed"
+                                        title={!isAdmin ? "Only administrators can delete steps" : "Delete step"}
                                     >
                                         <Trash2 className="h-3 w-3" />
                                     </button>
@@ -1073,7 +1077,9 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                     <Button
                                         key={type}
                                         onClick={() => handleAddStep(type)}
-                                        className="text-xs h-9 bg-black text-white hover:bg-gray-800 shadow-md border-none"
+                                        className="text-xs h-9 bg-black text-white hover:bg-gray-800 shadow-md border-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={!isAdmin}
+                                        title={!isAdmin ? `Only administrators can add steps` : `Add ${type} step`}
                                     >
                                         {type}
                                     </Button>
