@@ -15,6 +15,7 @@ export type AuditDTO = {
   project_name?: string | null;
   auditor_name?: string | null;
   facility_name?: string | null;
+  findings_count?: number | null;
 };
 
 export type AuditsResponseDTO = {
@@ -49,6 +50,7 @@ export const mapAuditDtoToDomain = (dto: AuditDTO): Audit => {
     updatedAt: toIsoOrEmpty(dto.updated_at),
     auditorName: dto.auditor_name ?? "",
     facilityName: dto.facility_name ?? "",
+    findingsCount: dto.findings_count ?? null,
   };
 };
 

@@ -260,9 +260,20 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                     <button
                       onClick={() => onEdit?.(row)}
                       disabled={editingId === row.id || !isAdmin}
-                      className="inline-flex items-center justify-center h-8 w-8 rounded-md text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className={cn(
+                        "inline-flex items-center justify-center h-8 w-8 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+                        row.findingsCount === 0
+                          ? "text-red-600 hover:bg-red-50"
+                          : "text-gray-700 hover:bg-gray-100"
+                      )}
                       aria-label="Edit audit"
-                      title={!isAdmin ? "Only administrators can edit audits" : "Edit audit"}
+                      title={
+                        !isAdmin
+                          ? "Only administrators can edit audits"
+                          : row.findingsCount === 0
+                            ? "No findings – all answers are compliant"
+                            : "Edit audit"
+                      }
                     >
                       {editingId === row.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
