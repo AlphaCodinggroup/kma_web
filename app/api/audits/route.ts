@@ -11,12 +11,16 @@ export async function GET(request: Request) {
   if (!token)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  // Extract query parameters from request URL
+  // Extract and validate query parameters
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status");
   const auditor = searchParams.get("auditor");
   const limit = searchParams.get("limit");
   const last_eval_id = searchParams.get("last_eval_id");
+
+  if (limit && (!/^\d+$/.test(limit) || Number(limit) > 200)) {
+    return NextResponse.json({ message: "Invalid limit" }, { status: 400 });
+  }
 
   // Build upstream URL with query parameters
   const upstreamParams = new URLSearchParams();

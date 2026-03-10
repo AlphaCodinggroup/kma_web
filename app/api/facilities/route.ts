@@ -22,6 +22,10 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get("search");
   const projectId = searchParams.get("projectId");
 
+  if (limit && (!/^\d+$/.test(limit) || Number(limit) > 200)) {
+    return NextResponse.json({ message: "Invalid limit" }, { status: 400 });
+  }
+
   if (limit) upstreamUrl.searchParams.set("limit", limit);
   if (cursor) upstreamUrl.searchParams.set("cursor", cursor);
   if (status) upstreamUrl.searchParams.set("status", status);
