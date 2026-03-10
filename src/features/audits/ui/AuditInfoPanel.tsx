@@ -10,6 +10,7 @@ export interface AuditInfoPanelProps {
   projectName?: string | null | undefined;
   facilityName?: string | null | undefined;
   location?: string | null | undefined;
+  auditorName?: string | null | undefined;
   className?: string;
   containerPaddingClassName?: string;
   ariaLabelledById?: string;
@@ -30,6 +31,7 @@ export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
   projectName,
   facilityName,
   location,
+  auditorName,
   className,
   containerPaddingClassName = "px-4 sm:px-6 lg:px-8",
   ariaLabelledById,
@@ -82,7 +84,16 @@ export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
             </dd>
           </div>
 
-          <div className="sm:col-span-2">
+          <div>
+            <dt className="text-sm font-semibold text-muted-foreground">
+              Auditor
+            </dt>
+            <dd className="mt-1 text-sm" data-testid="auditor-name">
+              {auditorName || "—"}
+            </dd>
+          </div>
+
+          <div className="sm:justify-self-end">
             <dt className="text-sm font-semibold text-muted-foreground">
               Location
             </dt>
