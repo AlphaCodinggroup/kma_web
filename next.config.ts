@@ -15,7 +15,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  ...(process.env.DOCKER_BUILD === "1" && { output: "standalone" as const }),
   reactStrictMode: true,
   poweredByHeader: false,
   eslint: { ignoreDuringBuilds: false },
