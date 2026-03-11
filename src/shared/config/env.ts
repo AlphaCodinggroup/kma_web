@@ -198,8 +198,24 @@ function loadServerEnv() {
 
 // -- API pública del módulo -------------------------------
 
-// Export seguro para usar en cualquier lugar (cliente/servidor).
-export const PublicEnv = loadPublicEnv();
+// Lazy singleton: valida al primer acceso, no al importar el módulo.
+// Esto evita que el build de Next.js explote cuando las env vars
+// aún no están disponibles (ej. Vercel collecting page data).
+let _publicEnvCache: ReturnType<typeof loadPublicEnv> | null = null;
+
+export function publicEnv() {
+  if (!_publicEnvCache) {
+    _publicEnvCache = loadPublicEnv();
+  }
+  return _publicEnvCache;
+}
+
+/** @deprecated Usa publicEnv() en su lugar */
+export const PublicEnv = new Proxy({} as ReturnType<typeof loadPublicEnv>, {
+  get(_target, prop: string) {
+    return publicEnv()[prop as keyof ReturnType<typeof loadPublicEnv>];
+  },
+});
 
 // Función para acceder a env de servidor (no importa en cliente).
 export function serverEnv() {
@@ -207,9 +223,9 @@ export function serverEnv() {
 }
 
 // Utils de conveniencia
-export const isProd = () => PublicEnv.appEnv === "production";
-export const isStaging = () => PublicEnv.appEnv === "staging";
-export const isDev = () => PublicEnv.appEnv === "development";
+export const isProd = () => publicEnv().appEnv === "production";
+export const isStaging = () => publicEnv().appEnv === "staging";
+export const isDev = () => publicEnv().appEnv === "development";
 
 // Tipos útiles para DX
 export type PublicEnvType = ReturnType<typeof loadPublicEnv>;
