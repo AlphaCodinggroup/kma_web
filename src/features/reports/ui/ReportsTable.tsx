@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Download, Trash2 } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Download, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { StatusBadge } from "@shared/ui/badge";
 import {
@@ -33,6 +33,9 @@ export interface ReportsTableProps {
   deletingId?: string | null | undefined;
 }
 
+type SortColumn = "project" | "status" | "date";
+type SortDirection = "asc" | "desc" | null;
+
 /**
  * Tabla de Reports: solo columnas requeridas.
  */
@@ -50,7 +53,68 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   deletingId,
 }) => {
   const { isAdmin } = useSession();
-  const hasItems = items.length > 0;
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      // Cycle through: asc -> desc -> null
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortDirection(null);
+        setSortColumn(null);
+      } else {
+        setSortDirection("asc");
+      }
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedItems = useMemo(() => {
+    if (!sortColumn || !sortDirection) return items;
+
+    const sorted = [...items].sort((a, b) => {
+      let aVal: string | number = "";
+      let bVal: string | number = "";
+
+      switch (sortColumn) {
+        case "project":
+          aVal = a.reportName?.toLowerCase() ?? "";
+          bVal = b.reportName?.toLowerCase() ?? "";
+          break;
+        case "status":
+          aVal = a.status?.toLowerCase() ?? "";
+          bVal = b.status?.toLowerCase() ?? "";
+          break;
+        case "date":
+          aVal = new Date(a.createdAt).getTime();
+          bVal = new Date(b.createdAt).getTime();
+          break;
+      }
+
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  }, [items, sortColumn, sortDirection]);
+
+  const SortIcon = ({ column }: { column: SortColumn }) => {
+    if (sortColumn !== column) {
+      return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    }
+    if (sortDirection === "asc") {
+      return <ArrowUp className="h-4 w-4 text-black" />;
+    }
+    if (sortDirection === "desc") {
+      return <ArrowDown className="h-4 w-4 text-black" />;
+    }
+    return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+  };
 
   if (isLoading) return <Loading text="Loading reports" />;
 
@@ -61,6 +125,8 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
         onClick={onError}
       />
     );
+
+  const hasItems = sortedItems.length > 0;
 
   return (
     <div
@@ -73,9 +139,33 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
         <Table className="min-w-[720px]">
           <TableHeader>
             <TableRow className="bg-white">
-              <TableHead>Project</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created At</TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("project")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Project
+                  <SortIcon column="project" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("status")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Status
+                  <SortIcon column="status" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("date")}
+                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                >
+                  Created At
+                  <SortIcon column="date" />
+                </button>
+              </TableHead>
               <TableHead>Export to PDF</TableHead>
             </TableRow>
           </TableHeader>
@@ -91,7 +181,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                 </TableCell>
               </TableRow>
             ) : (
-              items.map((r) => {
+              sortedItems.map((r) => {
                 return (
                   <TableRow key={r.id}>
                     <TableCell className="font-medium">
