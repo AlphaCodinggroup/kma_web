@@ -6,6 +6,8 @@ import { getServerSession } from "@processes/auth/session";
 import QueryProvider from "@shared/providers/query-provider";
 import { AuthProvider } from "@processes/auth/context";
 
+export const dynamic = "force-dynamic";
+
 type PrivateLayoutProps = {
   children: React.ReactNode;
 };

@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { serverEnv } from "@shared/config/env";
 
 export const runtime = "nodejs"; // por las dudas, para usar Buffer
 
 export async function PUT(req: NextRequest) {
+    const { cookies: cookieCfg } = serverEnv();
+    const cookieStore = await cookies();
+    const token = cookieStore.get(cookieCfg.accessName)?.value;
+
+    if (!token) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const encodedUrl = req.nextUrl.searchParams.get("url");
     const targetUrl = encodedUrl
         ? Buffer.from(encodedUrl, "base64").toString("utf8")

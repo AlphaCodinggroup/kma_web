@@ -21,6 +21,7 @@ export interface Audit {
   projectName: string | null;
   auditorName: string | null;
   facilityName: string | null;
+  findingsCount: number | null;
 }
 
 export type AuditType = {

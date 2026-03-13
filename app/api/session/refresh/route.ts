@@ -15,6 +15,10 @@ import { initiateAuthWithRefreshToken } from "@features/auth/api/cognito.repo.im
 // Helpers de cookies (idénticos a /api/session)
 // -----------------------------
 
+const isLocalEnv =
+  process.env.NEXT_PUBLIC_APP_ENV === "development" ||
+  process.env.VERCEL_ENV === "development";
+
 /** Normaliza opciones comunes de cookie y convierte sameSite a minúsculas. */
 function commonCookieOptions() {
   const env = serverEnv();
@@ -24,11 +28,14 @@ function commonCookieOptions() {
     | "strict"
     | "none";
 
+  const secure = isLocalEnv ? false : env.cookies.secure;
+  const domain = isLocalEnv ? undefined : env.cookies.domain;
+
   return {
     httpOnly: true as const,
-    secure: env.cookies.secure,
+    secure,
     sameSite: sameSiteLower,
-    domain: env.cookies.domain,
+    domain,
     path: "/" as const,
   };
 }
