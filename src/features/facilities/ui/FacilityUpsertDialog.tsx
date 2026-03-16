@@ -126,7 +126,9 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
 
   const isSubmitting = loading === true;
   const isNameValid = values.name.trim().length > 0;
-  const disableSubmit = isSubmitting || !isNameValid;
+  const isAddressValid = (values.address ?? "").trim().length > 0;
+  const isCityValid = (values.city ?? "").trim().length > 0;
+  const disableSubmit = isSubmitting || !isNameValid || !isAddressValid || !isCityValid;
 
   const handlePhotoChange = useCallback(
     (file: File | null) => {
@@ -247,7 +249,6 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               value={values.description ?? ""}
               onChange={(e) => handleChange("description", e.currentTarget.value)}
               disabled={isSubmitting}
-              required
               rows={4}
             />
           </div>
