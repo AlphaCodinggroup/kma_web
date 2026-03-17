@@ -28,6 +28,7 @@ export const StepBaseDTOSchema = z.object({
   id: z.string(),
   type: z.enum(["Question", "Form", "Select", "End"]),
   image: z.string().optional().nullable(),
+  images: z.array(z.string()).optional().nullable(),
   metadata: StepMetadataDTOSchema.optional().nullable(),
 });
 

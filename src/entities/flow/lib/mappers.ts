@@ -22,6 +22,15 @@ import type {
   StepMetadataDTO,
 } from "@features/flows/api/flows.dto";
 
+function normalizeImages(image?: string | null, images?: string[] | null): string[] {
+  const result = images ? [...images] : [];
+  if (image && !result.includes(image)) {
+    // Add the legacy image as the first item so it retains original rendering order
+    result.unshift(image);
+  }
+  return result;
+}
+
 /** ------------------------
  *  Pasos: DTO -> Dominio
  *  -----------------------*/
@@ -59,6 +68,7 @@ function mapQuestionStep(dto: QuestionStepDTO): QuestionStep {
     noNext: dto.no_next ?? "",
     barrierId: dto.barrier_id ?? "",
     image: dto.image ?? "",
+    images: normalizeImages(dto.image, dto.images),
     conditionalYesNext: dto.conditional_yes_next ? mapConditionalNextDTO(dto.conditional_yes_next) : undefined,
     conditionalNoNext: dto.conditional_no_next ? mapConditionalNextDTO(dto.conditional_no_next) : undefined,
     metadata: mapStepMetadata(dto.metadata),
@@ -84,6 +94,7 @@ function mapFormStep(dto: FormStepDTO): FormStep {
     barrierId: dto.barrier_id ?? "",
     fields: dto.fields.map(mapFormField),
     image: dto.image ?? "",
+    images: normalizeImages(dto.image, dto.images),
     metadata: mapStepMetadata(dto.metadata),
   };
 }
@@ -97,6 +108,7 @@ function mapSelectStep(dto: SelectStepDTO): SelectStep {
     options: dto.options.map((o) => ({ label: o.label, next: o.next, barrierId: o.barrier_id ?? undefined })),
     next: dto.next ?? "",
     image: dto.image ?? "",
+    images: normalizeImages(dto.image, dto.images),
     metadata: mapStepMetadata(dto.metadata),
   };
 }
@@ -106,6 +118,7 @@ function mapEndStep(dto: EndStepDTO): EndStep {
     id: dto.id,
     type: "End",
     image: dto.image ?? "",
+    images: normalizeImages(dto.image, dto.images),
     metadata: mapStepMetadata(dto.metadata),
   };
 }
@@ -149,7 +162,7 @@ export function mapFlowDTO(dto: FlowDTO): Flow {
 function mapFlowListItemDTO(dto: any): Flow {
   // Mapeo seguro de steps para el listado (rellena defaults)
   const safeSteps: FlowStep[] = dto.steps.map((s: any) => {
-    const base = { id: s.id || "unknown", image: s.image || null };
+    const base = { id: s.id || "unknown", image: s.image || null, images: normalizeImages(s.image, s.images) };
 
     switch (s.type) {
       case "Question":
@@ -240,7 +253,8 @@ function mapQuestionStepToDTO(step: QuestionStep): QuestionStepDTO {
     yes_next: step.yesNext || undefined,
     no_next: step.noNext || undefined,
     barrier_id: step.barrierId || undefined,
-    image: step.image || undefined,
+    image: step.images && step.images.length > 0 ? step.images[0] : undefined,
+    images: step.images || undefined,
     conditional_yes_next: step.conditionalYesNext ? mapConditionalNextToDTO(step.conditionalYesNext) : undefined,
     conditional_no_next: step.conditionalNoNext ? mapConditionalNextToDTO(step.conditionalNoNext) : undefined,
     metadata: mapStepMetadataToDTO(step.metadata),
@@ -265,7 +279,8 @@ function mapFormStepToDTO(step: FormStep): FormStepDTO {
     next: step.next || undefined,
     barrier_id: step.barrierId || undefined,
     fields: step.fields.map(mapFormFieldToDTO),
-    image: step.image || undefined,
+    image: step.images && step.images.length > 0 ? step.images[0] : undefined,
+    images: step.images || undefined,
     metadata: mapStepMetadataToDTO(step.metadata),
   };
 }
@@ -278,7 +293,8 @@ function mapSelectStepToDTO(step: SelectStep): SelectStepDTO {
     text: step.text || undefined,
     options: step.options.map((o) => ({ label: o.label, next: o.next, barrier_id: o.barrierId })),
     next: step.next || undefined,
-    image: step.image || undefined,
+    image: step.images && step.images.length > 0 ? step.images[0] : undefined,
+    images: step.images || undefined,
     metadata: mapStepMetadataToDTO(step.metadata),
   };
 }
@@ -287,7 +303,8 @@ function mapEndStepToDTO(step: EndStep): EndStepDTO {
   return {
     id: step.id,
     type: "End",
-    image: step.image || undefined,
+    image: step.images && step.images.length > 0 ? step.images[0] : undefined,
+    images: step.images || undefined,
     metadata: mapStepMetadataToDTO(step.metadata),
   };
 }

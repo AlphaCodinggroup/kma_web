@@ -35,6 +35,7 @@ export interface BaseStep {
   id: string;
   type: "Question" | "Form" | "Select" | "End";
   image?: string | null;
+  images?: string[] | null;
   metadata?: StepMetadata | undefined;
 }
 
