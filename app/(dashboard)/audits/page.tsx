@@ -12,11 +12,13 @@ import { useDeleteAudit } from "@features/audits/lib/hooks/useDeleteAudit";
 import { useAuditors } from "@features/audits/lib/hooks/useAuditors";
 import type { Audit } from "@entities/audit/model";
 import { useSendForReviewAudit } from "@features/audits/lib/hooks/useSendForReviewAudit";
+import ConfirmDialog from "@shared/ui/confirm-dialog";
 
 const AuditsPage: React.FC = () => {
   const router = useRouter();
   const [query, setQuery] = useState<string>("");
   const [pendingAuditId, setPendingAuditId] = useState<string | null>(null);
+  const [noFindingsDialogOpen, setNoFindingsDialogOpen] = useState(false);
 
   // Filter state
   const [auditorFilter, setAuditorFilter] = useState<string>("");
@@ -143,6 +145,10 @@ const AuditsPage: React.FC = () => {
 
   const handleEdit = useCallback(
     (audit: Audit) => {
+      if (audit.findingsCount === 0) {
+        setNoFindingsDialogOpen(true);
+        return;
+      }
       if (audit.status === "draft_report_pending_review") {
         setEditingId(audit.id);
         startSendForReview(audit.id);
@@ -211,6 +217,14 @@ const AuditsPage: React.FC = () => {
           onPageSizeChange={setPageSize}
         />
       </div>
+      <ConfirmDialog
+        open={noFindingsDialogOpen}
+        onOpenChange={setNoFindingsDialogOpen}
+        title="No Report Needed"
+        description="This audit has no findings — all answers are compliant. No report will be generated."
+        confirmLabel="OK"
+        onConfirm={() => setNoFindingsDialogOpen(false)}
+      />
     </main>
   );
 };
