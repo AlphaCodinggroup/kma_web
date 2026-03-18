@@ -12,7 +12,15 @@ import { useDeleteAudit } from "@features/audits/lib/hooks/useDeleteAudit";
 import { useAuditors } from "@features/audits/lib/hooks/useAuditors";
 import type { Audit } from "@entities/audit/model";
 import { useSendForReviewAudit } from "@features/audits/lib/hooks/useSendForReviewAudit";
-import ConfirmDialog from "@shared/ui/confirm-dialog";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalFooter,
+} from "@shared/ui/modal";
+import { Button } from "@shared/ui/controls";
 
 const AuditsPage: React.FC = () => {
   const router = useRouter();
@@ -217,14 +225,25 @@ const AuditsPage: React.FC = () => {
           onPageSizeChange={setPageSize}
         />
       </div>
-      <ConfirmDialog
-        open={noFindingsDialogOpen}
-        onOpenChange={setNoFindingsDialogOpen}
-        title="No Report Needed"
-        description="This audit has no findings — all answers are compliant. No report will be generated."
-        confirmLabel="OK"
-        onConfirm={() => setNoFindingsDialogOpen(false)}
-      />
+      <Modal open={noFindingsDialogOpen} onOpenChange={setNoFindingsDialogOpen}>
+        <ModalContent>
+          <ModalHeader>
+            <ModalTitle>No Report Needed</ModalTitle>
+            <ModalDescription>
+              This audit has no findings — all answers are compliant. No report will be generated.
+            </ModalDescription>
+          </ModalHeader>
+          <ModalFooter>
+            <Button
+              type="button"
+              onClick={() => setNoFindingsDialogOpen(false)}
+              className="bg-black hover:opacity-80 rounded-xl w-full"
+            >
+              OK
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </main>
   );
 };
