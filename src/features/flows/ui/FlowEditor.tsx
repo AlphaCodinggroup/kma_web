@@ -348,20 +348,10 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
     // -- Field Management (for Forms) --
 
-    const handleAddField = (stepId: string) => {
+    const handleAddField = (stepId: string, fieldType: "quantity" | "measurements" | "photo" | "notes") => {
         const step = flow.steps.find(s => s.id === stepId) as FormStep;
         if (!step) return;
 
-        const availableFieldIds = (["quantity", "measurements", "photo", "notes"] as const).filter(
-            (fieldId) => !step.fields.some(f => f.id === fieldId)
-        );
-
-        if (availableFieldIds.length === 0) {
-            alert("All standard fields are already added");
-            return;
-        }
-
-        const fieldId = availableFieldIds[0];
         const fieldConfig: Record<string, { type: string; label: string; unit?: string; placeholder?: string }> = {
             quantity: { type: "number", label: "Quantity" },
             measurements: { type: "number", label: "Measurements", unit: "\"" },
@@ -369,7 +359,21 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             notes: { type: "text", label: "Notes (optional)", placeholder: "Enter notes..." }
         };
 
-        const config = fieldConfig[fieldId];
+        if (fieldType !== "measurements" && step.fields.some(f => f.id === fieldType)) {
+            alert(`${fieldType} is already added`);
+            return;
+        }
+
+        let fieldId: string = fieldType;
+        if (fieldType === "measurements") {
+            let idx = 1;
+            while(step.fields.some(f => f.id === `measurements_${idx}`)) {
+                idx++;
+            }
+            fieldId = `measurements_${idx}`;
+        }
+
+        const config = fieldConfig[fieldType];
         const newField: any = {
             id: fieldId,
             type: config.type,
@@ -1356,34 +1360,62 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                         </div>
                                         <div className="grid grid-cols-[150px_1fr] gap-6 items-start">
                                             <Label className="mt-2 text-right text-gray-500">Fields</Label>
-                                            <div className="space-y-2">
-                                                {(selectedStep as FormStep).fields.map((field, fIdx) => (
-                                                    <div key={fIdx} className="flex items-center gap-2 bg-gray-50 p-2 rounded-md border">
-                                                        <div className="w-20 text-xs font-mono text-gray-500 shrink-0">{field.type}</div>
-                                                        <Input
-                                                            className="h-8 text-sm"
-                                                            value={field.label}
-                                                            onChange={(e) => handleUpdateField(selectedStep.id, fIdx, { label: e.target.value })}
-                                                        />
-                                                        {field.id === "measurements" && (
-                                                            <select
-                                                                value={field.unit ?? '"'}
-                                                                onChange={(e) => handleUpdateField(selectedStep.id, fIdx, { unit: e.target.value })}
-                                                                className="h-8 text-sm border-gray-300 rounded-md"
-                                                            >
-                                                                <option value={'"'}>in (")</option>
-                                                                <option value={'cm'}>cm</option>
-                                                                <option value={'%'}>%</option>
-                                                            </select>
-                                                        )}
-                                                        <button onClick={() => handleDeleteField(selectedStep.id, fIdx)} className="text-gray-400 hover:text-red-500">
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                                <Button onClick={() => handleAddField(selectedStep.id)} className="w-full h-8 text-xs bg-black text-white hover:bg-gray-800 shadow-sm border-none">
-                                                    <Plus className="h-3 w-3 mr-1" /> Add Field
-                                                </Button>
+                                            <div className="space-y-4">
+                                                {/* Add Field Buttons Above Fields */}
+                                                <div className="flex flex-row flex-wrap items-center gap-2">
+                                                    <button type="button" onClick={() => handleAddField(selectedStep.id, 'quantity')} disabled={(selectedStep as FormStep).fields.some(f => f.id === 'quantity')} className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                                                        <Plus className="h-3 w-3 mr-1" /> Quantity
+                                                    </button>
+                                                    <button type="button" onClick={() => handleAddField(selectedStep.id, 'measurements')} className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm transition-colors">
+                                                        <Plus className="h-3 w-3 mr-1" /> Measurement
+                                                    </button>
+                                                    <button type="button" onClick={() => handleAddField(selectedStep.id, 'photo')} disabled={(selectedStep as FormStep).fields.some(f => f.id === 'photo')} className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                                                        <Plus className="h-3 w-3 mr-1" /> Photo
+                                                    </button>
+                                                    <button type="button" onClick={() => handleAddField(selectedStep.id, 'notes')} disabled={(selectedStep as FormStep).fields.some(f => f.id === 'notes')} className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                                                        <Plus className="h-3 w-3 mr-1" /> Notes
+                                                    </button>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    {(selectedStep as FormStep).fields.map((field, fIdx) => (
+                                                        <div key={fIdx} className="flex flex-col gap-2 bg-gray-50 p-2 rounded-md border">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-20 text-xs font-mono text-gray-500 shrink-0">{field.type}</div>
+                                                                <Input
+                                                                    className="h-8 text-sm flex-1"
+                                                                    value={field.label}
+                                                                    onChange={(e) => handleUpdateField(selectedStep.id, fIdx, { label: e.target.value })}
+                                                                />
+                                                                {field.id.startsWith("measurements") && (
+                                                                    <select
+                                                                        value={field.unit ?? '"'}
+                                                                        onChange={(e) => handleUpdateField(selectedStep.id, fIdx, { unit: e.target.value })}
+                                                                        className="h-8 text-sm border-gray-300 rounded-md shrink-0"
+                                                                    >
+                                                                        <option value={'"'}>in (")</option>
+                                                                        <option value={'cm'}>cm</option>
+                                                                        <option value={'%'}>%</option>
+                                                                    </select>
+                                                                )}
+                                                                <button onClick={() => handleDeleteField(selectedStep.id, fIdx)} className="text-gray-400 hover:text-red-500 shrink-0">
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </button>
+                                                            </div>
+                                                            {(field.type === 'text' || field.type === 'number') && (
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-20 text-xs text-gray-400 shrink-0 text-right pr-2">Placeholder</div>
+                                                                    <Input
+                                                                        className="h-8 text-xs flex-1"
+                                                                        placeholder="Optional placeholder..."
+                                                                        value={field.placeholder ?? ""}
+                                                                        onChange={(e) => handleUpdateField(selectedStep.id, fIdx, { placeholder: e.target.value })}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
 

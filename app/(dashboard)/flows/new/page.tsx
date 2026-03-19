@@ -12,7 +12,22 @@ const EMPTY_FLOW: Flow = {
     flowType: "Navigation",
     isActive: true,
     version: 1,
-    steps: []
+    steps: [
+        {
+            id: "L-01",
+            type: "Form",
+            title: "Location",
+            fields: [
+                {
+                    id: "location",
+                    type: "text",
+                    label: "Location",
+                    placeholder: "Location of ramp(s)"
+                }
+            ],
+            next: ""
+        }
+    ]
 };
 
 export default function NewFlowPage() {
