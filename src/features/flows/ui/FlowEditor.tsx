@@ -5,7 +5,7 @@ import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, End
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
-import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info, ChevronDown, ChevronUp, RotateCcw, History } from "lucide-react";
+import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info, ChevronDown, ChevronUp, RotateCcw, History, GripVertical } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { cn } from "@shared/lib/cn";
 import { useRouter } from "next/navigation";
@@ -29,6 +29,8 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const [searchTerm, setSearchTerm] = React.useState("");
     const { isAdmin } = useSession();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const [draggedStepId, setDraggedStepId] = React.useState<string | null>(null);
+    const [dragOverStepId, setDragOverStepId] = React.useState<string | null>(null);
 
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -212,6 +214,70 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     if (isSaving) {
         return <Loading text="Saving..." />;
     }
+
+    // -- Drag and Drop --
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>, stepId: string) => {
+        if (!isAdmin) return;
+        setDraggedStepId(stepId);
+        e.dataTransfer.setData("text/plain", stepId);
+        e.dataTransfer.effectAllowed = "move";
+        // Timeout to let standard drag image generate before modifying the original element
+        setTimeout(() => {
+            if (e.target instanceof HTMLElement) {
+                e.target.classList.add("opacity-50");
+            }
+        }, 0);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+    };
+
+    const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, stepId: string) => {
+        e.preventDefault();
+        if (stepId !== draggedStepId) {
+            setDragOverStepId(stepId);
+        }
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>, stepId: string) => {
+        e.preventDefault();
+        if (dragOverStepId === stepId) {
+            // Only clear if we are leaving the element we entered, to prevent flickering 
+            // when hovering over children. A simple approach is relying on DragEnter.
+            setDragOverStepId(null);
+        }
+    };
+
+    const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+        setDraggedStepId(null);
+        setDragOverStepId(null);
+        if (e.target instanceof HTMLElement) {
+            e.target.classList.remove("opacity-50");
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetStepId: string) => {
+        e.preventDefault();
+        if (!isAdmin || !draggedStepId || draggedStepId === targetStepId) {
+            handleDragEnd(e);
+            return;
+        }
+
+        const newSteps = [...flow.steps];
+        const sourceIdx = newSteps.findIndex(s => s.id === draggedStepId);
+        const targetIdx = newSteps.findIndex(s => s.id === targetStepId);
+
+        if (sourceIdx !== -1 && targetIdx !== -1) {
+            const [movedStep] = newSteps.splice(sourceIdx, 1);
+            newSteps.splice(targetIdx, 0, movedStep);
+            
+            setFlow({ ...flow, steps: newSteps });
+        }
+
+        handleDragEnd(e);
+    };
 
     // -- Step Management --
 
@@ -1104,17 +1170,35 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     <div className="flex-1 overflow-y-auto p-2 space-y-2">
                         {filteredSteps.map((step) => {
                             const incomplete = isStepIncomplete(step);
+                            const isDragged = draggedStepId === step.id;
+                            const isDragOver = dragOverStepId === step.id;
+
                             return (
                                 <div
                                     key={step.id}
+                                    draggable={searchTerm === "" && isAdmin}
+                                    onDragStart={(e) => handleDragStart(e, step.id)}
+                                    onDragOver={handleDragOver}
+                                    onDrop={(e) => handleDrop(e, step.id)}
+                                    onDragEnter={(e) => handleDragEnter(e, step.id)}
+                                    onDragLeave={(e) => handleDragLeave(e, step.id)}
+                                    onDragEnd={handleDragEnd}
                                     onClick={() => setSelectedStepId(step.id)}
                                     className={cn(
-                                        "p-3 rounded-lg border cursor-pointer transition-all hover:bg-gray-50 group relative",
+                                        "p-3 rounded-lg border transition-all hover:bg-gray-50 group relative",
                                         selectedStepId === step.id ? "bg-blue-50 border-blue-200 ring-1 ring-blue-200" : "border-gray-100 bg-white",
-                                        incomplete && "border-amber-200 bg-amber-50/30"
+                                        incomplete && "border-amber-200 bg-amber-50/30",
+                                        isDragged && "opacity-50 border-dashed border-gray-400",
+                                        isDragOver && "border-t-[3px] border-t-purple-500 bg-purple-50",
+                                        searchTerm === "" && isAdmin ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"
                                     )}
                                 >
                                     <div className="flex items-center gap-2 mb-1">
+                                        {searchTerm === "" && isAdmin && (
+                                            <div className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition-colors" title="Drag to reorder">
+                                                <GripVertical className="h-4 w-4 shrink-0" />
+                                            </div>
+                                        )}
                                         {step.type === "Question" && <HelpCircle className="h-3.5 w-3.5 text-blue-500" />}
                                         {step.type === "Form" && <FileText className="h-3.5 w-3.5 text-green-500" />}
                                         {step.type === "Select" && <List className="h-3.5 w-3.5 text-purple-500" />}
