@@ -67,4 +67,5 @@ export interface AuditDetail {
   questions: AuditQuestion[];
   reportItems: AuditReportItem[];
   comments: AuditComment[];
+  steps?: any[];
 }

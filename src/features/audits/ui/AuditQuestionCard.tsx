@@ -10,6 +10,10 @@ import {
 } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { Button } from "@shared/ui/controls";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useUpdateAuditAnswerMutation } from "../lib/hooks/useUpdateAuditAnswerMutation";
+import type { AnswerItemUpdate } from "@entities/audit/model/audit-review-answer-update";
 
 export type QuestionType = "yes_no" | "multiple_choice" | "number" | "text";
 
@@ -20,6 +24,9 @@ export interface AttachmentVM {
 }
 
 export interface AuditQuestionCardProps {
+  auditId?: string | undefined;
+  questionId?: string | undefined;
+  steps?: any[] | undefined;
   index?: number;
   text: string;
   type: QuestionType;
@@ -180,6 +187,9 @@ function YesNoChip({ value }: { value: boolean }) {
 }
 
 const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
+  auditId,
+  questionId,
+  steps,
   index,
   text,
   type,
@@ -190,6 +200,42 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
   onViewAttachment,
   className,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [draftAnswer, setDraftAnswer] = useState<"YES" | "NO" | null>(null);
+  const [draftForm, setDraftForm] = useState<Record<string, any>>({});
+  const { mutateAsync: updateAnswer, isPending } = useUpdateAuditAnswerMutation();
+
+  const handleSave = async () => {
+    if (!draftAnswer || !auditId || !questionId) return;
+
+    const updates: AnswerItemUpdate[] = [
+      { step_id: questionId, answer: draftAnswer },
+    ];
+
+    if (draftAnswer === "NO") {
+      const currentStep = steps?.find((s: any) => s.id === questionId);
+      const noNextId = currentStep?.no_next;
+      if (noNextId) {
+        updates.push({
+          step_id: noNextId,
+          type: "form",
+          values: draftForm,
+        });
+      }
+    }
+
+    try {
+      await updateAnswer({ auditId, answers: updates });
+      setIsEditing(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update answer");
+    }
+  };
+
+  // added props dynamically above but need them extracted:
+  // using rest args if I didn't add them, wait, I can't extract them unless I modify the signature.
+  // actually, let's modify the signature using another chunk !
   const stylesContainerCard =
     "rounded-2xl border border-gray-100 bg-card p-6 shadow-sm sm:p-7";
   const hasChoice =
@@ -197,6 +243,161 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     answerValue !== undefined &&
     answerValue !== null &&
     String(answerValue).trim().length > 0;
+
+  /* ===== UNSURE (EDITABLE) ===== */
+  const isUnsure =
+    typeof answerValue === "string" && answerValue.toUpperCase() === "UNSURE";
+
+  if (isUnsure) {
+    if (isEditing) {
+      let formStep: any = null;
+      if (draftAnswer === "NO" && steps && questionId) {
+        const currentStep = steps.find((s) => s.id === questionId);
+        if (currentStep && currentStep.no_next) {
+          formStep = steps.find((s) => s.id === currentStep.no_next);
+        }
+      }
+
+      return (
+        <article
+          className={cn(
+            "rounded-2xl border border-blue-200 bg-blue-50/30 p-6 sm:p-7",
+            className
+          )}
+        >
+          <HeroSection
+            text={text}
+            pill={<SelectionPill label="UNSURE (Editing)" />}
+          />
+          <NotesSection {...(notes === undefined ? {} : { notes })} />
+
+          <div className="mt-6 border-t pt-4">
+            <h5 className="mb-3 text-sm font-semibold">Change Answer</h5>
+            <div className="mb-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setDraftAnswer("YES");
+                  setDraftForm({});
+                }}
+                className={cn(
+                  "inline-flex rounded-xl px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60",
+                  draftAnswer === "YES"
+                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                )}
+              >
+                YES
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftAnswer("NO")}
+                className={cn(
+                  "inline-flex rounded-xl px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60",
+                  draftAnswer === "NO"
+                    ? "bg-rose-600 text-white hover:bg-rose-700"
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                )}
+              >
+                NO
+              </button>
+            </div>
+
+            {formStep && formStep.type === "form" && (
+              <div className="mb-4 space-y-4 rounded-xl border bg-card p-4">
+                <h6 className="text-sm font-medium">
+                  {formStep.title ||
+                    formStep.text ||
+                    "Additional details required"}
+                </h6>
+
+                <div className="grid gap-4">
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+                      Quantity
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                      value={draftForm.quantity || ""}
+                      onChange={(e) =>
+                        setDraftForm((prev) => ({
+                          ...prev,
+                          quantity: Number(e.target.value),
+                        }))
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+                      Notes / Measurements
+                    </label>
+                    <textarea
+                      className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                      value={draftForm.notes || ""}
+                      onChange={(e) =>
+                        setDraftForm((prev) => ({
+                          ...prev,
+                          notes: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="text-xs italic text-muted-foreground">
+                    Use the "Edit Finding" dialog later to upload images.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={!draftAnswer || isPending}
+                className="inline-flex items-center justify-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-black/80 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Save Changes
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-xl bg-transparent px-4 py-2 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-100 disabled:opacity-50"
+                onClick={() => setIsEditing(false)}
+                disabled={isPending}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </article>
+      );
+    }
+
+    return (
+      <article
+        className={cn(
+          stylesContainerCard,
+          "border-orange-200 bg-orange-50/30",
+          className
+        )}
+      >
+        <HeroSection text={text} pill={<SelectionPill label="UNSURE" />} />
+        <NotesSection {...(notes === undefined ? {} : { notes })} />
+        <div className="mt-4 flex justify-end border-t pt-4">
+          <button
+            type="button"
+            className="inline-flex rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            onClick={() => setIsEditing(true)}
+          >
+            Resolve Answer...
+          </button>
+        </div>
+      </article>
+    );
+  }
 
   /* ===== YES ===== */
   if (answeredYes === true) {

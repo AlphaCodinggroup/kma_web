@@ -368,5 +368,6 @@ export const mapAuditDetailDTOToDomain = (dto: AuditDetailDTO): AuditDetail => {
     comments: Array.isArray(dto.comments)
       ? dto.comments.map(mapAuditCommentDTO)
       : [],
+    ...(dto.steps ? { steps: dto.steps } : {}),
   };
 };

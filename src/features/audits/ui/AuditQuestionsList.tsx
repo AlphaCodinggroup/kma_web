@@ -22,6 +22,8 @@ export interface QuestionItemVM {
 }
 
 export interface AuditQuestionsListProps {
+  auditId?: string | undefined;
+  steps?: any[] | undefined;
   items: QuestionItemVM[];
   filterMode?: QuestionsFilterMode;
   className?: string;
@@ -30,6 +32,8 @@ export interface AuditQuestionsListProps {
 }
 
 export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
+  auditId,
+  steps,
   items,
   filterMode = "all",
   className,
@@ -99,12 +103,7 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
     }
 
     if (filterMode === "no") {
-      return itemsWithAnswer.filter((q) => {
-        if (q.answeredYes === false) return true;
-        const hasNotes =
-          typeof q.notes === "string" && q.notes.trim().length > 0;
-        return q.answeredYes === undefined && (hasAnswerValue(q) || hasNotes);
-      });
+      return itemsWithAnswer.filter((q) => q.answeredYes === false);
     }
 
     if (filterMode === "yes") {
@@ -113,14 +112,17 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
 
     if (filterMode === "unsure") {
       return itemsWithAnswer.filter((q) => {
-        // Unsure means: not clearly yes/no, or has notes indicating review needed
-        const isUnclear = q.answeredYes === undefined || q.answeredYes === null;
+        const isExplicitlyUnsure =
+          typeof q.answerValue === "string" &&
+          q.answerValue.toUpperCase() === "UNSURE";
+          
         const hasReviewNotes =
           typeof q.notes === "string" &&
           (q.notes.toLowerCase().includes("review") ||
             q.notes.toLowerCase().includes("unsure") ||
             q.notes.toLowerCase().includes("unclear"));
-        return isUnclear || hasReviewNotes;
+            
+        return isExplicitlyUnsure || hasReviewNotes;
       });
     }
 
@@ -147,6 +149,9 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
           {filtered.map((q, i) => (
             <AuditQuestionCard
               key={q.id}
+              auditId={auditId}
+              questionId={q.id}
+              steps={steps}
               index={q.index ?? i + 1}
               text={q.text}
               type={q.type}

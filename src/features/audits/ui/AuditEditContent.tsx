@@ -232,6 +232,8 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             className="mt-2"
           />
           <AuditQuestionsList
+            auditId={id}
+            steps={auditDetail?.steps}
             items={questionsToRender}
             filterMode={internalFilter}
           />
