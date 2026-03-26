@@ -152,8 +152,8 @@ const AuditsPage: React.FC = () => {
   );
 
   const handleEdit = useCallback(
-    (audit: Audit) => {
-      if (audit.findingsCount === 0) {
+    (audit: Audit, isCompliant?: boolean) => {
+      if (isCompliant) {
         setNoFindingsDialogOpen(true);
         return;
       }

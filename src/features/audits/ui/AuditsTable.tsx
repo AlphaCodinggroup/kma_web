@@ -19,10 +19,11 @@ import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
 import Pagination from "@shared/ui/Pagination";
 import { useSession } from "@processes/auth/hooks";
+import { useAuditDetail } from "@features/audits/lib/hooks/useAuditDetail";
 
 export interface AuditsTableProps {
   items: Audit[];
-  onEdit?: (audit: Audit) => void;
+  onEdit?: (audit: Audit, isCompliant?: boolean) => void;
   onDelete?: (audit: Audit) => void;
   deletingId?: string | null;
   editingId?: string | null;
@@ -43,6 +44,59 @@ export interface AuditsTableProps {
 
 type SortColumn = "project" | "facility" | "flow" | "auditor" | "status" | "date";
 type SortDirection = "asc" | "desc" | null;
+
+const SmartEditButton = memo(({
+  row,
+  onEdit,
+  editingId,
+  isAdmin,
+}: {
+  row: Audit;
+  onEdit?: ((audit: Audit, isCompliant?: boolean) => void) | undefined;
+  editingId?: string | null | undefined;
+  isAdmin: boolean;
+}) => {
+  const checkAnswers = row.findingsCount === 0;
+
+  const { data: detail } = useAuditDetail(checkAnswers ? row.id : undefined, {
+    enabled: checkAnswers,
+    staleTime: Infinity,
+  });
+
+  let isRed = false;
+  if (checkAnswers && detail) {
+    const allYes = detail.questions?.every((q) => {
+      const v = String(q.answer || "").toUpperCase();
+      return v === "YES";
+    });
+    isRed = !!allYes;
+  }
+
+  return (
+    <button
+      onClick={() => onEdit?.(row, isRed)}
+      disabled={editingId === row.id || !isAdmin}
+      className={cn(
+        "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+        isRed ? "text-red-600 hover:bg-red-50" : "text-gray-700 hover:bg-gray-100"
+      )}
+      aria-label="Edit audit"
+      title={
+        !isAdmin
+          ? "Only administrators can edit audits"
+          : isRed
+            ? "No findings, unsures, or blanks - fully compliant"
+            : "Edit audit"
+      }
+    >
+      {editingId === row.id ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <Pencil className="h-4 w-4" />
+      )}
+    </button>
+  );
+});
 
 /**
  * Tabla de auditorías con columnas ordenables
@@ -257,30 +311,12 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                 </TableCell>
                 <TableCell className="text-right pr-6">
                   <div className="flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => onEdit?.(row)}
-                      disabled={editingId === row.id || !isAdmin}
-                      className={cn(
-                        "inline-flex items-center justify-center h-8 w-8 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-                        row.findingsCount === 0
-                          ? "text-red-600 hover:bg-red-50"
-                          : "text-gray-700 hover:bg-gray-100"
-                      )}
-                      aria-label="Edit audit"
-                      title={
-                        !isAdmin
-                          ? "Only administrators can edit audits"
-                          : row.findingsCount === 0
-                            ? "No findings – all answers are compliant"
-                            : "Edit audit"
-                      }
-                    >
-                      {editingId === row.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Pencil className="h-4 w-4" />
-                      )}
-                    </button>
+                    <SmartEditButton
+                      row={row}
+                      onEdit={onEdit}
+                      editingId={editingId}
+                      isAdmin={isAdmin}
+                    />
                     {onDelete && (
                       <button
                         onClick={() => onDelete(row)}

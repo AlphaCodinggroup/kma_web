@@ -250,14 +250,6 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
 
   if (isUnsure) {
     if (isEditing) {
-      let formStep: any = null;
-      if (draftAnswer === "NO" && steps && questionId) {
-        const currentStep = steps.find((s) => s.id === questionId);
-        if (currentStep && currentStep.no_next) {
-          formStep = steps.find((s) => s.id === currentStep.no_next);
-        }
-      }
-
       return (
         <article
           className={cn(
@@ -303,14 +295,9 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
               </button>
             </div>
 
-            {formStep && formStep.type === "form" && (
+            {draftAnswer === "NO" && (
               <div className="mb-4 space-y-4 rounded-xl border bg-card p-4">
-                <h6 className="text-sm font-medium">
-                  {formStep.title ||
-                    formStep.text ||
-                    "Additional details required"}
-                </h6>
-
+                <h6 className="text-sm font-medium">Finding details</h6>
                 <div className="grid gap-4">
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-muted-foreground">
@@ -386,7 +373,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
       >
         <HeroSection text={text} pill={<SelectionPill label="UNSURE" />} />
         <NotesSection {...(notes === undefined ? {} : { notes })} />
-        <div className="mt-4 flex justify-end border-t pt-4">
+        <div className="mt-4 flex justify-start border-t pt-4">
           <button
             type="button"
             className="inline-flex rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
