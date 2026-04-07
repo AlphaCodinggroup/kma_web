@@ -138,7 +138,6 @@ function AttachmentsList({
               onClick={
                 onViewAttachment ? () => onViewAttachment(att) : undefined
               }
-              // disabled={!onViewAttachment}
               aria-label={`View ${att.name}`}
               className={cn(
                 "h-8 rounded-lg border px-3 text-xs",
@@ -150,6 +149,152 @@ function AttachmentsList({
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/* ===== Dynamic Form Fields ===== */
+
+interface FlowFormField {
+  id: string;
+  type: "text" | "number" | "photo" | "button";
+  label: string;
+  placeholder?: string;
+  unit?: string;
+}
+
+function DynamicFormFields({
+  fields,
+  values,
+  onChange,
+}: {
+  fields: FlowFormField[];
+  values: Record<string, any>;
+  onChange: (key: string, value: any) => void;
+}) {
+  // Fallback: no fields defined in the flow → show generic form
+  if (!fields || fields.length === 0) {
+    return (
+      <div className="grid gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+            Quantity
+          </label>
+          <input
+            type="number"
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+            value={values.quantity ?? ""}
+            onChange={(e) => onChange("quantity", Number(e.target.value))}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+            Notes / Measurements
+          </label>
+          <textarea
+            className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
+            value={values.notes ?? ""}
+            onChange={(e) => onChange("notes", e.target.value)}
+          />
+        </div>
+        <div className="text-xs italic text-muted-foreground">
+          Use the &quot;Edit Finding&quot; dialog later to upload images.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4">
+      {fields.map((field) => {
+        if (field.type === "number") {
+          return (
+            <div key={field.id}>
+              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+                {field.label}
+                {field.unit && (
+                  <span className="ml-1 font-normal text-gray-400">
+                    ({field.unit})
+                  </span>
+                )}
+              </label>
+              <input
+                type="number"
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                placeholder={field.placeholder ?? ""}
+                value={values[field.id] ?? ""}
+                onChange={(e) =>
+                  onChange(
+                    field.id,
+                    e.target.value === "" ? "" : Number(e.target.value)
+                  )
+                }
+              />
+            </div>
+          );
+        }
+
+        if (field.type === "text") {
+          return (
+            <div key={field.id}>
+              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+                {field.label}
+              </label>
+              <textarea
+                className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                placeholder={field.placeholder ?? ""}
+                value={values[field.id] ?? ""}
+                onChange={(e) => onChange(field.id, e.target.value)}
+              />
+            </div>
+          );
+        }
+
+        if (field.type === "photo") {
+          const previews: string[] = values[field.id] ?? [];
+          return (
+            <div key={field.id}>
+              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+                {field.label}
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-black file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-gray-800"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files ?? []);
+                  const urls = files.map((f) => URL.createObjectURL(f));
+                  onChange(field.id, [...previews, ...urls]);
+                  // Store File objects under a prefixed key for later upload
+                  const existingFiles: File[] =
+                    values[`__files__${field.id}`] ?? [];
+                  onChange(`__files__${field.id}`, [
+                    ...existingFiles,
+                    ...files,
+                  ]);
+                }}
+              />
+              {previews.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {previews.map((src, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={i}
+                      src={src}
+                      alt={`preview ${i}`}
+                      className="h-16 w-16 rounded-md border object-cover shadow-sm"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // button type: skip rendering in edit form
+        return null;
+      })}
     </div>
   );
 }
@@ -203,7 +348,25 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [draftAnswer, setDraftAnswer] = useState<"YES" | "NO" | null>(null);
   const [draftForm, setDraftForm] = useState<Record<string, any>>({});
-  const { mutateAsync: updateAnswer, isPending } = useUpdateAuditAnswerMutation();
+  const { mutateAsync: updateAnswer, isPending } =
+    useUpdateAuditAnswerMutation();
+
+  // Derive the FormStep fields from the flow steps for this question's NO path
+  const noNextFormFields = React.useMemo((): FlowFormField[] => {
+    if (!steps || !questionId) return [];
+    const questionStep = steps.find((s: any) => s.id === questionId);
+    if (!questionStep) return [];
+    // Backend may use snake_case or camelCase
+    const noNextId = questionStep.no_next ?? questionStep.noNext;
+    if (!noNextId) return [];
+    const formStep = steps.find((s: any) => s.id === noNextId);
+    if (!formStep || formStep.type !== "Form") return [];
+    return (formStep.fields ?? []) as FlowFormField[];
+  }, [steps, questionId]);
+
+  const handleFormChange = (key: string, value: any) => {
+    setDraftForm((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleSave = async () => {
     if (!draftAnswer || !auditId || !questionId) return;
@@ -213,13 +376,20 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     ];
 
     if (draftAnswer === "NO") {
-      const currentStep = steps?.find((s: any) => s.id === questionId);
-      const noNextId = currentStep?.no_next;
+      const questionStep = steps?.find((s: any) => s.id === questionId);
+      const noNextId = questionStep?.no_next ?? questionStep?.noNext;
       if (noNextId) {
+        // Strip internal __files__ keys before sending to API
+        const cleanValues: Record<string, unknown> = {};
+        for (const [k, v] of Object.entries(draftForm)) {
+          if (!k.startsWith("__files__")) {
+            cleanValues[k] = v;
+          }
+        }
         updates.push({
           step_id: noNextId,
           type: "form",
-          values: draftForm,
+          values: cleanValues,
         });
       }
     }
@@ -233,9 +403,6 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     }
   };
 
-  // added props dynamically above but need them extracted:
-  // using rest args if I didn't add them, wait, I can't extract them unless I modify the signature.
-  // actually, let's modify the signature using another chunk !
   const stylesContainerCard =
     "rounded-2xl border border-gray-100 bg-card p-6 shadow-sm sm:p-7";
   const hasChoice =
@@ -298,42 +465,11 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
             {draftAnswer === "NO" && (
               <div className="mb-4 space-y-4 rounded-xl border bg-card p-4">
                 <h6 className="text-sm font-medium">Finding details</h6>
-                <div className="grid gap-4">
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-muted-foreground">
-                      Quantity
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                      value={draftForm.quantity || ""}
-                      onChange={(e) =>
-                        setDraftForm((prev) => ({
-                          ...prev,
-                          quantity: Number(e.target.value),
-                        }))
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-muted-foreground">
-                      Notes / Measurements
-                    </label>
-                    <textarea
-                      className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
-                      value={draftForm.notes || ""}
-                      onChange={(e) =>
-                        setDraftForm((prev) => ({
-                          ...prev,
-                          notes: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                  <div className="text-xs italic text-muted-foreground">
-                    Use the "Edit Finding" dialog later to upload images.
-                  </div>
-                </div>
+                <DynamicFormFields
+                  fields={noNextFormFields}
+                  values={draftForm}
+                  onChange={handleFormChange}
+                />
               </div>
             )}
 
@@ -410,7 +546,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     );
   }
 
-  /* ===== MULTIPLE CHOICE (estética YES, muestra opción) ===== */
+  /* ===== MULTIPLE CHOICE ===== */
   if (hasChoice) {
     return (
       <article className={cn(stylesContainerCard, className)}>
