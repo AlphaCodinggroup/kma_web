@@ -24,7 +24,8 @@ const STEP_TYPES = ["Question", "Form", "Select", "End"] as const;
 export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const [flow, setFlow] = React.useState<Flow>(initialFlow);
     const [selectedStepId, setSelectedStepId] = React.useState<string | null>(flow.steps[0]?.id || null);
-    const [pendingUploads, setPendingUploads] = React.useState<Record<string, File[]>>({});
+    // Map<stepId, Map<blobUrl, File>> — exact 1:1 tracking of preview url → file
+    const [pendingUploads, setPendingUploads] = React.useState<Record<string, Map<string, File>>>({});
     const [isSaving, setIsSaving] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState("");
     const { isAdmin } = useSession();
@@ -512,14 +513,17 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         if (!currentStep) return;
 
         const currentImages = currentStep.images || [];
-        const previewUrls = files.map(f => URL.createObjectURL(f));
-        
-        setPendingUploads(prev => ({
-            ...prev,
-            [selectedStepId]: [...(prev[selectedStepId] || []), ...files]
-        }));
-        
-        handleUpdateStep(selectedStepId, { images: [...currentImages, ...previewUrls] });
+
+        // Create blob URLs and register each one in the Map keyed by blobUrl
+        const newEntries: Array<[string, File]> = files.map(f => [URL.createObjectURL(f), f]);
+
+        setPendingUploads(prev => {
+            const existing = new Map(prev[selectedStepId] ?? []);
+            newEntries.forEach(([blobUrl, file]) => existing.set(blobUrl, file));
+            return { ...prev, [selectedStepId]: existing };
+        });
+
+        handleUpdateStep(selectedStepId, { images: [...currentImages, ...newEntries.map(([url]) => url)] });
     };
 
     const handleRemoveImage = (stepId: string, indexToRemove: number) => {
@@ -527,23 +531,23 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         if (!step) return;
 
         const currentImages = step.images || [];
-        if (currentImages[indexToRemove]) {
-            // Try to release memory
-            if (currentImages[indexToRemove].startsWith("blob:")) {
-                 URL.revokeObjectURL(currentImages[indexToRemove]);
+        const urlToRemove = currentImages[indexToRemove];
+
+        if (urlToRemove) {
+            if (urlToRemove.startsWith("blob:")) {
+                // Release object URL memory
+                URL.revokeObjectURL(urlToRemove);
+                // Remove exact entry from the pending Map
+                setPendingUploads(prev => {
+                    const existing = new Map(prev[stepId] ?? []);
+                    existing.delete(urlToRemove);
+                    return { ...prev, [stepId]: existing };
+                });
             }
         }
 
         const newImages = currentImages.filter((_, i) => i !== indexToRemove);
         handleUpdateStep(stepId, { images: newImages });
-
-        // If it's a pending upload, removing it from pending state is tricky without tracking IDs,
-        // so we'll just remove all corresponding files at that index in `pendingUploads` if it exists.
-        // A safer way if users remove previously saved mixed with pending is just re-uploading the remaining files if needed.
-        if (pendingUploads[stepId]) {
-             // For simplicity, we just filter it out assuming the index mapping aligns roughly with pending files appended at the end.
-             // This can be improved by tracking IDs, but for now we clear pending uploads and force re-upload.
-        }
     };
 
     // -- Save --
@@ -563,58 +567,28 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         setIsSaving(true);
         try {
             const stepsCopy = [...flow.steps];
-            
-            // Collect all upload tasks
-            const uploadTasks: Promise<void>[] = [];
 
-            Object.entries(pendingUploads).forEach(([stepId, files]) => {
-                files.forEach((file) => {
-                    uploadTasks.push((async () => {
-                         const { uploadUrl, publicUrl } = await flowsRepo.getPresignedUrl(file.name, file.type);
-                         await flowsRepo.uploadFile(uploadUrl, file);
-                         const stepIndex = stepsCopy.findIndex(s => s.id === stepId);
-                         if (stepIndex !== -1) {
-                             // Replace the blob URL with the actual public URL
-                             const blobUrl = URL.createObjectURL(file); // This won't perfectly match the state blob, so let's rely on finding all blobs
-                             stepsCopy[stepIndex] = { 
-                                 ...stepsCopy[stepIndex], 
-                                 images: (stepsCopy[stepIndex].images || []).map(img => img.startsWith("blob:") ? publicUrl : img)
-                                 // Note: this approach is naive and will replace ALL blob urls in the step with the last publicUrl if multiple files are uploaded.
-                                 // Better approach below.
-                             };
-                         }
-                    })());
-                });
-            });
-
-            // Better approach for uploads: process step by step
+            // Upload all pending files and build a blobUrl → publicUrl replacement map per step
             const processUploadsByStep = async () => {
-                for (const [stepId, files] of Object.entries(pendingUploads)) {
+                for (const [stepId, blobToFileMap] of Object.entries(pendingUploads)) {
+                    if (blobToFileMap.size === 0) continue;
+
                     const stepIndex = stepsCopy.findIndex(s => s.id === stepId);
                     if (stepIndex === -1) continue;
 
-                    const newUploadedUrls: string[] = [];
-                    for (const file of files) {
+                    // Upload each file and record blob → publicUrl
+                    const replacements = new Map<string, string>(); // blobUrl → publicUrl
+                    for (const [blobUrl, file] of blobToFileMap) {
                         const { uploadUrl, publicUrl } = await flowsRepo.getPresignedUrl(file.name, file.type);
                         await flowsRepo.uploadFile(uploadUrl, file);
-                        newUploadedUrls.push(publicUrl);
+                        replacements.set(blobUrl, publicUrl);
                     }
 
-                    // Replace blob URLs with the actual uploaded URLs
+                    // Replace each blob URL with its exact publicUrl; skip unknown blobs (shouldn't happen)
                     const currentImages = stepsCopy[stepIndex].images || [];
-                    const finalImages = [];
-                    let uploadIndex = 0;
-                    
-                    for (const img of currentImages) {
-                         if (img.startsWith("blob:")) {
-                             if (uploadIndex < newUploadedUrls.length) {
-                                finalImages.push(newUploadedUrls[uploadIndex]);
-                                uploadIndex++;
-                             }
-                         } else {
-                             finalImages.push(img);
-                         }
-                    }
+                    const finalImages = currentImages.map(img =>
+                        img.startsWith("blob:") ? (replacements.get(img) ?? img) : img
+                    );
 
                     stepsCopy[stepIndex] = { ...stepsCopy[stepIndex], images: finalImages };
                 }
