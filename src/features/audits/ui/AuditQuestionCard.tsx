@@ -14,6 +14,8 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useUpdateAuditAnswerMutation } from "../lib/hooks/useUpdateAuditAnswerMutation";
 import type { AnswerItemUpdate } from "@entities/audit/model/audit-review-answer-update";
+import { flowsRepo } from "@features/flows/api/flows.repo.impl";
+import { httpClient } from "@shared/api/http.client";
 
 export type QuestionType = "yes_no" | "multiple_choice" | "number" | "text";
 
@@ -378,14 +380,63 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     if (draftAnswer === "NO") {
       const questionStep = steps?.find((s: any) => s.id === questionId);
       const noNextId = questionStep?.no_next ?? questionStep?.noNext;
+      
       if (noNextId) {
-        // Strip internal __files__ keys before sending to API
+        setIsEditing(false); // Can be replaced by a general loading state if preferred, but isPending handles it locally
+        
         const cleanValues: Record<string, unknown> = {};
+        
+        // 1. Process files if they exist
         for (const [k, v] of Object.entries(draftForm)) {
-          if (!k.startsWith("__files__")) {
+          if (k.startsWith("__files__")) {
+             const fieldId = k.replace("__files__", "");
+             const filesToUpload = v as File[];
+
+             if (filesToUpload.length > 0) {
+                 // Hit backend uploads lambda
+                 try {
+                     const uploadReq = {
+                         audit_id: auditId,
+                         files: filesToUpload.map(f => ({ name: f.name, step_id: noNextId }))
+                     };
+                     
+                     const { data: uploadRes } = await httpClient.post<{ urls: { file_name: string, upload_url: string, file_url: string }[] }>(
+                         "/api/uploads",
+                         uploadReq
+                     );
+
+                     const finalS3Urls: string[] = [];
+                     
+                     // PUT files
+                     for (let i = 0; i < filesToUpload.length; i++) {
+                         const file = filesToUpload[i];
+                         const presignedInfo = uploadRes.urls.find(u => u.file_name === file.name);
+                         if (presignedInfo) {
+                             await flowsRepo.uploadFile(presignedInfo.upload_url, file);
+                             finalS3Urls.push(presignedInfo.file_url);
+                         }
+                     }
+                     // Map to proper key. If field is 'photo', use 'photos'
+                     const targetKey = fieldId === "photo" ? "photos" : fieldId;
+                     // In case there were already existing strings under the array, append them
+                     const existingUrls = (draftForm[fieldId] || []).filter((u: any) => typeof u === "string" && !u.startsWith("blob:"));
+                     cleanValues[targetKey] = [...existingUrls, ...finalS3Urls];
+                 } catch (err) {
+                     console.error("Failed to upload files:", err);
+                     alert("Failed to upload files");
+                     return;
+                 }
+             }
+          }
+        }
+
+        // 2. Map remaining fields, ignore 'photo' since we mapped it to 'photos' above!
+        for (const [k, v] of Object.entries(draftForm)) {
+          if (!k.startsWith("__files__") && k !== "photo") {
             cleanValues[k] = v;
           }
         }
+        
         updates.push({
           step_id: noNextId,
           type: "form",
@@ -397,6 +448,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     try {
       await updateAnswer({ auditId, answers: updates });
       setIsEditing(false);
+      alert("Answer updated successfully");
     } catch (err) {
       console.error(err);
       alert("Failed to update answer");

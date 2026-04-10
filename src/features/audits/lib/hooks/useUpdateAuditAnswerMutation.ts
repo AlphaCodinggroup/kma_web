@@ -12,6 +12,7 @@ import type {
 import type { ApiError } from "@shared/interceptors/error";
 import { updateAuditAnswer } from "@features/audits/lib/usecases/updateAuditAnswer";
 import { auditReviewDetailKey } from "./useAuditReviewDetail";
+import { auditDetailKey } from "./useAuditDetail";
 
 /**
  * Mutación para actualizar respuestas individuales dentro de un audit review.
@@ -33,9 +34,14 @@ export function useUpdateAuditAnswerMutation(): UseMutationResult<
     mutationFn: (input) => updateAuditAnswer(input),
     async onSuccess(_data, variables) {
       const auditId = variables.auditId;
-      await queryClient.invalidateQueries({
-        queryKey: auditReviewDetailKey(auditId),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: auditReviewDetailKey(auditId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: auditDetailKey(auditId),
+        })
+      ]);
     },
   });
 }
