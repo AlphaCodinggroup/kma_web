@@ -354,16 +354,30 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     useUpdateAuditAnswerMutation();
 
   // Derive the FormStep fields from the flow steps for this question's NO path
+  // Supports recursive Form linking (loading subsequent Form fields)
   const noNextFormFields = React.useMemo((): FlowFormField[] => {
     if (!steps || !questionId) return [];
     const questionStep = steps.find((s: any) => s.id === questionId);
     if (!questionStep) return [];
+    
     // Backend may use snake_case or camelCase
-    const noNextId = questionStep.no_next ?? questionStep.noNext;
-    if (!noNextId) return [];
-    const formStep = steps.find((s: any) => s.id === noNextId);
-    if (!formStep || formStep.type !== "Form") return [];
-    return (formStep.fields ?? []) as FlowFormField[];
+    let nextIdToCheck = questionStep.no_next ?? questionStep.noNext;
+    const collectedFields: FlowFormField[] = [];
+    let sanityCounter = 0;
+    
+    while (nextIdToCheck && sanityCounter < 20) {
+      sanityCounter++;
+      const step = steps.find((s: any) => s.id === nextIdToCheck);
+      if (!step || step.type !== "Form") break;
+      
+      const stepFields = (step.fields ?? []) as FlowFormField[];
+      // We append any fields found. The keys usually don't overlap (e.g., measurements, notes vs quantity)
+      collectedFields.push(...stepFields);
+      
+      nextIdToCheck = step.next;
+    }
+    
+    return collectedFields;
   }, [steps, questionId]);
 
   const handleFormChange = (key: string, value: any) => {
@@ -437,11 +451,44 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
           }
         }
         
-        updates.push({
-          step_id: noNextId,
-          type: "form",
-          values: cleanValues,
-        });
+        let currentFormId = noNextId;
+        let sanity = 0;
+        let pushedAnyForm = false;
+
+        while (currentFormId && sanity < 20) {
+          sanity++;
+          const formStep = steps?.find((s: any) => s.id === currentFormId);
+          if (!formStep || formStep.type !== "Form") break;
+          
+          const formFields = formStep.fields ?? [];
+          const formValues: Record<string, unknown> = {};
+          
+          // Only pull fields defined in this specific form
+          for (const field of formFields) {
+            const targetKey = field.id === "photo" ? "photos" : field.id;
+            if (cleanValues[targetKey] !== undefined) {
+              formValues[targetKey] = cleanValues[targetKey];
+            }
+          }
+          
+          updates.push({
+            step_id: currentFormId,
+            type: "form",
+            values: formValues,
+          });
+          pushedAnyForm = true;
+          
+          currentFormId = formStep.next;
+        }
+
+        // Dropback in case anything failed
+        if (!pushedAnyForm) {
+          updates.push({
+            step_id: noNextId,
+            type: "form",
+            values: cleanValues,
+          });
+        }
       }
     }
 
