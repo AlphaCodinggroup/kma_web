@@ -8,6 +8,7 @@ import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFo
 import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info, ChevronDown, ChevronUp, RotateCcw, History, GripVertical } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { cn } from "@shared/lib/cn";
+import { sanitizeFileName } from "@shared/lib/file";
 import { useRouter } from "next/navigation";
 import { Loading } from "@shared/ui/Loading";
 import { useQueryClient } from "@tanstack/react-query";
@@ -579,7 +580,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     // Upload each file and record blob → publicUrl
                     const replacements = new Map<string, string>(); // blobUrl → publicUrl
                     for (const [blobUrl, file] of blobToFileMap) {
-                        const { uploadUrl, publicUrl } = await flowsRepo.getPresignedUrl(file.name, file.type);
+                        const { uploadUrl, publicUrl } = await flowsRepo.getPresignedUrl(sanitizeFileName(file.name), file.type);
                         await flowsRepo.uploadFile(uploadUrl, file);
                         replacements.set(blobUrl, publicUrl);
                     }

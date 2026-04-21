@@ -4,6 +4,7 @@ import type {
 } from "@entities/facility/model";
 import type { FacilitiesRepo } from "@entities/facility/api/facilities.repo";
 import { facilitiesRepoImpl } from "@features/facilities/api/facilities.repo.impl";
+import { sanitizeFileName } from "@shared/lib/file";
 
 export type UpdateFacilityInput = UpdateFacilityParams & {
   photoFile?: File | null;
@@ -92,7 +93,7 @@ export async function updateFacilityUseCase(
   if (rawParams.photoFile) {
     const file = rawParams.photoFile;
     const contentType = file.type || "application/octet-stream";
-    const signature = await repo.getUploadSignedUrl(file.name, contentType);
+    const signature = await repo.getUploadSignedUrl(sanitizeFileName(file.name), contentType);
     await repo.uploadFile(signature.uploadUrl, file);
     photoUrl = signature.publicUrl;
     payload.photoUrl = photoUrl;
