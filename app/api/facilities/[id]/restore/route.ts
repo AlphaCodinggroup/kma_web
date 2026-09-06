@@ -1,29 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { PublicEnv, serverEnv } from "@shared/config/env";
 
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
+    const { cookies: cookieCfg } = serverEnv();
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const token = cookieStore.get(cookieCfg.accessName)?.value;
 
     if (!token) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    if (!BACKEND_URL) {
-        return NextResponse.json(
-            { error: "Backend URL not configured" },
-            { status: 500 }
-        );
-    }
-
     try {
-        const response = await fetch(`${BACKEND_URL}/facilities/${id}/restore`, {
+        const response = await fetch(`${PublicEnv.apiBaseUrl.replace(/\/$/, "")}/facilities/${encodeURIComponent(id)}/restore`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -39,8 +32,11 @@ export async function POST(
             );
         }
 
-        const data = await response.json();
-        return NextResponse.json(data);
+        const contentType = response.headers.get("content-type") ?? "";
+        const data = contentType.includes("application/json")
+            ? await response.json().catch(() => ({}))
+            : { message: await response.text() };
+        return NextResponse.json(data, { status: response.status });
     } catch (error) {
         console.error("Error restoring facility:", error);
         return NextResponse.json(

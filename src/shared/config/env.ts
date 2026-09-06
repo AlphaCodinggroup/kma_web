@@ -62,6 +62,7 @@ const ServerSchema = z.object({
   // Opcionales para validación de tokens/JWKS en server
   COGNITO_USER_POOL_ID: z.string().optional(),
   COGNITO_JWKS_URL: z.string().url().optional(),
+	COGNITO_ISSUER: z.string().url().optional(),
 
   // Cookies httpOnly
   SESSION_COOKIE_NAME: z.string().min(1, "SESSION_COOKIE_NAME is required"),
@@ -86,6 +87,9 @@ const ServerSchema = z.object({
   HTTP_RETRY_BASE_DELAY_MS: z
     .string()
     .min(1, "HTTP_RETRY_BASE_DELAY_MS is required"),
+  UPLOAD_ALLOWED_HOSTS: z.string().optional(),
+  UPLOAD_ALLOWED_BUCKETS: z.string().optional(),
+  UPLOAD_MAX_BYTES: z.string().optional(),
 });
 
 // -- Carga y parseo seguro -------------------------------
@@ -123,11 +127,17 @@ function loadPublicEnv() {
   return {
     appName: pub.NEXT_PUBLIC_APP_NAME,
     appEnv: pub.NEXT_PUBLIC_APP_ENV,
-    authBaseUrl: pub.NEXT_PUBLIC_AUTH_BASE_URL,
+    authBaseUrl:
+      typeof window === "undefined" && process.env.COGNITO_ENDPOINT
+        ? z.string().url().parse(process.env.COGNITO_ENDPOINT)
+        : pub.NEXT_PUBLIC_AUTH_BASE_URL,
     httpTimeoutMs: PUBLIC_HTTP_TIMEOUT_MS,
     queryStaleTimeMs: PUBLIC_QUERY_STALE_TIME,
     // NUEVO
-    apiBaseUrl: pub.NEXT_PUBLIC_API_BASE_URL,
+    apiBaseUrl:
+      typeof window === "undefined" && process.env.API_BASE_URL
+        ? z.string().url().parse(process.env.API_BASE_URL)
+        : pub.NEXT_PUBLIC_API_BASE_URL,
   } as const;
 }
 
@@ -145,6 +155,7 @@ function loadServerEnv() {
     COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
     COGNITO_USER_POOL_ID: process.env.COGNITO_USER_POOL_ID,
     COGNITO_JWKS_URL: process.env.COGNITO_JWKS_URL,
+    COGNITO_ISSUER: process.env.COGNITO_ISSUER,
 
     SESSION_COOKIE_NAME: process.env.SESSION_COOKIE_NAME,
     ACCESS_TOKEN_COOKIE_NAME: process.env.ACCESS_TOKEN_COOKIE_NAME,
@@ -155,6 +166,9 @@ function loadServerEnv() {
 
     HTTP_RETRY_MAX_ATTEMPTS: process.env.HTTP_RETRY_MAX_ATTEMPTS,
     HTTP_RETRY_BASE_DELAY_MS: process.env.HTTP_RETRY_BASE_DELAY_MS,
+    UPLOAD_ALLOWED_HOSTS: process.env.UPLOAD_ALLOWED_HOSTS,
+    UPLOAD_ALLOWED_BUCKETS: process.env.UPLOAD_ALLOWED_BUCKETS,
+    UPLOAD_MAX_BYTES: process.env.UPLOAD_MAX_BYTES,
   });
 
   if (!parsed.success) {
@@ -173,6 +187,11 @@ function loadServerEnv() {
   const HTTP_RETRY_MAX_ATTEMPTS = toInt(env.HTTP_RETRY_MAX_ATTEMPTS);
   const HTTP_RETRY_BASE_DELAY_MS = toInt(env.HTTP_RETRY_BASE_DELAY_MS);
   const COOKIE_SECURE = toBool(env.COOKIE_SECURE);
+  const commaList = (value?: string) =>
+    (value ?? "")
+      .split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean);
 
   return {
     cognito: {
@@ -180,6 +199,7 @@ function loadServerEnv() {
       clientId: env.COGNITO_CLIENT_ID,
       userPoolId: env.COGNITO_USER_POOL_ID,
       jwksUrl: env.COGNITO_JWKS_URL,
+      issuer: env.COGNITO_ISSUER,
     },
     cookies: {
       sessionName: env.SESSION_COOKIE_NAME,
@@ -192,6 +212,11 @@ function loadServerEnv() {
     httpRetry: {
       maxAttempts: HTTP_RETRY_MAX_ATTEMPTS,
       baseDelayMs: HTTP_RETRY_BASE_DELAY_MS,
+    },
+    uploads: {
+      allowedHosts: commaList(env.UPLOAD_ALLOWED_HOSTS),
+      allowedBuckets: commaList(env.UPLOAD_ALLOWED_BUCKETS),
+      maxBytes: toInt(env.UPLOAD_MAX_BYTES ?? "10485760"),
     },
   } as const;
 }

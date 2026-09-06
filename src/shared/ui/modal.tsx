@@ -10,6 +10,7 @@ export interface ModalProps {
   children: React.ReactNode;
   closeOnEsc?: boolean;
   closeOnOverlay?: boolean;
+  ariaLabelledBy?: string;
   className?: string | undefined;
 }
 
@@ -19,6 +20,7 @@ export function Modal({
   children,
   closeOnEsc = true,
   closeOnOverlay = true,
+  ariaLabelledBy,
 }: ModalProps) {
   React.useEffect(() => {
     if (open) {
@@ -42,7 +44,12 @@ export function Modal({
   if (!open) return null;
 
   return (
-    <div aria-modal="true" role="dialog" className="fixed inset-0 z-50">
+    <div
+      aria-modal="true"
+      aria-labelledby={ariaLabelledBy}
+      role="dialog"
+      className="fixed inset-0 z-50"
+    >
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/40"

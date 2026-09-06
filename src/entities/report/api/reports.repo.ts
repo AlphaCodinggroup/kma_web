@@ -22,4 +22,5 @@ export interface ReportsRepo {
    * Elimina un reporte por ID de auditoría.
    */
   delete(id: string): Promise<void>;
+  restore(id: string): Promise<void>;
 }

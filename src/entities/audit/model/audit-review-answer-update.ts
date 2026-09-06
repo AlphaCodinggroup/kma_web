@@ -7,6 +7,7 @@ export interface AnswerItemUpdate {
 
 export interface UpdateAuditAnswerInput {
   auditId: string;
+	expectedVersion?: number;
   answers: AnswerItemUpdate[];
 }
 

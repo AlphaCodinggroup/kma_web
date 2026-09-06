@@ -83,8 +83,10 @@ export async function POST(req: NextRequest) {
 
   const upstreamUrl = `${PublicEnv.apiBaseUrl}/projects`;
 
+  let requestParsed = false;
   try {
     const payload = await req.json();
+    requestParsed = true;
 
     const res = await fetch(upstreamUrl, {
       method: "POST",
@@ -122,6 +124,9 @@ export async function POST(req: NextRequest) {
     const text = await res.text();
     return NextResponse.json({ message: text }, { status: 201 });
   } catch (err) {
+    if (!requestParsed && err instanceof SyntaxError) {
+      return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
+    }
     console.error("[api/projects:POST] upstream error:", err);
     return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
   }

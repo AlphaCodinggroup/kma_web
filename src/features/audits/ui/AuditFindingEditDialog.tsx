@@ -23,6 +23,7 @@ export interface AuditFindingEditDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   auditId: string;
+	expectedVersion?: number;
   questionCode?: string | null;
   defaultValues?: Partial<AuditFindingEditFormValues>;
   title?: string;
@@ -32,6 +33,7 @@ const AuditFindingEditDialog: React.FC<AuditFindingEditDialogProps> = ({
   open,
   onOpenChange,
   auditId,
+	expectedVersion,
   questionCode,
   defaultValues,
   title = "Edit finding",
@@ -71,7 +73,8 @@ const AuditFindingEditDialog: React.FC<AuditFindingEditDialogProps> = ({
     e.preventDefault();
     setLocalError(null);
 
-    if (!auditId || !questionCode) {
+    const normalizedQuestionCode = questionCode?.trim();
+    if (!auditId || !normalizedQuestionCode) {
       setLocalError("Missing auditId or questionCode.");
       return;
     }
@@ -82,8 +85,8 @@ const AuditFindingEditDialog: React.FC<AuditFindingEditDialogProps> = ({
     let parsedQuantity: number | null = null;
     if (qtyStr !== "") {
       const asNumber = Number(qtyStr);
-      if (!Number.isFinite(asNumber)) {
-        setLocalError("Quantity must be a valid number.");
+      if (!Number.isFinite(asNumber) || asNumber < 0) {
+        setLocalError("Quantity must be a non-negative number.");
         return;
       }
       parsedQuantity = asNumber;
@@ -92,7 +95,8 @@ const AuditFindingEditDialog: React.FC<AuditFindingEditDialogProps> = ({
     try {
       const payload: UpdateAuditFindingInput = {
         auditId,
-        questionCode,
+        questionCode: normalizedQuestionCode,
+		...(expectedVersion === undefined ? {} : { expectedVersion }),
       };
 
       if (qtyStr !== "") {

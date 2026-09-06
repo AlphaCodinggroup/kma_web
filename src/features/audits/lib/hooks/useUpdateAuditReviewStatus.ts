@@ -3,23 +3,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ApiError } from "@shared/interceptors/error";
 import type {
+  ApplyAuditEventInput,
   AuditReviewStatusChange,
-  UpdateAuditReviewStatusInput,
 } from "@entities/audit/model/audit-review-status";
-import { updateAuditReviewStatus } from "@features/audits/lib/usecases/updateAuditReviewStatus";
+import { applyAuditEvent } from "@features/audits/lib/usecases/updateAuditReviewStatus";
 import { auditReviewDetailKey } from "./useAuditReviewDetail";
 import { auditDetailKey } from "./useAuditDetail";
 
-export function useUpdateAuditReviewStatus() {
+/** Applies a workflow event and refreshes everything that shows the state. */
+export function useApplyAuditEvent() {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    AuditReviewStatusChange,
-    ApiError,
-    UpdateAuditReviewStatusInput
-  >({
-    mutationKey: ["audits", "review", "update-status"],
-    mutationFn: (input) => updateAuditReviewStatus(input),
+  return useMutation<AuditReviewStatusChange, ApiError, ApplyAuditEventInput>({
+    mutationKey: ["audits", "review", "apply-event"],
+    mutationFn: (input) => applyAuditEvent(input),
     async onSuccess(_data, variables) {
       const { auditId } = variables;
 
@@ -32,4 +29,4 @@ export function useUpdateAuditReviewStatus() {
   });
 }
 
-export default useUpdateAuditReviewStatus;
+export default useApplyAuditEvent;

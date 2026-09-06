@@ -9,13 +9,18 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:bff": "vitest run --config vitest.bff.config.ts --coverage",
+    "test:coverage:web": "vitest run --config vitest.web.config.ts --coverage",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-tabs": "^1.1.13",
     "@tanstack/react-query": "^5.90.5",
     "axios": "^1.7.7",
+    "jose": "^6.2.12",
     "lucide-react": "^0.544.0",
     "next": "^15.5.9",
     "react": "19.1.0",
@@ -25,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.55.0",
     "@tailwindcss/postcss": "^4.1.17",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -33,6 +39,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/coverage-v8": "^2.1.9",
     "eslint": "^9",
     "eslint-config-next": "15.5.7",
     "happy-dom": "^20.8.4",

@@ -2,6 +2,7 @@
 
 import { cn } from "@shared/lib/cn";
 import * as React from "react";
+import { AUDIT_STATUS_LABELS as AUDIT_STATUS_LABELS_SOURCE } from "@entities/audit/lib/audit-status";
 import type { AuditStatus } from "@entities/audit/model";
 import type { ProjectStatus } from "@entities/projects/model";
 
@@ -74,14 +75,9 @@ Badge.displayName = "Badge";
 
 /* -------------------------- Badge de dominio --------------------------- */
 
-export const AUDIT_STATUS_LABELS: Record<AuditStatus, string> = {
-  draft_report_pending_review: "Draft Report Pending Review",
-  draft_report_in_review: "Draft Report In Review",
-  final_report_sent_to_client: "Final Report Sent to Client",
-  completed: "Completed",
-};
+export { AUDIT_STATUS_LABELS } from "@entities/audit/lib/audit-status";
 
-const STATUS_LABELS = AUDIT_STATUS_LABELS;
+const STATUS_LABELS = AUDIT_STATUS_LABELS_SOURCE;
 
 export function StatusBadge({
   status,

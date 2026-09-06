@@ -29,6 +29,7 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
+    const [operationError, setOperationError] = useState<string | null>(null);
 
     const [openDelete, setOpenDelete] = useState(false);
     const [facilityToDelete, setFacilityToDelete] = useState<Facility | null>(
@@ -188,11 +189,14 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         if (!facilityToDelete) return;
 
         try {
+            setOperationError(null);
             await deleteFacility(facilityToDelete.id);
             setOpenDelete(false);
             setFacilityToDelete(null);
-        } catch {
-            // El error se podría mostrar con un toast; el modal sigue abierto.
+        } catch (error) {
+            setOperationError(
+                error instanceof Error ? error.message : "Failed to delete facility."
+            );
         }
     }, [deleteFacility, facilityToDelete]);
 
@@ -211,11 +215,14 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         if (!facilityToArchive) return;
 
         try {
+            setOperationError(null);
             await archiveFacility(facilityToArchive.id);
             setOpenArchive(false);
             setFacilityToArchive(null);
-        } catch {
-            // Ideal: mostrar toast de error; el modal sigue abierto.
+        } catch (error) {
+            setOperationError(
+                error instanceof Error ? error.message : "Failed to archive facility."
+            );
         }
     }, [archiveFacility, facilityToArchive]);
 
@@ -234,11 +241,14 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         if (!facilityToRestore) return;
 
         try {
+            setOperationError(null);
             await restoreFacility(facilityToRestore.id);
             setOpenRestore(false);
             setFacilityToRestore(null);
-        } catch {
-            // Ideal: mostrar toast de error; el modal sigue abierto.
+        } catch (error) {
+            setOperationError(
+                error instanceof Error ? error.message : "Failed to restore facility."
+            );
         }
     }, [restoreFacility, facilityToRestore]);
 
@@ -258,6 +268,11 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
 
     return (
         <>
+            {operationError ? (
+                <div role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+                    {operationError}
+                </div>
+            ) : null}
             <FacilitySearchCard
                 total={visibleFacilities.length}
                 query={query}

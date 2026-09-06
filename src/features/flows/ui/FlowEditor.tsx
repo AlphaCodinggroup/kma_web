@@ -97,7 +97,6 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     savedAt: new Date().toISOString(),
                 };
                 localStorage.setItem(draftKey, JSON.stringify(draftData));
-                console.log("[FlowEditor] Draft auto-saved to localStorage");
             } catch (err) {
                 console.warn("[FlowEditor] Failed to save draft to localStorage:", err);
             }

@@ -8,6 +8,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { serverEnv } from "@shared/config/env";
+import { verifyAccessToken } from "@shared/auth/verify-access-token";
 
 type Props = {
   children: React.ReactNode;
@@ -24,11 +25,14 @@ async function hasActiveSession(): Promise<boolean> {
 
   // Preferimos access token (httpOnly).
   const access = jar.get(env.cookies.accessName)?.value;
-  if (process.env.NEXT_PUBLIC_APP_ENV === "development") {
-    console.log("[AuthGuard] access?", !!access);
-  }
+  if (!access) return false;
 
-  return Boolean(access);
+  try {
+    await verifyAccessToken(access);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**

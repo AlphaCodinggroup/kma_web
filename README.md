@@ -1,5 +1,11 @@
 # KMA Web - Plataforma de Gestión de Auditorías
 
+## Desarrollo local con Docker
+
+Con este repositorio junto a `kma-backend`, ejecutar `make up` desde `../kma-backend` y abrir **http://localhost:3000**; la cuenta ficticia inicial es **admin@example.test** / **LocalAdmin123!**.
+
+El Compose del backend ejecuta las funciones Go reales, almacenamiento, colas, Cognito local y esta web con recarga de código; ver la [guía local](../kma-backend/docs/DESARROLLO-LOCAL.md) y el [análisis técnico](../kma-backend/docs/ANALISIS-TECNICO-Y-MEJORAS.md).
+
 Este documento describe la funcionalidad y el objetivo de negocio de los distintos módulos de la aplicación. La plataforma está diseñada para facilitar la planificación, ejecución y reporte de auditorías en diferentes instalaciones, permitiendo flujos dinámicos y revisiones exhaustivas.
 
 ---

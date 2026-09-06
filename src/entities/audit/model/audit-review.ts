@@ -23,6 +23,7 @@ export interface AuditFinding {
  */
 export interface AuditReviewDetail {
   auditId: string;
+	version: number;
   flowId: string;
   projectId: string;
   status: AuditStatus;

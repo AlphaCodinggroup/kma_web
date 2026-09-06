@@ -44,6 +44,8 @@ const AuditQuestionsHeader: React.FC<AuditQuestionsHeaderProps> = ({
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-gray-500" aria-hidden="true" />
           <select
+            id="audit-questions-filter"
+            name="audit-questions-filter"
             value={filterMode}
             onChange={(e) => onFilterChange?.(e.target.value as QuestionsFilterMode)}
             className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"

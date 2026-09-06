@@ -18,11 +18,11 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     ""
   )}/audits-review/${encodeURIComponent(auditId)}/answers`;
 
-  let payload: unknown = {};
+  let payload: unknown;
   try {
     payload = await req.json();
   } catch {
-    payload = {};
+    return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
   }
 
   try {

@@ -13,6 +13,10 @@ export interface ReportListItem {
   createdAt: string;
   updatedAt: string | null;
   completedAt: string | null;
+  triggerAuditId: string | null;
+  attempt: number;
+  archivedAt: string | null;
+  includedAudits: string[];
 }
 
 /**
@@ -33,4 +37,5 @@ export interface ReportListFilter {
   status?: AuditStatus;
   limit?: number;
   lastEvalId?: string;
+  includeArchived?: boolean;
 }

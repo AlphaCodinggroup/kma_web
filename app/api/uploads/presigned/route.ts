@@ -13,8 +13,10 @@ export async function POST(req: Request) {
 
     const upstreamUrl = `${PublicEnv.apiBaseUrl}/uploads/presigned`;
 
+    let requestParsed = false;
     try {
         const body = await req.json();
+        requestParsed = true;
 
         const res = await fetch(upstreamUrl, {
             method: "POST",
@@ -47,6 +49,9 @@ export async function POST(req: Request) {
         const data = await res.json();
         return NextResponse.json(data, { status: 200 });
     } catch (err) {
+        if (!requestParsed && err instanceof SyntaxError) {
+            return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
+        }
         console.error("[api/uploads/presigned] upstream error:", err);
         return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
     }

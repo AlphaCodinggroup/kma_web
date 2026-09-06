@@ -58,9 +58,9 @@ const DashboardPage: React.FC = () => {
         icon: "eye",
       },
       {
-        title: "Reports Sent",
+        title: "Reports Approved",
         value: fmt(metrics.totalFinalReportsSentToClient),
-        subtitle: "Final reports delivered",
+        subtitle: "Approved for report generation",
         icon: "send",
       },
     ];

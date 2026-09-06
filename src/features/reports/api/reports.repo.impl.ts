@@ -45,6 +45,7 @@ export class ReportsRepoHttp implements ReportsRepo {
             status: filter?.status,
             limit: filter?.limit,
             last_eval_id: filter?.lastEvalId,
+            include_archived: filter?.includeArchived,
           },
         }
       );
@@ -76,6 +77,14 @@ export class ReportsRepoHttp implements ReportsRepo {
   async delete(id: string): Promise<void> {
     try {
       await httpClient.delete(`${this.basePath}/${encodeURIComponent(id)}`);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  async restore(id: string): Promise<void> {
+    try {
+      await httpClient.post(`${this.basePath}/${encodeURIComponent(id)}/restore`, {});
     } catch (err) {
       throw toApiError(err);
     }

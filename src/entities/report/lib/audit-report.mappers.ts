@@ -11,6 +11,10 @@ export type AuditReportDTO = {
   created_at: string;
   updated_at?: string | null;
   completed_at?: string | null;
+  trigger_audit_id?: string | null;
+  attempt?: number;
+  archived_at?: string | null;
+  included_audits?: string[];
 };
 
 const toStatus = (raw: string): AuditStatus => raw as AuditStatus;
@@ -32,5 +36,9 @@ export const mapAuditReportDTO = (dto: AuditReportDTO): AuditReport => {
     createdAt: dto.created_at,
     updatedAt: dto.updated_at ?? null,
     completedAt: dto.completed_at ?? null,
+    triggerAuditId: toNullIfEmpty(dto.trigger_audit_id ?? null),
+    attempt: dto.attempt ?? 1,
+    archivedAt: dto.archived_at ?? null,
+    includedAudits: Array.isArray(dto.included_audits) ? dto.included_audits : [],
   };
 };

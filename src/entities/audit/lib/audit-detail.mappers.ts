@@ -1,3 +1,4 @@
+import { toAuditStatus } from "@entities/audit/lib/audit-status";
 import type {
   AuditDetail,
   AuditQuestion,
@@ -122,20 +123,6 @@ const toNumber = (v: unknown, fallback = 0): number => {
   return fallback;
 };
 
-const toAuditStatus = (raw?: string): AuditStatus => {
-  const allowed: AuditStatus[] = [
-    "draft_report_pending_review",
-    "draft_report_in_review",
-    "final_report_sent_to_client",
-    "completed",
-  ];
-
-  if (raw && allowed.includes(raw as AuditStatus)) {
-    return raw as AuditStatus;
-  }
-
-  return (raw ?? "draft_report_pending_review") as AuditStatus;
-};
 
 const toYesNo = (
   raw: string | number | boolean | null | undefined

@@ -39,6 +39,30 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+describe("private service endpoints", () => {
+  beforeEach(() => {
+    for (const [key, value] of Object.entries(validPublicVars)) {
+      vi.stubEnv(key, value);
+    }
+    vi.stubEnv("API_BASE_URL", "http://api:8080/api");
+    vi.stubEnv("COGNITO_ENDPOINT", "http://cognito:9229");
+  });
+
+  it("uses container endpoints for server requests", async () => {
+    vi.stubGlobal("window", undefined);
+    const { publicEnv } = await import("../env");
+    expect(publicEnv().apiBaseUrl).toBe("http://api:8080/api");
+    expect(publicEnv().authBaseUrl).toBe("http://cognito:9229");
+  });
+
+  it("keeps public endpoints in the browser", async () => {
+    vi.stubGlobal("window", {});
+    const { publicEnv } = await import("../env");
+    expect(publicEnv().apiBaseUrl).toBe(validPublicVars.NEXT_PUBLIC_API_BASE_URL);
+    expect(publicEnv().authBaseUrl).toBe(validPublicVars.NEXT_PUBLIC_AUTH_BASE_URL);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // toInt – tested indirectly through publicEnv() which calls toInt on
 // NEXT_PUBLIC_HTTP_TIMEOUT_MS and NEXT_PUBLIC_QUERY_STALE_TIME

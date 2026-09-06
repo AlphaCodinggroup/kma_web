@@ -126,7 +126,7 @@ export const FlowQuestionsDialog: React.FC<FlowQuestionsDialogProps> = ({
   const headingId = React.useId();
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={onOpenChange} ariaLabelledBy={headingId}>
       <div
         className={cn(
           "relative mx-auto w-full max-w-3xl",
@@ -134,9 +134,6 @@ export const FlowQuestionsDialog: React.FC<FlowQuestionsDialogProps> = ({
           "outline-none",
           className
         )}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={headingId}
         data-testid={testId ?? "flow-questions-dialog"}
       >
         {/* Botón de cierre (X) en la esquina superior derecha */}

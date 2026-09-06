@@ -10,6 +10,7 @@ import PageHeader from "@shared/ui/page-header";
 import { useDebouncedSearch } from "@shared/lib/useDebouncedSearch";
 import { cn } from "@shared/lib/cn";
 import { useDeleteReport } from "@features/reports/lib/hooks/useDeleteReport";
+import { useRestoreReport } from "@features/reports/lib/hooks/useRestoreReport";
 
 const ReportsPage: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -21,9 +22,11 @@ const ReportsPage: React.FC = () => {
     isLoading: isListLoading,
     isError: isListError,
     refetch,
-  } = useReportsListQuery();
+  } = useReportsListQuery({ includeArchived: true });
+  const [message, setMessage] = useState<string | null>(null);
+  const [fallbackDownload, setFallbackDownload] = useState<string | null>(null);
 
-  const items = data?.items ?? [];
+  const items = useMemo(() => data?.items ?? [], [data?.items]);
 
   const filtered = useMemo(() => {
     const q = debouncedQuery;
@@ -71,7 +74,7 @@ const ReportsPage: React.FC = () => {
     if (!downloadAuditId) return;
     if (isDownloadLoading) return;
     if (isDownloadError) {
-      console.error("[ReportsPage] Error downloading report:", downloadError);
+      setMessage(downloadError?.message ?? "The report could not be downloaded.");
       setDownloadAuditId(null);
       return;
     }
@@ -81,14 +84,14 @@ const ReportsPage: React.FC = () => {
     const isValidUrl = url && /^https?:\/\//.test(url);
 
     if (isValidUrl) {
-      window.open(url as string, "_blank", "noopener,noreferrer");
-    } else {
-      console.warn(
-        "[ReportsPage] Report URL not ready or invalid for auditId:",
-        downloadAuditId,
-        "status:",
-        downloadReport.status
+      const opened = window.open(
+        url as string,
+        "_blank",
+        "noopener,noreferrer"
       );
+      if (!opened) setFallbackDownload(url as string);
+    } else {
+      setMessage("This report version is not available for download.");
     }
     setDownloadAuditId(null);
   }, [
@@ -102,11 +105,13 @@ const ReportsPage: React.FC = () => {
   // Delete report functionality
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const deleteMutation = useDeleteReport();
+	const restoreMutation = useRestoreReport();
+	const [restoringId, setRestoringId] = useState<string | null>(null);
 
   const handleDelete = useCallback(
     async (id: string) => {
       const confirmed = window.confirm(
-        "Are you sure you want to delete this report? This action cannot be undone."
+        "Archive this consolidated report version? Administrators can restore it later."
       );
 
       if (!confirmed) return;
@@ -114,9 +119,10 @@ const ReportsPage: React.FC = () => {
       try {
         setDeletingId(id);
         await deleteMutation.mutateAsync(id);
-      } catch (err) {
-        console.error("[ReportsPage] Error deleting report:", err);
-        alert("Error deleting the report. Please try again.");
+      } catch {
+        setMessage(
+          "The report version could not be archived. Please try again."
+        );
       } finally {
         setDeletingId(null);
       }
@@ -124,11 +130,25 @@ const ReportsPage: React.FC = () => {
     [deleteMutation]
   );
 
+  const handleRestore = useCallback(
+    async (id: string) => {
+      try {
+        setRestoringId(id);
+        await restoreMutation.mutateAsync(id);
+      } catch {
+        setMessage(
+          "The report version could not be restored. Please try again."
+        );
+      } finally {
+        setRestoringId(null);
+      }
+    },
+    [restoreMutation]
+  );
+
   return (
     <main className={cn("min-h-dvh overflow-hidden bg-white")}>
-      <PageHeader
-        title="Reports"
-      />
+      <PageHeader title="Reports" />
 
       <div className="mb-6">
         <ReportsSearchCard
@@ -137,6 +157,25 @@ const ReportsPage: React.FC = () => {
           placeholder="Search reports..."
         />
       </div>
+      {message ? (
+        <div
+          role="alert"
+          className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+        >
+          {message}
+        </div>
+      ) : null}
+      {fallbackDownload ? (
+        <a
+          className="mb-4 inline-block text-sm font-semibold underline"
+          href={fallbackDownload}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => setFallbackDownload(null)}
+        >
+          Open download
+        </a>
+      ) : null}
 
       <ReportsListCard
         items={filtered}
@@ -148,7 +187,9 @@ const ReportsPage: React.FC = () => {
         onError={refetch}
         onDownload={handleDownload}
         onDelete={handleDelete}
+        onRestore={handleRestore}
         deletingId={deletingId}
+        restoringId={restoringId}
         isDownloading={isDownloadLoading}
       />
     </main>

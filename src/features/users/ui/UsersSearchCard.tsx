@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import { Plus, Search } from "lucide-react";
 import { cn } from "@shared/lib/cn";
-import { Button, Input } from "@shared/ui/controls";
 import TableHeader from "@shared/ui/table-header";
 import SearchInput from "@shared/ui/search-input";
 
@@ -36,8 +34,8 @@ const UsersSearchCard: React.FC<UsersSearchCardProps> = ({
       )}
     >
       <TableHeader
-        title="Managements"
-        subtitle="Total Managements"
+        title="Users"
+        subtitle="Total Users"
         total={total}
       />
       {/* Search input */}
@@ -47,7 +45,7 @@ const UsersSearchCard: React.FC<UsersSearchCardProps> = ({
             value={query}
             onChange={(e) => onQueryChange(e.currentTarget.value)}
             placeholder={placeholder}
-            aria-label="Search Managements"
+            aria-label="Search users"
           />
         </div>
       </div>

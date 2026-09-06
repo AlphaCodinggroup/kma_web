@@ -36,6 +36,7 @@ const UsersPage: React.FC = () => {
   const [editingUser, setEditingUser] = useState<UserSummary | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserSummary | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [createState, setCreateState] = useState<CreateState>({
     loading: false,
@@ -55,7 +56,7 @@ const UsersPage: React.FC = () => {
       (u) =>
         u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
     );
-  }, [data, query]);
+  }, [users, query]);
 
   const metrics = useMemo(
     () => ({
@@ -64,7 +65,7 @@ const UsersPage: React.FC = () => {
       qcManagers: users.filter((u) => u.role === "qc_manager").length,
       projectManagers: users.filter((u) => u.role === "admin").length,
     }),
-    [users.length]
+    [users]
   );
 
   const handleEdit = useCallback(
@@ -83,6 +84,7 @@ const UsersPage: React.FC = () => {
     (userId: string) => {
       const user = users.find((u) => u.id === userId);
       if (user) {
+        setDeleteError(null);
         setDeletingUser(user);
       }
     },
@@ -100,7 +102,7 @@ const UsersPage: React.FC = () => {
     } catch (err: any) {
       console.error("Failed to delete user", err);
       setIsDeleting(false);
-      // Optional: show error toast or alert, for now just log
+      setDeleteError(err?.message || "Failed to delete user. Please try again.");
     }
   };
 
@@ -160,6 +162,12 @@ const UsersPage: React.FC = () => {
 
       {/* Métricas */}
       <UsersMetrics metrics={metrics} />
+
+      {deleteError ? (
+        <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+          {deleteError}
+        </div>
+      ) : null}
 
       <UsersSearchCard
         query={query}

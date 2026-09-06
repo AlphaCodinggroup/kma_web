@@ -17,8 +17,10 @@ export interface ReportsListCardProps {
   isDownloading: boolean;
   onDownload: (id: string) => void;
   onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
   onError: () => void;
   deletingId?: string | null;
+  restoringId?: string | null;
 }
 
 const ReportsListCard: React.FC<ReportsListCardProps> = ({
@@ -33,8 +35,10 @@ const ReportsListCard: React.FC<ReportsListCardProps> = ({
   isDownloading,
   onDownload,
   onDelete,
+  onRestore,
   onError,
   deletingId,
+  restoringId,
 }) => {
   return (
     <section
@@ -63,7 +67,9 @@ const ReportsListCard: React.FC<ReportsListCardProps> = ({
         bodyMaxHeightClassName={cn("max-h-[520px]", bodyMaxHeightClassName)}
         onDownload={onDownload}
         onDelete={onDelete}
+        onRestore={onRestore}
         deletingId={deletingId}
+        restoringId={restoringId}
         isLoading={isLoading}
         onError={onError}
         isError={isError}

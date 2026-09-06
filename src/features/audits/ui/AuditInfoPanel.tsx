@@ -16,15 +16,6 @@ export interface AuditInfoPanelProps {
   ariaLabelledById?: string;
 }
 
-function toIso(d: string | Date): string | undefined {
-  try {
-    const date = typeof d === "string" ? new Date(d) : d;
-    return isNaN(date.getTime()) ? undefined : date.toISOString();
-  } catch {
-    return undefined;
-  }
-}
-
 export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
   auditDate,
   completedDate,

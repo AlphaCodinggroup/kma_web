@@ -129,7 +129,6 @@ export class FlowsHttpRepo implements FlowsRepo {
 
   async create(flow: Flow): Promise<Flow> {
     const dto = mapFlowToDTO(flow);
-    console.log(JSON.stringify(dto));
 
     try {
       const res = await httpClient.post<Flow>(INTERNAL_API_URL, dto);

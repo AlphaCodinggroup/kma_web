@@ -58,8 +58,10 @@ export async function POST(req: Request) {
 
   const upstreamUrl = `${PublicEnv.apiBaseUrl}/flows`;
 
+  let requestParsed = false;
   try {
     const bodyPoints = await req.json();
+    requestParsed = true;
     const res = await fetch(upstreamUrl, {
       method: "POST",
       headers: {
@@ -91,6 +93,9 @@ export async function POST(req: Request) {
     const data = await res.json();
     return NextResponse.json(data, { status: 201 });
   } catch (err) {
+    if (!requestParsed && err instanceof SyntaxError) {
+      return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
+    }
     console.error("[api/flows] POST error:", err);
     return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
   }

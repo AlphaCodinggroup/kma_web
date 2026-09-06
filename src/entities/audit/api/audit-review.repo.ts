@@ -7,16 +7,15 @@ import type {
 } from "@entities/audit/model/audit-review-finding-update";
 import type { CompleteReviewResult } from "@entities/audit/model/completeReview";
 import type {
+  ApplyAuditEventInput,
   AuditReviewStatusChange,
-  UpdateAuditReviewStatusInput,
 } from "@entities/audit/model/audit-review-status";
 
 export interface AuditReviewDetailRepo {
   getReviewDetail(auditId: string): Promise<AuditReviewDetail>;
   completeReview(auditId: string): Promise<CompleteReviewResult>;
-  updateStatus(
-    input: UpdateAuditReviewStatusInput
-  ): Promise<AuditReviewStatusChange>;
+  openReview(auditId: string): Promise<AuditReviewDetail>;
+  applyEvent(input: ApplyAuditEventInput): Promise<AuditReviewStatusChange>;
   updateFinding(
     input: UpdateAuditFindingInput
   ): Promise<AuditFindingUpdateResult>;

@@ -10,4 +10,8 @@ export interface AuditReport {
   createdAt: string;
   updatedAt: string | null;
   completedAt: string | null;
+  triggerAuditId: string | null;
+  attempt: number;
+  archivedAt: string | null;
+  includedAudits: string[];
 }

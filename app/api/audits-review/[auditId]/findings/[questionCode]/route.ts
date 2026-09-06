@@ -22,11 +22,11 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
     questionCode
   )}`;
 
-  let payload: unknown = {};
+  let payload: unknown;
   try {
     payload = await req.json();
   } catch {
-    payload = {};
+    return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
   }
 
   try {

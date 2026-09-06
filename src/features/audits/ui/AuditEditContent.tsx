@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@shared/lib/cn";
 import AuditEditTabsBar, { type AuditEditTab } from "./AuditEditTabsBar";
 import AuditQuestionsList, { type QuestionItemVM } from "./AuditQuestionsList";
@@ -16,10 +16,10 @@ import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
 import { useCompleteReviewAuditMutation } from "../lib/hooks/useCompleteReviewAuditMutation";
 import { Loading } from "@shared/ui/Loading";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
-import type { AuditStatus } from "@entities/audit/model";
-import { useUpdateAuditReviewStatus } from "../lib/hooks/useUpdateAuditReviewStatus";
-import AuditStatusSelector from "./AuditStatusSelector";
 import AuditFindingEditDialog from "./AuditFindingEditDialog";
+import { reportJobRepo } from "@features/reports/api/report-job.repo.impl";
+import type { ReportJob } from "@entities/report/model/report-job";
+import { AUDIT_STATUS_LABELS } from "@shared/ui/badge";
 
 export type ReportSeverity = "high" | "medium" | "low";
 
@@ -57,6 +57,10 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const [internalFilter, setInternalFilter] =
     useState<QuestionsFilterMode>("all");
   const [isPollingReport, setIsPollingReport] = useState(false);
+  const [reportJob, setReportJob] = useState<ReportJob | null>(null);
+  const [reportMessage, setReportMessage] = useState<string | null>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const pollingAbort = useRef<AbortController | null>(null);
 
   // Estado del panel de comentarios (cuando es undefined NO se muestra)
   const [selectedCommentTarget, setSelectedCommentTarget] = useState<
@@ -76,9 +80,6 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   } = useAuditReviewDetail(id);
 
   const { mutateAsync, isPending } = useCompleteReviewAuditMutation();
-  const { mutate: mutateStatus, isPending: isUpdatingStatus } =
-    useUpdateAuditReviewStatus();
-
   const { isFetching: isFetchingReport, refetch: refetchReport } =
     useAuditReport(id, { enabled: false });
 
@@ -90,16 +91,6 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     [auditDetail?.questions]
   );
   const showLoadingOverlay = isLoading || isAuditDetailLoading;
-  const [selectedStatus, setSelectedStatus] = useState<AuditStatus | undefined>(
-    status
-  );
-
-  useEffect(() => {
-    if (status) {
-      setSelectedStatus(status);
-    }
-  }, [status]);
-
   const handleChangeTab = useCallback((tab: AuditEditTab) => {
     setInternalTab(tab);
   }, []);
@@ -113,11 +104,14 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   }, []);
 
   const handleOpenComments = useCallback((row: AuditFinding, index: number) => {
+    const questionCode = row.questionCode?.trim();
+    const barrierStatement = row.barrierStatement?.trim();
+    const proposedMitigation = row.proposedMitigation?.trim();
     setSelectedCommentTarget({
-      id: row.questionCode ?? `report-item-${index + 1}`,
+      id: questionCode || `report-item-${index + 1}`,
       title:
-        row.barrierStatement ??
-        row.proposedMitigation ??
+        barrierStatement ||
+        proposedMitigation ||
         `Item ${index + 1}`,
     });
   }, []);
@@ -134,27 +128,90 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     }
   }, []);
 
-  const handleChangeStatus = useCallback(
-    (next: AuditStatus) => {
-      if (!id || !status) return;
-      const previous = selectedStatus ?? status;
-      setSelectedStatus(next);
-      mutateStatus(
-        { auditId: id, status: next },
-        {
-          onError: () => setSelectedStatus(previous),
+  const pollReportJob = useCallback(
+    async (jobId: string, popup?: Window | null) => {
+      pollingAbort.current?.abort();
+      const controller = new AbortController();
+      pollingAbort.current = controller;
+      setIsPollingReport(true);
+
+      try {
+        for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt++) {
+          const job = await reportJobRepo.get(jobId, controller.signal);
+          setReportJob(job);
+
+          if (job.status === "failed") {
+            setReportMessage(job.errorMessage ?? "Report generation failed.");
+            popup?.close();
+            return;
+          }
+          if (job.status === "succeeded") {
+            const report = await refetchReport();
+            const url = report.data?.reportUrl ?? null;
+            if (!url) {
+              setReportMessage(
+                "The job finished, but its PDF is unavailable. Retry or contact an administrator."
+              );
+            } else if (popup && !popup.closed) {
+              popup.opener = null;
+              popup.location.href = url;
+            } else {
+              setDownloadUrl(url);
+              setReportMessage(
+                "Your PDF is ready. Use the download link below."
+              );
+            }
+            localStorage.removeItem(`report-job:${id}`);
+            return;
+          }
+
+          await new Promise<void>((resolve, reject) => {
+            const timer = window.setTimeout(resolve, POLL_INTERVAL_MS);
+            controller.signal.addEventListener(
+              "abort",
+              () => {
+                window.clearTimeout(timer);
+                reject(new DOMException("Polling cancelled", "AbortError"));
+              },
+              { once: true }
+            );
+          });
         }
-      );
+
+        setReportMessage(
+          "Generation is still pending. You can resume checking without creating another job."
+        );
+        popup?.close();
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          setReportMessage(
+            error instanceof Error ? error.message : "Report generation failed."
+          );
+          popup?.close();
+        }
+      } finally {
+        if (pollingAbort.current === controller) {
+          pollingAbort.current = null;
+          setIsPollingReport(false);
+        }
+      }
     },
-    [id, mutateStatus, selectedStatus, status]
+    [id, refetchReport]
   );
+
+  useEffect(() => {
+    const storedJob = localStorage.getItem(`report-job:${id}`);
+    if (storedJob) void pollReportJob(storedJob);
+    return () => pollingAbort.current?.abort();
+  }, [id, pollReportJob]);
 
   const handleExport = useCallback(async () => {
     try {
       // Abrir la pestaña inmediatamente (gesto del usuario) para evitar que el browser
       // bloquee el popup cuando el URL esté listo (porque el polling es async).
-      // Si el popup es bloqueado, hacemos fallback a navegar en la misma pestaña.
-      const popup = window.open("about:blank", "_blank", "noopener,noreferrer");
+      setReportMessage(null);
+      setDownloadUrl(null);
+      const popup = window.open("about:blank", "_blank");
       if (popup) {
         try {
           popup.document.title = "Generating PDF...";
@@ -168,55 +225,60 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
       // Para que se genere el PDF, primero hay que disparar el proceso en backend.
       // El endpoint `complete-review` encola el trabajo (SQS -> ReportsWorker) y luego
       // `GET /api/reports/{id}` empieza a devolver `reportUrl` cuando esté listo.
-      await mutateAsync({ auditId: id });
+      const result = await mutateAsync({ auditId: id });
+      localStorage.setItem(`report-job:${id}`, result.jobId);
       await refetchReviewDetail(); // refresca status/datos antes de hacer polling
-
-      // Empezamos el polling del reporte
-      setIsPollingReport(true);
-
-      let finalUrl: string | null = null;
-
-      for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt++) {
-        const res = await refetchReport();
-
-        if (res.error) {
-          console.error("[FinalReport] Error fetching report:", res.error);
-          break;
-        }
-
-        const currentUrl = res.data?.reportUrl ?? null;
-
-        if (currentUrl && /^https?:\/\//.test(currentUrl)) {
-          finalUrl = currentUrl;
-          break; // tenemos URL válida, salimos del loop
-        }
-
-        // Seguimos esperando: 2s más
-        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-      }
-
-      if (finalUrl) {
-        if (popup && !popup.closed) {
-          popup.location.href = finalUrl;
-          popup.focus();
-        } else {
-          // Fallback cuando el popup fue bloqueado/cerrado.
-          window.location.href = finalUrl;
-        }
-      } else {
-        console.warn(
-          "[FinalReport] No reportUrl available after polling attempts."
-        );
-        if (popup && !popup.closed) {
-          popup.close();
-        }
-      }
+      await pollReportJob(result.jobId, popup);
     } catch (err) {
-      console.error("[FinalReport] Error al exportar reporte:", err);
+      setReportMessage(
+        err instanceof Error ? err.message : "Report generation failed."
+      );
     } finally {
       setIsPollingReport(false);
     }
-  }, [id, status, mutateAsync, refetchReviewDetail, refetchReport]);
+  }, [id, mutateAsync, pollReportJob, refetchReviewDetail]);
+
+  const handleRetry = useCallback(async () => {
+    if (!reportJob) return;
+    try {
+      const job = await reportJobRepo.retry(reportJob.jobId);
+      localStorage.setItem(`report-job:${id}`, job.jobId);
+      setReportMessage(null);
+      await pollReportJob(job.jobId);
+    } catch (error) {
+      setReportMessage(
+        error instanceof Error ? error.message : "Report retry failed."
+      );
+    }
+  }, [id, pollReportJob, reportJob]);
+
+  const handleReopen = useCallback(async () => {
+    const reason = window.prompt("Reason for reopening this review:")?.trim();
+    if (!reason || !auditDetail?.version) return;
+    try {
+      const response = await fetch(
+        `/api/audits-review/${encodeURIComponent(id)}/reopen`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reason,
+            expected_version: auditDetail.version,
+          }),
+        }
+      );
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(body.message ?? "Failed to reopen review");
+      }
+      setReportMessage(null);
+      await refetchReviewDetail();
+    } catch (error) {
+      setReportMessage(
+        error instanceof Error ? error.message : "Failed to reopen review"
+      );
+    }
+  }, [auditDetail?.version, id, refetchReviewDetail]);
 
   if (showLoadingOverlay) return <Loading />;
 
@@ -243,17 +305,61 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
           <div className="mb-3">
             <FinalReportHeader
               onExport={handleExport}
-              disabled={!findings.length}
+              disabled={!findings.length || status !== "draft_report_in_review"}
               exporting={isFetchingReport || isPending || isPollingReport}
               rightAddon={
-                <AuditStatusSelector
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  disabled={!status || isLoading || isAuditDetailLoading}
-                  isLoading={isUpdatingStatus}
-                />
+                <div className="flex items-center gap-2 text-sm">
+                  <span>{status ? AUDIT_STATUS_LABELS[status] : "Unknown"}</span>
+                  {status === "completed" ? (
+                    <button
+                      type="button"
+                      onClick={() => void handleReopen()}
+                      className="underline"
+                    >
+                      Reopen review
+                    </button>
+                  ) : null}
+                </div>
               }
             />
+            {reportMessage ? (
+              <div
+                role="status"
+                className="mt-2 rounded-md bg-amber-50 p-3 text-sm text-amber-900"
+              >
+                {reportMessage}
+                {downloadUrl ? (
+                  <a
+                    className="ml-2 font-semibold underline"
+                    href={downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download PDF
+                  </a>
+                ) : null}
+                {reportJob?.status === "failed" && reportJob.retryable ? (
+                  <button
+                    type="button"
+                    className="ml-2 font-semibold underline"
+                    onClick={() => void handleRetry()}
+                  >
+                    Retry
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
+            {reportJob ? (
+              <p className="mt-2 text-xs text-gray-600">
+                Includes{" "}
+                {reportJob.audits
+                  .map(
+                    (audit) =>
+                      `${audit.auditId} (audit v${audit.auditVersion}, review v${audit.reviewVersion})`
+                  )
+                  .join(", ")}
+              </p>
+            ) : null}
           </div>
 
           <div className={cn("flex gap-4", "flex-col md:flex-row")}>
@@ -289,6 +395,9 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         open={editOpen}
         onOpenChange={handleEditDialogOpenChange}
         auditId={id}
+        {...(reviewDetail?.version
+          ? { expectedVersion: reviewDetail.version }
+          : {})}
         questionCode={selectedFinding?.questionCode ?? ""}
         defaultValues={{
           quantity:

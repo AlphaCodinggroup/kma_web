@@ -6,6 +6,8 @@ export interface CompleteReviewResponseDTO {
   status: AuditStatus;
   message?: string | null;
   request_id: string;
+	job_id?: string | null;
+	job_status?: CompleteReviewResult["jobStatus"] | null;
 }
 
 /**
@@ -19,5 +21,7 @@ export function mapCompleteReviewResponseDTOToDomain(
     status: dto.status,
     message: dto.message ?? "",
     requestId: dto.request_id,
+	jobId: dto.job_id ?? dto.request_id,
+	jobStatus: dto.job_status ?? "queued",
   };
 }

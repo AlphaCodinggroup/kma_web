@@ -11,7 +11,7 @@ import useListAudits from "@features/audits/lib/hooks/useListAudits";
 import { useDeleteAudit } from "@features/audits/lib/hooks/useDeleteAudit";
 import { useAuditors } from "@features/audits/lib/hooks/useAuditors";
 import type { Audit } from "@entities/audit/model";
-import { useSendForReviewAudit } from "@features/audits/lib/hooks/useSendForReviewAudit";
+import { auditReviewDetailRepo } from "@features/audits/api/audit-review.repo.impl";
 import {
   Modal,
   ModalContent,
@@ -25,7 +25,6 @@ import { Button } from "@shared/ui/controls";
 const AuditsPage: React.FC = () => {
   const router = useRouter();
   const [query, setQuery] = useState<string>("");
-  const [pendingAuditId, setPendingAuditId] = useState<string | null>(null);
   const [noFindingsDialogOpen, setNoFindingsDialogOpen] = useState(false);
 
   // Filter state
@@ -52,12 +51,6 @@ const AuditsPage: React.FC = () => {
 
   // Fetch auditors from API
   const { auditors: availableAuditors } = useAuditors();
-
-  const { start: startSendForReview, sendResult } = useSendForReviewAudit({
-    refetchIntervalMs: 5000,
-    stopWhenReady: true,
-    onReady: () => refetch(),
-  });
 
   // Detect pagination mode: server-side if last_eval_id present, client-side otherwise
   const paginationMode = useMemo(() => {
@@ -152,16 +145,21 @@ const AuditsPage: React.FC = () => {
   );
 
   const handleEdit = useCallback(
-    (audit: Audit, isCompliant?: boolean) => {
+    async (audit: Audit, isCompliant?: boolean) => {
       if (isCompliant) {
         setNoFindingsDialogOpen(true);
         return;
       }
       if (audit.status === "draft_report_pending_review") {
         setEditingId(audit.id);
-        startSendForReview(audit.id);
-        setPendingAuditId(audit.id);
-        return;
+        try {
+          await auditReviewDetailRepo.openReview(audit.id);
+        } catch (error) {
+          console.error("Error opening review:", error);
+          alert("The review could not be opened. Please try again.");
+          setEditingId(null);
+          return;
+        }
       }
       setEditingId(audit.id);
       const auditorName = audit.auditorName ?? audit.createdBy ?? "";
@@ -176,17 +174,8 @@ const AuditsPage: React.FC = () => {
           : baseHref;
       router.push(href);
     },
-    [router, startSendForReview]
+    [router]
   );
-
-  useEffect(() => {
-    if (!sendResult || !pendingAuditId) return;
-    const href = `/audits/${encodeURIComponent(
-      pendingAuditId
-    )}/edit` as Route<`/audits/${string}/edit`>;
-    router.push(href);
-    setPendingAuditId(null);
-  }, [sendResult, pendingAuditId, router]);
 
   return (
     <main className={cn("min-h-dv hoverflow-hidden bg-white")}>

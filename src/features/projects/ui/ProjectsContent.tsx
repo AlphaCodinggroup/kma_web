@@ -32,6 +32,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     const [openCreate, setOpenCreate] = useState<boolean>(false);
     const [openEdit, setOpenEdit] = useState<boolean>(false);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const [operationError, setOperationError] = useState<string | null>(null);
 
     const [openDelete, setOpenDelete] = useState<boolean>(false);
     const [projectToDelete, setProjectToDelete] = useState<{
@@ -141,11 +142,17 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     const { mutate: deleteProject, isPending: isDeleting } =
         useDeleteProjectMutation({
             onSuccess: () => {
+                setOperationError(null);
                 setOpenDelete(false);
                 setProjectToDelete(null);
                 refetch();
             },
-            onError: (err) => console.error("Failed to delete project", err),
+            onError: (err) => {
+                console.error("Failed to delete project", err);
+                setOperationError(
+                    err instanceof Error ? err.message : "Failed to delete project."
+                );
+            },
         });
 
     const { mutateAsync: archiveProject, isPending: isArchiving } =
@@ -359,12 +366,16 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
         if (!projectToArchive) return;
 
         try {
+            setOperationError(null);
             await archiveProject({ id: projectToArchive.id });
             setOpenArchive(false);
             setProjectToArchive(null);
             await refetch();
         } catch (err) {
             console.error("Failed to archive project", err);
+            setOperationError(
+                err instanceof Error ? err.message : "Failed to archive project."
+            );
         }
     }, [archiveProject, projectToArchive, refetch]);
 
@@ -383,6 +394,11 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
 
     return (
         <>
+            {operationError ? (
+                <div role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+                    {operationError}
+                </div>
+            ) : null}
             <ProjectsSearchCard
                 total={filtered.length}
                 query={query}

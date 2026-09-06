@@ -13,7 +13,7 @@ export async function updateAuditAnswer(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ answers: input.answers }),
+	  body: JSON.stringify({ expected_version: input.expectedVersion, answers: input.answers }),
     }
   );
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Download, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Download, Archive, ArchiveRestore, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { StatusBadge } from "@shared/ui/badge";
 import {
@@ -29,8 +29,10 @@ export interface ReportsTableProps {
   isDownloading: boolean;
   onDownload: (id: string) => void;
   onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
   onError: () => void;
   deletingId?: string | null | undefined;
+  restoringId?: string | null | undefined;
 }
 
 type SortColumn = "project" | "status" | "date";
@@ -49,8 +51,10 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   isDownloading,
   onDownload,
   onDelete,
+  onRestore,
   onError,
   deletingId,
+  restoringId,
 }) => {
   const { isAdmin } = useSession();
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
@@ -166,7 +170,8 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                   <SortIcon column="date" />
                 </button>
               </TableHead>
-              <TableHead>Export to PDF</TableHead>
+              <TableHead>Version / Included audits</TableHead>
+              <TableHead>PDF / Archive</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -174,7 +179,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
             {!hasItems ? (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={5}
                   className="py-10 text-center text-sm text-gray-500"
                 >
                   {emptyMessage}
@@ -196,6 +201,12 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                       {formatIsoToYmdHm(r.createdAt) ?? "—"}
                     </TableCell>
                     <TableCell>
+                      <div className="text-xs text-gray-600">
+                        <div>Attempt {r.attempt}</div>
+                        <div className="max-w-72 truncate" title={r.includedAudits.join(", ")}>{r.includedAudits.join(", ") || "No manifest details"}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         {/* Download button - always shown but disabled if no reportUrl */}
                         <RowActionButton
@@ -207,15 +218,15 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                           }
                           onClick={() => onDownload(r.id)}
                           size="md"
-                          disabled={!r.reportUrl || isDownloading}
+                          disabled={!r.reportUrl || isDownloading || Boolean(r.archivedAt)}
                         />
                         <RowActionButton
-                          icon={Trash2}
-                          ariaLabel="Delete report"
-                          onClick={() => onDelete(r.id)}
+                          icon={r.archivedAt ? ArchiveRestore : Archive}
+                          ariaLabel={r.archivedAt ? "Restore report version" : "Archive report version"}
+                          onClick={() => r.archivedAt ? onRestore(r.id) : onDelete(r.id)}
                           size="md"
-                          disabled={deletingId === r.id || !isAdmin}
-                          title={!isAdmin ? "Only administrators can delete reports" : "Delete report"}
+                          disabled={deletingId === r.id || restoringId === r.id || !isAdmin}
+                          title={!isAdmin ? "Only administrators can archive reports" : r.archivedAt ? "Restore this report version" : "Archive this report version"}
                         />
                       </div>
                     </TableCell>

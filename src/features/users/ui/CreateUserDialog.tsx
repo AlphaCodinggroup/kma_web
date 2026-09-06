@@ -32,8 +32,10 @@ export interface CreateUserDialogProps {
 
 const ROLE_OPTIONS = [
     { value: "auditor", label: "Auditor" },
+    { value: "viewer", label: "Viewer" },
     { value: "qc_manager", label: "QC Manager" },
     { value: "admin", label: "Administrator" },
+    { value: "administrator", label: "Administrator (legacy role)" },
 ];
 
 /**
@@ -47,7 +49,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
     error,
     defaultValues,
 }) => {
-    const isEditing = !!defaultValues?.name;
+    const isEditing = defaultValues !== undefined;
 
     const initial: CreateUserValues = useMemo(
         () => ({

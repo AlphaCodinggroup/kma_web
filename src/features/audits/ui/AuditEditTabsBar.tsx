@@ -40,10 +40,11 @@ const AuditEditTabsBar: React.FC<AuditEditTabsBarProps> = ({
         <Tabs
           value={activeTab}
           onValueChange={handleChange}
-          aria-label={ariaLabel}
-          aria-labelledby={ariaLabel ? undefined : ariaLabelledById}
         >
-          <TabsList>
+          <TabsList
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabel ? undefined : ariaLabelledById}
+          >
             <TabsTrigger
               value="questions"
               disabled={disabledTabs?.questions}

@@ -196,6 +196,9 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
 
         <ModalHeader>
           <ModalTitle>{copy.title}</ModalTitle>
+          {descriptionOverride ? (
+            <ModalDescription>{descriptionOverride}</ModalDescription>
+          ) : null}
         </ModalHeader>
 
         <form onSubmit={onSubmitInternal} className="space-y-5">

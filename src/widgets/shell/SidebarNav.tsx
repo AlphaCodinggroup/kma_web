@@ -16,8 +16,6 @@ import type { Route } from "next";
 import type { Role } from "@entities/user/model/sessions";
 import { logout } from "@features/auth/lib/usecases/login";
 
-import { Loading } from "@shared/ui/Loading";
-
 export type NavItem = {
   label: string;
   href: Route;

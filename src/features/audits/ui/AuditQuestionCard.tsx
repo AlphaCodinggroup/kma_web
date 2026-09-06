@@ -169,20 +169,26 @@ function DynamicFormFields({
   fields,
   values,
   onChange,
+  idPrefix,
 }: {
   fields: FlowFormField[];
   values: Record<string, any>;
   onChange: (key: string, value: any) => void;
+  idPrefix: string;
 }) {
   // Fallback: no fields defined in the flow → show generic form
   if (!fields || fields.length === 0) {
     return (
       <div className="grid gap-4">
         <div>
-          <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+          <label
+            htmlFor={`${idPrefix}-quantity`}
+            className="mb-1 block text-xs font-semibold text-muted-foreground"
+          >
             Quantity
           </label>
           <input
+            id={`${idPrefix}-quantity`}
             type="number"
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
             value={values.quantity ?? ""}
@@ -190,10 +196,14 @@ function DynamicFormFields({
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+          <label
+            htmlFor={`${idPrefix}-notes`}
+            className="mb-1 block text-xs font-semibold text-muted-foreground"
+          >
             Notes / Measurements
           </label>
           <textarea
+            id={`${idPrefix}-notes`}
             className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
             value={values.notes ?? ""}
             onChange={(e) => onChange("notes", e.target.value)}
@@ -212,7 +222,10 @@ function DynamicFormFields({
         if (field.type === "number") {
           return (
             <div key={field.id}>
-              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+              <label
+                htmlFor={`${idPrefix}-${field.id}`}
+                className="mb-1 block text-xs font-semibold text-muted-foreground"
+              >
                 {field.label}
                 {field.unit && (
                   <span className="ml-1 font-normal text-gray-400">
@@ -221,6 +234,7 @@ function DynamicFormFields({
                 )}
               </label>
               <input
+                id={`${idPrefix}-${field.id}`}
                 type="number"
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                 placeholder={field.placeholder ?? ""}
@@ -239,10 +253,14 @@ function DynamicFormFields({
         if (field.type === "text") {
           return (
             <div key={field.id}>
-              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+              <label
+                htmlFor={`${idPrefix}-${field.id}`}
+                className="mb-1 block text-xs font-semibold text-muted-foreground"
+              >
                 {field.label}
               </label>
               <textarea
+                id={`${idPrefix}-${field.id}`}
                 className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
                 placeholder={field.placeholder ?? ""}
                 value={values[field.id] ?? ""}
@@ -256,10 +274,14 @@ function DynamicFormFields({
           const previews: string[] = values[field.id] ?? [];
           return (
             <div key={field.id}>
-              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+              <label
+                htmlFor={`${idPrefix}-${field.id}`}
+                className="mb-1 block text-xs font-semibold text-muted-foreground"
+              >
                 {field.label}
               </label>
               <input
+                id={`${idPrefix}-${field.id}`}
                 type="file"
                 accept="image/*"
                 multiple
@@ -363,10 +385,10 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     // Backend may use snake_case or camelCase
     let nextIdToCheck = questionStep.no_next ?? questionStep.noNext;
     const collectedFields: FlowFormField[] = [];
-    let sanityCounter = 0;
+    const visitedFormIds = new Set<string>();
     
-    while (nextIdToCheck && sanityCounter < 20) {
-      sanityCounter++;
+    while (nextIdToCheck && !visitedFormIds.has(nextIdToCheck)) {
+      visitedFormIds.add(nextIdToCheck);
       const step = steps.find((s: any) => s.id === nextIdToCheck);
       if (!step || step.type !== "Form") break;
       
@@ -396,8 +418,6 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
       const noNextId = questionStep?.no_next ?? questionStep?.noNext;
       
       if (noNextId) {
-        setIsEditing(false); // Can be replaced by a general loading state if preferred, but isPending handles it locally
-        
         const cleanValues: Record<string, unknown> = {};
         
         // 1. Process files if they exist
@@ -425,10 +445,11 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
                      for (let i = 0; i < filesToUpload.length; i++) {
                          const file = filesToUpload[i];
                          const presignedInfo = uploadRes.urls.find(u => u.file_name === file.name);
-                         if (presignedInfo) {
-                             await flowsRepo.uploadFile(presignedInfo.upload_url, file);
-                             finalS3Urls.push(presignedInfo.file_url);
+                         if (!presignedInfo) {
+                             throw new Error(`Missing upload URL for ${file.name}`);
                          }
+                         await flowsRepo.uploadFile(presignedInfo.upload_url, file);
+                         finalS3Urls.push(presignedInfo.file_url);
                      }
                      // Map to proper key. If field is 'photo', use 'photos'
                      const targetKey = fieldId === "photo" ? "photos" : fieldId;
@@ -452,11 +473,11 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
         }
         
         let currentFormId = noNextId;
-        let sanity = 0;
+        const visitedFormIds = new Set<string>();
         let pushedAnyForm = false;
 
-        while (currentFormId && sanity < 20) {
-          sanity++;
+        while (currentFormId && !visitedFormIds.has(currentFormId)) {
+          visitedFormIds.add(currentFormId);
           const formStep = steps?.find((s: any) => s.id === currentFormId);
           if (!formStep || formStep.type !== "Form") break;
           
@@ -568,6 +589,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
                   fields={noNextFormFields}
                   values={draftForm}
                   onChange={handleFormChange}
+                  idPrefix={`finding-${auditId ?? "audit"}-${questionId ?? "question"}`}
                 />
               </div>
             )}

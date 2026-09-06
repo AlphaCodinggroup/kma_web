@@ -75,7 +75,7 @@ function PhotosColumn({ photos }: { photos: PhotoInput[] }) {
             <button
               type="button"
               onClick={() => toggle(i)}
-              aria-label={isHidden ? "Mostrar imagen" : "Ocultar imagen"}
+              aria-label={isHidden ? "Show image" : "Hide image"}
               className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-card/80 backdrop-blur ring-1 ring-border hover:bg-card"
             >
               {isHidden ? (
@@ -90,7 +90,7 @@ function PhotosColumn({ photos }: { photos: PhotoInput[] }) {
               <div className="flex h-full w-full items-center justify-center bg-muted/40">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Eye className="h-4 w-4" aria-hidden="true" />
-                  <span>Imagen oculta</span>
+                  <span>Image hidden</span>
                 </div>
               </div>
             ) : (
@@ -239,11 +239,11 @@ const ReportItemsTable: React.FC<ReportItemsTableProps> = ({
                     <div className="flex items-center gap-2">
                       <RowActionButton
                         icon={Pencil}
-                        ariaLabel="Editar hallazgo"
+                        ariaLabel="Edit finding"
                         onClick={() => onEditFinding?.(r, idx)}
                         size="md"
                         disabled={!isAdmin}
-                        title={!isAdmin ? "Only administrators can edit findings" : "Editar hallazgo"}
+                        title={!isAdmin ? "Only administrators can edit findings" : "Edit finding"}
                       />
                       <RowActionButton
                         icon={MessageSquare}

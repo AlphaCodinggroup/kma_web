@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { Button } from "@shared/ui/controls";
 import type { AuditorOption } from "@features/audits/lib/hooks/useAuditors";
 
+import { AUDIT_STATUSES, AUDIT_STATUS_LABELS } from "@entities/audit/lib/audit-status";
 export interface AuditsFiltersProps {
     auditorFilter: string;
     statusFilter: string;
@@ -14,12 +15,14 @@ export interface AuditsFiltersProps {
     availableAuditors: AuditorOption[];
 }
 
+// Built from the shared vocabulary so the filter can never offer a state the
+// rest of the app does not know, or miss one it does.
 const STATUS_OPTIONS = [
-    { value: "", label: "All Audits in progress" },
-    { value: "draft_report_pending_review", label: "Draft Report Pending Review" },
-    { value: "draft_report_in_review", label: "Draft Report In Review" },
-    { value: "final_report_sent_to_client", label: "Final Report Sent to Client" },
-    { value: "completed", label: "Completed" },
+    { value: "", label: "All Audit Statuses" },
+    ...AUDIT_STATUSES.map((status) => ({
+        value: status,
+        label: AUDIT_STATUS_LABELS[status],
+    })),
 ];
 
 /**
@@ -40,6 +43,7 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
         <div className="flex items-center gap-2">
             {/* Auditor Filter */}
             <select
+                aria-label="Filter by auditor"
                 value={auditorFilter}
                 onChange={(e) => onAuditorChange(e.target.value)}
                 className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
@@ -54,6 +58,7 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
 
             {/* Status Filter */}
             <select
+                aria-label="Filter by audit status"
                 value={statusFilter}
                 onChange={(e) => onStatusChange(e.target.value)}
                 className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"

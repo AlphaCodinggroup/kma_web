@@ -28,11 +28,11 @@ export function useAuditComments(auditId?: string, options?: Options) {
     ReturnType<typeof auditCommentsKey>
   >({
     queryKey: auditCommentsKey(auditId || ""),
-    enabled,
     queryFn: () => listAuditComments(auditId as string),
     staleTime: 30_000,
     retry: 2,
     refetchOnWindowFocus: false,
     ...options,
+    enabled,
   });
 }

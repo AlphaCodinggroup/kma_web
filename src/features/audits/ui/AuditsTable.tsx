@@ -65,7 +65,8 @@ const SmartEditButton = memo(({
 
   let isRed = false;
   if (checkAnswers && detail) {
-    const allYes = detail.questions?.every((q) => {
+    const questions = detail.questions ?? [];
+    const allYes = questions.length > 0 && questions.every((q) => {
       const v = String(q.answer || "").toUpperCase();
       return v === "YES";
     });

@@ -67,9 +67,9 @@ export function useSendForReviewAudit(opts?: {
 
   // Mensaje recomendado para UI
   const uiMessage = useMemo(() => {
-    if (isSending) return "Enviando para revisión…";
-    if (isReady) return "Enviado para revisión. Esperando QC.";
-    if (auditReviewId) return "Generando borrador de informe…";
+    if (isSending) return "Sending for review…";
+    if (isReady) return "Sent for review. Waiting for QC.";
+    if (auditReviewId) return "Generating draft report…";
     return "";
   }, [isSending, isReady, auditReviewId]);
 

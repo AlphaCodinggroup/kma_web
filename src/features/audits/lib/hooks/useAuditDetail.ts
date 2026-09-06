@@ -25,11 +25,11 @@ export function useAuditDetail(auditId?: string, options?: Options) {
     ReturnType<typeof auditDetailKey>
   >({
     queryKey: auditDetailKey(auditId || ""),
-    enabled,
     queryFn: () => getAuditById(auditId as string),
     staleTime: 30_000,
     retry: 2,
     refetchOnWindowFocus: false,
     ...options,
+    enabled,
   });
 }

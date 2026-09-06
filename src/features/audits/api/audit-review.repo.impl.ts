@@ -22,11 +22,11 @@ import {
 } from "@entities/audit/lib/completeReview.mappers";
 import type {
   AuditReviewStatusChange,
-  UpdateAuditReviewStatusInput,
+  ApplyAuditEventInput,
 } from "@entities/audit/model/audit-review-status";
 import {
   mapAuditReviewStatusChangeDTOToDomain,
-  mapUpdateAuditReviewStatusInputToDTO,
+  mapApplyAuditEventInputToDTO,
   type AuditReviewStatusChangeDTO,
 } from "@entities/audit/lib/audit-review-status.mappers";
 
@@ -38,7 +38,9 @@ const routes = {
     `${apiBase}/audits/audit-reviews/${encodeURIComponent(auditReviewId)}`,
   completeReview: (auditId: string) =>
     `${apiBase}/audits-review/${encodeURIComponent(auditId)}/complete-review`,
-  updateStatus: (auditId: string) =>
+  openReview: (auditId: string) =>
+    `${apiBase}/audits-review/${encodeURIComponent(auditId)}/reviews`,
+  applyEvent: (auditId: string) =>
     `${apiBase}/audits-review/${encodeURIComponent(auditId)}/status`,
   updateFinding: (auditId: string, questionCode: string) =>
     `${apiBase}/audits-review/${encodeURIComponent(
@@ -62,12 +64,18 @@ export function createAuditReviewDetailRepo(
       );
       return mapCompleteReviewResponseDTOToDomain(data);
     },
-    async updateStatus(
-      input: UpdateAuditReviewStatusInput
+    async openReview(auditId: string): Promise<AuditReviewDetail> {
+      const { data } = await client.post<AuditReviewDTO>(
+        routes.openReview(auditId)
+      );
+      return mapAuditReviewDTO(data);
+    },
+    async applyEvent(
+      input: ApplyAuditEventInput
     ): Promise<AuditReviewStatusChange> {
-      const payload = mapUpdateAuditReviewStatusInputToDTO(input);
+      const payload = mapApplyAuditEventInputToDTO(input);
       const { data } = await client.patch<AuditReviewStatusChangeDTO>(
-        routes.updateStatus(input.auditId),
+        routes.applyEvent(input.auditId),
         payload
       );
       return mapAuditReviewStatusChangeDTOToDomain(data);

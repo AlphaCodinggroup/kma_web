@@ -5,4 +5,14 @@ export interface CompleteReviewResult {
   status: AuditStatus;
   message: string;
   requestId: string;
+	jobId: string;
+	jobStatus: ReportJobStatus;
 }
+
+export type ReportJobStatus =
+  | "queued"
+  | "running"
+  | "finalizing"
+  | "retrying"
+  | "succeeded"
+  | "failed";

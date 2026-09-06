@@ -26,7 +26,7 @@ describe("decodeJwtPayload", () => {
   });
 
   it("returns typed payload via generic parameter", () => {
-    interface CustomClaims {
+	interface CustomClaims extends Record<string, unknown> {
       sub: string;
       role: string;
     }

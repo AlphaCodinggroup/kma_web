@@ -5,6 +5,7 @@ import type {
 } from "@entities/audit/model/audit-review-finding-update";
 
 export type UpdateAuditFindingDTO = {
+	expected_version?: number;
   quantity?: number;
   notes?: string | null;
   photos?: Array<{
@@ -48,6 +49,7 @@ export const mapUpdateAuditFindingInputToDTO = (
   input: UpdateAuditFindingInput
 ): UpdateAuditFindingDTO => {
   const payload: UpdateAuditFindingDTO = {};
+	if (typeof input.expectedVersion === "number") payload.expected_version = input.expectedVersion;
 
   if (typeof input.quantity === "number" && Number.isFinite(input.quantity)) {
     payload.quantity = input.quantity;

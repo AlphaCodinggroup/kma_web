@@ -1,7 +1,7 @@
 import type { AuditReviewDetailRepo } from "@entities/audit/api/audit-review.repo";
 import type {
+  ApplyAuditEventInput,
   AuditReviewStatusChange,
-  UpdateAuditReviewStatusInput,
 } from "@entities/audit/model/audit-review-status";
 import { auditReviewDetailRepo } from "@features/audits/api/audit-review.repo.impl";
 
@@ -13,20 +13,24 @@ const defaultDeps: Deps = {
   auditReviewRepo: auditReviewDetailRepo,
 };
 
-export async function updateAuditReviewStatus(
-  input: UpdateAuditReviewStatusInput,
+/**
+ * Applies a workflow event to an audit. The resulting state comes back from the
+ * backend, which owns the transition table.
+ */
+export async function applyAuditEvent(
+  input: ApplyAuditEventInput,
   deps: Deps = defaultDeps
 ): Promise<AuditReviewStatusChange> {
-  const { auditId, status } = input;
+  const { auditId, event } = input;
 
   if (!auditId) {
-    throw new Error("updateAuditReviewStatus: auditId is required");
+    throw new Error("applyAuditEvent: auditId is required");
   }
-  if (!status) {
-    throw new Error("updateAuditReviewStatus: status is required");
+  if (!event) {
+    throw new Error("applyAuditEvent: event is required");
   }
 
-  return deps.auditReviewRepo.updateStatus({ auditId, status });
+  return deps.auditReviewRepo.applyEvent({ auditId, event });
 }
 
-export default updateAuditReviewStatus;
+export default applyAuditEvent;

@@ -33,8 +33,6 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
   onClose,
   className,
 }) => {
-  if (!selected) return null;
-
   const [value, setValue] = useState<string>("");
   const [comments, setComments] = useState<LocalComment[]>([]);
   const { mutateAsync: createComment, isPending: isCreating } =
@@ -48,11 +46,13 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     }
   );
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     setValue("");
     setComments([]);
     setEditingId(null);
+    setLocalError(null);
   }, [selected?.id]);
 
   useEffect(() => {
@@ -76,6 +76,7 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     if (!selected) return;
     const text = value.trim();
     if (!text) return;
+    setLocalError(null);
     try {
       if (editingId) {
         const updated = await updateComment({
@@ -110,6 +111,9 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
       setEditingId(null);
     } catch (err) {
       console.error("[CommentsSidebar] Error saving comment", err);
+      setLocalError(
+        err instanceof Error ? err.message : "Failed to save comment."
+      );
     }
   };
 
@@ -117,6 +121,8 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     setEditingId(comment.id);
     setValue(comment.text);
   };
+
+  if (!selected) return null;
 
   return (
     <aside
@@ -192,6 +198,11 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
 
         {/* Editor simple */}
         <div className="mt-4 space-y-2">
+          {localError ? (
+            <p role="alert" className="text-sm text-red-700">
+              {localError}
+            </p>
+          ) : null}
           <label
             htmlFor="new-comment"
             className="text-xs font-medium text-muted-foreground"

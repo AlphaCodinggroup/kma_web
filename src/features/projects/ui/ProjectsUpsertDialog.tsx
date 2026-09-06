@@ -133,18 +133,9 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
   const isNameInvalid = trimmedName.length === 0;
   const showNameError = nameTouched && isNameInvalid;
 
-  const hasPendingSelection = false; // No longer needed with auto-add
-
-  const pendingSelectionError = null; // No longer needed with auto-add
-
   const onSubmitInternal = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-
-      // Bloqueo extra por seguridad
-      if (hasPendingSelection) {
-        return;
-      }
 
       const trimmedNameLocal = values.name.trim();
       if (!trimmedNameLocal) {
@@ -163,12 +154,11 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
 
       await onSubmit(payload);
     },
-    [onSubmit, values, hasPendingSelection]
+    [onSubmit, values]
   );
 
   const isFormControlsDisabled = loading === true;
-  const isSubmitDisabled =
-    loading === true || isNameInvalid || hasPendingSelection;
+  const isSubmitDisabled = loading === true || isNameInvalid;
 
   // Index de opciones para mostrar labels en chips (user.name/email/id)
   const auditorNameById = useMemo<Map<string, string>>(() => {
@@ -195,8 +185,6 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
       (mode === "create" ? "Create Project" : "Update Project"),
   };
 
-  const globalError = pendingSelectionError ?? error ?? null;
-
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className={cn(className)}>
@@ -204,6 +192,9 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
 
         <ModalHeader>
           <ModalTitle>{copy.title}</ModalTitle>
+          {descriptionOverride ? (
+            <ModalDescription>{descriptionOverride}</ModalDescription>
+          ) : null}
         </ModalHeader>
 
         <form onSubmit={onSubmitInternal} className="space-y-5">
@@ -310,8 +301,8 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 aria-label="Select a facility to add"
               >
                 <option value="">Select a facility</option>
-                {facilities.map((f, i) => (
-                  <option key={i} value={f.id}>
+                {facilities.map((f) => (
+                  <option key={f.id} value={f.id}>
                     {f.name || f.id}
                   </option>
                 ))}
@@ -322,9 +313,9 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
 
             {values.facilityIds && values.facilityIds.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
-                {values.facilityIds.map((id, i) => (
+                {values.facilityIds.map((id) => (
                   <span
-                    key={i}
+                    key={id}
                     className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800 ring-1 ring-gray-200"
                   >
                     {facilityNameById.get(id) ?? id}
@@ -343,8 +334,8 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
             )}
           </div>
 
-          {globalError ? (
-            <ErrorText>{globalError}</ErrorText>
+          {error ? (
+            <ErrorText>{error}</ErrorText>
           ) : (
             <HelpText>&nbsp;</HelpText>
           )}

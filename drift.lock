@@ -1,0 +1,11 @@
+version = 1
+
+[[bindings]]
+doc = "README.md"
+target = "Dockerfile"
+sig = "d6f7164d8206b14c"
+
+[[bindings]]
+doc = "README.md"
+target = "src/shared/config/env.ts"
+sig = "c053aa6980850d8c"

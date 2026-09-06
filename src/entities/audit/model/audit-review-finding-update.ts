@@ -6,6 +6,7 @@ export interface AuditFindingPhotoInput {
 export interface UpdateAuditFindingInput {
   auditId: string;
   questionCode: string;
+	expectedVersion?: number;
   quantity?: number | null;
   notes?: string | null;
   photos?: AuditFindingPhotoInput[];
