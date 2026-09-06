@@ -1,5 +1,5 @@
 import { httpClient } from "@shared/api/http.client";
-import type { ApiError } from "@shared/interceptors/error";
+import { toApiError, type ApiError } from "@shared/interceptors/error";
 import type { ReportsRepo } from "@entities/report/api/reports.repo";
 import type {
   ReportListFilter,
@@ -12,19 +12,6 @@ import {
   type ReportsListResponseDTO,
   type ReportListItemDTO,
 } from "@entities/report/lib/report-list.mappers";
-
-/** Utilidad defensiva: normaliza a ApiError en edge cases */
-function toApiError(err: unknown): ApiError {
-  if (err && typeof err === "object" && "code" in err && "message" in err) {
-    const e = err as { code: string; message: string; details?: unknown };
-    return { code: e.code, message: e.message, details: e.details };
-  }
-  return {
-    code: "UNEXPECTED_ERROR",
-    message: "Unexpected error",
-    details: err,
-  } as const;
-}
 
 /**
  * Implementación axios del repositorio de Reports.

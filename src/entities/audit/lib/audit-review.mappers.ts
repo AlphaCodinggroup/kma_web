@@ -1,3 +1,4 @@
+import { toBool, toNumber } from "@shared/lib/coerce";
 import { toAuditStatus } from "@entities/audit/lib/audit-status";
 import type { AuditStatus } from "@entities/audit/model";
 import type {
@@ -33,20 +34,7 @@ export type AuditReviewDTO = {
   updated_at: string;
 };
 
-const toNumber = (v: unknown, fallback = 0): number => {
-  if (typeof v === "number" && Number.isFinite(v)) return v;
-  if (typeof v === "string" && v.trim() !== "" && !Number.isNaN(Number(v))) {
-    return Number(v);
-  }
-  return fallback;
-};
 
-const toBool = (v: unknown, fallback = false): boolean => {
-  if (typeof v === "boolean") return v;
-  if (typeof v === "string") return v.toLowerCase() === "true";
-  if (typeof v === "number") return v !== 0;
-  return fallback;
-};
 
 
 export const mapAuditFindingDTO = (dto: AuditFindingDTO): AuditFinding => {

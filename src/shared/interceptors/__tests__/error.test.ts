@@ -112,6 +112,26 @@ describe("createApiErrorFromAxios", () => {
     expect(isApiError(result)).toBe(true);
   });
 
+  it("unwraps the backend envelope { error: { code, message } }", () => {
+    const err = fakeAxiosError({
+      status: 409,
+      data: { error: { code: "INVALID_TRANSITION", message: "audit is not in review" } },
+    });
+
+    const result = createApiErrorFromAxios(err);
+
+    expect(result.code).toBe("INVALID_TRANSITION");
+    expect(result.message).toBe("audit is not in review");
+  });
+
+  it("falls back to the status code when the envelope carries no message", () => {
+    const err = fakeAxiosError({ status: 409, data: { error: { code: "CONFLICT" } } });
+
+    const result = createApiErrorFromAxios(err);
+
+    expect(result.code).toBe("CONFLICT");
+  });
+
   it("maps ECONNABORTED to TIMEOUT", () => {
     const err = fakeAxiosError({ code: "ECONNABORTED" });
     const result = createApiErrorFromAxios(err);

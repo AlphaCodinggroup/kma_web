@@ -5,20 +5,7 @@ import {
   mapDashboardSummaryDTO,
   type DashboardSummaryDTO,
 } from "@entities/dashboard/lib/mappers";
-import type { ApiError } from "@shared/interceptors/error";
-
-/** Utilidad defensiva: normaliza a ApiError en edge cases */
-function toApiError(err: unknown): ApiError {
-  if (err && typeof err === "object" && "code" in err && "message" in err) {
-    const e = err as { code: string; message: string; details?: unknown };
-    return { code: e.code, message: e.message, details: e.details };
-  }
-  return {
-    code: "UNEXPECTED_ERROR",
-    message: "Unexpected error",
-    details: err,
-  } as const;
-}
+import { toApiError, type ApiError } from "@shared/interceptors/error";
 
 export class DashboardRepoHttp implements DashboardRepo {
   constructor(private readonly basePath = "/api/dashboard") {}

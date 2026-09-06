@@ -44,7 +44,9 @@ function mapConditionDTO(dto: any): Condition {
 
 function mapConditionalNextDTO(dto: any): ConditionalNext {
   return {
-    conditions: dto.conditions.map(mapConditionDTO),
+    // A payload without conditions used to throw a TypeError here rather than
+    // degrade, taking the whole flow view down with it.
+    conditions: Array.isArray(dto?.conditions) ? dto.conditions.map(mapConditionDTO) : [],
     next: dto.next,
     match_any: dto.match_any,
   };
@@ -149,7 +151,7 @@ export function mapFlowDTO(dto: FlowDTO): Flow {
     id: dto.id,
     title: dto.title,
     description: dto.description ?? null,
-    steps: dto.steps.map(mapFlowStepDTO),
+    steps: Array.isArray(dto.steps) ? dto.steps.map(mapFlowStepDTO) : [],
     flowType: dto.flow_type ?? null,
     version: dto.version,
     isActive: dto.is_active ?? true,
@@ -161,7 +163,10 @@ export function mapFlowDTO(dto: FlowDTO): Flow {
 // Mapper resiliente para el listado
 function mapFlowListItemDTO(dto: any): Flow {
   // Mapeo seguro de steps para el listado (rellena defaults)
-  const safeSteps: FlowStep[] = dto.steps.map((s: any) => {
+  // The comment below calls this resilient, but the resilience only started
+  // inside the callback: a listing without steps threw before reaching it.
+  const rawSteps: any[] = Array.isArray(dto.steps) ? dto.steps : [];
+  const safeSteps: FlowStep[] = rawSteps.map((s: any) => {
     const base = { id: s.id || "unknown", image: s.image || null, images: normalizeImages(s.image, s.images) };
 
     switch (s.type) {

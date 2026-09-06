@@ -1,3 +1,4 @@
+import { toIsoDate } from "@shared/lib/coerce";
 import type { Audit, AuditStatus, IsoDateString } from "@entities/audit/model";
 
 export type AuditDTO = {
@@ -27,10 +28,6 @@ const emptyToNull = (v?: string | null): string | null => {
   return s === "" ? null : s;
 };
 
-const toIsoOrEmpty = (v?: string | null): IsoDateString => {
-  const s = (v ?? "").trim();
-  return s as IsoDateString; // si viene vacío lo dejamos vacío
-};
 
 /** ========= Audit mapping ========= */
 
@@ -46,8 +43,8 @@ export const mapAuditDtoToDomain = (dto: AuditDTO): Audit => {
     status: (dto.status ?? "") as AuditStatus,
     createdBy: emptyToNull(dto.created_by),
     updatedBy: emptyToNull(dto.updated_by),
-    createdAt: toIsoOrEmpty(dto.created_at),
-    updatedAt: toIsoOrEmpty(dto.updated_at),
+    createdAt: toIsoDate(dto.created_at),
+    updatedAt: toIsoDate(dto.updated_at),
     auditorName: dto.auditor_name ?? "",
     facilityName: dto.facility_name ?? "",
     findingsCount: dto.findings_count ?? null,

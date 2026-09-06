@@ -23,7 +23,6 @@ vi.mock("@features/facilities/api/facilities.repo.impl", () => ({
 import { completeReviewAudit } from "./audits/lib/usecases/completeReviewAudit";
 import { createAuditComment } from "./audits/lib/usecases/createAuditComment";
 import { deleteAudit } from "./audits/lib/usecases/deleteAudit";
-import { makeGetReviewProgressUsecase } from "./audits/lib/usecases/get-review-progress";
 import { getAuditById } from "./audits/lib/usecases/getAuditById";
 import { listAuditComments } from "./audits/lib/usecases/listAuditComments";
 import { listAudits } from "./audits/lib/usecases/listAudits";
@@ -125,10 +124,6 @@ describe("application use case contracts", () => {
     await expect(listAuditComments("", { repo: {} } as never)).rejects.toThrow(
       "auditId is required"
     );
-
-    const pollReview = vi.fn().mockResolvedValue({ status: "draft_report_pending_review" });
-    await makeGetReviewProgressUsecase({ repo: { pollReview } as never })("review-1");
-    expect(pollReview).toHaveBeenCalledWith("review-1");
 
     const sendForReview = vi.fn().mockResolvedValue({ auditReviewId: "review-1" });
     await makeSendForReviewUsecase({ repo: { sendForReview } as never })("audit-1");

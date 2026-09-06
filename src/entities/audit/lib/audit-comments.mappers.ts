@@ -1,3 +1,4 @@
+import { toIsoDate, toNumber } from "@shared/lib/coerce";
 import type { IsoDateString } from "@entities/audit/model";
 import type {
   AuditReviewComment,
@@ -35,23 +36,7 @@ export type AuditCommentsListDTO = {
   comments?: AuditCommentResponseDTO[];
 };
 
-const toIso = (value?: string | null): IsoDateString => {
-  return (value ?? "") as IsoDateString;
-};
 
-const toNumber = (value: unknown, fallback = 1): number => {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value;
-  }
-  if (
-    typeof value === "string" &&
-    value.trim() !== "" &&
-    !Number.isNaN(Number(value))
-  ) {
-    return Number(value);
-  }
-  return fallback;
-};
 
 export const mapCreateAuditCommentInputToDTO = (
   input: CreateAuditCommentInput
@@ -76,8 +61,8 @@ export const mapAuditCommentResponseDTOToDomain = (
     userId: dto.user_id ?? dto.userId ?? "",
     content: dto.content ?? "",
     version: toNumber(dto.version, 1),
-    createdAt: toIso(created),
-    updatedAt: toIso(updated),
+    createdAt: toIsoDate(created),
+    updatedAt: toIsoDate(updated),
   };
 };
 

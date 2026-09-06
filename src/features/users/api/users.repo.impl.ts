@@ -10,20 +10,8 @@ import {
   mapUsersListFromDTO,
   type UserDTO,
 } from "@entities/user/lib/list.mappers";
-import type { ApiError } from "@shared/interceptors/error";
+import { toApiError, type ApiError } from "@shared/interceptors/error";
 
-/** Normalizador defensivo de errores a ApiError */
-function toApiError(err: unknown): ApiError {
-  if (err && typeof err === "object" && "code" in err && "message" in err) {
-    const e = err as { code: string; message: string; details?: unknown };
-    return { code: e.code, message: e.message, details: e.details };
-  }
-  return {
-    code: "UNEXPECTED_ERROR",
-    message: "Unexpected error",
-    details: err,
-  } as const;
-}
 
 /**
  * Implementación axios del repositorio de Users

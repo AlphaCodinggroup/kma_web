@@ -103,6 +103,22 @@ function defaultMessageFor(code?: string): string {
   }
 }
 
+// Desenvuelve el sobre canónico del backend, { error: { code, message } }.
+function unwrapErrorEnvelope(data: unknown): ApiError | undefined {
+  if (!data || typeof data !== "object") return undefined;
+  const nested = (data as { error?: unknown }).error;
+  if (!nested || typeof nested !== "object") return undefined;
+
+  const { code, message, details } = nested as Record<string, unknown>;
+  if (typeof message !== "string" || message.trim() === "") return undefined;
+
+  return {
+    code: typeof code === "string" && code.trim() !== "" ? code : "UNKNOWN_ERROR",
+    message: message.trim(),
+    details,
+  };
+}
+
 // -----------------------------------------------------------------------------
 // Normalizadores de error
 // -----------------------------------------------------------------------------
@@ -152,6 +168,16 @@ export function createApiErrorFromAxios(err: AxiosError): ApiError {
   const status = err.response?.status;
   const url = err.config?.url;
   const method = (err.config?.method ?? "get").toUpperCase();
+
+  // El backend responde { error: { code, message, details } }. Sin desenvolverlo
+  // el mensaje real se perdía y la UI mostraba el texto genérico de axios.
+  const envelope = unwrapErrorEnvelope(err.response?.data);
+  if (envelope) {
+    return {
+      ...envelope,
+      details: { status, url, method, ...(envelope.details ? { details: envelope.details } : {}) },
+    };
+  }
 
   // Si el payload parece AWS Cognito
   const data = err.response?.data as unknown;
@@ -247,4 +273,23 @@ export function installErrorInterceptor(instance: AxiosInstance): void {
       return Promise.reject(apiErr);
     }
   );
+}
+
+/**
+ * Normalizes an unknown rejection to ApiError at a repository boundary.
+ *
+ * This lived as five byte-identical private copies, one per feature repository,
+ * so a fix to one of them silently left the other four behind.
+ */
+export function toApiError(err: unknown): ApiError {
+  if (err && typeof err === "object" && "code" in err && "message" in err) {
+    const e = err as { code: string; message: string; details?: unknown };
+    return { code: e.code, message: e.message, details: e.details };
+  }
+
+  return {
+    code: "UNEXPECTED_ERROR",
+    message: "Unexpected error",
+    details: err,
+  };
 }

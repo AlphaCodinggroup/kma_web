@@ -1,3 +1,4 @@
+import { toIsoDate, toNumber } from "@shared/lib/coerce";
 import { toAuditStatus } from "@entities/audit/lib/audit-status";
 import type {
   AuditDetail,
@@ -110,18 +111,7 @@ const emptyToNull = (v?: string | null): string | null => {
   return s === "" ? null : s;
 };
 
-const toIso = (v?: string | null, fallback?: string): IsoDateString => {
-  const raw = (v ?? fallback ?? "").toString();
-  return raw as IsoDateString;
-};
 
-const toNumber = (v: unknown, fallback = 0): number => {
-  if (typeof v === "number" && Number.isFinite(v)) return v;
-  if (typeof v === "string" && v.trim() !== "" && !Number.isNaN(Number(v))) {
-    return Number(v);
-  }
-  return fallback;
-};
 
 
 const toYesNo = (
@@ -218,7 +208,7 @@ export const mapAuditCommentDTO = (dto: AuditCommentDTO): AuditComment => {
     itemId: dto.item_id ?? dto.itemId ?? dto.report_item_id ?? "",
     text: dto.text ?? "",
     ...(page === null ? {} : { page }),
-    createdAt: toIso(dto.created_at ?? dto.createdAt),
+    createdAt: toIsoDate(dto.created_at ?? dto.createdAt),
     author: dto.author ?? dto.user ?? "",
   };
 };
@@ -336,7 +326,7 @@ export const mapAuditDetailDTOToDomain = (dto: AuditDetailDTO): AuditDetail => {
     location: extractLocation(dto.answers),
     facilityName: dto.facility_name ?? null,
     status: toAuditStatus(dto.status),
-    auditDate: toIso(
+    auditDate: toIsoDate(
       dto.audit_date ?? dto.auditDate ?? dto.created_at,
       dto.created_at ?? undefined
     ),
@@ -345,9 +335,9 @@ export const mapAuditDetailDTOToDomain = (dto: AuditDetailDTO): AuditDetail => {
         ? null
         : completedRaw === null
           ? null
-          : toIso(completedRaw),
-    createdAt: dto.created_at ? toIso(dto.created_at) : null,
-    updatedAt: dto.updated_at ? toIso(dto.updated_at) : null,
+          : toIsoDate(completedRaw),
+    createdAt: dto.created_at ? toIsoDate(dto.created_at) : null,
+    updatedAt: dto.updated_at ? toIsoDate(dto.updated_at) : null,
     questions: questionsFromSteps ?? questionsFromDto ?? [],
     reportItems: Array.isArray(reportItems)
       ? reportItems.map(mapAuditReportItemDTO)

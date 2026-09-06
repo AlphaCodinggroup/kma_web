@@ -1,3 +1,4 @@
+import { toNumber, toText } from "@shared/lib/coerce";
 import type {
   DashboardSummary,
   DashboardMetrics,
@@ -41,17 +42,7 @@ export type DashboardSummaryDTO = {
   recent_activity?: RecentActivityDTO[] | null;
 };
 
-const toNumber = (value: unknown, fallback = 0): number => {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
 
-const toString = (value: unknown): string => {
-  if (typeof value === "string") return value;
-  if (value === null || value === undefined) return "";
-  return String(value);
-};
 
 const mapDashboardMetricsDTO = (
   dto: DashboardMetricsDTO | null | undefined
@@ -71,8 +62,8 @@ export const mapProjectFacilitySummaryDTO = (
   dto: ProjectFacilitySummaryDTO
 ): ProjectFacilitySummary => {
   return {
-    projectId: toString(dto.project_id),
-    projectName: toString(dto.project_name),
+    projectId: toText(dto.project_id),
+    projectName: toText(dto.project_name),
     facilitiesUnassigned: toNumber(dto.facilities_unassigned, 0),
     facilitiesCompleted: toNumber(dto.facilities_completed, 0),
   };
@@ -82,16 +73,16 @@ export const mapRecentActivityDTO = (
   dto: RecentActivityDTO
 ): RecentActivityItem => {
   return {
-    auditId: toString(dto.audit_id),
-    projectId: toString(dto.project_id),
-    projectName: toString(dto.project_name),
-    facilityId: toString(dto.facility_id),
-    facilityName: toString(dto.facility_name),
-    flowId: toString(dto.flow_id),
-    flowName: toString(dto.flow_name),
-    auditorId: toString(dto.auditor_id),
-    auditorName: toString(dto.auditor_name),
-    completedAt: toString(dto.completed_at),
+    auditId: toText(dto.audit_id),
+    projectId: toText(dto.project_id),
+    projectName: toText(dto.project_name),
+    facilityId: toText(dto.facility_id),
+    facilityName: toText(dto.facility_name),
+    flowId: toText(dto.flow_id),
+    flowName: toText(dto.flow_name),
+    auditorId: toText(dto.auditor_id),
+    auditorName: toText(dto.auditor_name),
+    completedAt: toText(dto.completed_at),
   };
 };
 

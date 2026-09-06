@@ -401,3 +401,31 @@ describe("mapFlowToDTO", () => {
     });
   });
 });
+
+describe("resilience against incomplete payloads", () => {
+  it("maps a conditional path with no conditions", () => {
+    const step = mapFlowStepDTO({
+      id: "Q1",
+      type: "Question",
+      text: "Ok?",
+      conditional_yes_next: { next: "F1" },
+    } as never);
+
+    expect(step).toMatchObject({ conditionalYesNext: { next: "F1", conditions: [] } });
+  });
+
+  it("maps a flow with no steps", () => {
+    expect(mapFlowDTO({ id: "flow-1", title: "T", version: 1 } as never).steps).toEqual([]);
+  });
+
+  it("maps a listing whose flows have no steps", () => {
+    const list = mapFlowListDTO({
+      total: 1,
+      limit: 10,
+      offset: 0,
+      flows: [{ id: "flow-1", title: "T", version: 1 }],
+    } as never);
+
+    expect(list.flows[0].steps).toEqual([]);
+  });
+})

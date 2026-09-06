@@ -16,7 +16,7 @@ import {
   type ProjectsResponseDTO,
   type ProjectDTO,
 } from "@entities/projects/lib/mappers";
-import type { ApiError } from "@shared/interceptors/error";
+import { toApiError, type ApiError } from "@shared/interceptors/error";
 
 /** DTOs para creación/actualización */
 type ProjectUserDTO = {
@@ -48,19 +48,6 @@ type UpdateProjectRequestDTO = {
   facilities?: ProjectFacilityDTO[];
   status?: "ACTIVE" | "ARCHIVED";
 };
-
-/** Utilidad defensiva: normaliza a ApiError en edge cases */
-function toApiError(err: unknown): ApiError {
-  if (err && typeof err === "object" && "code" in err && "message" in err) {
-    const e = err as { code: string; message: string; details?: unknown };
-    return { code: e.code, message: e.message, details: e.details };
-  }
-  return {
-    code: "UNEXPECTED_ERROR",
-    message: "Unexpected error",
-    details: err,
-  } as const;
-}
 
 /**
  * Implementación axios del repositorio de Projects.
