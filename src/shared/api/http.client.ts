@@ -6,7 +6,7 @@
 // - Timeouts y valores tomados desde PublicEnv.
 // ------------------------------------------------------
 
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 import { PublicEnv } from "@shared/config/env";
 import { installErrorInterceptor } from "@shared/interceptors/error";
 import { installAuthInterceptor } from "@shared/interceptors/auth";

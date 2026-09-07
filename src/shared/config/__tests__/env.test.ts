@@ -145,6 +145,8 @@ describe("publicEnv", () => {
       httpTimeoutMs: 5000,
       queryStaleTimeMs: 30000,
       apiBaseUrl: "https://api.example.com",
+      // Polling del reporte: configurable, con valores por defecto.
+      reportPoll: { intervalMs: 2000, maxAttempts: 60 },
     });
   });
 

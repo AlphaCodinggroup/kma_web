@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import { Plus, Search } from "lucide-react";
 import { cn } from "@shared/lib/cn";
-import { Button, Input } from "@shared/ui/controls";
 import TableHeader from "@shared/ui/table-header";
 import SearchInput from "@shared/ui/search-input";
 

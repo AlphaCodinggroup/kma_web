@@ -103,9 +103,6 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     );
 
     // ---- Create ----
-    const handleOpenCreate = useCallback(() => {
-        setIsCreateOpen(true);
-    }, []);
 
     const handleCloseCreate = useCallback((open: boolean) => {
         setIsCreateOpen(open);

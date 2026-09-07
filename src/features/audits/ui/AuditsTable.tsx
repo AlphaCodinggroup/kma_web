@@ -12,7 +12,6 @@ import {
   TableRow,
 } from "@shared/ui/table";
 import { StatusBadge } from "@shared/ui/badge";
-import RowActionButton from "@shared/ui/row-action-button";
 import { formatIsoToYmdHm } from "@shared/lib/date";
 import { cn } from "@shared/lib/cn";
 import { Loading } from "@shared/ui/Loading";

@@ -87,7 +87,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
   let body;
   try {
     body = await req.json();
-  } catch (e) {
+  } catch {
     return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
   }
 

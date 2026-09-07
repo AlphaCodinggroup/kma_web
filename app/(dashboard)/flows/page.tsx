@@ -12,13 +12,11 @@ import SearchInput from "@shared/ui/search-input";
 import { useFlowsQuery } from "@features/flows/lib/useFlowsQuery";
 import { Loading } from "@shared/ui/Loading";
 
-import { useRouter } from "next/navigation";
 
 export default function FlowsPage() {
-  const router = useRouter();
   const [search, setSearch] = React.useState<string>("");
   const { data, isLoading, error } = useFlowsQuery(true);
-  const [isNavigating, setIsNavigating] = React.useState(false);
+  const [isNavigating] = React.useState(false);
 
   const handleSearchChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
