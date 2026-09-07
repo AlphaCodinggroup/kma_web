@@ -30,13 +30,18 @@ describe("buildFacilityOptionalFields", () => {
     expect(buildFacilityOptionalFields(makeValues())).toEqual({});
   });
 
+  // Un campo vaciado a propósito viaja como cadena vacía para que el backend lo
+  // borre: descartarlo hacía imposible limpiarlo y el usuario veía el cambio
+  // como aplicado. Sólo se omite el campo ausente.
   it.each<[string, Partial<FacilityUpsertValues>, object]>([
-    ["a blank address", { address: "   " }, {}],
+    ["a blank address", { address: "   " }, { address: "   " }],
     ["a filled address", { address: "Main st. 1" }, { address: "Main st. 1" }],
-    ["a blank city", { city: "  " }, {}],
+    ["a blank city", { city: "  " }, { city: "  " }],
     ["a filled city", { city: "Austin" }, { city: "Austin" }],
-    ["a blank description", { description: "" }, {}],
+    ["an emptied description", { description: "" }, { description: "" }],
     ["a filled description", { description: "Notes" }, { description: "Notes" }],
+    ["an emptied notes", { notes: "" }, { notes: "" }],
+    ["a filled notes", { notes: "Internal" }, { notes: "Internal" }],
   ])("maps %s", (_label, overrides, expected) => {
     expect(buildFacilityOptionalFields(makeValues(overrides))).toEqual(expected);
   });

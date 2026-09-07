@@ -247,8 +247,10 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
                 name: editingFacility.name,
                 address: editingFacility.address ?? "",
                 city: editingFacility.city ?? "",
-                description:
-                    editingFacility.description ?? editingFacility.notes ?? "",
+                // description y notes son campos distintos: antes se
+                // colapsaban en uno porque el backend no tenía notes.
+                description: editingFacility.description ?? "",
+                notes: editingFacility.notes ?? "",
                 photoUrl: editingFacility.photoUrl ?? "",
             };
         }, [editingFacility]);

@@ -494,7 +494,9 @@ describe("FacilitiesContent", () => {
             ).toHaveAttribute("src", "https://cdn.kma.io/north.png");
         });
 
-        it("falls back to the notes when the facility has no description", async () => {
+        // description y notes son campos distintos: antes se colapsaban en uno
+        // porque el backend no tenía notes, y la interfaz no podía separarlos.
+        it("loads notes into its own field, not into the description", async () => {
             renderContent();
 
             await userEvent.click(
@@ -503,9 +505,8 @@ describe("FacilitiesContent", () => {
                 })
             );
 
-            expect(screen.getByLabelText("Description")).toHaveValue(
-                "Legacy notes"
-            );
+            expect(screen.getByLabelText("Description")).toHaveValue("");
+            expect(screen.getByLabelText("Notes")).toHaveValue("Legacy notes");
         });
 
         it("leaves every optional field empty when the facility has none", async () => {
@@ -539,12 +540,14 @@ describe("FacilitiesContent", () => {
                 screen.getByRole("button", { name: "Update Facility" })
             );
 
+            // notes viaja como campo propio, vacío cuando la facility no tiene.
             expect(updateFacilityMock).toHaveBeenCalledWith({
                 id: "f-north",
                 name: "North Plant II",
                 address: "1 Main Street",
                 city: "Springfield",
                 description: "Main production plant",
+                notes: "",
                 photoUrl: "https://cdn.kma.io/north.png",
             });
             expect(
@@ -557,7 +560,9 @@ describe("FacilitiesContent", () => {
         // buildFacilityOptionalFields omiten la clave, así que la descripción
         // vieja queda intacta en el backend. El test fija el comportamiento
         // ACTUAL.
-        it("omits the description from the payload when it is emptied instead of clearing it", async () => {
+        // Vaciar un campo lo borra: antes se omitía del payload, el backend
+        // conservaba el valor viejo y el usuario veía el cambio como aplicado.
+        it("sends an emptied description so the backend clears it", async () => {
             renderContent();
 
             await userEvent.click(
@@ -571,13 +576,10 @@ describe("FacilitiesContent", () => {
             );
 
             const payload = updateFacilityMock.mock.calls[0]?.[0];
-            expect(payload).not.toHaveProperty("description");
-            expect(payload).toEqual({
+            expect(payload).toMatchObject({
                 id: "f-north",
                 name: "North Plant",
-                address: "1 Main Street",
-                city: "Springfield",
-                photoUrl: "https://cdn.kma.io/north.png",
+                description: "",
             });
         });
 

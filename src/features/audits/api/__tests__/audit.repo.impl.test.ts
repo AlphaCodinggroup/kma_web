@@ -213,15 +213,41 @@ describe("AuditRepoHttp.list", () => {
     expect(result.last_eval_id).toBeUndefined();
   });
 
-  it("prefers the server total and forwards last_eval_id", async () => {
+  // El backend acota su propia página y devuelve last_eval_id aunque se pida un
+  // limit mayor: sin seguir ese cursor el listado se quedaba en la primera
+  // página y una auditoría creada después nunca aparecía.
+  it("follows the cursor and accumulates every page", async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({ audits: [auditDTO], total: 2, last_eval_id: "cursor-9" })
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({ audits: [{ ...auditDTO, id: "audit-2" }], total: 2 })
+      );
+
+    const result = await auditRepoImpl.list();
+
+    expect(result.audits).toHaveLength(2);
+    expect(result.total).toBe(2);
+    expect(result.last_eval_id).toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(String(fetchMock.mock.calls[1]?.[0])).toContain(
+      "last_eval_id=cursor-9"
+    );
+  });
+
+  it("stops once it reaches the requested limit", async () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({ audits: [auditDTO], total: 42, last_eval_id: "cursor-9" })
     );
 
-    const result = await auditRepoImpl.list();
+    const result = await auditRepoImpl.list({ limit: 1 });
 
+    expect(result.audits).toHaveLength(1);
     expect(result.total).toBe(42);
+    // Queda el cursor para que el consumidor sepa que hay más.
     expect(result.last_eval_id).toBe("cursor-9");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
 

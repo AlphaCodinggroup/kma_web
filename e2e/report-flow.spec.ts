@@ -1,4 +1,4 @@
-import { expect, test, type APIRequestContext } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { login } from "./fixtures";
 
 /**
@@ -84,23 +84,65 @@ async function seedAudit(request: APIRequestContext, token: string) {
 }
 
 /** Espera a que el worker de enriquecimiento produzca los hallazgos. */
-async function waitForEnrichment(
+/**
+ * Busca la auditoría recorriendo el listado paginado.
+ *
+ * El endpoint devuelve una página más `last_eval_id` aunque se pida un limit
+ * mayor: quedarse con la primera página dejaba de encontrar las auditorías
+ * nuevas en cuanto la tabla crecía.
+ */
+async function findAudit(
   request: APIRequestContext,
   token: string,
   auditId: string
-): Promise<void> {
-  for (let attempt = 0; attempt < 40; attempt += 1) {
-    const res = await request.get(`${GATEWAY_URL}/api/audits?limit=200`, {
+): Promise<{ findings_count?: number | null } | undefined> {
+  let cursor = "";
+
+  for (let page = 0; page < 50; page += 1) {
+    const query = cursor
+      ? `?limit=200&last_eval_id=${encodeURIComponent(cursor)}`
+      : "?limit=200";
+    const res = await request.get(`${GATEWAY_URL}/api/audits${query}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const body = await res.json();
     const audit = (body.audits ?? body.items ?? []).find(
       (a: { id: string }) => a.id === auditId
     );
+    if (audit) return audit;
+
+    cursor = body.last_eval_id ?? "";
+    if (!cursor) return undefined;
+  }
+
+  return undefined;
+}
+
+async function waitForEnrichment(
+  request: APIRequestContext,
+  token: string,
+  auditId: string
+): Promise<void> {
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const audit = await findAudit(request, token, auditId);
     if (audit?.findings_count !== undefined && audit.findings_count !== null) return;
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   throw new Error(`el enriquecimiento de ${auditId} no completó a tiempo`);
+}
+
+
+/**
+ * Abre el listado y filtra por el tag de la corrida.
+ *
+ * El listado no ordena por fecha y pagina de a 25, así que una auditoría recién
+ * creada puede caer en cualquier página: sin filtrar, el test fallaba de forma
+ * intermitente a medida que la tabla crecía.
+ */
+async function openAuditsFilteredBy(page: Page, tag: string) {
+  await page.goto("/audits");
+  await page.waitForLoadState("networkidle");
+  await page.getByPlaceholder(/search audits/i).fill(tag);
 }
 
 test.describe("Flujo de reporte por la interfaz", () => {
@@ -112,8 +154,7 @@ test.describe("Flujo de reporte por la interfaz", () => {
     await login(page);
 
     // La auditoría aparece en el listado.
-    await page.goto("/audits");
-    await page.waitForLoadState("networkidle");
+    await openAuditsFilteredBy(page, auditId.replace("audit-e2e-ui-", ""));
     const row = page.getByTestId(`audit-row-${auditId}`);
     await expect(row).toBeVisible({ timeout: 30_000 });
 
@@ -178,8 +219,7 @@ test.describe("Flujo de reporte por la interfaz", () => {
     await waitForEnrichment(request, token, auditId);
 
     await login(page);
-    await page.goto("/audits");
-    await page.waitForLoadState("networkidle");
+    await openAuditsFilteredBy(page, tag);
 
     const row = page.getByTestId(`audit-row-${auditId}`);
     await expect(row).toBeVisible({ timeout: 30_000 });

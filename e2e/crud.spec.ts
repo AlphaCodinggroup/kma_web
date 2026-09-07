@@ -92,16 +92,37 @@ test.describe("Facilities", () => {
     const row = page.getByRole("row").filter({ hasText: name });
     await expect(row).toBeVisible({ timeout: 20_000 });
 
-    // Edición: vaciar la dirección tiene que borrarla, no dejarla como estaba.
+    // Edición: notes es un campo propio y vaciar uno lo borra de verdad.
     await row.getByRole("button", { name: /edit facility/i }).click();
     await expect(
       page.getByRole("heading", { name: "Edit Facility" })
     ).toBeVisible();
     await page.locator("#facility-city").fill("Pittsburgh");
+    await page.locator("#facility-notes").fill("Nota interna del e2e");
     await page.getByRole("button", { name: "Update Facility" }).click();
 
     const updated = page.getByRole("row").filter({ hasText: name });
     await expect(updated).toContainText("Pittsburgh", { timeout: 20_000 });
+
+    // La nota vuelve en su propio campo, sin pisar la descripción.
+    await updated.getByRole("button", { name: /edit facility/i }).click();
+    await expect(page.locator("#facility-notes")).toHaveValue(
+      "Nota interna del e2e"
+    );
+    await expect(page.locator("#facility-description")).toHaveValue("");
+
+    // Vaciar un campo opcional lo borra: antes se omitía del payload y el
+    // backend conservaba el valor viejo. address y city no aplican porque el
+    // formulario los exige.
+    await page.locator("#facility-notes").fill("");
+    await page.getByRole("button", { name: "Update Facility" }).click();
+
+    await expect(
+      page.getByRole("heading", { name: "Edit Facility" })
+    ).toBeHidden({ timeout: 20_000 });
+    await updated.getByRole("button", { name: /edit facility/i }).click();
+    await expect(page.locator("#facility-notes")).toHaveValue("");
+    await page.getByRole("button", { name: /close|cancel/i }).first().click();
 
     await updated.getByRole("button", { name: /delete facility/i }).click();
     await page

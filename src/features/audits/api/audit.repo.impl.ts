@@ -23,6 +23,9 @@ export class AuditsApiError extends Error {
 
 const INTERNAL_API_URL = `/api/audits`;
 
+/** Tope de páginas que se recorren al seguir el cursor del listado. */
+const MAX_LIST_PAGES = 50;
+
 // Helper para extraer robustamente el array de DTOs
 function extractDtos(data: unknown): AuditDTO[] {
   const d = data as any;
@@ -123,22 +126,43 @@ class AuditRepoHttp implements AuditRepo {
       ? `${INTERNAL_API_URL}?${searchParams.toString()}`
       : INTERNAL_API_URL;
 
-    const res = await fetch(url, {
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",
-    });
+    // El backend acota su propia página y devuelve `last_eval_id` aunque se
+    // pida un limit mayor. Sin seguir ese cursor, el listado se quedaba en la
+    // primera página del backend y una auditoría creada después nunca
+    // aparecía, con la paginación de la interfaz volviéndose decorativa.
+    const requested = params?.limit ?? Number.POSITIVE_INFINITY;
+    const dtos: ReturnType<typeof extractDtos> = [];
+    let cursor = params?.last_eval_id;
+    let total: number | undefined;
+    let lastEvalId: string | undefined;
 
-    await ensureOk(res);
+    for (let page = 0; page < MAX_LIST_PAGES; page += 1) {
+      if (cursor) searchParams.set("last_eval_id", cursor);
+      const pageUrl = searchParams.toString()
+        ? `${INTERNAL_API_URL}?${searchParams.toString()}`
+        : INTERNAL_API_URL;
 
-    const data = await res.json();
-    const dtos = extractDtos(data);
+      const res = await fetch(pageUrl, {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
+      await ensureOk(res);
+
+      const data = await res.json();
+      dtos.push(...extractDtos(data));
+      total = (data as any).total ?? total;
+      lastEvalId = (data as any).last_eval_id;
+
+      if (!lastEvalId || dtos.length >= requested) break;
+      cursor = lastEvalId;
+    }
 
     // Mapeo DTO → Dominio (status queda tal cual viene del backend)
     const resp: AuditType = {
       audits: dtos.map(mapAuditDtoToDomain),
-      total: (data as any).total ?? dtos.length,
-      last_eval_id: (data as any).last_eval_id,
+      total: total ?? dtos.length,
+      ...(lastEvalId ? { last_eval_id: lastEvalId } : {}),
     };
     return resp;
   }
