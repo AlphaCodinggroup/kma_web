@@ -41,7 +41,7 @@ function makePage(overrides: Partial<ReportListPage> = {}): ReportListPage {
 }
 
 function makeRepo(list = vi.fn()): ReportsRepo {
-  return { list, getById: vi.fn(), delete: vi.fn() };
+  return { list, delete: vi.fn() };
 }
 
 // ---------------------------------------------------------------------------

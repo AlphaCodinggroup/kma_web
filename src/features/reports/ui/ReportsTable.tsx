@@ -18,6 +18,7 @@ import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
 import { formatIsoToYmdHm } from "@shared/lib/date";
 import { useSession } from "@processes/auth/hooks";
+import { ProgressRing } from "@shared/ui/progress";
 
 export interface ReportsTableProps {
   items: ReportListItem[];
@@ -26,7 +27,7 @@ export interface ReportsTableProps {
   emptyMessage?: string;
   isLoading: boolean;
   isError: boolean;
-  isDownloading: boolean;
+  downloadingId: string | null;
   onDownload: (id: string) => void;
   onDelete: (id: string) => void;
   onError: () => void;
@@ -46,7 +47,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   emptyMessage = "No reports found",
   isError,
   isLoading,
-  isDownloading,
+  downloadingId,
   onDownload,
   onDelete,
   onError,
@@ -198,17 +199,27 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {/* Download button - always shown but disabled if no reportUrl */}
-                        <RowActionButton
-                          icon={Download}
-                          ariaLabel={
-                            r.reportUrl
-                              ? "Download report"
-                              : "Report not available yet"
-                          }
-                          onClick={() => onDownload(r.id)}
-                          size="md"
-                          disabled={!r.reportUrl || isDownloading}
-                        />
+                        {downloadingId === r.id ? (
+                          <ProgressRing
+                            value={null}
+                            label="Downloading report"
+                            size={32}
+                            strokeWidth={4}
+                            showValue={false}
+                          />
+                        ) : (
+                          <RowActionButton
+                            icon={Download}
+                            ariaLabel={
+                              r.reportUrl
+                                ? "Download report"
+                                : "Report not available yet"
+                            }
+                            onClick={() => onDownload(r.id)}
+                            size="md"
+                            disabled={!r.reportUrl}
+                          />
+                        )}
                         <RowActionButton
                           icon={Trash2}
                           ariaLabel="Delete report"

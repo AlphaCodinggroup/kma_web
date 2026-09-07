@@ -68,7 +68,7 @@ function renderTable(overrides?: Partial<ReportsTableProps>) {
     items,
     isLoading: false,
     isError: false,
-    isDownloading: false,
+    downloadingId: null,
     onDownload: vi.fn(),
     onDelete: vi.fn(),
     onError: vi.fn(),
@@ -197,19 +197,22 @@ describe("ReportsTable", () => {
     expect(onDownload).toHaveBeenCalledWith("ready");
   });
 
-  it("disables every download while another one is in flight", () => {
-    renderTable({ items: [readyReport], isDownloading: true });
+  it("shows progress only in the row being downloaded", () => {
+    renderTable({ items: [readyReport, inReviewReport], downloadingId: "ready" });
 
-    expect(screen.getByRole("button", { name: "Download report" })).toBeDisabled();
+    expect(
+      screen.getByRole("progressbar", { name: "Downloading report" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Download report" })).toBeEnabled();
   });
 
-  it("does not call onDownload while downloading", async () => {
+  it("does not expose a second action for the row being downloaded", async () => {
     const onDownload = vi.fn();
-    const user = userEvent.setup();
-    renderTable({ items: [readyReport], onDownload, isDownloading: true });
+    renderTable({ items: [readyReport], onDownload, downloadingId: "ready" });
 
-    await user.click(screen.getByRole("button", { name: "Download report" }));
-
+    expect(
+      screen.queryByRole("button", { name: "Download report" })
+    ).not.toBeInTheDocument();
     expect(onDownload).not.toHaveBeenCalled();
   });
 

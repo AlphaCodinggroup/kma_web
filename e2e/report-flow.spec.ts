@@ -177,6 +177,20 @@ test.describe("Flujo de reporte por la interfaz", () => {
 
     // Un solo barrier con cantidad 2 y costo unitario 1250.
     await expect(page.getByText(/2,500|2500/).first()).toBeVisible();
+
+    const pagesBefore = page.context().pages().length;
+    const downloadPromise = page.waitForEvent("download", {
+      timeout: 120_000,
+    });
+    await page.getByLabel("Export to PDF").click();
+    await expect(
+      page.getByRole("progressbar", { name: "Report export progress" })
+    ).toBeVisible();
+
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(/\.pdf$/);
+    expect(page.context().pages()).toHaveLength(pagesBefore);
+    await expect(page.getByRole("status")).toContainText(/downloaded/i);
   });
 
   test("una auditoría sin hallazgos no ofrece reporte", async ({ page, request }) => {

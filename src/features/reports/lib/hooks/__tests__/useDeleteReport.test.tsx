@@ -12,7 +12,6 @@ const deleteMock = vi.fn();
 vi.mock("@features/reports/api/reports.repo.impl", () => {
   const repo = {
     list: vi.fn(),
-    getById: vi.fn(),
     delete: (...args: unknown[]) => deleteMock(...args),
   };
   return { reportsRepo: repo, default: repo, ReportsRepoHttp: class {} };

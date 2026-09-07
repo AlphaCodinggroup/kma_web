@@ -3,6 +3,15 @@ import { toIsoDate, toIsoDateOrNull } from "@shared/lib/coerce";
 import type { AuditStatus } from "@entities/audit/model";
 import type { AuditReport } from "@entities/report/model/audit-report";
 
+export type ReportProgressDTO = {
+  request_id?: string | null;
+  step?: string | null;
+  photos_done?: number | null;
+  photos_total?: number | null;
+  percent?: number | null;
+  updated_at?: string | null;
+};
+
 export type AuditReportDTO = {
   id: string;
   flow_id?: string | null;
@@ -13,6 +22,7 @@ export type AuditReportDTO = {
   created_at: string;
   updated_at?: string | null;
   completed_at?: string | null;
+  report_progress?: ReportProgressDTO | null;
 };
 
 // El estado se valida contra la lista de estados conocidos: antes era un cast
@@ -24,6 +34,9 @@ const toNullIfEmpty = (v: unknown): string | null => {
   const s = v.trim();
   return s.length ? s : null;
 };
+
+const toFiniteNumberOrNull = (value: unknown): number | null =>
+  typeof value === "number" && Number.isFinite(value) ? value : null;
 
 export const mapAuditReportDTO = (dto: AuditReportDTO): AuditReport => {
   return {
@@ -38,5 +51,15 @@ export const mapAuditReportDTO = (dto: AuditReportDTO): AuditReport => {
     createdAt: toIsoDate(dto.created_at),
     updatedAt: toIsoDateOrNull(dto.updated_at),
     completedAt: toIsoDateOrNull(dto.completed_at),
+    reportProgress: dto.report_progress
+      ? {
+          requestId: toNullIfEmpty(dto.report_progress.request_id),
+          step: toNullIfEmpty(dto.report_progress.step),
+          photosDone: toFiniteNumberOrNull(dto.report_progress.photos_done),
+          photosTotal: toFiniteNumberOrNull(dto.report_progress.photos_total),
+          percent: toFiniteNumberOrNull(dto.report_progress.percent),
+          updatedAt: toIsoDateOrNull(dto.report_progress.updated_at),
+        }
+      : null,
   };
 };

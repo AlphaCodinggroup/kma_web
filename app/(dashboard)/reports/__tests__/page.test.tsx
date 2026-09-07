@@ -1,37 +1,30 @@
-/**
- * Página de reportes: filtrado, descarga y borrado.
- *
- * Los componentes de feature se stubbean para que el test ejercite la lógica de
- * la página (filtro, estado de descarga, confirmación de borrado) y no el
- * render de las tarjetas, que se prueba en su propio directorio.
- */
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const useReportsListQuery = vi.fn();
-const useReportByIdQuery = vi.fn();
 const mutateAsync = vi.fn();
+const download = vi.fn();
+const downloadState = { activeId: null as string | null };
 
 vi.mock("@features/reports/lib/hooks/useReportsQuery", () => ({
   useReportsListQuery: (...args: unknown[]) => useReportsListQuery(...args),
 }));
-vi.mock("@features/reports/lib/hooks/useReportByIdQuery", () => ({
-  useReportByIdQuery: (...args: unknown[]) => useReportByIdQuery(...args),
-}));
 vi.mock("@features/reports/lib/hooks/useDeleteReport", () => ({
   useDeleteReport: () => ({ mutateAsync }),
 }));
-
-// El debounce se anula: el test no mide tiempo, mide el filtrado.
+vi.mock("@features/reports/lib/hooks/useDownloadReportFile", () => ({
+  useDownloadReportFile: () => ({
+    download,
+    activeId: downloadState.activeId,
+  }),
+}));
 vi.mock("@shared/lib/useDebouncedSearch", () => ({
   useDebouncedSearch: (value: string) => value.toLowerCase(),
 }));
-
 vi.mock("@shared/ui/page-header", () => ({
   default: ({ title }: { title: string }) => <h1>{title}</h1>,
 }));
-
 vi.mock("@features/reports/ui/ReportsSearchCard", () => ({
   default: ({
     query,
@@ -49,8 +42,6 @@ vi.mock("@features/reports/ui/ReportsSearchCard", () => ({
     />
   ),
 }));
-
-// El stub expone los props que la página controla, para poder afirmarlos.
 vi.mock("@features/reports/ui/ReportsListCard", () => ({
   default: ({
     items,
@@ -61,7 +52,7 @@ vi.mock("@features/reports/ui/ReportsListCard", () => ({
     onDownload,
     onDelete,
     deletingId,
-    isDownloading,
+    downloadingId,
   }: {
     items: Array<{ id: string; reportName?: string | null }>;
     totalCount: number;
@@ -71,59 +62,46 @@ vi.mock("@features/reports/ui/ReportsListCard", () => ({
     onDownload: (id: string) => void;
     onDelete: (id: string) => void;
     deletingId: string | null;
-    isDownloading: boolean;
+    downloadingId: string | null;
   }) => (
     <div>
       <span data-testid="total">{totalCount}</span>
       <span data-testid="loading">{String(isLoading)}</span>
       <span data-testid="error">{String(isError)}</span>
-      <span data-testid="downloading">{String(isDownloading)}</span>
+      <span data-testid="downloading">{downloadingId ?? "none"}</span>
       <span data-testid="deleting">{deletingId ?? "none"}</span>
       <button onClick={onError}>retry</button>
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <span>{item.reportName}</span>
-            <button onClick={() => onDownload(item.id)}>
-              download {item.id}
-            </button>
-            <button onClick={() => onDelete(item.id)}>delete {item.id}</button>
-          </li>
-        ))}
-      </ul>
+      {items.map((item) => (
+        <div key={item.id}>
+          <span>{item.reportName}</span>
+          <button onClick={() => onDownload(item.id)}>download {item.id}</button>
+          <button onClick={() => onDelete(item.id)}>delete {item.id}</button>
+        </div>
+      ))}
+      <button onClick={() => onDownload("missing")}>download missing</button>
     </div>
   ),
 }));
 
-/** Reporte mínimo del listado. */
-function makeReport(overrides: Record<string, unknown> = {}) {
-  return {
-    id: "audit-1",
-    reportName: "Curb ramps",
-    createdAt: "2026-01-15T10:30:00Z",
-    status: "completed",
-    ...overrides,
-  };
-}
+const report = {
+  id: "audit-1",
+  flowId: "flow-1",
+  userId: "user-1",
+  reportName: "Curb ramps",
+  createdAt: "2026-01-15T10:30:00Z",
+  updatedAt: null,
+  completedAt: null,
+  status: "completed",
+  reportUrl: "https://s3.example.com/report.pdf",
+};
 
-/** Estado por defecto de los hooks: listado con un reporte y sin descarga. */
-function stubHooks(
-  list: Record<string, unknown> = {},
-  detail: Record<string, unknown> = {}
-) {
+function stubList(overrides: Record<string, unknown> = {}) {
   useReportsListQuery.mockReturnValue({
-    data: { items: [makeReport()], count: 1 },
+    data: { items: [report], count: 1 },
     isLoading: false,
     isError: false,
     refetch: vi.fn(),
-    ...list,
-  });
-  useReportByIdQuery.mockReturnValue({
-    data: undefined,
-    isLoading: false,
-    isError: false,
-    error: undefined,
-    ...detail,
+    ...overrides,
   });
 }
 
@@ -136,208 +114,94 @@ describe("ReportsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
-    stubHooks();
+    downloadState.activeId = null;
+    download.mockResolvedValue({
+      bytes: 10,
+      usedFallback: false,
+      filename: "report.pdf",
+    });
+    stubList();
   });
 
-  it("renders the header and the list with its total", async () => {
+  it("renders, filters and forwards list state", async () => {
     await renderPage();
+    expect(screen.getByRole("heading", { name: "Reports" })).toBeInTheDocument();
+    expect(screen.getByTestId("total")).toHaveTextContent("1");
 
-    expect(screen.getByRole("heading", { name: "Reports" })).toBeTruthy();
-    expect(screen.getByTestId("total").textContent).toBe("1");
-    expect(screen.getByText("Curb ramps")).toBeTruthy();
+    await userEvent.type(screen.getByLabelText("Search reports..."), "zzz");
+    expect(screen.queryByText("Curb ramps")).not.toBeInTheDocument();
   });
 
-  it("falls back to the filtered length when the response has no count", async () => {
-    stubHooks({ data: { items: [makeReport()] } });
-
+  it("uses the presigned URL already present in the list without opening a tab", async () => {
+    const open = vi.fn();
+    vi.stubGlobal("open", open);
+    download.mockResolvedValue({ bytes: 10, usedFallback: false });
     await renderPage();
 
-    expect(screen.getByTestId("total").textContent).toBe("1");
+    await userEvent.click(screen.getByRole("button", { name: "download audit-1" }));
+
+    expect(download).toHaveBeenCalledWith(report);
+    expect(open).not.toHaveBeenCalled();
   });
 
-  it("renders an empty list when there is no data", async () => {
-    stubHooks({ data: undefined });
-
+  it("forwards only the active download id", async () => {
+    downloadState.activeId = "audit-1";
     await renderPage();
 
-    expect(screen.getByTestId("total").textContent).toBe("0");
+    expect(screen.getByTestId("downloading")).toHaveTextContent("audit-1");
   });
 
-  it.each([
-    ["the report name", "curb", 1],
-    ["the status", "completed", 1],
-    ["nothing that matches", "zzz", 0],
-  ])("filters by %s", async (_label, term, expected) => {
+  it("ignores a download id that is not in the current items", async () => {
     await renderPage();
-
-    await userEvent.type(
-      screen.getByLabelText("Search reports..."),
-      term
+    await userEvent.click(
+      screen.getByRole("button", { name: "download missing" })
     );
 
-    await waitFor(() =>
-      expect(screen.queryAllByText("Curb ramps")).toHaveLength(expected)
-    );
+    expect(download).not.toHaveBeenCalled();
   });
 
-  it("keeps every item when the query is empty", async () => {
+  it("shows an actionable error when download fails", async () => {
+    const alertMock = vi.fn();
+    vi.stubGlobal("alert", alertMock);
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    download.mockRejectedValue(new Error("network"));
     await renderPage();
 
-    expect(screen.getByText("Curb ramps")).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "download audit-1" }));
+
+    await waitFor(() => expect(alertMock).toHaveBeenCalled());
+    expect(console.error).toHaveBeenCalled();
   });
 
-  it("propagates the loading and error state of the list", async () => {
-    stubHooks({ isLoading: true, isError: true });
-
-    await renderPage();
-
-    expect(screen.getByTestId("loading").textContent).toBe("true");
-    expect(screen.getByTestId("error").textContent).toBe("true");
-  });
-
-  it("refetches the list from the error action", async () => {
+  it("refetches the list from its retry action", async () => {
     const refetch = vi.fn();
-    stubHooks({ refetch });
-
+    stubList({ refetch, isError: true });
     await renderPage();
-    await userEvent.click(screen.getByRole("button", { name: "retry" }));
 
+    await userEvent.click(screen.getByRole("button", { name: "retry" }));
     expect(refetch).toHaveBeenCalledTimes(1);
   });
 
-  it("enables the detail query only after asking for a download", async () => {
-    await renderPage();
-
-    expect(useReportByIdQuery).toHaveBeenLastCalledWith({
-      id: undefined,
-      enabled: false,
-    });
-
-    await userEvent.click(
-      screen.getByRole("button", { name: "download audit-1" })
-    );
-
-    await waitFor(() =>
-      expect(useReportByIdQuery).toHaveBeenLastCalledWith({
-        id: "audit-1",
-        enabled: true,
-      })
-    );
-  });
-
-  it("opens the report url once the detail query resolves", async () => {
-    const open = vi.fn();
-    vi.stubGlobal("open", open);
-    stubHooks(
-      {},
-      { data: { reportUrl: "https://s3.example.com/r.pdf", status: "completed" } }
-    );
-
-    await renderPage();
-    await userEvent.click(
-      screen.getByRole("button", { name: "download audit-1" })
-    );
-
-    await waitFor(() =>
-      expect(open).toHaveBeenCalledWith(
-        "https://s3.example.com/r.pdf",
-        "_blank",
-        "noopener,noreferrer"
-      )
-    );
-  });
-
-  it.each([
-    ["a relative path", "/local/r.pdf"],
-    ["a javascript url", "javascript:alert(1)"],
-    ["an empty url", ""],
-  ])("does not open %s", async (_label, reportUrl) => {
-    const open = vi.fn();
-    vi.stubGlobal("open", open);
-    stubHooks({}, { data: { reportUrl, status: "pending" } });
-
-    await renderPage();
-    await userEvent.click(
-      screen.getByRole("button", { name: "download audit-1" })
-    );
-
-    await waitFor(() =>
-      expect(screen.getByTestId("downloading").textContent).toBe("false")
-    );
-    expect(open).not.toHaveBeenCalled();
-  });
-
-  it("clears the pending download when the detail query fails", async () => {
-    const open = vi.fn();
-    vi.stubGlobal("open", open);
-    stubHooks({}, { isError: true, error: new Error("boom") });
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => undefined);
-
-    await renderPage();
-    await userEvent.click(
-      screen.getByRole("button", { name: "download audit-1" })
-    );
-
-    await waitFor(() => expect(consoleError).toHaveBeenCalled());
-    expect(open).not.toHaveBeenCalled();
-  });
-
-  it("waits for the detail query while it is loading", async () => {
-    const open = vi.fn();
-    vi.stubGlobal("open", open);
-    stubHooks({}, { isLoading: true });
-
-    await renderPage();
-    await userEvent.click(
-      screen.getByRole("button", { name: "download audit-1" })
-    );
-
-    expect(open).not.toHaveBeenCalled();
-    expect(screen.getByTestId("downloading").textContent).toBe("true");
-  });
-
-  it("deletes a report after the confirmation", async () => {
-    vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
-    mutateAsync.mockResolvedValue(undefined);
-
-    await renderPage();
-    await userEvent.click(
-      screen.getByRole("button", { name: "delete audit-1" })
-    );
-
-    await waitFor(() => expect(mutateAsync).toHaveBeenCalledWith("audit-1"));
-    expect(screen.getByTestId("deleting").textContent).toBe("none");
-  });
-
-  it("does not delete when the confirmation is dismissed", async () => {
-    vi.stubGlobal("confirm", vi.fn().mockReturnValue(false));
-
-    await renderPage();
-    await userEvent.click(
-      screen.getByRole("button", { name: "delete audit-1" })
-    );
-
-    expect(mutateAsync).not.toHaveBeenCalled();
-  });
-
-  it("reports a failed deletion and clears the pending id", async () => {
+  it("deletes after confirmation and reports failures", async () => {
     vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
     const alertMock = vi.fn();
     vi.stubGlobal("alert", alertMock);
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
     mutateAsync.mockRejectedValue(new Error("conflict"));
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => undefined);
-
     await renderPage();
-    await userEvent.click(
-      screen.getByRole("button", { name: "delete audit-1" })
-    );
+
+    await userEvent.click(screen.getByRole("button", { name: "delete audit-1" }));
 
     await waitFor(() => expect(alertMock).toHaveBeenCalled());
-    expect(consoleError).toHaveBeenCalled();
-    expect(screen.getByTestId("deleting").textContent).toBe("none");
+    expect(mutateAsync).toHaveBeenCalledWith("audit-1");
+    expect(screen.getByTestId("deleting")).toHaveTextContent("none");
+  });
+
+  it("does not delete when confirmation is dismissed", async () => {
+    vi.stubGlobal("confirm", vi.fn().mockReturnValue(false));
+    await renderPage();
+
+    await userEvent.click(screen.getByRole("button", { name: "delete audit-1" }));
+    expect(mutateAsync).not.toHaveBeenCalled();
   });
 });

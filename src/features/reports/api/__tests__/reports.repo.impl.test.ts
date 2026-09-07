@@ -19,7 +19,6 @@ vi.mock("@shared/api/http.client", () => ({ httpClient: http, default: http }));
 import { ReportsRepoHttp, reportsRepo } from "../reports.repo.impl";
 import {
   mapReportsListFromDTO,
-  mapReportListItemFromDTO,
   type ReportsListResponseDTO,
   type ReportListItemDTO,
 } from "@entities/report/lib/report-list.mappers";
@@ -108,49 +107,8 @@ describe("ReportsRepoHttp.list", () => {
 });
 
 // ---------------------------------------------------------------------------
-// getById / delete
+// delete
 // ---------------------------------------------------------------------------
-
-describe("ReportsRepoHttp.getById", () => {
-  it.each([
-    ["audit-1", "/api/reports/audit-1"],
-    ["audit/1", "/api/reports/audit%2F1"],
-    ["a b#c", "/api/reports/a%20b%23c"],
-  ])("encodes the id %s into %s", async (id, expectedUrl) => {
-    http.get.mockResolvedValueOnce({ data: itemDTO });
-
-    await new ReportsRepoHttp().getById(id);
-
-    expect(http.get).toHaveBeenCalledWith(expectedUrl);
-  });
-
-  it("maps the DTO into a domain item", async () => {
-    http.get.mockResolvedValueOnce({ data: itemDTO });
-
-    const item = await new ReportsRepoHttp().getById("audit-1");
-
-    expect(item).toEqual(mapReportListItemFromDTO(itemDTO));
-    expect(item.reportUrl).toBe("https://cdn.example.com/report-1.pdf");
-  });
-
-  // El estado del reporte es el de la auditoría (la lambda `reports` devuelve
-  // audit.Status), así que "generándose" se señaliza con report_url en null y
-  // no con un estado propio.
-  it("keeps a still-generating report with a null url", async () => {
-    http.get.mockResolvedValueOnce({
-      data: {
-        ...itemDTO,
-        status: "final_report_sent_to_client",
-        report_url: null,
-      },
-    });
-
-    const item = await new ReportsRepoHttp().getById("audit-1");
-
-    expect(item.status).toBe("final_report_sent_to_client");
-    expect(item.reportUrl).toBeNull();
-  });
-});
 
 describe("ReportsRepoHttp.delete", () => {
   it.each([
@@ -174,7 +132,6 @@ describe("ReportsRepoHttp error normalisation", () => {
 
   it.each([
     ["list", "get" as const, () => new ReportsRepoHttp().list()],
-    ["getById", "get" as const, () => new ReportsRepoHttp().getById("a")],
     ["delete", "delete" as const, () => new ReportsRepoHttp().delete("a")],
   ])("%s propagates an ApiError untouched", async (_label, verb, run) => {
     http[verb].mockRejectedValueOnce(apiError);
@@ -183,7 +140,6 @@ describe("ReportsRepoHttp error normalisation", () => {
 
   it.each([
     ["list", "get" as const, () => new ReportsRepoHttp().list()],
-    ["getById", "get" as const, () => new ReportsRepoHttp().getById("a")],
     ["delete", "delete" as const, () => new ReportsRepoHttp().delete("a")],
   ])("%s wraps an unknown error", async (_label, verb, run) => {
     const raw = new Error("boom");
@@ -207,10 +163,10 @@ describe("reportsRepo singleton", () => {
   });
 
   it("honours a custom base path on a fresh instance", async () => {
-    http.get.mockResolvedValueOnce({ data: itemDTO });
+    http.delete.mockResolvedValueOnce({ data: undefined });
 
-    await new ReportsRepoHttp("/api/v2/reports").getById("a-1");
+    await new ReportsRepoHttp("/api/v2/reports").delete("a-1");
 
-    expect(http.get).toHaveBeenCalledWith("/api/v2/reports/a-1");
+    expect(http.delete).toHaveBeenCalledWith("/api/v2/reports/a-1");
   });
 });

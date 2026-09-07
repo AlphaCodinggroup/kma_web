@@ -48,6 +48,7 @@ describe("mapAuditReportDTO", () => {
       createdAt: "2026-01-01T00:00:00Z",
       updatedAt: "2026-01-02T00:00:00Z",
       completedAt: "2026-01-03T00:00:00Z",
+      reportProgress: null,
     });
   });
 
@@ -60,6 +61,31 @@ describe("mapAuditReportDTO", () => {
     expect(result.reportUrl).toBeNull();
     expect(result.updatedAt).toBeNull();
     expect(result.completedAt).toBeNull();
+    expect(result.reportProgress).toBeNull();
+  });
+
+  it("maps report generation progress and rejects invalid numeric values", () => {
+    const result = mapAuditReportDTO(
+      makeReportDTO({
+        report_progress: {
+          request_id: " request-1 ",
+          step: " rendering_pdf ",
+          photos_done: 3,
+          photos_total: 10,
+          percent: Number.NaN,
+          updated_at: "2026-09-07T12:00:00Z",
+        },
+      })
+    );
+
+    expect(result.reportProgress).toEqual({
+      requestId: "request-1",
+      step: "rendering_pdf",
+      photosDone: 3,
+      photosTotal: 10,
+      percent: null,
+      updatedAt: "2026-09-07T12:00:00Z",
+    });
   });
 
   it("maps null optional fields to null", () => {

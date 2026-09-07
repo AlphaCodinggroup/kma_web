@@ -56,6 +56,10 @@ const PublicSchema = z.object({
   // Polling de la generación del reporte. Estaban hardcodeados en el componente.
   NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS: z.string().optional(),
   NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS: z.string().optional(),
+  NEXT_PUBLIC_REPORT_ESTIMATE_MS: z.string().optional(),
+  NEXT_PUBLIC_REPORT_TIMEOUT_MS: z.string().optional(),
+  NEXT_PUBLIC_REPORT_DOWNLOAD_MODE: z.enum(["stream", "anchor"]).optional(),
+  NEXT_PUBLIC_REPORT_STREAM_MAX_MB: z.string().optional(),
   // Locale de los formatos de número y fecha. Estaba escrito a mano como
   // "es-ES" dentro de la página del dashboard, en una interfaz en inglés.
   NEXT_PUBLIC_LOCALE: z.string().optional(),
@@ -117,6 +121,14 @@ function loadPublicEnv() {
       process.env.NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS,
     NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS:
       process.env.NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS,
+    NEXT_PUBLIC_REPORT_ESTIMATE_MS:
+      process.env.NEXT_PUBLIC_REPORT_ESTIMATE_MS,
+    NEXT_PUBLIC_REPORT_TIMEOUT_MS:
+      process.env.NEXT_PUBLIC_REPORT_TIMEOUT_MS,
+    NEXT_PUBLIC_REPORT_DOWNLOAD_MODE:
+      process.env.NEXT_PUBLIC_REPORT_DOWNLOAD_MODE,
+    NEXT_PUBLIC_REPORT_STREAM_MAX_MB:
+      process.env.NEXT_PUBLIC_REPORT_STREAM_MAX_MB,
     NEXT_PUBLIC_LOCALE: process.env.NEXT_PUBLIC_LOCALE,
   });
 
@@ -147,6 +159,11 @@ function loadPublicEnv() {
       intervalMs: toInt(pub.NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS ?? "2000"),
       maxAttempts: toInt(pub.NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS ?? "60"),
     },
+    reportEstimateMs: toInt(pub.NEXT_PUBLIC_REPORT_ESTIMATE_MS ?? "30000"),
+    reportTimeoutMs: toInt(pub.NEXT_PUBLIC_REPORT_TIMEOUT_MS ?? "180000"),
+    reportDownloadMode: pub.NEXT_PUBLIC_REPORT_DOWNLOAD_MODE ?? "stream",
+    reportStreamMaxBytes:
+      toInt(pub.NEXT_PUBLIC_REPORT_STREAM_MAX_MB ?? "200") * 1024 * 1024,
     // La interfaz está en inglés, así que el default acompaña.
     locale: pub.NEXT_PUBLIC_LOCALE ?? "en-US",
   } as const;

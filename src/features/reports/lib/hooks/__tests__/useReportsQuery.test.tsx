@@ -16,7 +16,6 @@ const listMock = vi.fn();
 vi.mock("@features/reports/api/reports.repo.impl", () => {
   const repo = {
     list: (...args: unknown[]) => listMock(...args),
-    getById: vi.fn(),
     delete: vi.fn(),
   };
   return { reportsRepo: repo, default: repo, ReportsRepoHttp: class {} };

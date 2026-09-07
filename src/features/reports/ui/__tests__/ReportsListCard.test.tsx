@@ -48,7 +48,7 @@ function renderCard(overrides?: Partial<ReportsListCardProps>) {
     totalCount: 2,
     isLoading: false,
     isError: false,
-    isDownloading: false,
+    downloadingId: null,
     onDownload: vi.fn(),
     onDelete: vi.fn(),
     onError: vi.fn(),
@@ -154,10 +154,12 @@ describe("ReportsListCard", () => {
     expect(screen.getByRole("button", { name: "Delete report" })).toBeDisabled();
   });
 
-  it("forwards isDownloading so the row action is disabled", () => {
-    renderCard({ items: [readyReport], isDownloading: true });
+  it("forwards downloadingId so the active row shows progress", () => {
+    renderCard({ items: [readyReport], downloadingId: "ready" });
 
-    expect(screen.getByRole("button", { name: "Download report" })).toBeDisabled();
+    expect(
+      screen.getByRole("progressbar", { name: "Downloading report" })
+    ).toBeInTheDocument();
   });
 
   it("renders the loading state of the embedded table but keeps the header", () => {

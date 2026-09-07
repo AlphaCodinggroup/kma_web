@@ -1,13 +1,14 @@
 /**
  * Contenido de la pantalla de edición de auditoría: pestañas, filtro de
  * preguntas, cambio de estado, panel de comentarios, diálogo de hallazgo y el
- * polling del reporte final con su apertura de pestaña.
+ * flujo de exportación del reporte final.
  */
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
 import type { AuditFinding, AuditReviewDetail } from "@entities/audit/model/audit-review";
+import type { ExportProgress } from "@entities/report/model/export-progress";
 
 // ---- mocks ----
 
@@ -26,23 +27,63 @@ vi.mock("@features/audits/lib/hooks/useAuditReviewDetail", () => ({
   }),
 }));
 
-const reportState = { isFetching: false };
-const refetchReport = vi.fn();
-const useAuditReportSpy = vi.fn();
-vi.mock("@features/reports/lib/hooks/useAuditReport", () => ({
-  useAuditReport: (...args: unknown[]) => {
-    useAuditReportSpy(...args);
-    return { isFetching: reportState.isFetching, refetch: refetchReport };
+const startExport = vi.fn();
+const retryExport = vi.fn();
+const stopExport = vi.fn();
+const closeExport = vi.fn();
+const exportState: {
+  isBusy: boolean;
+  isOpen: boolean;
+  filename: string;
+  progress: ExportProgress;
+} = {
+  isBusy: false,
+  isOpen: false,
+  filename: "report.pdf",
+  progress: {
+    phase: "idle" as const,
+    percent: null as number | null,
+    message: "",
+    bytes: null,
+    error: null,
   },
+};
+vi.mock("@features/audits/lib/hooks/useExportAuditReport", () => ({
+  useExportAuditReport: () => ({
+    ...exportState,
+    start: startExport,
+    retry: retryExport,
+    stopWaiting: stopExport,
+    close: closeExport,
+  }),
 }));
 
-const completeReview = vi.fn();
-const completeState = { isPending: false };
-vi.mock("@features/audits/lib/hooks/useCompleteReviewAuditMutation", () => ({
-  useCompleteReviewAuditMutation: () => ({
-    mutateAsync: completeReview,
-    isPending: completeState.isPending,
-  }),
+vi.mock("@features/audits/ui/ExportReportModal", () => ({
+  __esModule: true,
+  default: ({
+    open,
+    progress,
+    filename,
+    onStop,
+    onRetry,
+    onClose,
+  }: {
+    open: boolean;
+    progress: { message: string };
+    filename: string;
+    onStop: () => void;
+    onRetry: () => void;
+    onClose: () => void;
+  }) => (
+    <div data-testid="export-modal">
+      <span>{String(open)}</span>
+      <span>{progress.message}</span>
+      <span>{filename}</span>
+      <button onClick={onStop}>stop export</button>
+      <button onClick={onRetry}>retry export</button>
+      <button onClick={onClose}>close export</button>
+    </div>
+  ),
 }));
 
 const mutateStatus = vi.fn();
@@ -216,49 +257,23 @@ const makeAuditDetail = (
   ...overrides,
 });
 
-type Popup = {
-  document: { title: string; body: { innerHTML: string } };
-  closed: boolean;
-  location: { href: string };
-  focus: ReturnType<typeof vi.fn>;
-  close: ReturnType<typeof vi.fn>;
-};
-
-const makePopup = (): Popup => ({
-  document: { title: "", body: { innerHTML: "" } },
-  closed: false,
-  location: { href: "" },
-  focus: vi.fn(),
-  close: vi.fn(),
-});
-
-let openMock: ReturnType<typeof vi.fn>;
-let assignedHref: string;
-
 beforeEach(() => {
   vi.clearAllMocks();
   reviewDetailState.data = makeReviewDetail();
   reviewDetailState.isLoading = false;
   reviewDetailState.isError = false;
-  reportState.isFetching = false;
-  completeState.isPending = false;
+  exportState.isBusy = false;
+  exportState.isOpen = false;
+  exportState.filename = "report.pdf";
+  exportState.progress = {
+    phase: "idle",
+    percent: null,
+    message: "",
+    bytes: null,
+    error: null,
+  };
   statusState.isPending = false;
-  completeReview.mockResolvedValue({ auditId: "audit-1" });
   refetchReviewDetail.mockResolvedValue({ data: reviewDetailState.data });
-  refetchReport.mockResolvedValue({ data: { reportUrl: null } });
-
-  openMock = vi.fn(() => null);
-  vi.stubGlobal("open", openMock);
-
-  // Se intercepta la navegación de la pestaña actual (fallback del popup).
-  assignedHref = "";
-  Object.defineProperty(window.location, "href", {
-    configurable: true,
-    get: () => assignedHref,
-    set: (value: string) => {
-      assignedHref = value;
-    },
-  });
 
   vi.spyOn(console, "error").mockImplementation(() => {});
   vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -267,7 +282,6 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
-  Reflect.deleteProperty(window.location, "href");
   vi.restoreAllMocks();
 });
 
@@ -571,7 +585,7 @@ describe("AuditEditContent — status selector", () => {
   });
 });
 
-describe("AuditEditContent — export button state", () => {
+describe("AuditEditContent — report export", () => {
   it("disables the export button when there are no findings", async () => {
     reviewDetailState.data = makeReviewDetail({ findings: [] });
     render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
@@ -580,277 +594,57 @@ describe("AuditEditContent — export button state", () => {
     expect(screen.getByLabelText("Export to PDF")).toBeDisabled();
   });
 
-  it("shows the loading label while the report query is fetching", async () => {
-    reportState.isFetching = true;
+  it("starts the orchestrated export without opening a tab", async () => {
+    const open = vi.fn();
+    vi.stubGlobal("open", open);
+    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
+    await openReportTab();
+
+    await userEvent.click(screen.getByLabelText("Export to PDF"));
+
+    expect(startExport).toHaveBeenCalledTimes(1);
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it("shows the phase and percent while export is active", async () => {
+    exportState.isBusy = true;
+    exportState.isOpen = true;
+    exportState.progress = {
+      phase: "generating",
+      percent: 42,
+      message: "Rendering the PDF…",
+      bytes: null,
+      error: null,
+    };
     render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
     await openReportTab();
 
     const button = screen.getByLabelText("Export to PDF");
     expect(button).toBeDisabled();
-    expect(button).toHaveTextContent("Loading...");
+    expect(button).toHaveTextContent("Rendering the PDF… 42%");
+    expect(screen.getByTestId("export-modal")).toHaveTextContent("true");
+    expect(screen.getByTestId("export-modal")).toHaveTextContent("report.pdf");
   });
 
-  it("shows the loading label while the complete review mutation runs", async () => {
-    completeState.isPending = true;
+  it("forwards modal actions to the export orchestrator", async () => {
+    exportState.isOpen = true;
     render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
 
-    expect(screen.getByLabelText("Export to PDF")).toHaveTextContent(
-      "Loading..."
+    await userEvent.click(screen.getByRole("button", { name: "stop export" }));
+    await userEvent.click(screen.getByRole("button", { name: "retry export" }));
+    await userEvent.click(screen.getByRole("button", { name: "close export" }));
+
+    expect(stopExport).toHaveBeenCalledTimes(1);
+    expect(retryExport).toHaveBeenCalledTimes(1);
+    expect(closeExport).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not put aria-live on the whole report section", async () => {
+    const { container } = render(
+      <AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />
     );
-  });
-
-  it("asks for the report query without auto fetching", () => {
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-
-    expect(useAuditReportSpy).toHaveBeenCalledWith("audit-1", {
-      enabled: false,
-    });
-  });
-});
-
-describe("AuditEditContent — report export polling", () => {
-  const clickExport = async () => {
-    await act(async () => {
-      fireEvent.click(screen.getByLabelText("Export to PDF"));
-    });
-  };
-
-  it("queues the report and navigates the popup to the ready url", async () => {
-    const popup = makePopup();
-    openMock.mockReturnValue(popup);
-    refetchReport.mockResolvedValue({
-      data: { reportUrl: "https://s3.example.com/report.pdf" },
-    });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
     await openReportTab();
-    await clickExport();
 
-    expect(openMock).toHaveBeenCalledWith("about:blank", "_blank", "noopener,noreferrer");
-    expect(popup.document.title).toBe("Generating PDF...");
-    expect(popup.document.body.innerHTML).toContain("Generating PDF");
-    expect(completeReview).toHaveBeenCalledWith({ auditId: "audit-1" });
-    expect(refetchReviewDetail).toHaveBeenCalledTimes(1);
-    expect(refetchReport).toHaveBeenCalledTimes(1);
-    expect(popup.location.href).toBe("https://s3.example.com/report.pdf");
-    expect(popup.focus).toHaveBeenCalledTimes(1);
-    expect(assignedHref).toBe("");
-  });
-
-  it("opens any http host, not only the configured S3 bucket", async () => {
-    // FIXME: la única validación es el esquema http(s); no hay allowlist del
-    // host de S3, así que cualquier origen que devuelva el backend se abre.
-    const popup = makePopup();
-    openMock.mockReturnValue(popup);
-    refetchReport.mockResolvedValue({
-      data: { reportUrl: "http://attacker.example.net/whatever.pdf" },
-    });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    await clickExport();
-
-    expect(popup.location.href).toBe(
-      "http://attacker.example.net/whatever.pdf"
-    );
-  });
-
-  it("never opens a url that is not http or https", async () => {
-    const popup = makePopup();
-    openMock.mockReturnValue(popup);
-    refetchReport.mockResolvedValue({
-      data: { reportUrl: "javascript:alert(1)" },
-    });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    // Los temporizadores falsos se instalan DESPUÉS de abrir la pestaña: con
-    // ellos puestos antes, el cambio de pestaña no se aplicaba.
-    vi.useFakeTimers();
-    await clickExport();
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(130_000);
-    });
-
-    expect(popup.location.href).toBe("");
-    expect(popup.close).toHaveBeenCalledTimes(1);
-    expect(assignedHref).toBe("");
-  });
-
-  it("keeps polling until the report url shows up", async () => {
-    const popup = makePopup();
-    openMock.mockReturnValue(popup);
-    refetchReport
-      .mockResolvedValueOnce({ data: { reportUrl: null } })
-      .mockResolvedValueOnce({ data: {} })
-      .mockResolvedValue({
-        data: { reportUrl: "https://s3.example.com/report.pdf" },
-      });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    // Los temporizadores falsos se instalan DESPUÉS de abrir la pestaña: con
-    // ellos puestos antes, el cambio de pestaña no se aplicaba.
-    vi.useFakeTimers();
-    await clickExport();
-
-    expect(refetchReport).toHaveBeenCalledTimes(1);
-    expect(popup.location.href).toBe("");
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(2000);
-    });
-    expect(refetchReport).toHaveBeenCalledTimes(2);
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(2000);
-    });
-    expect(refetchReport).toHaveBeenCalledTimes(3);
-    expect(popup.location.href).toBe("https://s3.example.com/report.pdf");
-  });
-
-  it("gives up after the maximum number of attempts and closes the popup", async () => {
-    const popup = makePopup();
-    openMock.mockReturnValue(popup);
-    refetchReport.mockResolvedValue({ data: { reportUrl: null } });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    // Los temporizadores falsos se instalan DESPUÉS de abrir la pestaña: con
-    // ellos puestos antes, el cambio de pestaña no se aplicaba.
-    vi.useFakeTimers();
-    await clickExport();
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(130_000);
-    });
-
-    // 60 intentos con 2s de espera entre cada uno.
-    expect(refetchReport).toHaveBeenCalledTimes(60);
-    expect(popup.close).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      "[FinalReport] No reportUrl available after polling attempts."
-    );
-  });
-
-  it("stops polling as soon as the report request fails", async () => {
-    const popup = makePopup();
-    openMock.mockReturnValue(popup);
-    refetchReport.mockResolvedValue({ error: new Error("boom") });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    await clickExport();
-
-    expect(refetchReport).toHaveBeenCalledTimes(1);
-    expect(console.error).toHaveBeenCalledWith(
-      "[FinalReport] Error fetching report:",
-      expect.any(Error)
-    );
-    expect(popup.close).toHaveBeenCalledTimes(1);
-  });
-
-  it("does not close a popup the user already closed", async () => {
-    const popup = makePopup();
-    popup.closed = true;
-    openMock.mockReturnValue(popup);
-    refetchReport.mockResolvedValue({ error: new Error("boom") });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    await clickExport();
-
-    expect(popup.close).not.toHaveBeenCalled();
-  });
-
-  it("navigates the current tab when the popup was blocked", async () => {
-    openMock.mockReturnValue(null);
-    refetchReport.mockResolvedValue({
-      data: { reportUrl: "https://s3.example.com/report.pdf" },
-    });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    await clickExport();
-
-    expect(assignedHref).toBe("https://s3.example.com/report.pdf");
-  });
-
-  it("navigates the current tab when the popup was closed before the url arrived", async () => {
-    const popup = makePopup();
-    popup.closed = true;
-    openMock.mockReturnValue(popup);
-    refetchReport.mockResolvedValue({
-      data: { reportUrl: "https://s3.example.com/report.pdf" },
-    });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    await clickExport();
-
-    expect(assignedHref).toBe("https://s3.example.com/report.pdf");
-    expect(popup.focus).not.toHaveBeenCalled();
-  });
-
-  it("survives a popup whose document cannot be written", async () => {
-    const popup = makePopup();
-    Object.defineProperty(popup, "document", {
-      get() {
-        throw new Error("cross origin");
-      },
-    });
-    openMock.mockReturnValue(popup);
-    refetchReport.mockResolvedValue({
-      data: { reportUrl: "https://s3.example.com/report.pdf" },
-    });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    await clickExport();
-
-    expect(popup.location.href).toBe("https://s3.example.com/report.pdf");
-  });
-
-  it("logs and recovers when queueing the report fails", async () => {
-    const popup = makePopup();
-    openMock.mockReturnValue(popup);
-    completeReview.mockRejectedValue(new Error("queue down"));
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    await clickExport();
-
-    expect(console.error).toHaveBeenCalledWith(
-      "[FinalReport] Error al exportar reporte:",
-      expect.any(Error)
-    );
-    expect(refetchReport).not.toHaveBeenCalled();
-    await waitFor(() =>
-      expect(screen.getByLabelText("Export to PDF")).not.toBeDisabled()
-    );
-  });
-
-  it("shows the loading label while the polling runs", async () => {
-    openMock.mockReturnValue(makePopup());
-    refetchReport.mockResolvedValue({ data: { reportUrl: null } });
-
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-    // Los temporizadores falsos se instalan DESPUÉS de abrir la pestaña: con
-    // ellos puestos antes, el cambio de pestaña no se aplicaba.
-    vi.useFakeTimers();
-    await clickExport();
-
-    expect(screen.getByLabelText("Export to PDF")).toHaveTextContent(
-      "Loading..."
-    );
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(130_000);
-    });
-
-    expect(screen.getByLabelText("Export to PDF")).toHaveTextContent(
-      "Export to PDF"
-    );
+    expect(container.querySelector("section[aria-live]")).toBeNull();
   });
 });
