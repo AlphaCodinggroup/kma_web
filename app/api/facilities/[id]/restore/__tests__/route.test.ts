@@ -131,8 +131,8 @@ describe("POST /api/facilities/[id]/restore", () => {
     );
   });
 
-  // FIXME: el id no se escapa antes de armar el path del backend.
-  it("does not escape the id when building the upstream url", async () => {
+  // El id se escapa: un segmento con ".." o "/" no alcanza otra ruta.
+  it("escapes the id when building the upstream url", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -141,7 +141,7 @@ describe("POST /api/facilities/[id]/restore", () => {
 
     const [upstream] = fetchMock.mock.calls[0] as unknown as FetchArgs;
     expect(String(upstream)).toBe(
-      "https://api.example.com/api/facilities/f-1/../projects/restore"
+      "https://api.example.com/api/facilities/f-1%2F..%2Fprojects/restore"
     );
   });
 

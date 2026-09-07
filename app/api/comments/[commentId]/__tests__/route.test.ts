@@ -118,7 +118,7 @@ describe("PUT /api/comments/[commentId]", () => {
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      message: "commentId is required",
+      message: "Comment id is required",
     });
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -195,5 +195,56 @@ describe("PUT /api/comments/[commentId]", () => {
 
     expect(res.status).toBe(502);
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
+  });
+});
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/comments/[commentId] with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream response into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { PUT } = await import("../route");
+    const res = await PUT(putRequest(), context("c-1"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Un JSON corrupto conserva el status del backend y llega como null.
+  it("answers a null body when the JSON is malformed", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response("{oops", {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          })
+      )
+    );
+
+    const { PUT } = await import("../route");
+    const res = await PUT(putRequest(), context("c-1"));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toBeNull();
   });
 });

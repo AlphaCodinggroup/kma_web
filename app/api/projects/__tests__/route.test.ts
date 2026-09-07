@@ -239,26 +239,27 @@ describe("POST /api/projects", () => {
     );
   });
 
-  // FIXME: el status de éxito se fuerza a 201; un 200 del backend se reescribe.
-  it("rewrites a successful upstream 200 as 201", async () => {
+  // El status de éxito ya no se reescribe: viaja tal cual lo manda el backend.
+  it("propagates the upstream success status", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ id: "p-1" }, 200)));
 
     const { POST } = await import("../route");
     const res = await POST(postRequest());
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ id: "p-1" });
   });
 
-  // FIXME: el JSON inválido se parsea dentro del try del upstream, así que la
-  // ruta responde 502 en vez del 400 que devuelve POST /api/facilities.
-  it("answers 502 instead of 400 on an invalid JSON body", async () => {
+  // El cuerpo se valida antes de llamar al backend: un JSON inválido es 400.
+  it("rejects an invalid JSON body with 400", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal("fetch", fetchMock);
 
     const { POST } = await import("../route");
     const res = await POST(postRequest("no-json"));
 
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ message: "Invalid JSON body" });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -316,14 +317,15 @@ describe("/api/projects with non JSON upstream responses", () => {
     await expect(res.json()).resolves.toEqual({ message: "gateway down" });
   });
 
-  it("falls back to a generic message when the error body is empty", async () => {
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
 
     const { POST } = await import("../route");
     const res = await POST(postRequest());
 
     expect(res.status).toBe(503);
-    await expect(res.json()).resolves.toEqual({ message: "Upstream error" });
+    await expect(res.json()).resolves.toBeNull();
   });
 
   it("wraps the text of a successful POST without JSON", async () => {
@@ -332,7 +334,7 @@ describe("/api/projects with non JSON upstream responses", () => {
     const { POST } = await import("../route");
     const res = await POST(postRequest());
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({ message: "created" });
   });
 

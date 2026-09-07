@@ -405,27 +405,30 @@ describe("/api/projects/[id] with non JSON upstream responses", () => {
     await expect(res.json()).resolves.toEqual({ message: "gateway down" });
   });
 
-  it("falls back to a generic message when the error body is empty", async () => {
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
 
     const { PATCH } = await import("../route");
     const res = await PATCH(patchRequest(), context("p-1"));
 
     expect(res.status).toBe(503);
-    await expect(res.json()).resolves.toEqual({ message: "Upstream error" });
+    await expect(res.json()).resolves.toBeNull();
   });
 
-  it("answers an empty body when a successful PATCH has no JSON", async () => {
+  // Una respuesta de éxito sin JSON conserva su status y viaja como `message`.
+  it("wraps the text of a successful PATCH into a message", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => textResponse("ok", 200)));
 
     const { PATCH } = await import("../route");
     const res = await PATCH(patchRequest(), context("p-1"));
 
     expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toBe("");
+    await expect(res.json()).resolves.toEqual({ message: "ok" });
   });
 
-  it("answers an empty body when a successful DELETE has no JSON", async () => {
+  // Una respuesta de éxito sin JSON conserva su status y viaja como `message`.
+  it("wraps the text of a successful DELETE into a message", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => textResponse("ok", 200)));
 
     const { DELETE } = await import("../route");
@@ -435,7 +438,7 @@ describe("/api/projects/[id] with non JSON upstream responses", () => {
     );
 
     expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toBe("");
+    await expect(res.json()).resolves.toEqual({ message: "ok" });
   });
 
   it.each([

@@ -129,14 +129,15 @@ describe("GET /api/reports", () => {
     expect(params.has("projectId")).toBe(false);
   });
 
-  // FIXME: a diferencia de /api/audits, /api/projects y /api/facilities, esta
-  // ruta no valida `limit`: cualquier valor llega tal cual al backend.
+  // `limit` se valida antes de llamar al backend, igual que en /api/audits.
   it.each([
     ["not a number", "abc"],
     ["over the maximum", "100000"],
     ["negative", "-3"],
-  ])("forwards a limit that is %s without validating it", async (_case, limit) => {
-    const fetchMock = vi.fn(async () => jsonResponse({ items: [] }));
+    ["decimal", "1.5"],
+    ["scientific notation", "1e3"],
+  ])("rejects a limit that is %s with 400", async (_case, limit) => {
+    const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 
     const { GET } = await import("../route");
@@ -144,9 +145,20 @@ describe("GET /api/reports", () => {
       request(`http://localhost/api/reports?limit=${limit}`)
     );
 
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ message: "Invalid limit" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("accepts the maximum allowed limit", async () => {
+    const fetchMock = vi.fn(async () => jsonResponse({ items: [] }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/reports?limit=200"));
+
     expect(res.status).toBe(200);
-    const [upstream] = fetchMock.mock.calls[0] as unknown as FetchArgs;
-    expect(new URL(String(upstream)).searchParams.get("limit")).toBe(limit);
+    expect(fetchMock).toHaveBeenCalledOnce();
   });
 
   it.each(UPSTREAM_ERRORS)(
@@ -170,5 +182,56 @@ describe("GET /api/reports", () => {
 
     expect(res.status).toBe(502);
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
+  });
+});
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("GET /api/reports with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream response into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/reports"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Un JSON corrupto conserva el status del backend y llega como null.
+  it("answers a null body when the JSON is malformed", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response("{oops", {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          })
+      )
+    );
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/reports"));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toBeNull();
   });
 });

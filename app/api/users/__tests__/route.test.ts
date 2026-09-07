@@ -214,32 +214,32 @@ describe("POST /api/users", () => {
     );
   });
 
-  it("answers 204 when the backend replies without JSON", async () => {
+  // Sin content-type JSON ni texto, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when there is no JSON", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 200 })));
 
     const { POST } = await import("../route");
     const res = await POST(postRequest());
 
-    expect(res.status).toBe(204);
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toBeNull();
   });
 
-  // FIXME: el JSON inválido se parsea dentro del try del upstream, así que la
-  // ruta responde 502 en vez del 400 que devuelve POST /api/facilities.
-  it("answers 502 instead of 400 on an invalid JSON body", async () => {
+  // El cuerpo se valida antes de llamar al backend: un JSON inválido es 400.
+  it("rejects an invalid JSON body with 400", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal("fetch", fetchMock);
 
     const { POST } = await import("../route");
     const res = await POST(postRequest("no-json"));
 
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ message: "Invalid JSON body" });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  // FIXME: el camino de error nunca mira el content-type, así que el JSON del
-  // backend llega al cliente como texto plano dentro de `message`.
   it.each(UPSTREAM_ERRORS)(
-    "propagates the upstream %i but wraps its JSON body as text",
+    "propagates the upstream %i and its JSON body",
     async (status, body) => {
       vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(body, status)));
 
@@ -247,9 +247,7 @@ describe("POST /api/users", () => {
       const res = await POST(postRequest());
 
       expect(res.status).toBe(status);
-      await expect(res.json()).resolves.toEqual({
-        message: JSON.stringify(body),
-      });
+      await expect(res.json()).resolves.toEqual(body);
     }
   );
 
@@ -261,5 +259,60 @@ describe("POST /api/users", () => {
 
     expect(res.status).toBe(502);
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
+  });
+});
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/users with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream error into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/users"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
+
+    const { POST } = await import("../route");
+    const res = await POST(postRequest());
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toBeNull();
+  });
+
+  it("normalises an upstream 401 on POST without leaking its body", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({ detail: "expired" }, 401))
+    );
+
+    const { POST } = await import("../route");
+    const res = await POST(postRequest());
+
+    expect(res.status).toBe(401);
+    await expect(res.json()).resolves.toEqual({ message: "Unauthorized" });
   });
 });

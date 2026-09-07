@@ -164,3 +164,54 @@ describe("POST /api/audits-review/[auditId]/complete-review", () => {
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
   });
 });
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/audits-review/[auditId]/complete-review with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream response into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { POST } = await import("../route");
+    const res = await POST(request(url, { method: "POST" }), context("a-1"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Un JSON corrupto conserva el status del backend y llega como null.
+  it("answers a null body when the JSON is malformed", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response("{oops", {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          })
+      )
+    );
+
+    const { POST } = await import("../route");
+    const res = await POST(request(url, { method: "POST" }), context("a-1"));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toBeNull();
+  });
+});

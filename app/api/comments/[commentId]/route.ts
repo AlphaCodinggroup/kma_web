@@ -1,67 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { PublicEnv, serverEnv } from "@shared/config/env";
+import { type NextRequest } from "next/server";
+import { pathSegment, proxyToBackend } from "@shared/api/backend-proxy";
 
 type RouteContext = { params: Promise<{ commentId: string }> };
 
-/**
- * Proxy interno para actualizar un comentario de auditoria.
- * PUT /api/comments/:commentId -> PUT {apiBaseUrl}/comments/:commentId
- */
-export async function PUT(
-  req: NextRequest,
-  { params }: RouteContext
-): Promise<NextResponse> {
+/** PUT /api/comments/:commentId -> PUT {apiBaseUrl}/comments/:commentId */
+export async function PUT(req: NextRequest, { params }: RouteContext) {
   const { commentId } = await params;
+  const id = pathSegment(commentId, "Comment id");
+  if (!id.ok) return id.response;
 
-  if (!commentId) {
-    return NextResponse.json(
-      { message: "commentId is required" },
-      { status: 400 }
-    );
-  }
-
-  const { cookies: cookieCfg } = serverEnv();
-  const cookieStore = await cookies();
-  const token = cookieStore.get(cookieCfg.accessName)?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
-  }
-
-  const upstreamUrl = `${PublicEnv.apiBaseUrl.replace(
-    /\/$/,
-    ""
-  )}/comments/${encodeURIComponent(commentId)}`;
-
-  try {
-    const res = await fetch(upstreamUrl, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-      cache: "no-store",
-    });
-
-    const contentType = res.headers.get("content-type") ?? "";
-    const isJson = contentType.includes("application/json");
-    const responseBody = isJson
-      ? await res.json().catch(() => ({}))
-      : { message: await res.text() };
-
-    return NextResponse.json(responseBody, { status: res.status });
-  } catch (err) {
-    console.error("[api/comments/:id] upstream PUT error:", err);
-    return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
-  }
+  return proxyToBackend(req, {
+    method: "PUT",
+    path: `/comments/${id.value}`,
+    expectJson: true,
+  });
 }

@@ -5,6 +5,13 @@
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
+import { NextRequest } from "next/server";
+
+/** Arma la NextRequest que recibe el route handler. */
+function request(url: string, init?: RequestInit) {
+  return new NextRequest(new Request(url, init));
+}
+
 const cookieStore = { value: undefined as string | undefined };
 
 vi.mock("next/headers", () => ({
@@ -79,7 +86,7 @@ describe("GET /api/flows/summary", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const { GET } = await import("../route");
-    const res = await GET();
+    const res = await GET(request("http://localhost/api/flows/summary"));
 
     expect(res.status).toBe(401);
     expect(fetchMock).not.toHaveBeenCalled();
@@ -90,7 +97,7 @@ describe("GET /api/flows/summary", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const { GET } = await import("../route");
-    const res = await GET();
+    const res = await GET(request("http://localhost/api/flows/summary"));
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({ total: 2 });
@@ -108,7 +115,7 @@ describe("GET /api/flows/summary", () => {
       vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(body, status)));
 
       const { GET } = await import("../route");
-      const res = await GET();
+      const res = await GET(request("http://localhost/api/flows/summary"));
 
       expect(res.status).toBe(status);
       await expect(res.json()).resolves.toEqual(body);
@@ -122,7 +129,7 @@ describe("GET /api/flows/summary", () => {
     );
 
     const { GET } = await import("../route");
-    const res = await GET();
+    const res = await GET(request("http://localhost/api/flows/summary"));
 
     expect(res.status).toBe(401);
     await expect(res.json()).resolves.toEqual({ message: "Unauthorized" });
@@ -132,9 +139,62 @@ describe("GET /api/flows/summary", () => {
     vi.stubGlobal("fetch", failingFetch());
 
     const { GET } = await import("../route");
-    const res = await GET();
+    const res = await GET(request("http://localhost/api/flows/summary"));
 
     expect(res.status).toBe(502);
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
+  });
+});
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/flows/summary with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream error into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/flows/summary"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/flows/summary"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toBeNull();
+  });
+
+  // Una respuesta de éxito sin JSON conserva su status y viaja como `message`.
+  it("wraps the text of a successful response into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("plain", 200)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/flows/summary"));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ message: "plain" });
   });
 });

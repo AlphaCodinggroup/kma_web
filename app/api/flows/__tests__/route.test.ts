@@ -95,7 +95,7 @@ describe("GET /api/flows", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const { GET } = await import("../route");
-    const res = await GET();
+    const res = await GET(request("http://localhost/api/flows"));
 
     expect(res.status).toBe(401);
     expect(fetchMock).not.toHaveBeenCalled();
@@ -106,7 +106,7 @@ describe("GET /api/flows", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const { GET } = await import("../route");
-    const res = await GET();
+    const res = await GET(request("http://localhost/api/flows"));
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({ flows: [] });
@@ -124,7 +124,7 @@ describe("GET /api/flows", () => {
       vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(body, status)));
 
       const { GET } = await import("../route");
-      const res = await GET();
+      const res = await GET(request("http://localhost/api/flows"));
 
       expect(res.status).toBe(status);
       await expect(res.json()).resolves.toEqual(body);
@@ -135,7 +135,7 @@ describe("GET /api/flows", () => {
     vi.stubGlobal("fetch", failingFetch());
 
     const { GET } = await import("../route");
-    const res = await GET();
+    const res = await GET(request("http://localhost/api/flows"));
 
     expect(res.status).toBe(502);
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
@@ -184,26 +184,27 @@ describe("POST /api/flows", () => {
     );
   });
 
-  // FIXME: el status de éxito se fuerza a 201; un 200 del backend se reescribe.
-  it("rewrites a successful upstream 200 as 201", async () => {
+  // El status de éxito ya no se reescribe: viaja tal cual lo manda el backend.
+  it("propagates the upstream success status", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ id: "fl-1" }, 200)));
 
     const { POST } = await import("../route");
     const res = await POST(postRequest());
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ id: "fl-1" });
   });
 
-  // FIXME: el JSON inválido se parsea dentro del try del upstream, así que la
-  // ruta responde 502 en vez del 400 que devuelven comments o facilities.
-  it("answers 502 instead of 400 on an invalid JSON body", async () => {
+  // El cuerpo se valida antes de llamar al backend: un JSON inválido es 400.
+  it("rejects an invalid JSON body with 400", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal("fetch", fetchMock);
 
     const { POST } = await import("../route");
     const res = await POST(postRequest("no-json"));
 
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ message: "Invalid JSON body" });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -228,5 +229,63 @@ describe("POST /api/flows", () => {
 
     expect(res.status).toBe(502);
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
+  });
+});
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/flows with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream error into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/flows"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
+
+    const { POST } = await import("../route");
+    const res = await POST(postRequest());
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toBeNull();
+  });
+
+  it.each([
+    ["GET", true],
+    ["POST", false],
+  ])("normalises an upstream 401 on %s without leaking its body", async (method) => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({ detail: "expired" }, 401))
+    );
+
+    const mod = await import("../route");
+    const res = method === "GET" ? await mod.GET(request("http://localhost/api/flows")) : await mod.POST(postRequest());
+
+    expect(res.status).toBe(401);
+    await expect(res.json()).resolves.toEqual({ message: "Unauthorized" });
   });
 });

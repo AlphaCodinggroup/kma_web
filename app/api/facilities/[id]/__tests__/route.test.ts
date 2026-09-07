@@ -136,9 +136,9 @@ describe("GET /api/facilities/[id]", () => {
     );
   });
 
-  // FIXME: el id no se escapa, así que un segmento con ".." o "/" permite
-  // apuntar a otro recurso del backend (otras rutas usan encodeURIComponent).
-  it("does not escape the id when building the upstream url", async () => {
+  // El id se escapa con encodeURIComponent: un segmento con ".." o "/" no
+  // permite apuntar a otro recurso del backend.
+  it("escapes the id when building the upstream url", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -147,7 +147,7 @@ describe("GET /api/facilities/[id]", () => {
 
     const [upstream] = fetchMock.mock.calls[0] as unknown as FetchArgs;
     expect(String(upstream)).toBe(
-      "https://api.example.com/api/facilities/f-1/../projects"
+      "https://api.example.com/api/facilities/f-1%2F..%2Fprojects"
     );
   });
 
@@ -388,14 +388,15 @@ describe("/api/facilities/[id] with non JSON upstream responses", () => {
     await expect(res.json()).resolves.toEqual({ message: "gateway down" });
   });
 
-  it("falls back to a generic message when the error body is empty", async () => {
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
 
     const { PUT } = await import("../route");
     const res = await PUT(putRequest(), context("f-1"));
 
     expect(res.status).toBe(503);
-    await expect(res.json()).resolves.toEqual({ message: "Upstream error" });
+    await expect(res.json()).resolves.toBeNull();
   });
 
   it("answers a null body when a successful PUT has no JSON", async () => {
@@ -408,7 +409,8 @@ describe("/api/facilities/[id] with non JSON upstream responses", () => {
     await expect(res.json()).resolves.toBeNull();
   });
 
-  it("returns the raw text when a successful DELETE has no JSON", async () => {
+  // Una respuesta de éxito sin JSON conserva su status y viaja como `message`.
+  it("wraps the text of a successful DELETE into a message", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => textResponse("deleted", 200)));
 
     const { DELETE } = await import("../route");
@@ -418,7 +420,7 @@ describe("/api/facilities/[id] with non JSON upstream responses", () => {
     );
 
     expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toBe("deleted");
+    await expect(res.json()).resolves.toEqual({ message: "deleted" });
   });
 
   it("wraps a plain text DELETE error into a message", async () => {

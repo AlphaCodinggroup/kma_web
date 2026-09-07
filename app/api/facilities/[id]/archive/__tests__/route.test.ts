@@ -196,24 +196,26 @@ describe("/api/facilities/[id]/archive with non JSON upstream responses", () => 
     await expect(res.json()).resolves.toEqual({ message: "gateway down" });
   });
 
-  it("falls back to a generic message when the error body is empty", async () => {
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
 
     const { POST } = await import("../route");
     const res = await POST(request(url, { method: "POST" }), context("f-1"));
 
     expect(res.status).toBe(503);
-    await expect(res.json()).resolves.toEqual({ message: "Upstream error" });
+    await expect(res.json()).resolves.toBeNull();
   });
 
-  it("answers a null body when the successful response has no JSON", async () => {
+  // Una respuesta de éxito sin JSON conserva su status y viaja como `message`.
+  it("wraps the text of a successful response into a message", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => textResponse("ok", 200)));
 
     const { POST } = await import("../route");
     const res = await POST(request(url, { method: "POST" }), context("f-1"));
 
     expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toBeNull();
+    await expect(res.json()).resolves.toEqual({ message: "ok" });
   });
 
   it("normalises an upstream 401 without leaking its body", async () => {

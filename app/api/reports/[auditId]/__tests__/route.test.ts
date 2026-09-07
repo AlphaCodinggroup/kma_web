@@ -126,17 +126,18 @@ describe("GET /api/reports/[auditId]", () => {
     );
   });
 
-  // FIXME: la ruta no valida el id vacío y consulta ".../reports/".
-  it("does not reject an empty id", async () => {
-    const fetchMock = vi.fn(async () => jsonResponse({}));
+  it("rejects an empty id with 400 and never reaches the backend", async () => {
+    const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 
     const { GET } = await import("../route");
     const res = await GET(request(url), context(""));
 
-    expect(res.status).toBe(200);
-    const [upstream] = fetchMock.mock.calls[0] as unknown as FetchArgs;
-    expect(String(upstream)).toBe("https://api.example.com/api/reports/");
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      message: "Report id is required",
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("does not forward query params from the incoming request", async () => {
@@ -200,7 +201,8 @@ describe("DELETE /api/reports/[auditId]", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("sends DELETE with the bearer token and answers with a success envelope", async () => {
+  // Ya no hay envoltorio {success:true}: se propaga el 204 del backend.
+  it("sends DELETE with the bearer token and propagates the upstream 204", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 204 }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -210,8 +212,8 @@ describe("DELETE /api/reports/[auditId]", () => {
       context("a-1")
     );
 
-    expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toEqual({ success: true });
+    expect(res.status).toBe(204);
+    await expect(res.text()).resolves.toBe("");
     const [upstream, init] = fetchMock.mock.calls[0] as unknown as FetchArgs;
     expect(String(upstream)).toBe("https://api.example.com/api/reports/a-1");
     expect(init.method).toBe("DELETE");
@@ -247,5 +249,83 @@ describe("DELETE /api/reports/[auditId]", () => {
 
     expect(res.status).toBe(502);
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
+  });
+});
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("GET /api/reports/[auditId] with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream response into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request(url), context("a-1"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Un JSON corrupto conserva el status del backend y llega como null.
+  it("answers a null body when the JSON is malformed", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response("{oops", {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          })
+      )
+    );
+
+    const { GET } = await import("../route");
+    const res = await GET(request(url), context("a-1"));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toBeNull();
+  });
+});
+
+
+describe("DELETE /api/reports/[auditId] with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream error into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("nope", 409)));
+
+    const { DELETE } = await import("../route");
+    const res = await DELETE(
+      request(url, { method: "DELETE" }),
+      context("a-1")
+    );
+
+    expect(res.status).toBe(409);
+    await expect(res.json()).resolves.toEqual({ message: "nope" });
   });
 });

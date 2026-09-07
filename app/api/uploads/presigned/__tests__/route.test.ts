@@ -119,16 +119,16 @@ describe("POST /api/uploads/presigned", () => {
     );
   });
 
-  // FIXME: el JSON inválido se parsea dentro del try del upstream, así que la
-  // ruta responde 502 en vez del 400 que devuelve /api/facilities/upload-img.
-  it("answers 502 instead of 400 on an invalid JSON body", async () => {
+  // El cuerpo se valida antes de llamar al backend: un JSON inválido es 400.
+  it("rejects an invalid JSON body with 400", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal("fetch", fetchMock);
 
     const { POST } = await import("../route");
     const res = await POST(postRequest("no-json"));
 
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ message: "Invalid JSON body" });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -183,5 +183,58 @@ describe("POST /api/uploads/presigned", () => {
 
     expect(res.status).toBe(502);
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
+  });
+});
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/uploads/presigned with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream error into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { POST } = await import("../route");
+    const res = await POST(postRequest());
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
+
+    const { POST } = await import("../route");
+    const res = await POST(postRequest());
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toBeNull();
+  });
+
+  // Una respuesta de éxito sin JSON conserva su status y viaja como `message`.
+  it("wraps the text of a successful response into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("plain", 200)));
+
+    const { POST } = await import("../route");
+    const res = await POST(postRequest());
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ message: "plain" });
   });
 });

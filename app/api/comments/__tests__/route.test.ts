@@ -242,3 +242,55 @@ describe("GET /api/comments", () => {
     await expect(res.json()).resolves.toEqual({ message: "Bad Gateway" });
   });
 });
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/comments with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text POST response into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { POST } = await import("../route");
+    const res = await POST(postRequest());
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  it("wraps a plain text GET error into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/comments?audit_id=a-1"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Una respuesta de éxito sin JSON conserva su status y viaja como `message`.
+  it("wraps the text of a successful GET into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("plain", 200)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request("http://localhost/api/comments?audit_id=a-1"));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ message: "plain" });
+  });
+});

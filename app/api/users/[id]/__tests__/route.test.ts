@@ -282,3 +282,79 @@ describe("DELETE /api/users/[id]", () => {
     expect(res.status).toBe(502);
   });
 });
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/users/[id] with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream error into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { PATCH } = await import("../route");
+    const res = await PATCH(patchRequest(), context("u-1"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
+
+    const { DELETE } = await import("../route");
+    const res = await DELETE(
+      request(url, { method: "DELETE" }),
+      context("u-1")
+    );
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toBeNull();
+  });
+
+  // Una respuesta de éxito sin JSON conserva su status y viaja como `message`.
+  it("wraps the text of a successful PATCH into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("ok", 200)));
+
+    const { PATCH } = await import("../route");
+    const res = await PATCH(patchRequest(), context("u-1"));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ message: "ok" });
+  });
+
+  it.each([
+    ["PATCH", "PATCH"],
+    ["DELETE", "DELETE"],
+  ])("normalises an upstream 401 on %s without leaking its body", async (_case, method) => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({ detail: "expired" }, 401))
+    );
+
+    const mod = await import("../route");
+    const handler = method === "PATCH" ? mod.PATCH : mod.DELETE;
+    const res = await handler(
+      method === "PATCH" ? patchRequest() : request(url, { method }),
+      context("u-1")
+    );
+
+    expect(res.status).toBe(401);
+    await expect(res.json()).resolves.toEqual({ message: "Unauthorized" });
+  });
+});

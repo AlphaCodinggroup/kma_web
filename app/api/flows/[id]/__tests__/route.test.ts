@@ -136,8 +136,8 @@ describe("GET /api/flows/[id]", () => {
     );
   });
 
-  // FIXME: el id no se escapa antes de armar la url del backend.
-  it("does not escape the id when building the upstream url", async () => {
+  // El id se escapa: un segmento con ".." o "/" no alcanza otra ruta.
+  it("escapes the id when building the upstream url", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -146,7 +146,7 @@ describe("GET /api/flows/[id]", () => {
 
     const [upstream] = fetchMock.mock.calls[0] as unknown as FetchArgs;
     expect(String(upstream)).toBe(
-      "https://api.example.com/api/flows/fl-1/../users"
+      "https://api.example.com/api/flows/fl-1%2F..%2Fusers"
     );
   });
 
@@ -309,7 +309,7 @@ describe("DELETE /api/flows/[id]", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("answers 204 after a successful upstream delete", async () => {
+  it("propagates the upstream success status and body", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({ deleted: true }, 200));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -319,7 +319,9 @@ describe("DELETE /api/flows/[id]", () => {
       context("fl-1")
     );
 
-    expect(res.status).toBe(204);
+    // El status del backend se propaga: ya no se reescribe a 204.
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ deleted: true });
     const [upstream, init] = fetchMock.mock.calls[0] as unknown as FetchArgs;
     expect(String(upstream)).toBe("https://api.example.com/api/flows/fl-1");
     expect(init.method).toBe("DELETE");
@@ -328,10 +330,9 @@ describe("DELETE /api/flows/[id]", () => {
     );
   });
 
-  // FIXME: en el camino de error no se mira el content-type, así que el JSON del
-  // backend llega al cliente como texto plano dentro de `message`.
+  // El cuerpo JSON del backend se propaga tal cual, sin envolverlo en `message`.
   it.each(UPSTREAM_ERRORS)(
-    "propagates the upstream %i but wraps its JSON body as text",
+    "propagates the upstream %i with its JSON body",
     async (status, body) => {
       vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(body, status)));
 
@@ -342,9 +343,7 @@ describe("DELETE /api/flows/[id]", () => {
       );
 
       expect(res.status).toBe(status);
-      await expect(res.json()).resolves.toEqual({
-        message: JSON.stringify(body),
-      });
+      await expect(res.json()).resolves.toEqual(body);
     }
   );
 
@@ -358,5 +357,69 @@ describe("DELETE /api/flows/[id]", () => {
     );
 
     expect(res.status).toBe(502);
+  });
+});
+
+/** Respuesta del backend sin JSON (por ejemplo un error del gateway). */
+function textResponse(body: string, status: number) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "text/plain" },
+  });
+}
+
+describe("/api/flows/[id] with non JSON upstream responses", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    stubEnv();
+    cookieStore.value = "token-abc";
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("wraps a plain text upstream error into a message", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("gateway down", 503)));
+
+    const { GET } = await import("../route");
+    const res = await GET(request(url), context("fl-1"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toEqual({ message: "gateway down" });
+  });
+
+  // Sin texto que envolver, el proxy conserva el status y devuelve null.
+  it("propagates the upstream status with a null body when the error body is empty", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => textResponse("", 503)));
+
+    const { PUT } = await import("../route");
+    const res = await PUT(putRequest(), context("fl-1"));
+
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toBeNull();
+  });
+
+  it.each([
+    ["GET", "GET"],
+    ["PUT", "PUT"],
+    ["DELETE", "DELETE"],
+  ])("normalises an upstream 401 on %s without leaking its body", async (_case, method) => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({ detail: "expired" }, 401))
+    );
+
+    const mod = await import("../route");
+    const handler =
+      method === "GET" ? mod.GET : method === "PUT" ? mod.PUT : mod.DELETE;
+    const res = await handler(
+      method === "PUT" ? putRequest() : request(url, { method }),
+      context("fl-1")
+    );
+
+    expect(res.status).toBe(401);
+    await expect(res.json()).resolves.toEqual({ message: "Unauthorized" });
   });
 });
