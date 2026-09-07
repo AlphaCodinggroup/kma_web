@@ -122,10 +122,6 @@ class AuditRepoHttp implements AuditRepo {
       searchParams.set('last_eval_id', params.last_eval_id);
     }
 
-    const url = searchParams.toString()
-      ? `${INTERNAL_API_URL}?${searchParams.toString()}`
-      : INTERNAL_API_URL;
-
     // El backend acota su propia página y devuelve `last_eval_id` aunque se
     // pida un limit mayor. Sin seguir ese cursor, el listado se quedaba en la
     // primera página del backend y una auditoría creada después nunca

@@ -11,17 +11,21 @@ import { Retry } from "@shared/ui/Retry";
 type AuditEditParams = { id: string };
 type AuditEditSearchParams = { auditor?: string };
 
+// El chequeo de tipos de Next 15 exige promesas en las props de página, pero en
+// runtime pueden llegar resueltas (tests, render directo): el guard cubre ambas.
+type MaybePromise<T> = T | Promise<T>;
+
 type AuditEditPageProps = {
-  // Next 15 puede entregarlos como promesa o resueltos según el contexto.
-  params: AuditEditParams | Promise<AuditEditParams>;
-  searchParams?: AuditEditSearchParams | Promise<AuditEditSearchParams>;
+  params: Promise<AuditEditParams>;
+  searchParams?: Promise<AuditEditSearchParams>;
 };
 
 export default function AuditEditPage(props: AuditEditPageProps) {
   // `use` debe invocarse en el cuerpo del componente, no en un helper.
-  const params =
-    props.params instanceof Promise ? use(props.params) : props.params;
-  const rawSearchParams = props.searchParams ?? {};
+  const rawParams: MaybePromise<AuditEditParams> = props.params;
+  const params = rawParams instanceof Promise ? use(rawParams) : rawParams;
+  const rawSearchParams: MaybePromise<AuditEditSearchParams> =
+    props.searchParams ?? {};
   const searchParams =
     rawSearchParams instanceof Promise ? use(rawSearchParams) : rawSearchParams;
 

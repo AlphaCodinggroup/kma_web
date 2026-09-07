@@ -74,14 +74,19 @@ function propsOf(testId: string) {
 type Params = { id: string } | Promise<{ id: string }>;
 type Search = { auditor?: string } | Promise<{ auditor?: string }>;
 
+// La página se tipa como pide Next 15 (promesas) pero en runtime acepta las dos
+// formas; el cast deja que los tests ejerciten ambas.
+const asParams = (params: Params) => params as Promise<{ id: string }>;
+const asSearch = (search: Search) => search as Promise<{ auditor?: string }>;
+
 // searchParams se omite cuando no hay: con exactOptionalPropertyTypes la
 // página lo declara opcional pero no admite un undefined explícito.
 async function renderPage(params: Params, searchParams?: Search) {
   const { default: AuditEditPage } = await import("../page");
   return render(
     <AuditEditPage
-      params={params}
-      {...(searchParams ? { searchParams } : {})}
+      params={asParams(params)}
+      {...(searchParams ? { searchParams: asSearch(searchParams) } : {})}
     />
   );
 }
@@ -95,8 +100,8 @@ async function renderSuspendedPage(params: Params, searchParams?: Search) {
     result = render(
       <Suspense fallback={<span>loading</span>}>
         <AuditEditPage
-          params={params}
-          {...(searchParams ? { searchParams } : {})}
+          params={asParams(params)}
+          {...(searchParams ? { searchParams: asSearch(searchParams) } : {})}
         />
       </Suspense>
     );
