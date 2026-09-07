@@ -122,6 +122,14 @@ const toNumber = (v: unknown, fallback = 0): number => {
   return fallback;
 };
 
+/** Devuelve el primer arreglo con elementos, o uno vacío. */
+const firstNonEmpty = <T,>(...candidates: (T[] | undefined)[]): T[] => {
+  for (const candidate of candidates) {
+    if (candidate && candidate.length > 0) return candidate;
+  }
+  return [];
+};
+
 const toAuditStatus = (raw?: string): AuditStatus => {
   const allowed: AuditStatus[] = [
     "draft_report_pending_review",
@@ -134,7 +142,10 @@ const toAuditStatus = (raw?: string): AuditStatus => {
     return raw as AuditStatus;
   }
 
-  return (raw ?? "draft_report_pending_review") as AuditStatus;
+  // La lista blanca era decorativa: un estado desconocido se devolvía igual y
+  // rompía cualquier switch exhaustivo aguas abajo, y el `?? ` no cubría la
+  // cadena vacía. Lo que no está en la lista cae al estado inicial.
+  return "draft_report_pending_review";
 };
 
 const toYesNo = (
@@ -361,7 +372,10 @@ export const mapAuditDetailDTOToDomain = (dto: AuditDetailDTO): AuditDetail => {
           : toIso(completedRaw),
     createdAt: dto.created_at ? toIso(dto.created_at) : null,
     updatedAt: dto.updated_at ? toIso(dto.updated_at) : null,
-    questions: questionsFromSteps ?? questionsFromDto ?? [],
+    // `steps: []` es un array, así que el `??` no caía a `questions`: una
+    // auditoría con steps vacío y questions poblado se mostraba sin ninguna
+    // pregunta. Se prefiere la fuente que trae datos.
+    questions: firstNonEmpty(questionsFromSteps, questionsFromDto),
     reportItems: Array.isArray(reportItems)
       ? reportItems.map(mapAuditReportItemDTO)
       : [],

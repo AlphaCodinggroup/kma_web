@@ -96,6 +96,14 @@ export function mapCreateFacilityParamsToDTO(
     dto.city = params.city;
   }
 
+  // El backend no tiene campo `notes`: sólo `description`. El dominio del
+  // frontend declara los dos, así que acá se colapsan en uno.
+  //
+  // FIXME: la consecuencia es que editar `notes` sobrescribe `description` y
+  // que al leer los dos vuelven con el mismo valor, así que la UI no puede
+  // distinguirlos. Para separarlos hay que agregar `notes` al modelo y a los
+  // DTOs de request de la lambda `facilities` (su DTO de respuesta ya lo
+  // declara, pero nunca se puebla).
   if (params.description) {
     dto.description = params.description;
   } else if (params.notes) {

@@ -533,19 +533,26 @@ describe("mapAuditDetailDTOToDomain", () => {
     );
   });
 
-  it("passes an unknown status through unchanged", () => {
-    // FIXME: la lista `allowed` no filtra nada: el valor desconocido igual se
-    // castea a AuditStatus en la rama del fallback.
+  // La lista blanca filtra de verdad: lo que no está en ella cae al estado
+  // inicial, en vez de entrar al dominio y romper los switches por estado.
+  it.each([
+    ["an unknown status", "surprise"],
+    ["an empty status", ""],
+  ])("falls back to the initial status for %s", (_label, status) => {
     expect(
-      mapAuditDetailDTOToDomain(makeDetailDTO({ status: "surprise" })).status
-    ).toBe("surprise");
+      mapAuditDetailDTOToDomain(makeDetailDTO({ status })).status
+    ).toBe("draft_report_pending_review");
   });
 
-  it("does not apply the default status when status is an empty string", () => {
-    // FIXME: el fallback usa `raw ?? "draft_report_pending_review"`, que solo
-    // dispara con undefined/null. Un status vacio del backend llega al dominio
-    // como "" y rompe cualquier switch por estado.
-    expect(mapAuditDetailDTOToDomain(makeDetailDTO({ status: "" })).status).toBe("");
+  it("falls back to the initial status when the field is absent", () => {
+    // El DTO se arma sin `status`: exactOptionalPropertyTypes no admite
+    // pasarlo como undefined explícito.
+    const dto = makeDetailDTO({});
+    delete (dto as { status?: string }).status;
+
+    expect(mapAuditDetailDTOToDomain(dto).status).toBe(
+      "draft_report_pending_review"
+    );
   });
 
   it("normalizes blank ids to null", () => {
@@ -656,7 +663,9 @@ describe("mapAuditDetailDTOToDomain", () => {
     expect(result.questions[0]?.text).toBe("From questions");
   });
 
-  it("discards questions[] when steps is an empty array", () => {
+  // `steps: []` es un array y no es nullish, así que el `??` no caía a
+  // `questions`: la auditoría se mostraba sin ninguna pregunta.
+  it("uses questions[] when steps is an empty array", () => {
     const result = mapAuditDetailDTOToDomain(
       makeDetailDTO({
         steps: [],
@@ -664,9 +673,15 @@ describe("mapAuditDetailDTOToDomain", () => {
       })
     );
 
-    // FIXME: `questionsFromSteps ?? questionsFromDto` cortocircuita sobre [],
-    // que no es nullish. Con `steps: []` se pierden las preguntas del DTO;
-    // deberia usarse `questionsFromSteps?.length ? ... : questionsFromDto`.
+    expect(result.questions).toHaveLength(1);
+    expect(result.questions[0]?.text).toBe("From questions");
+  });
+
+  it("returns an empty list when neither source has questions", () => {
+    const result = mapAuditDetailDTOToDomain(
+      makeDetailDTO({ steps: [], questions: [] })
+    );
+
     expect(result.questions).toEqual([]);
   });
 

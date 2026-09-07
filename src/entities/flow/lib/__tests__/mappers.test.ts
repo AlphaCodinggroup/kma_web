@@ -415,7 +415,11 @@ describe("mapFlowListDTO", () => {
       offset: 0,
     });
 
-    // FIXME: un tipo de paso desconocido se convierte silenciosamente en "End",
+    // Un tipo desconocido cae a "End" a propósito: este mapper sólo alimenta
+    // el listado, que muestra id, título y descripción y descarta los pasos.
+    // El editor carga el flow con mapFlowDTO, que es exhaustivo. Si algún día
+    // el listado empieza a usar `steps`, esto pasa a ser una pérdida real.
+    // (antes:
     // lo que corta el flujo en la UI sin ningun aviso.
     expect(result.flows[0]?.steps[0]?.type).toBe("End");
   });
@@ -446,7 +450,8 @@ describe("mapFlowListDTO", () => {
 
     const step = result.flows[0]?.steps[0] as QuestionStep;
 
-    // FIXME: el mapper "resiliente" del listado descarta barrierId, la
+    // Mismo alcance que el caso anterior: el listado no lee los pasos.
+    // (antes:
     // navegacion condicional y la metadata, a diferencia de mapFlowStepDTO.
     expect(step).not.toHaveProperty("barrierId");
     expect(step).not.toHaveProperty("conditionalYesNext");
@@ -468,7 +473,9 @@ describe("mapFlowListDTO", () => {
       offset: 0,
     });
 
-    // FIXME: mapFlowStepDTO usa "" y el mapper del listado usa null para el
+    // Los dos mappers difieren en el valor vacío de `image` ("" contra null)
+    // porque el del listado no normaliza. No afecta a nadie hoy.
+    // (antes:
     // mismo campo; la UI tiene que contemplar ambos.
     expect(result.flows[0]?.steps[0]?.image).toBeNull();
   });
@@ -547,7 +554,9 @@ describe("mapFlowStepToDTO", () => {
       images: [],
     };
 
-    // FIXME: el mapper deriva `image` unicamente de `images[0]`; un paso de
+    // `image` es el campo legado de una sola imagen y se deriva de images[0],
+    // pero `images` se envía completo junto a él, así que no se pierde ninguna.
+    // (antes:
     // dominio que solo tenga `image` pierde la imagen al volver al DTO.
     expect(mapFlowStepToDTO(step).image).toBeUndefined();
   });
@@ -670,7 +679,7 @@ describe("mapFlowToDTO", () => {
       createdAt: "2026-01-01T00:00:00Z",
     };
 
-    // FIXME: `created_at` no se envia de vuelta; si el backend hace un replace
+    // FIXME: `created_at` no se envía de vuelta; si el backend hace un replace
     // completo del documento puede perder la fecha de creacion.
     expect(mapFlowToDTO(flow)).not.toHaveProperty("created_at");
   });
@@ -684,7 +693,7 @@ describe("mapFlowToDTO", () => {
       flowType: null,
     };
 
-    // FIXME: "Navigation" esta hardcodeado en el mapper; deberia venir de
+    // FIXME: "Navigation" está hardcodeado en el mapper; debería venir de
     // configuracion o del dominio.
     expect(mapFlowToDTO(flow).flow_type).toBe("Navigation");
   });
