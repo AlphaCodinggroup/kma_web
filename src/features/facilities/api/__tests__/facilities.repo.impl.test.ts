@@ -297,7 +297,7 @@ describe("FacilitiesRepoHttp.getUploadSignedUrl", () => {
     });
   });
 
-  it("strips the query string to build the public URL", async () => {
+  it("returns the upload URL and the key the backend gave", async () => {
     http.post.mockResolvedValueOnce({ data: signature });
 
     const result = await new FacilitiesRepoHttp().getUploadSignedUrl(
@@ -305,21 +305,13 @@ describe("FacilitiesRepoHttp.getUploadSignedUrl", () => {
       "image/jpeg"
     );
 
+    // La key es lo que se guarda en la facility: recortar la URL prefirmada
+    // producía un valor que el backend volvía a prefirmar como si fuera key.
     expect(result).toEqual({
       uploadUrl: signature.upload_url,
       key: "facilities/f-1.jpg",
       expiresIn: 900,
-      publicUrl: "https://s3.example.com/bucket/f-1.jpg",
     });
-  });
-
-  it("keeps the URL as-is when there is no query string", async () => {
-    const noQuery = { ...signature, upload_url: "https://s3.example.com/f-1.jpg" };
-    http.post.mockResolvedValueOnce({ data: noQuery });
-
-    const result = await new FacilitiesRepoHttp().getUploadSignedUrl("p", "t");
-
-    expect(result.publicUrl).toBe("https://s3.example.com/f-1.jpg");
   });
 
   it("unwraps a response nested under data", async () => {

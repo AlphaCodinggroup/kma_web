@@ -95,7 +95,8 @@ export async function updateFacilityUseCase(
     const contentType = file.type || "application/octet-stream";
     const signature = await repo.getUploadSignedUrl(sanitizeFileName(file.name), contentType);
     await repo.uploadFile(signature.uploadUrl, file);
-    photoUrl = signature.publicUrl;
+    // Se guarda la key, no una URL: el backend la prefirma al leer la facility.
+    photoUrl = signature.key;
     payload.photoUrl = photoUrl;
     payload.clearPhoto = false;
   } else if (photoUrl) {

@@ -214,7 +214,7 @@ describe("createFacilityUseCase", () => {
     );
     expect(repo.uploadFile).toHaveBeenCalledWith(signature.uploadUrl, photoFile);
     expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ photoUrl: signature.publicUrl })
+      expect.objectContaining({ photoUrl: signature.key })
     );
   });
 
@@ -250,7 +250,7 @@ describe("createFacilityUseCase", () => {
     );
 
     expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ photoUrl: signature.publicUrl })
+      expect.objectContaining({ photoUrl: signature.key })
     );
   });
 

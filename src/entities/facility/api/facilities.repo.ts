@@ -11,9 +11,13 @@ import type {
 
 export interface FacilityUploadSignature {
   uploadUrl: string;
+  /**
+   * Key del objeto en S3. Es lo que se guarda en la facility: el backend
+   * prefirma ese valor al leerla, y una URL completa no la sabe desarmar en
+   * todos los entornos.
+   */
   key: string;
   expiresIn: number;
-  publicUrl: string;
 }
 
 /**

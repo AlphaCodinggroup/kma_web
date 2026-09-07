@@ -33,7 +33,6 @@ export function makeSignature(
     uploadUrl: "https://uploads.test/signed",
     key: "facilities/photo.png",
     expiresIn: 900,
-    publicUrl: "https://cdn.test/facilities/photo.png",
     ...overrides,
   };
 }

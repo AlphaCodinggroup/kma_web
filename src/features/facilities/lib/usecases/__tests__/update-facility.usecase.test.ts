@@ -204,7 +204,7 @@ describe("updateFacilityUseCase", () => {
     expect(repo.uploadFile).toHaveBeenCalledWith(signature.uploadUrl, photoFile);
     expect(repo.update).toHaveBeenCalledWith({
       id: "facility-1",
-      photoUrl: signature.publicUrl,
+      photoUrl: signature.key,
       clearPhoto: false,
     });
   });

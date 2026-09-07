@@ -240,15 +240,10 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
         (res.data as { data?: UploadImageResponseDTO }).data ??
         (res.data as UploadImageResponseDTO);
 
-      const publicUrl = raw.upload_url.includes("?")
-        ? raw.upload_url.split("?")[0]
-        : raw.upload_url;
-
       return {
         uploadUrl: raw.upload_url,
         key: raw.key,
         expiresIn: raw.expires_in,
-        publicUrl,
       };
     } catch (err) {
       throw toApiError(err);
