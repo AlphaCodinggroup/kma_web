@@ -44,6 +44,22 @@ export interface AuditsTableProps {
 type SortColumn = "project" | "facility" | "flow" | "auditor" | "status" | "date";
 type SortDirection = "asc" | "desc" | null;
 
+/**
+ * Normaliza la respuesta de una pregunta de sí/no.
+ * El mapper de detalle devuelve booleanos, pero otras rutas devuelven cadenas.
+ */
+function normalizeYesNo(
+  answer: string | number | boolean | null | undefined
+): "YES" | "NO" | "UNSURE" | "OTHER" {
+  if (answer === true) return "YES";
+  if (answer === false) return "NO";
+  const value = String(answer ?? "").trim().toUpperCase();
+  if (value === "YES" || value === "TRUE" || value === "SI") return "YES";
+  if (value === "NO" || value === "FALSE") return "NO";
+  if (value === "UNSURE") return "UNSURE";
+  return "OTHER";
+}
+
 const SmartEditButton = memo(({
   row,
   onEdit,
@@ -62,13 +78,21 @@ const SmartEditButton = memo(({
     staleTime: Infinity,
   });
 
+  // Una auditoría es "conforme" cuando el backend no encontró hallazgos y todas
+  // las preguntas de sí/no fueron respondidas afirmativamente.
+  //
+  // La comprobación anterior comparaba contra la cadena "YES" sobre todos los
+  // pasos. Nunca podía acertar por dos motivos: los pasos Form y Select no
+  // llevan respuesta, y el mapper normaliza "YES" a booleano `true`. El aviso
+  // de "No Report Needed" era, en la práctica, código muerto.
   let isRed = false;
   if (checkAnswers && detail) {
-    const allYes = detail.questions?.every((q) => {
-      const v = String(q.answer || "").toUpperCase();
-      return v === "YES";
-    });
-    isRed = !!allYes;
+    const yesNoAnswers = (detail.questions ?? [])
+      .filter((q) => q.type === "yes_no")
+      .map((q) => normalizeYesNo(q.answer));
+
+    isRed =
+      yesNoAnswers.length > 0 && yesNoAnswers.every((answer) => answer === "YES");
   }
 
   return (
@@ -297,7 +321,12 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
             )}
 
             {sortedItems.map((row) => (
-              <TableRow key={`${row.id}-${row.version}`}>
+              // data-testid da un identificador estable a la fila: la tabla no
+              // muestra el id de la auditoría en ninguna columna.
+              <TableRow
+                key={`${row.id}-${row.version}`}
+                data-testid={`audit-row-${row.id}`}
+              >
                 <TableCell>{row.projectName ?? "—"}</TableCell>
                 <TableCell>{row.facilityName ?? "—"}</TableCell>
                 <TableCell>{row.flowName ?? "—"}</TableCell>
