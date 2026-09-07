@@ -75,19 +75,15 @@ describe("updateProject", () => {
   it("forwards users, facilities and status when provided", async () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(makeProject()));
     const users = [{ id: "user-1", name: "User 1" }];
-    const facilities = [{ id: "facility-1", name: "Facility 1" }];
-
     await updateProject(repo, {
       id: "project-1",
       users,
-      facilities,
       status: "ARCHIVED",
     });
 
     expect(repo.update).toHaveBeenCalledWith({
       id: "project-1",
       users,
-      facilities,
       status: "ARCHIVED",
     });
   });
@@ -95,13 +91,12 @@ describe("updateProject", () => {
   it("still sends empty collections because an empty array is truthy", async () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(makeProject()));
 
-    await updateProject(repo, { id: "project-1", users: [], facilities: [] });
+    await updateProject(repo, { id: "project-1", users: [] });
 
     // Un array vacío es truthy, así que sí se envía: documentamos el contrato real.
     expect(repo.update).toHaveBeenCalledWith({
       id: "project-1",
       users: [],
-      facilities: [],
     });
   });
 

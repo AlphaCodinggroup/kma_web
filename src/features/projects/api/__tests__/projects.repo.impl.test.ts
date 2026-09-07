@@ -154,7 +154,6 @@ describe("ProjectsRepoHttp.create", () => {
       code: "PRJ-1",
       description: "First project",
       users: [{ id: "u-1", name: "Ada" }],
-      facilities: [{ id: "f-1", name: "Main Building" }],
       status: "ACTIVE",
     });
 
@@ -165,7 +164,6 @@ describe("ProjectsRepoHttp.create", () => {
         code: "PRJ-1",
         description: "First project",
         users: [{ id: "u-1", name: "Ada" }],
-        facilities: [{ facility_id: "f-1", name: "Main Building" }],
         status: "ACTIVE",
       },
       JSON_HEADERS
@@ -177,11 +175,6 @@ describe("ProjectsRepoHttp.create", () => {
     ["an empty code", { name: "N", code: "" }, { name: "N" }],
     ["an empty description", { name: "N", description: "" }, { name: "N" }],
     ["an empty users array", { name: "N", users: [] }, { name: "N" }],
-    [
-      "an empty facilities array",
-      { name: "N", facilities: [] },
-      { name: "N" },
-    ],
     ["only the name", { name: "N" }, { name: "N" }],
   ])("omits %s", async (_label, params, expectedBody) => {
     http.post.mockResolvedValueOnce({ data: projectDTO });
@@ -218,7 +211,6 @@ describe("ProjectsRepoHttp.update", () => {
       code: "PRJ-2",
       description: "Updated",
       users: [{ id: "u-2", name: "Alan" }],
-      facilities: [{ id: "f-2", name: "Annex" }],
       status: "ARCHIVED",
     });
 
@@ -229,7 +221,6 @@ describe("ProjectsRepoHttp.update", () => {
         code: "PRJ-2",
         description: "Updated",
         users: [{ id: "u-2", name: "Alan" }],
-        facilities: [{ facility_id: "f-2", name: "Annex" }],
         status: "ARCHIVED",
       },
       JSON_HEADERS

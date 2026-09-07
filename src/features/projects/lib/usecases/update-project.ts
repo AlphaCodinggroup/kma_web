@@ -29,7 +29,6 @@ export async function updateProject(
       ? { description: trimmedDescription }
       : {}),
     ...(params.users ? { users: params.users } : {}),
-    ...(params.facilities ? { facilities: params.facilities } : {}),
     ...(params.status ? { status: params.status } : {}),
   });
 }

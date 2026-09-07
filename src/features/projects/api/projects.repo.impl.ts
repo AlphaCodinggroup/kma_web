@@ -24,10 +24,6 @@ type ProjectUserDTO = {
   name: string;
 };
 
-type ProjectFacilityDTO = {
-  facility_id: string;
-  name: string;
-};
 
 /** Body esperado por el upstream para crear un proyecto */
 type CreateProjectRequestDTO = {
@@ -35,7 +31,6 @@ type CreateProjectRequestDTO = {
   code?: string;
   description?: string;
   users?: ProjectUserDTO[];
-  facilities?: ProjectFacilityDTO[];
   status?: "ACTIVE" | "ARCHIVED";
 };
 
@@ -45,7 +40,6 @@ type UpdateProjectRequestDTO = {
   code?: string;
   description?: string;
   users?: ProjectUserDTO[];
-  facilities?: ProjectFacilityDTO[];
   status?: "ACTIVE" | "ARCHIVED";
 };
 
@@ -125,14 +119,6 @@ export class ProjectsRepoHttp implements ProjectsRepo {
               })),
             }
           : {}),
-        ...(params.facilities && params.facilities.length
-          ? {
-              facilities: params.facilities.map((f) => ({
-                facility_id: f.id,
-                name: f.name,
-              })),
-            }
-          : {}),
         ...(params.status ? { status: params.status } : {}),
       };
 
@@ -170,14 +156,6 @@ export class ProjectsRepoHttp implements ProjectsRepo {
               users: params.users.map((u) => ({
                 id: u.id,
                 name: u.name,
-              })),
-            }
-          : {}),
-        ...(params.facilities && params.facilities.length
-          ? {
-              facilities: params.facilities.map((f) => ({
-                facility_id: f.id,
-                name: f.name,
               })),
             }
           : {}),

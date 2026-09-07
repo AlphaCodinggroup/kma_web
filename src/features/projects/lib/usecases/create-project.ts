@@ -26,9 +26,8 @@ export async function createProject(
   const code = params.code?.trim();
   const description = params.description?.trim();
 
-  // Normalizamos arrays opcionales → siempre arrays
+  // Normalizamos el array opcional → siempre array
   const users = params.users ?? [];
-  const facilities = params.facilities ?? [];
 
   return await repo.create({
     name,
@@ -36,6 +35,5 @@ export async function createProject(
     ...(code ? { code } : {}),
     ...(description ? { description } : {}),
     users,
-    facilities,
   });
 }

@@ -20,6 +20,7 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     name: "Project 1",
     status: "ACTIVE",
     users: [],
+    // El proyecto sigue devolviendo sus facilities: se derivan del project_id.
     facilities: [],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-02T00:00:00Z",
@@ -75,7 +76,6 @@ describe("createProject", () => {
       name: "Project 1",
       status: "ACTIVE",
       users: [],
-      facilities: [],
     });
   });
 
@@ -107,7 +107,6 @@ describe("createProject", () => {
       code: "P-1",
       description: "A description",
       users: [],
-      facilities: [],
     });
   });
 
@@ -123,19 +122,17 @@ describe("createProject", () => {
       name: "Project 1",
       status: "ACTIVE",
       users: [],
-      facilities: [],
     });
   });
 
-  it("forwards users and facilities when provided", async () => {
+  it("forwards users when provided", async () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(makeProject()));
     const users = [{ id: "user-1", name: "User 1" }];
-    const facilities = [{ id: "facility-1", name: "Facility 1" }];
 
-    await createProject(repo, makeParams({ users, facilities }));
+    await createProject(repo, makeParams({ users }));
 
     expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ users, facilities })
+      expect.objectContaining({ users })
     );
   });
 
