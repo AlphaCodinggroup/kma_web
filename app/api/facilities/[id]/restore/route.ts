@@ -1,51 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextResponse, type NextRequest } from "next/server";
+import { proxyToBackend } from "@shared/api/backend-proxy";
 
-export async function POST(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    const { id } = await params;
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+type RouteContext = { params: Promise<{ id: string }> };
 
-    if (!token) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export async function POST(req: NextRequest, { params }: RouteContext) {
+  const { id } = await params;
+  if (!id) {
+    return NextResponse.json(
+      { message: "Facility id is required" },
+      { status: 400 }
+    );
+  }
 
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    if (!BACKEND_URL) {
-        return NextResponse.json(
-            { error: "Backend URL not configured" },
-            { status: 500 }
-        );
-    }
-
-    try {
-        const response = await fetch(`${BACKEND_URL}/facilities/${id}/restore`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            return NextResponse.json(
-                { error: errorText || "Failed to restore facility" },
-                { status: response.status }
-            );
-        }
-
-        const data = await response.json();
-        return NextResponse.json(data);
-    } catch (error) {
-        console.error("Error restoring facility:", error);
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 }
-        );
-    }
+  return proxyToBackend(req, {
+    method: "POST",
+    path: `/facilities/${id}/restore`,
+    omitBody: true,
+  });
 }
