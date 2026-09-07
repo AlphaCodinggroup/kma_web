@@ -20,6 +20,7 @@ import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQ
 import type { FacilityListFilter } from "@entities/facility/model";
 import type { ProjectUpsertValues } from "@features/projects/ui/ProjectsUpsertDialog";
 import { buildProjectOptionalFields } from "@features/projects/lib/buildProjectOptionalFields";
+import { syncProjectFacilities } from "@features/projects/lib/syncProjectFacilities";
 
 type ProjectsContentProps = {
     createTriggerRef?: React.MutableRefObject<(() => void) | undefined>;
@@ -117,13 +118,6 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
         return map;
     }, [auditors]);
 
-    const facilityById = useMemo(() => {
-        const map = new Map<string, { id: string; name: string }>();
-        for (const f of facilityOptions) {
-            map.set(f.id, f);
-        }
-        return map;
-    }, [facilityOptions]);
 
     // Mutations
     const {
@@ -242,26 +236,20 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
                             name: u.name?.trim() || u.email || u.id,
                         })) ?? [];
 
-                const facilities =
-                    values.facilityIds
-                        ?.map((id) => facilityById.get(id))
-                        .filter(
-                            (
-                                f
-                            ): f is {
-                                id: string;
-                                name: string;
-                            } => Boolean(f) && Boolean(f!.id)
-                        ) ?? [];
-
                 const optionalFields = buildProjectOptionalFields(values);
 
-                await createProject({
+                const created = await createProject({
                     name: values.name,
                     ...optionalFields,
                     users,
-                    facilities,
                     status: "ACTIVE",
+                });
+
+                // La asignación se escribe en el project_id de cada facility,
+                // que es de donde el proyecto deriva su lista.
+                await syncProjectFacilities({
+                    projectId: created.id,
+                    selectedIds: values.facilityIds ?? [],
                 });
 
                 setOpenCreate(false);
@@ -270,7 +258,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
                 console.error("Failed to create project", err);
             }
         },
-        [createProject, refetch, auditorById, facilityById]
+        [createProject, refetch, auditorById]
     );
 
     // ---- Edit ----
@@ -296,18 +284,6 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
                             name: u.name?.trim() || u.email || u.id,
                         })) ?? [];
 
-                const facilities =
-                    values.facilityIds
-                        ?.map((id) => facilityById.get(id))
-                        .filter(
-                            (
-                                f
-                            ): f is {
-                                id: string;
-                                name: string;
-                            } => Boolean(f) && Boolean(f!.id)
-                        ) ?? [];
-
                 const optionalFields = buildProjectOptionalFields(values);
 
                 await updateProject({
@@ -315,7 +291,19 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
                     name: values.name,
                     ...optionalFields,
                     users,
-                    facilities,
+                });
+
+                // Las que se destildan quedan sin proyecto; las nuevas apuntan
+                // a este. El proyecto ya no guarda su propia lista.
+                const previousIds =
+                    projects
+                        .find((p) => p.id === values.id)
+                        ?.facilities?.map((f) => f.id) ?? [];
+
+                await syncProjectFacilities({
+                    projectId: values.id,
+                    selectedIds: values.facilityIds ?? [],
+                    previousIds,
                 });
 
                 setOpenEdit(false);
@@ -325,7 +313,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
                 console.error("Failed to update project", err);
             }
         },
-        [updateProject, refetch, auditorById, facilityById]
+        [updateProject, refetch, auditorById, projects]
     );
 
     // ---- Delete ----

@@ -43,6 +43,12 @@ const archiveProjectMock = vi.fn();
 const projectsQuerySpy = vi.fn();
 const usersQuerySpy = vi.fn();
 const facilitiesQuerySpy = vi.fn();
+const syncFacilitiesMock = vi.fn();
+
+// La asignación de facilities se escribe sobre cada facility, no en el proyecto.
+vi.mock("@features/projects/lib/syncProjectFacilities", () => ({
+    syncProjectFacilities: (...args: unknown[]) => syncFacilitiesMock(...args),
+}));
 
 vi.mock("@features/projects/ui/hooks/useProjectsQuery", () => ({
     useProjectsQuery: (...args: unknown[]) => {
@@ -265,6 +271,8 @@ describe("ProjectsContent", () => {
         state.deleteOptions = undefined;
         state.isAdmin = true;
         createProjectMock.mockResolvedValue(makeProject());
+        syncFacilitiesMock.mockReset();
+        syncFacilitiesMock.mockResolvedValue(undefined);
         updateProjectMock.mockResolvedValue(makeProject());
         archiveProjectMock.mockResolvedValue(makeProject());
         refetchMock.mockResolvedValue(undefined);
@@ -572,8 +580,13 @@ describe("ProjectsContent", () => {
             expect(createProjectMock).toHaveBeenCalledWith({
                 name: "Delta Site",
                 users: [{ id: "u-ada", name: "Ada Lovelace" }],
-                facilities: [{ id: "f-north", name: "North Plant" }],
                 status: "ACTIVE",
+            });
+            // La facility elegida se asigna escribiendo su project_id, con el
+            // id que devolvió el alta del proyecto.
+            expect(syncFacilitiesMock).toHaveBeenCalledWith({
+                projectId: "p-1",
+                selectedIds: ["f-north"],
             });
             await waitFor(() => {
                 expect(refetchMock).toHaveBeenCalled();
@@ -596,7 +609,6 @@ describe("ProjectsContent", () => {
             expect(createProjectMock).toHaveBeenCalledWith({
                 name: "Bare",
                 users: [],
-                facilities: [],
                 status: "ACTIVE",
             });
         });
@@ -625,10 +637,8 @@ describe("ProjectsContent", () => {
                 screen.getByRole("button", { name: "Create Project" })
             );
 
-            expect(createProjectMock).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    facilities: [{ id: "f-south", name: "South Depot" }],
-                })
+            expect(syncFacilitiesMock).toHaveBeenCalledWith(
+                expect.objectContaining({ selectedIds: ["f-south"] })
             );
         });
 
@@ -802,7 +812,12 @@ describe("ProjectsContent", () => {
                 name: "Alpha Tower II",
                 description: "Alpha description",
                 users: [{ id: "u-ada", name: "Ada Lovelace" }],
-                facilities: [{ id: "f-north", name: "North Plant" }],
+            });
+            // La que ya estaba sigue asignada: no hay nada que mover.
+            expect(syncFacilitiesMock).toHaveBeenCalledWith({
+                projectId: "p-alpha",
+                selectedIds: ["f-north"],
+                previousIds: ["f-north"],
             });
             await waitFor(() => {
                 expect(refetchMock).toHaveBeenCalled();
@@ -831,8 +846,14 @@ describe("ProjectsContent", () => {
             );
 
             expect(updateProjectMock).toHaveBeenCalledWith(
-                expect.objectContaining({ users: [], facilities: [] })
+                expect.objectContaining({ users: [] })
             );
+            // La facility destildada se desasigna del proyecto.
+            expect(syncFacilitiesMock).toHaveBeenCalledWith({
+                projectId: "p-alpha",
+                selectedIds: [],
+                previousIds: ["f-north"],
+            });
         });
 
         it("ignores an auditor or facility that is already selected", async () => {
@@ -891,7 +912,6 @@ describe("ProjectsContent", () => {
                 id: "p-min",
                 name: "Gamma Yard",
                 users: [],
-                facilities: [],
             });
         });
 

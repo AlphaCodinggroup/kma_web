@@ -113,5 +113,10 @@ export async function updateFacilityUseCase(
     payload.geo = rawParams.geo;
   }
 
+  // La asignación a un proyecto vive en la facility: null la desasigna.
+  if (rawParams.projectId !== undefined) {
+    payload.projectId = rawParams.projectId;
+  }
+
   return repo.update(payload);
 }

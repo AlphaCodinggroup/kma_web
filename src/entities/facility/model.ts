@@ -77,6 +77,8 @@ export type CreateFacilityResult = Facility;
  */
 export interface UpdateFacilityParams {
   id: FacilityId;
+  // La relación con el proyecto vive en la facility: null la desasigna.
+  projectId?: string | null;
   name?: string;
   address?: string;
   city?: string;

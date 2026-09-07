@@ -63,6 +63,7 @@ export interface CreateFacilityRequestDTO {
  * Body para actualizar una Facility en la API (PATCH).
  */
 export interface UpdateFacilityRequestDTO {
+  project_id?: string | null;
   name?: string;
   address?: string;
   city?: string;
@@ -170,6 +171,11 @@ export function mapUpdateFacilityParamsToDTO(
       lat: params.geo.lat,
       lng: params.geo.lng,
     };
+  }
+
+  // `undefined` no toca la asignación; `null` la borra.
+  if (params.projectId !== undefined) {
+    dto.project_id = params.projectId;
   }
 
   // Si más adelante hay photoUrl en UpdateFacilityParams, se mapea acá.
