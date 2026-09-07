@@ -55,16 +55,20 @@ const UsersPage: React.FC = () => {
       (u) =>
         u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
     );
-  }, [data, query]);
+  }, [users, query]);
 
+  // Las dependencias son `users` y no `users.length`: un cambio de rol no
+  // altera la cantidad de usuarios, así que los conteos por rol quedaban
+  // congelados después de editar uno. El rol de QC es el grupo "qc" de
+  // Cognito, no "qc_manager", así que esa métrica contaba siempre cero.
   const metrics = useMemo(
     () => ({
       totalUsers: users.length,
       auditors: users.filter((u) => u.role === "auditor").length,
-      qcManagers: users.filter((u) => u.role === "qc_manager").length,
+      qcManagers: users.filter((u) => u.role === "qc").length,
       projectManagers: users.filter((u) => u.role === "admin").length,
     }),
-    [users.length]
+    [users]
   );
 
   const handleEdit = useCallback(
