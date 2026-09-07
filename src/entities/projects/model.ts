@@ -46,7 +46,6 @@ export interface CreateProjectParams {
   code?: string;
   description?: string;
   users?: Options[];
-  facilities?: Options[];
   status?: ProjectStatus;
 }
 
@@ -64,7 +63,6 @@ export interface UpdateProjectParams {
   code?: string;
   description?: string;
   users?: Options[];
-  facilities?: Options[];
   status?: ProjectStatus;
 }
 

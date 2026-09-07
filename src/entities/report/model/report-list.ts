@@ -1,19 +1,10 @@
+import type { AuditReport } from "@entities/report/model/audit-report";
 import type { AuditStatus } from "@entities/audit/model";
 
 /**
  * Item de listado de reports en dominio.
  */
-export interface ReportListItem {
-  id: string;
-  flowId: string | null;
-  userId: string | null;
-  reportName: string | null;
-  status: AuditStatus;
-  reportUrl: string | null;
-  createdAt: string;
-  updatedAt: string | null;
-  completedAt: string | null;
-}
+export type ReportListItem = AuditReport;
 
 /**
  * Resultado paginado del endpoint GET /api/reports en dominio.

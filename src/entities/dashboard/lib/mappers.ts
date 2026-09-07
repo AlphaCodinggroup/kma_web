@@ -1,3 +1,4 @@
+import { toIsoDateOrNull } from "@shared/lib/coerce";
 import type {
   DashboardSummary,
   DashboardMetrics,
@@ -47,11 +48,10 @@ const toNumber = (value: unknown, fallback = 0): number => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const toString = (value: unknown): string => {
-  if (typeof value === "string") return value;
-  if (value === null || value === undefined) return "";
-  return String(value);
-};
+// Sólo se aceptan cadenas: `String(value)` sobre cualquier tipo convertía un
+// objeto del backend en "[object Object]" y lo mostraba tal cual en pantalla.
+const toString = (value: unknown): string =>
+  typeof value === "string" ? value : "";
 
 const mapDashboardMetricsDTO = (
   dto: DashboardMetricsDTO | null | undefined
@@ -91,7 +91,10 @@ export const mapRecentActivityDTO = (
     flowName: toString(dto.flow_name),
     auditorId: toString(dto.auditor_id),
     auditorName: toString(dto.auditor_name),
-    completedAt: toString(dto.completed_at),
+    // completedAt es nullable: como cadena no se podía distinguir "sin
+    // completar" de una fecha vacía, y la interfaz mostraba un guion en los dos
+    // casos sin poder diferenciarlos.
+    completedAt: toIsoDateOrNull(dto.completed_at),
   };
 };
 

@@ -25,7 +25,8 @@ export type RecentActivityItem = {
   flowName: string;
   auditorId: string;
   auditorName: string;
-  completedAt: string;
+  /** Fecha de finalización, o null si la auditoría no se completó. */
+  completedAt: string | null;
 };
 
 export type DashboardSummary = {

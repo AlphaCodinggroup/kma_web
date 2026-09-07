@@ -8,7 +8,7 @@
 // by mocking the entire "../auth" module partially through vi.hoisted.
 // ---------------------------------------------------------------------------
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import axios, { AxiosError, type AxiosResponse } from "axios";
 
 // ---------------------------------------------------------------------------
@@ -308,5 +308,127 @@ describe("installAuthInterceptor", () => {
 
     await expect(client.get("/api/data")).rejects.toBeDefined();
     // Should not throw due to missing callback
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Fallos del callback onSessionExpired (fire-and-forget)
+// ---------------------------------------------------------------------------
+
+describe("installAuthInterceptor — onSessionExpired failures", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("logs when the callback rejects while refreshing", async () => {
+    const failing = vi.fn().mockRejectedValue(new Error("callback exploded"));
+    const client = createTestClient(async () => fakeResponse(401, {}), {
+      onSessionExpired: failing,
+    });
+
+    mockRefreshPost.mockRejectedValueOnce(new Error("refresh failed"));
+
+    await expect(client.get("/api/data")).rejects.toBeDefined();
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(console.error).toHaveBeenCalledWith(
+      "[AuthInterceptor] onSessionExpired callback failed:",
+      expect.any(Error)
+    );
+  });
+
+  it("logs when the callback rejects on the retried request", async () => {
+    const failing = vi.fn().mockRejectedValue(new Error("callback exploded"));
+    const client = createTestClient(
+      async (url) => (url === "/api/data" ? fakeResponse(401, {}) : fakeResponse(200, {})),
+      { onSessionExpired: failing }
+    );
+
+    mockRefreshPost.mockResolvedValueOnce(fakeResponse(200, { ok: true }));
+
+    await expect(client.get("/api/data")).rejects.toMatchObject({
+      code: "UNAUTHORIZED",
+    });
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(console.error).toHaveBeenCalledWith(
+      "[AuthInterceptor] onSessionExpired callback failed in retry:",
+      expect.any(Error)
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Orden de instalación respecto del interceptor de errores
+// ---------------------------------------------------------------------------
+
+describe("interceptor installation order", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  /**
+   * Monta una instancia con ambos interceptores en el orden pedido y un
+   * adapter que devuelve 401 la primera vez y 200 después.
+   */
+  async function createOrderedClient(order: "auth-first" | "error-first") {
+    const { installErrorInterceptor } = await import("../error");
+    const client = axios.create({ baseURL: "" });
+
+    if (order === "auth-first") {
+      installAuthInterceptor(client, { onSessionExpired: vi.fn() });
+      installErrorInterceptor(client);
+    } else {
+      installErrorInterceptor(client);
+      installAuthInterceptor(client, { onSessionExpired: vi.fn() });
+    }
+
+    let calls = 0;
+    client.defaults.adapter = async (config) => {
+      calls += 1;
+      const res =
+        calls === 1
+          ? fakeResponse(401, { message: "expired" })
+          : fakeResponse(200, { data: "success" });
+      res.config = config as never;
+      if (res.status >= 400) {
+        throw new AxiosError(
+          "Request failed with status code 401",
+          "ERR_BAD_REQUEST",
+          config as never,
+          null,
+          res as never
+        );
+      }
+      return res as never;
+    };
+
+    return client;
+  }
+
+  it("auth installed first sees the raw 401 and triggers the refresh", async () => {
+    const client = await createOrderedClient("auth-first");
+    mockRefreshPost.mockResolvedValueOnce(fakeResponse(200, { ok: true }));
+
+    const res = await client.get("/api/data");
+
+    expect(res.data).toEqual({ data: "success" });
+    expect(mockRefreshPost).toHaveBeenCalledOnce();
+  });
+
+  // Con el orden invertido el auth interceptor recibe un ApiError sin `config`,
+  // así que no puede reconocer la URL interna y nunca intenta el refresh.
+  it("error installed first prevents the refresh from ever running", async () => {
+    const client = await createOrderedClient("error-first");
+
+    await expect(client.get("/api/data")).rejects.toMatchObject({
+      code: "UNAUTHORIZED",
+    });
+    expect(mockRefreshPost).not.toHaveBeenCalled();
   });
 });

@@ -81,7 +81,7 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
     try {
       const res = await httpClient.get<
         FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
-      >(`${this.basePath}/${facilityId}`);
+      >(`${this.basePath}/${encodeURIComponent(facilityId)}`);
 
       const raw = res.data as
         | FacilityDTO
@@ -139,7 +139,7 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
 
       const res = await httpClient.put<
         FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
-      >(`${this.basePath}/${params.id}`, body);
+      >(`${this.basePath}/${encodeURIComponent(params.id)}`, body);
 
       const raw = res.data as
         | FacilityDTO
@@ -163,7 +163,7 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
    */
   async delete(facilityId: FacilityId): Promise<void> {
     try {
-      await httpClient.delete<void>(`${this.basePath}/${facilityId}`);
+      await httpClient.delete<void>(`${this.basePath}/${encodeURIComponent(facilityId)}`);
     } catch (err) {
       throw toApiError(err);
     }
@@ -177,7 +177,7 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
     try {
       const res = await httpClient.post<
         FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
-      >(`${this.basePath}/${facilityId}/archive`);
+      >(`${this.basePath}/${encodeURIComponent(facilityId)}/archive`);
 
       const raw = res.data as
         | FacilityDTO
@@ -203,7 +203,7 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
     try {
       const res = await httpClient.post<
         FacilityDTO | { facility: FacilityDTO } | { data: FacilityDTO }
-      >(`${this.basePath}/${facilityId}/restore`);
+      >(`${this.basePath}/${encodeURIComponent(facilityId)}/restore`);
 
       const raw = res.data as
         | FacilityDTO
@@ -240,15 +240,10 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
         (res.data as { data?: UploadImageResponseDTO }).data ??
         (res.data as UploadImageResponseDTO);
 
-      const publicUrl = raw.upload_url.includes("?")
-        ? raw.upload_url.split("?")[0]
-        : raw.upload_url;
-
       return {
         uploadUrl: raw.upload_url,
         key: raw.key,
         expiresIn: raw.expires_in,
-        publicUrl,
       };
     } catch (err) {
       throw toApiError(err);

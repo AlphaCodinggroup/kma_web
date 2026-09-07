@@ -53,6 +53,16 @@ const PublicSchema = z.object({
   NEXT_PUBLIC_API_BASE_URL: z
     .string()
     .url("NEXT_PUBLIC_API_BASE_URL must be a valid URL"),
+  // Polling de la generación del reporte. Estaban hardcodeados en el componente.
+  NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS: z.string().optional(),
+  NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS: z.string().optional(),
+  NEXT_PUBLIC_REPORT_ESTIMATE_MS: z.string().optional(),
+  NEXT_PUBLIC_REPORT_TIMEOUT_MS: z.string().optional(),
+  NEXT_PUBLIC_REPORT_DOWNLOAD_MODE: z.enum(["stream", "anchor"]).optional(),
+  NEXT_PUBLIC_REPORT_STREAM_MAX_MB: z.string().optional(),
+  // Locale de los formatos de número y fecha. Estaba escrito a mano como
+  // "es-ES" dentro de la página del dashboard, en una interfaz en inglés.
+  NEXT_PUBLIC_LOCALE: z.string().optional(),
 });
 
 // Variables de servidor
@@ -62,6 +72,11 @@ const ServerSchema = z.object({
   // Opcionales para validación de tokens/JWKS en server
   COGNITO_USER_POOL_ID: z.string().optional(),
   COGNITO_JWKS_URL: z.string().url().optional(),
+  // Issuer esperado del token; se valida junto con la firma.
+  COGNITO_ISSUER: z.string().url().optional(),
+  // Hosts a los que el proxy de subida puede reenviar (separados por coma).
+  // Sin esta lista el proxy aceptaba cualquier URL (SSRF).
+  UPLOAD_PROXY_ALLOWED_HOSTS: z.string().optional(),
 
   // Cookies httpOnly
   SESSION_COOKIE_NAME: z.string().min(1, "SESSION_COOKIE_NAME is required"),
@@ -102,6 +117,19 @@ function loadPublicEnv() {
     NEXT_PUBLIC_HTTP_TIMEOUT_MS: process.env.NEXT_PUBLIC_HTTP_TIMEOUT_MS,
     NEXT_PUBLIC_QUERY_STALE_TIME: process.env.NEXT_PUBLIC_QUERY_STALE_TIME,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS:
+      process.env.NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS,
+    NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS:
+      process.env.NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS,
+    NEXT_PUBLIC_REPORT_ESTIMATE_MS:
+      process.env.NEXT_PUBLIC_REPORT_ESTIMATE_MS,
+    NEXT_PUBLIC_REPORT_TIMEOUT_MS:
+      process.env.NEXT_PUBLIC_REPORT_TIMEOUT_MS,
+    NEXT_PUBLIC_REPORT_DOWNLOAD_MODE:
+      process.env.NEXT_PUBLIC_REPORT_DOWNLOAD_MODE,
+    NEXT_PUBLIC_REPORT_STREAM_MAX_MB:
+      process.env.NEXT_PUBLIC_REPORT_STREAM_MAX_MB,
+    NEXT_PUBLIC_LOCALE: process.env.NEXT_PUBLIC_LOCALE,
   });
 
   if (!parsed.success) {
@@ -126,8 +154,18 @@ function loadPublicEnv() {
     authBaseUrl: pub.NEXT_PUBLIC_AUTH_BASE_URL,
     httpTimeoutMs: PUBLIC_HTTP_TIMEOUT_MS,
     queryStaleTimeMs: PUBLIC_QUERY_STALE_TIME,
-    // NUEVO
     apiBaseUrl: pub.NEXT_PUBLIC_API_BASE_URL,
+    reportPoll: {
+      intervalMs: toInt(pub.NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS ?? "2000"),
+      maxAttempts: toInt(pub.NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS ?? "60"),
+    },
+    reportEstimateMs: toInt(pub.NEXT_PUBLIC_REPORT_ESTIMATE_MS ?? "30000"),
+    reportTimeoutMs: toInt(pub.NEXT_PUBLIC_REPORT_TIMEOUT_MS ?? "180000"),
+    reportDownloadMode: pub.NEXT_PUBLIC_REPORT_DOWNLOAD_MODE ?? "stream",
+    reportStreamMaxBytes:
+      toInt(pub.NEXT_PUBLIC_REPORT_STREAM_MAX_MB ?? "200") * 1024 * 1024,
+    // La interfaz está en inglés, así que el default acompaña.
+    locale: pub.NEXT_PUBLIC_LOCALE ?? "en-US",
   } as const;
 }
 
@@ -145,6 +183,8 @@ function loadServerEnv() {
     COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
     COGNITO_USER_POOL_ID: process.env.COGNITO_USER_POOL_ID,
     COGNITO_JWKS_URL: process.env.COGNITO_JWKS_URL,
+    COGNITO_ISSUER: process.env.COGNITO_ISSUER,
+    UPLOAD_PROXY_ALLOWED_HOSTS: process.env.UPLOAD_PROXY_ALLOWED_HOSTS,
 
     SESSION_COOKIE_NAME: process.env.SESSION_COOKIE_NAME,
     ACCESS_TOKEN_COOKIE_NAME: process.env.ACCESS_TOKEN_COOKIE_NAME,
@@ -180,6 +220,13 @@ function loadServerEnv() {
       clientId: env.COGNITO_CLIENT_ID,
       userPoolId: env.COGNITO_USER_POOL_ID,
       jwksUrl: env.COGNITO_JWKS_URL,
+      issuer: env.COGNITO_ISSUER,
+    },
+    uploadProxy: {
+      allowedHosts: (env.UPLOAD_PROXY_ALLOWED_HOSTS ?? "")
+        .split(",")
+        .map((host) => host.trim().toLowerCase())
+        .filter(Boolean),
     },
     cookies: {
       sessionName: env.SESSION_COOKIE_NAME,

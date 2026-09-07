@@ -24,10 +24,6 @@ type ProjectUserDTO = {
   name: string;
 };
 
-type ProjectFacilityDTO = {
-  facility_id: string;
-  name: string;
-};
 
 /** Body esperado por el upstream para crear un proyecto */
 type CreateProjectRequestDTO = {
@@ -35,7 +31,6 @@ type CreateProjectRequestDTO = {
   code?: string;
   description?: string;
   users?: ProjectUserDTO[];
-  facilities?: ProjectFacilityDTO[];
   status?: "ACTIVE" | "ARCHIVED";
 };
 
@@ -45,7 +40,6 @@ type UpdateProjectRequestDTO = {
   code?: string;
   description?: string;
   users?: ProjectUserDTO[];
-  facilities?: ProjectFacilityDTO[];
   status?: "ACTIVE" | "ARCHIVED";
 };
 
@@ -92,7 +86,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
     try {
       const res = await httpClient.get<
         ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
-      >(`${this.basePath}/${id}`);
+      >(`${this.basePath}/${encodeURIComponent(id)}`);
 
       const raw = res.data as
         | ProjectDTO
@@ -122,14 +116,6 @@ export class ProjectsRepoHttp implements ProjectsRepo {
               users: params.users.map((u) => ({
                 id: u.id,
                 name: u.name,
-              })),
-            }
-          : {}),
-        ...(params.facilities && params.facilities.length
-          ? {
-              facilities: params.facilities.map((f) => ({
-                facility_id: f.id,
-                name: f.name,
               })),
             }
           : {}),
@@ -173,20 +159,12 @@ export class ProjectsRepoHttp implements ProjectsRepo {
               })),
             }
           : {}),
-        ...(params.facilities && params.facilities.length
-          ? {
-              facilities: params.facilities.map((f) => ({
-                facility_id: f.id,
-                name: f.name,
-              })),
-            }
-          : {}),
         ...(params.status ? { status: params.status } : {}),
       };
 
       const res = await httpClient.patch<
         ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
-      >(`${this.basePath}/${params.id}`, body, {
+      >(`${this.basePath}/${encodeURIComponent(params.id)}`, body, {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -209,7 +187,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
   /** Elimina un proyecto */
   async deleteProject(id: ProjectId): Promise<void> {
     try {
-      await httpClient.delete<void>(`${this.basePath}/${id}`);
+      await httpClient.delete<void>(`${this.basePath}/${encodeURIComponent(id)}`);
     } catch (err) {
       throw toApiError(err);
     }
@@ -220,7 +198,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
     try {
       const res = await httpClient.post<
         ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
-      >(`${this.basePath}/${id}/archive`);
+      >(`${this.basePath}/${encodeURIComponent(id)}/archive`);
 
       const raw = res.data as
         | ProjectDTO

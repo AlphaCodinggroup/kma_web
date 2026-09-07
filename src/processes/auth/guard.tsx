@@ -24,9 +24,6 @@ async function hasActiveSession(): Promise<boolean> {
 
   // Preferimos access token (httpOnly).
   const access = jar.get(env.cookies.accessName)?.value;
-  if (process.env.NEXT_PUBLIC_APP_ENV === "development") {
-    console.log("[AuthGuard] access?", !!access);
-  }
 
   return Boolean(access);
 }

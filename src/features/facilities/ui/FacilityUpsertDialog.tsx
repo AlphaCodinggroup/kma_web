@@ -8,7 +8,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalTitle,
-  ModalDescription,
   ModalFooter,
   ModalCloseButton,
 } from "@shared/ui/modal";
@@ -20,6 +19,7 @@ export type FacilityUpsertValues = {
   address?: string | undefined;
   city?: string | undefined;
   description?: string | undefined;
+  notes?: string | undefined;
   photoUrl?: string | undefined;
   photoFile?: File | null;
   clearPhoto?: boolean;
@@ -51,7 +51,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
   loading,
   error,
   titleOverride,
-  descriptionOverride,
+  descriptionOverride: _descriptionOverride,
   submitLabelOverride,
   className,
 }) => {
@@ -61,6 +61,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
       address: defaultValues?.address ?? "",
       city: defaultValues?.city ?? "",
       description: defaultValues?.description ?? "",
+      notes: defaultValues?.notes ?? "",
       photoUrl: defaultValues?.photoUrl ?? "",
       photoFile: null,
       clearPhoto: false,
@@ -105,13 +106,26 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
       const trimmedAddress = values.address?.trim();
       const trimmedCity = values.city?.trim();
       const trimmedDescription = values.description?.trim();
+      const trimmedNotes = values.notes?.trim();
       const trimmedPhotoUrl = values.photoUrl?.trim();
+
+      // Al editar, un campo vaciado se envía como cadena vacía para que el
+      // backend lo borre; descartarlo hacía imposible limpiarlo. Al crear no
+      // hay nada que borrar, así que los vacíos se omiten.
+      const keepEmpty = mode === "edit";
+      const optional = (value: string | undefined) =>
+        value || (keepEmpty && value !== undefined) ? value : undefined;
 
       const payload: FacilityUpsertValues = {
         name: trimmedName,
-        ...(trimmedAddress ? { address: trimmedAddress } : {}),
-        ...(trimmedCity ? { city: trimmedCity } : {}),
-        ...(trimmedDescription ? { description: trimmedDescription } : {}),
+        ...(optional(trimmedAddress) !== undefined
+          ? { address: trimmedAddress }
+          : {}),
+        ...(optional(trimmedCity) !== undefined ? { city: trimmedCity } : {}),
+        ...(optional(trimmedDescription) !== undefined
+          ? { description: trimmedDescription }
+          : {}),
+        ...(optional(trimmedNotes) !== undefined ? { notes: trimmedNotes } : {}),
         ...(values.photoFile ? { photoFile: values.photoFile } : {}),
         ...(trimmedPhotoUrl && !values.photoFile && !values.clearPhoto
           ? { photoUrl: trimmedPhotoUrl }
@@ -121,7 +135,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
 
       await onSubmit(payload);
     },
-    [onSubmit, values]
+    [mode, onSubmit, values]
   );
 
   const isSubmitting = loading === true;
@@ -250,6 +264,19 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               onChange={(e) => handleChange("description", e.currentTarget.value)}
               disabled={isSubmitting}
               rows={4}
+            />
+          </div>
+
+          {/* Notes */}
+          <div>
+            <Label htmlFor="facility-notes">Notes</Label>
+            <Textarea
+              id="facility-notes"
+              placeholder="Internal notes"
+              value={values.notes ?? ""}
+              onChange={(e) => handleChange("notes", e.currentTarget.value)}
+              disabled={isSubmitting}
+              rows={3}
             />
           </div>
 

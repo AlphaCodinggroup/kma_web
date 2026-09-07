@@ -1,3 +1,4 @@
+import { asArray, toFiniteNumber } from "@shared/lib/coerce";
 import type {
   ReportListItem,
   ReportListPage,
@@ -37,13 +38,17 @@ export const mapReportListItemFromDTO = (
 export const mapReportsListFromDTO = (
   response: ReportsListResponseDTO
 ): ReportListPage => {
-  const { reports, count, has_more, last_eval_id } = response;
+  const { reports, count, has_more, last_eval_id } = response ?? {};
+  // Guarda sobre `reports`: una respuesta sin la clave rompía el map.
+  const items = asArray<ReportListItemDTO>(reports);
 
   const total =
-    typeof count === "number" && !Number.isNaN(count) ? count : reports.length;
+    // El backend puede mandar el count como string: descartarlo hacía que la
+    // interfaz mostrara el tamaño de la página en vez del total.
+    toFiniteNumber(count, items.length);
 
   return {
-    items: reports.map(mapReportListItemFromDTO),
+    items: items.map(mapReportListItemFromDTO),
     count: total,
     lastEvalId: last_eval_id ?? null,
     hasMore: Boolean(has_more),

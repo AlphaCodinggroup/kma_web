@@ -7,6 +7,7 @@ interface FacilityOptionalFields {
   address?: string;
   city?: string;
   description?: string;
+  notes?: string;
   photoFile?: File | null;
   photoUrl?: string;
   clearPhoto?: boolean;
@@ -21,16 +22,23 @@ export function buildFacilityOptionalFields(
 ): FacilityOptionalFields {
   const result: FacilityOptionalFields = {};
 
-  if (values.address && values.address.trim().length > 0) {
+  // `!= null` y no truthy: un campo vaciado a propósito viaja como cadena
+  // vacía para que el backend lo borre. Descartarlo hacía imposible limpiarlo,
+  // y el usuario veía el cambio como aplicado.
+  if (values.address != null) {
     result.address = values.address;
   }
 
-  if (values.city && values.city.trim().length > 0) {
+  if (values.city != null) {
     result.city = values.city;
   }
 
-  if (values.description && values.description.trim().length > 0) {
+  if (values.description != null) {
     result.description = values.description;
+  }
+
+  if (values.notes != null) {
+    result.notes = values.notes;
   }
 
   if (values.clearPhoto && !values.photoFile) {

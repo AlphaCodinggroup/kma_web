@@ -1,3 +1,4 @@
+import { asArray, toFiniteNumber } from "@shared/lib/coerce";
 import type {
   Facility,
   FacilityListPage,
@@ -49,6 +50,7 @@ export interface CreateFacilityRequestDTO {
   address?: string;
   city?: string;
   description?: string;
+  notes?: string;
   photo_url?: string;
   status?: "ACTIVE" | "ARCHIVED";
   geo?: {
@@ -61,10 +63,12 @@ export interface CreateFacilityRequestDTO {
  * Body para actualizar una Facility en la API (PATCH).
  */
 export interface UpdateFacilityRequestDTO {
+  project_id?: string | null;
   name?: string;
   address?: string;
   city?: string;
   description?: string;
+  notes?: string;
   photo_url?: string | null;
   status?: "ACTIVE" | "ARCHIVED";
   geo?: {
@@ -88,18 +92,23 @@ export function mapCreateFacilityParamsToDTO(
     dto.project_id = params.projectId;
   }
 
-  if (params.address) {
+  if (params.address != null) {
     dto.address = params.address;
   }
 
-  if (params.city) {
+  if (params.city != null) {
     dto.city = params.city;
   }
 
-  if (params.description) {
+  // description y notes son campos distintos de punta a punta: antes se
+  // colapsaban en description porque el backend no tenía notes, y editar uno
+  // sobrescribía el otro.
+  if (params.description != null) {
     dto.description = params.description;
-  } else if (params.notes) {
-    dto.description = params.notes;
+  }
+
+  if (params.notes != null) {
+    dto.notes = params.notes;
   }
 
   if (params.photoUrl) {
@@ -141,8 +150,10 @@ export function mapUpdateFacilityParamsToDTO(
 
   if (params.description != null) {
     dto.description = params.description;
-  } else if (params.notes != null) {
-    dto.description = params.notes;
+  }
+
+  if (params.notes != null) {
+    dto.notes = params.notes;
   }
 
   if (params.clearPhoto === true) {
@@ -160,6 +171,11 @@ export function mapUpdateFacilityParamsToDTO(
       lat: params.geo.lat,
       lng: params.geo.lng,
     };
+  }
+
+  // `undefined` no toca la asignación; `null` la borra.
+  if (params.projectId !== undefined) {
+    dto.project_id = params.projectId;
   }
 
   // Si más adelante hay photoUrl en UpdateFacilityParams, se mapea acá.
@@ -195,8 +211,6 @@ export function mapFacilityFromDTO(dto: FacilityDTO): Facility {
 
   if (dto.notes != null) {
     facility.notes = dto.notes;
-  } else if (dto.description != null) {
-    facility.notes = dto.description;
   }
 
   if (dto.geo) {
@@ -231,15 +245,23 @@ export function mapFacilityFromDTO(dto: FacilityDTO): Facility {
 export function mapFacilitiesListFromDTO(
   response: FacilitiesResponseDTO
 ): FacilityListPage {
+  // Guarda sobre la respuesta: una malformada rompía el mapper en vez de
+  // degradar a una página vacía.
   const page: FacilityListPage = {
-    items: response.facilities.map(mapFacilityFromDTO),
+    items: asArray<FacilityDTO>(response?.facilities).map(mapFacilityFromDTO),
   };
 
-  if (typeof response.limit === "number") {
-    page.limit = response.limit;
+  if (response?.limit != null) {
+    page.limit = toFiniteNumber(response.limit, 0);
   }
 
-  if (response.cursor != null) {
+  if (response?.total != null) {
+    // El DTO declaraba `total` y el dominio no lo modelaba, así que el total
+    // real del listado se perdía.
+    page.total = toFiniteNumber(response.total, page.items.length);
+  }
+
+  if (response?.cursor != null) {
     page.cursor = response.cursor;
   }
 

@@ -9,7 +9,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalTitle,
-  ModalDescription,
   ModalFooter,
   ModalCloseButton,
 } from "@shared/ui/modal";
@@ -58,7 +57,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
   loading,
   error,
   titleOverride,
-  descriptionOverride,
+  descriptionOverride: _descriptionOverride,
   submitLabelOverride,
   className,
 }) => {

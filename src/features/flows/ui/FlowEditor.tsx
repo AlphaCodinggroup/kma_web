@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, EndStep, Condition, ConditionalNext, StepMetadata } from "@entities/flow/model";
-import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
+import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField, Condition, ConditionalNext } from "@entities/flow/model";
+import { Card, CardContent, CardHeader } from "@shared/ui/card";
 import { Button, Input, Label, Textarea } from "@shared/ui/controls";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
 import { ImagePlus, Save, Trash2, Plus, Loader2, Search, ArrowRight, CornerDownRight, FileText, HelpCircle, List, AlertCircle, X, CheckCircle2, AlertTriangle, Info, ChevronDown, ChevronUp, RotateCcw, History, GripVertical } from "lucide-react";
@@ -97,7 +97,6 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     savedAt: new Date().toISOString(),
                 };
                 localStorage.setItem(draftKey, JSON.stringify(draftData));
-                console.log("[FlowEditor] Draft auto-saved to localStorage");
             } catch (err) {
                 console.warn("[FlowEditor] Failed to save draft to localStorage:", err);
             }

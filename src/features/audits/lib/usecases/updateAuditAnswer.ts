@@ -6,6 +6,15 @@ import type {
 export async function updateAuditAnswer(
   input: UpdateAuditAnswerInput
 ): Promise<AuditAnswerUpdateResult> {
+  // Sin estas guardas un auditId vacío pegaba en "/api/audits-review//answers"
+  // y una lista de respuestas vacía se enviaba igual.
+  if (!input?.auditId?.trim()) {
+    throw new Error("updateAuditAnswer: auditId is required");
+  }
+  if (!input.answers?.length) {
+    throw new Error("updateAuditAnswer: answers is required");
+  }
+
   const res = await fetch(
     `/api/audits-review/${encodeURIComponent(input.auditId)}/answers`,
     {

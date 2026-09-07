@@ -10,8 +10,7 @@ import {
   ModalTitle,
   ModalDescription,
   ModalFooter,
-  ModalCloseButton,
-} from "@shared/ui/modal";
+  } from "@shared/ui/modal";
 
 export interface ConfirmDialogProps {
   open: boolean;

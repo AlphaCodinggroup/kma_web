@@ -33,8 +33,8 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
   onClose,
   className,
 }) => {
-  if (!selected) return null;
-
+  // Los hooks deben ejecutarse siempre en el mismo orden: el corte por
+  // "sin selección" va después de declararlos, no antes.
   const [value, setValue] = useState<string>("");
   const [comments, setComments] = useState<LocalComment[]>([]);
   const { mutateAsync: createComment, isPending: isCreating } =
@@ -117,6 +117,8 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     setEditingId(comment.id);
     setValue(comment.text);
   };
+
+  if (!selected) return null;
 
   return (
     <aside
