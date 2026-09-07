@@ -42,8 +42,8 @@ describe("mapUserFromDTO", () => {
   it("keeps empty strings for name, email and role", () => {
     const result = mapUserFromDTO(makeUserDTO({ name: "", email: "", role: "" }));
 
-    // FIXME: el mapper no valida los campos obligatorios; un usuario sin rol
-    // llega al dominio con un rol vacio.
+    // Los campos obligatorios se normalizan a cadena: un usuario sin rol ni
+  // nombre ya no entra al dominio con undefined.
     expect(result.name).toBe("");
     expect(result.email).toBe("");
     expect(result.role).toBe("");

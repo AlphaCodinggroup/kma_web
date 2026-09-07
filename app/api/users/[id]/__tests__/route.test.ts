@@ -121,8 +121,11 @@ describe("PATCH /api/users/[id]", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  // FIXME: el handler es PATCH pero envía PUT al backend, así que un cambio
-  // parcial viaja como reemplazo completo del recurso.
+  // El handler es PATCH hacia afuera y PUT hacia el backend, que es el único
+  // verbo que expone la lambda `users`. No es un reemplazo: su UpdateUser
+  // aplica sólo los campos presentes en el cuerpo, así que la semántica
+  // parcial se conserva (verificado contra el stack: un PUT con sólo `name`
+  // deja intactos el email y el rol).
   it("forwards the bearer token and the body as an upstream PUT", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({ id: "u-1" }));
     vi.stubGlobal("fetch", fetchMock);

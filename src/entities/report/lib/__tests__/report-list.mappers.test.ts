@@ -105,7 +105,9 @@ describe("mapReportsListFromDTO", () => {
     expect(result.count).toBe(3);
   });
 
-  it("falls back to the array length when count is not a number", () => {
+  // El backend puede mandar el count como string: descartarlo hacía que la
+  // interfaz mostrara el tamaño de la página en vez del total.
+  it("accepts a numeric count sent as a string", () => {
     const result = mapReportsListFromDTO(
       makeResponseDTO({
         reports: [makeItemDTO()],
@@ -113,9 +115,18 @@ describe("mapReportsListFromDTO", () => {
       })
     );
 
-    // FIXME: un count numerico como string se descarta y se usa la longitud de
-    // la pagina, lo que rompe la paginacion (total != items de la pagina).
-    expect(result.count).toBe(1);
+    expect(result.count).toBe(5);
+  });
+
+  it("falls back to the array length when the count is not usable", () => {
+    const result = mapReportsListFromDTO(
+      makeResponseDTO({
+        reports: [makeItemDTO(), makeItemDTO()],
+        count: "muchos" as never,
+      })
+    );
+
+    expect(result.count).toBe(2);
   });
 
   it.each([
@@ -144,9 +155,15 @@ describe("mapReportsListFromDTO", () => {
     expect(mapReportsListFromDTO(response).hasMore).toBe(expected);
   });
 
-  it("throws when the reports key is missing", () => {
-    // FIXME: no hay guarda defensiva sobre `reports`; una respuesta sin la
-    // clave hace explotar el mapper en lugar de devolver una pagina vacia.
-    expect(() => mapReportsListFromDTO({ count: 0 } as never)).toThrow();
+  // Una respuesta malformada degrada a una página vacía en vez de romper.
+  it.each([
+    ["the reports key is missing", { count: 0 }],
+    ["the response is null", null],
+    ["reports is not an array", { reports: "nope" }],
+  ])("returns an empty page when %s", (_label, response) => {
+    const result = mapReportsListFromDTO(response as never);
+
+    expect(result.items).toEqual([]);
+    expect(result.count).toBe(0);
   });
 });

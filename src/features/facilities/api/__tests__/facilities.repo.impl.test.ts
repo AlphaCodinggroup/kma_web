@@ -166,7 +166,7 @@ describe("FacilitiesRepoHttp.create", () => {
       project_id: "p-1",
       address: "2 Second St",
       city: "Shelbyville",
-      description: "used as description",
+      notes: "used as description",
       photo_url: "https://cdn.example.com/new.jpg",
       geo: { lat: 10, lng: 20 },
     });

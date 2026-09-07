@@ -43,15 +43,19 @@ describe("mapCompleteReviewResponseDTOToDomain", () => {
     expect(result.message).toBe("");
   });
 
-  it("keeps an empty request_id as an empty string", () => {
-    const result = mapCompleteReviewResponseDTOToDomain({
-      audit_id: "audit-1",
-      status: "completed",
-      request_id: "",
-    });
-
-    // FIXME: request_id vacio se propaga tal cual; no hay validacion del
-    // identificador que despues se usa para trazar la operacion.
-    expect(result.requestId).toBe("");
+  // Un request_id vacío no permite seguir la generación del reporte: se corta
+  // acá en vez de dejar al poller consultando "".
+  it.each([
+    ["empty", ""],
+    ["blank", "   "],
+    ["absent", undefined],
+  ])("rejects a request_id that is %s", (_label, request_id) => {
+    expect(() =>
+      mapCompleteReviewResponseDTOToDomain({
+        audit_id: "audit-1",
+        status: "completed",
+        request_id: request_id as never,
+      })
+    ).toThrow(/request_id is required/);
   });
 });

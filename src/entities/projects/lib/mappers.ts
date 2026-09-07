@@ -1,3 +1,4 @@
+import { asArray, toFiniteNumber, toIsoDate } from "@shared/lib/coerce";
 import type { Options, Project, ProjectListPage } from "../model";
 
 export interface ProjectDTO {
@@ -32,8 +33,10 @@ export function mapProjectFromDTO(dto: ProjectDTO): Project {
     status: dto.status,
     users: dto.users?.map((u) => ({ id: u.id, name: u.name })) ?? [],
     facilities: dto.facilities?.map((f) => ({ id: f.facility_id, name: f.name })) ?? [],
-    createdAt: dto.created_at,
-    updatedAt: dto.updated_at,
+    // Las fechas se validan: una inválida llegaba a la interfaz y se mostraba
+    // como "Invalid Date".
+    createdAt: toIsoDate(dto.created_at),
+    updatedAt: toIsoDate(dto.updated_at),
     createdBy: dto.created_by,
   };
 }
@@ -42,11 +45,16 @@ export function mapProjectFromDTO(dto: ProjectDTO): Project {
 export function mapProjectsListFromDTO(
   response: ProjectsResponseDTO
 ): ProjectListPage {
-  const { projects, limit, cursor } = response.data;
+  // Guarda sobre `data`: una respuesta malformada rompía el mapper en vez de
+  // degradar a una página vacía.
+  const data = response?.data ?? ({} as ProjectsResponseDTO["data"]);
+  const { projects, limit, cursor } = data;
 
   return {
-    items: projects.map(mapProjectFromDTO),
-    limit: typeof limit === "number" ? limit : 0,
+    items: asArray<ProjectDTO>(projects).map(mapProjectFromDTO),
+    // El backend puede mandar el limit como string: descartarlo lo dejaba en 0
+    // y la interfaz creía que no había página.
+    limit: toFiniteNumber(limit, 0),
     cursor: cursor ?? "",
   };
 }

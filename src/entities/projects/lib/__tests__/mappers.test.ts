@@ -106,14 +106,23 @@ describe("mapProjectFromDTO", () => {
     expect(result.facilities[0]).not.toHaveProperty("projectId");
   });
 
-  it("does not validate or normalize the date fields", () => {
+  // Las fechas se validan: una inválida llegaba a la interfaz y se mostraba
+  // como "Invalid Date".
+  it("normalizes an invalid date to an empty string", () => {
     const result = mapProjectFromDTO(
       makeProjectDTO({ created_at: "not-a-date", updated_at: "  " })
     );
 
-    // FIXME: las fechas llegan sin validar; un valor invalido se propaga a la UI.
-    expect(result.createdAt).toBe("not-a-date");
-    expect(result.updatedAt).toBe("  ");
+    expect(result.createdAt).toBe("");
+    expect(result.updatedAt).toBe("");
+  });
+
+  it("keeps a valid date untouched", () => {
+    const result = mapProjectFromDTO(
+      makeProjectDTO({ created_at: "2026-01-15T10:30:00Z" })
+    );
+
+    expect(result.createdAt).toBe("2026-01-15T10:30:00Z");
   });
 });
 
@@ -152,13 +161,21 @@ describe("mapProjectsListFromDTO", () => {
     expect(mapProjectsListFromDTO(makeResponseDTO({ limit: 0 })).limit).toBe(0);
   });
 
-  it("falls back to limit 0 when the limit is not a number", () => {
+  // El backend puede mandar el limit como string: descartarlo lo dejaba en 0 y
+  // rompía el cálculo de páginas.
+  it("accepts a numeric limit sent as a string", () => {
     const page = mapProjectsListFromDTO(
       makeResponseDTO({ limit: "20" as never })
     );
 
-    // FIXME: un limit numerico como string se descarta y queda en 0, lo que
-    // rompe el calculo de paginas en la UI.
+    expect(page.limit).toBe(20);
+  });
+
+  it("falls back to limit 0 when the limit is not usable", () => {
+    const page = mapProjectsListFromDTO(
+      makeResponseDTO({ limit: "muchos" as never })
+    );
+
     expect(page.limit).toBe(0);
   });
 
@@ -166,8 +183,16 @@ describe("mapProjectsListFromDTO", () => {
     expect(mapProjectsListFromDTO(makeResponseDTO()).cursor).toBe("");
   });
 
-  it("throws when the data envelope is missing", () => {
-    // FIXME: no hay guarda defensiva sobre `response.data`.
-    expect(() => mapProjectsListFromDTO({ status: "ok" } as never)).toThrow();
+  // Una respuesta malformada degrada a una página vacía en vez de romper.
+  it.each([
+    ["the data envelope is missing", { status: "ok" }],
+    ["the response is null", null],
+    ["projects is not an array", { data: { projects: "nope" } }],
+  ])("returns an empty page when %s", (_label, response) => {
+    const page = mapProjectsListFromDTO(response as never);
+
+    expect(page.items).toEqual([]);
+    expect(page.limit).toBe(0);
+    expect(page.cursor).toBe("");
   });
 });

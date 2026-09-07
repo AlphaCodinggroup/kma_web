@@ -1,3 +1,4 @@
+import { toIsoDate } from "@shared/lib/coerce";
 import type { IsoDateString } from "@entities/audit/model";
 import type {
   AuditReviewComment,
@@ -35,9 +36,10 @@ export type AuditCommentsListDTO = {
   comments?: AuditCommentResponseDTO[];
 };
 
-const toIso = (value?: string | null): IsoDateString => {
-  return (value ?? "") as IsoDateString;
-};
+// Valida la fecha en vez de castearla: una inválida llegaba al dominio y se
+// mostraba como "Invalid Date" en la interfaz.
+const toIso = (value?: string | null): IsoDateString =>
+  toIsoDate(value) as IsoDateString;
 
 const toNumber = (value: unknown, fallback = 1): number => {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -56,10 +58,17 @@ const toNumber = (value: unknown, fallback = 1): number => {
 export const mapCreateAuditCommentInputToDTO = (
   input: CreateAuditCommentInput
 ): CreateAuditCommentDTO => {
+  // Un comentario vacío no es un comentario: se rechaza acá en vez de enviar
+  // "" al backend y crear un registro sin contenido.
+  const content = input.content?.trim() ?? "";
+  if (content === "") {
+    throw new Error("mapCreateAuditCommentInputToDTO: content is required");
+  }
+
   return {
     audit_id: input.auditId,
     step_id: input.stepId,
-    content: input.content.trim(),
+    content,
   };
 };
 

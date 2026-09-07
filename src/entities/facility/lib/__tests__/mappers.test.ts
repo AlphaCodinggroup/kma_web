@@ -68,42 +68,40 @@ describe("mapCreateFacilityParamsToDTO", () => {
     });
   });
 
-  it("uses notes as the fallback for description", () => {
+  // notes es un campo propio de punta a punta: antes se escribía sobre
+  // description porque el backend no lo tenía.
+  it("sends notes in its own field", () => {
     const dto = mapCreateFacilityParamsToDTO({
       name: "F",
       notes: "some notes",
     });
 
-    expect(dto.description).toBe("some notes");
+    expect(dto.notes).toBe("some notes");
+    expect(dto).not.toHaveProperty("description");
   });
 
-  it("prefers description over notes when both are present", () => {
+  it("sends description and notes together", () => {
     const dto = mapCreateFacilityParamsToDTO({
       name: "F",
       description: "the description",
       notes: "the notes",
     });
 
-    // FIXME: `notes` no tiene campo propio en el DTO: cuando hay description,
-    // las notas se pierden por completo en el request de creacion.
     expect(dto.description).toBe("the description");
-    expect(dto).not.toHaveProperty("notes");
+    expect(dto.notes).toBe("the notes");
   });
 
   it.each([
     ["address", "address"],
     ["city", "city"],
     ["description", "description"],
-    ["photoUrl", "photo_url"],
-  ] as const)("drops an empty %s because the mapper uses a truthy check", (
-    domainKey,
-    dtoKey
-  ) => {
+    // photoUrl queda fuera a propósito: para borrar la foto el dominio tiene
+    // el flag `clearPhoto`, no una cadena vacía.
+  ] as const)("sends an explicitly empty %s", (domainKey, dtoKey) => {
     const params = { name: "F", [domainKey]: "" } as CreateFacilityParams;
 
-    // FIXME: `if (params.address)` descarta el string vacio. Deberia usarse
-    // `!= null` para poder enviar un valor explicitamente vacio.
-    expect(mapCreateFacilityParamsToDTO(params)).not.toHaveProperty(dtoKey);
+    // El vacío se envía: descartarlo hacía imposible dejar el campo en blanco.
+    expect(mapCreateFacilityParamsToDTO(params)).toHaveProperty(dtoKey, "");
   });
 
   it("keeps a geo point at the 0,0 coordinates", () => {
@@ -167,12 +165,12 @@ describe("mapUpdateFacilityParamsToDTO", () => {
     expect(dto).toEqual({ name: "", address: "", city: "" });
   });
 
-  it("uses notes as the fallback for description", () => {
+  // Actualizar sólo notes ya no sobrescribe description.
+  it("updates notes without touching description", () => {
     const dto = mapUpdateFacilityParamsToDTO({ id: "fa-1", notes: "just notes" });
 
-    // FIXME: actualizar solo `notes` sobrescribe `description` en el backend,
-    // porque el DTO no tiene un campo propio para notas.
-    expect(dto.description).toBe("just notes");
+    expect(dto.notes).toBe("just notes");
+    expect(dto).not.toHaveProperty("description");
   });
 
   it("clears the photo when clearPhoto is true", () => {
@@ -285,15 +283,24 @@ describe("mapFacilityFromDTO", () => {
     expect(result.projectId).toBe("");
   });
 
-  it("falls back to description for notes when notes is absent", () => {
+  // Al leer, notes queda ausente si el backend no la trae: antes copiaba
+  // description y la interfaz no podía saber si había notas de verdad.
+  it("leaves notes absent when the DTO has none", () => {
     const result = mapFacilityFromDTO(
       makeFacilityDTO({ description: "A description" })
     );
 
-    // FIXME: description y notes terminan con el mismo valor; la UI no puede
-    // saber si el usuario realmente cargo notas.
-    expect(result.notes).toBe("A description");
     expect(result.description).toBe("A description");
+    expect(result.notes).toBeUndefined();
+  });
+
+  it("reads notes from its own field", () => {
+    const result = mapFacilityFromDTO(
+      makeFacilityDTO({ description: "A description", notes: "Some notes" })
+    );
+
+    expect(result.description).toBe("A description");
+    expect(result.notes).toBe("Some notes");
   });
 
   it("keeps archived_at and archived_by null when they are explicitly null", () => {
@@ -368,16 +375,22 @@ describe("mapFacilitiesListFromDTO", () => {
     );
   });
 
-  it("drops the total returned by the API", () => {
+  // El total del backend se modela: antes se descartaba y la paginación de la
+  // interfaz no tenía con qué calcular.
+  it("keeps the total returned by the API", () => {
     const page = mapFacilitiesListFromDTO({ facilities: [], total: 57 });
 
-    // FIXME: el DTO declara `total` pero FacilityListPage no lo modela, asi que
-    // el conteo total del backend se descarta y la UI no puede paginar bien.
-    expect(page).not.toHaveProperty("total");
+    expect(page.total).toBe(57);
   });
 
-  it("throws when the facilities key is missing", () => {
-    // FIXME: sin guarda defensiva, una respuesta malformada rompe el mapper.
-    expect(() => mapFacilitiesListFromDTO({} as never)).toThrow();
+  // Una respuesta malformada degrada a una página vacía en vez de romper.
+  it.each([
+    ["the facilities key is missing", {}],
+    ["the response is null", null],
+    ["facilities is not an array", { facilities: "nope" }],
+  ])("returns an empty page when %s", (_label, response) => {
+    const page = mapFacilitiesListFromDTO(response as never);
+
+    expect(page.items).toEqual([]);
   });
 });

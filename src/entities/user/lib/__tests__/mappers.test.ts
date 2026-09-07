@@ -72,23 +72,36 @@ describe("mapUserDTOtoDomain", () => {
     expect(mapUserDTOtoDomain({ name: "Jane Doe" }).username).toBe("Jane Doe");
   });
 
-  it("keeps an empty name instead of falling back", () => {
-    const result = mapUserDTOtoDomain({ name: "", username: "jane" });
+  // Un name en blanco cae al username: `??` no cubría el string vacío y el
+  // usuario se mostraba sin nombre.
+  it.each([
+    ["an empty name", ""],
+    ["a blank name", "   "],
+  ])("falls back to the username for %s", (_label, name) => {
+    const result = mapUserDTOtoDomain({ name, username: "jane" });
 
-    // FIXME: `??` no cubre el string vacio, asi que un name en blanco del
-    // backend se muestra como usuario sin nombre en vez de caer a username.
-    expect(result.name).toBe("");
+    expect(result.name).toBe("jane");
   });
 
   it("maps a null email to null", () => {
     expect(mapUserDTOtoDomain({ email: null }).email).toBeNull();
   });
 
-  it("casts an unknown role without validating it", () => {
-    // FIXME: `role` se castea a Role sin comprobar la lista de roles validos;
-    // un rol desconocido llega a las guardas de permisos como si fuera valido.
-    expect(mapUserDTOtoDomain({ role: "superuser" }).role).toBe("superuser");
+  // Un rol desconocido cae a "viewer": antes se casteaba tal cual y llegaba a
+  // las guardas de permisos como si fuera válido.
+  it.each([
+    ["an unknown role", "superuser"],
+    ["an empty role", ""],
+  ])("falls back to viewer for %s", (_label, role) => {
+    expect(mapUserDTOtoDomain({ role }).role).toBe("viewer");
   });
+
+  it.each(["administrator", "admin", "auditor", "viewer"] as const)(
+    "keeps the known role %s",
+    (role) => {
+      expect(mapUserDTOtoDomain({ role }).role).toBe(role);
+    }
+  );
 
   it("defaults the role to viewer when it is null", () => {
     expect(mapUserDTOtoDomain({ role: null }).role).toBe("viewer");
@@ -193,8 +206,9 @@ describe("mapCognitoClaimsToUser", () => {
   it("ignores the exp claim", () => {
     const result = mapCognitoClaimsToUser({ sub: "s", exp: 1893456000 });
 
-    // FIXME: `exp` se declara en el tipo pero el mapper lo descarta; el dominio
-    // no expone la expiracion de la sesion.
+    // El dominio no expone `exp` a propósito: la expiración se comprueba en
+    // shared/auth/verify-access-token, sobre los claims ya verificados y antes
+    // de mapear. El campo está en el tipo de claims porque el token lo trae.
     expect(result).not.toHaveProperty("exp");
   });
 });

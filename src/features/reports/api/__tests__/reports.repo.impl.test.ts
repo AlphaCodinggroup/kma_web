@@ -133,14 +133,21 @@ describe("ReportsRepoHttp.getById", () => {
     expect(item.reportUrl).toBe("https://cdn.example.com/report-1.pdf");
   });
 
+  // El estado del reporte es el de la auditoría (la lambda `reports` devuelve
+  // audit.Status), así que "generándose" se señaliza con report_url en null y
+  // no con un estado propio.
   it("keeps a still-generating report with a null url", async () => {
     http.get.mockResolvedValueOnce({
-      data: { ...itemDTO, status: "generating_report", report_url: null },
+      data: {
+        ...itemDTO,
+        status: "final_report_sent_to_client",
+        report_url: null,
+      },
     });
 
     const item = await new ReportsRepoHttp().getById("audit-1");
 
-    expect(item.status).toBe("generating_report");
+    expect(item.status).toBe("final_report_sent_to_client");
     expect(item.reportUrl).toBeNull();
   });
 });

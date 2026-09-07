@@ -105,7 +105,9 @@ describe("useAuditReport", () => {
     expect(getReportMock).not.toHaveBeenCalled();
   });
 
-  it("lets the caller force the query even without an audit id", async () => {
+  // El id manda sobre `enabled`: con `enabled: true` y sin auditId el hook
+  // cortocircuita en vez de pedirle el reporte de un id vacío al repositorio.
+  it("does not query without an audit id even when the caller forces enabled", () => {
     getReportMock.mockResolvedValue(makeReport());
     const { wrapper } = createWrapper();
 
@@ -114,9 +116,7 @@ describe("useAuditReport", () => {
       { wrapper }
     );
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    // FIXME: con `enabled: true` explícito el hook consulta igual y le pasa
-    // `undefined` al repositorio en vez de cortocircuitar.
-    expect(getReportMock).toHaveBeenCalledWith(undefined);
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(getReportMock).not.toHaveBeenCalled();
   });
 });

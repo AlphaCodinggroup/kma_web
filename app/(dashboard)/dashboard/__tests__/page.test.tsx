@@ -6,7 +6,7 @@
  */
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const useDashboardSummary = vi.fn();
 
@@ -79,9 +79,26 @@ async function renderPage() {
   return render(<DashboardPage />);
 }
 
+/** Declara las variables que zod valida al cargar el entorno público. */
+function stubEnv() {
+  vi.stubEnv("NEXT_PUBLIC_APP_NAME", "KMA");
+  vi.stubEnv("NEXT_PUBLIC_APP_ENV", "development");
+  vi.stubEnv("NEXT_PUBLIC_AUTH_BASE_URL", "https://auth.example.com");
+  vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.example.com/api");
+  vi.stubEnv("NEXT_PUBLIC_HTTP_TIMEOUT_MS", "5000");
+  vi.stubEnv("NEXT_PUBLIC_QUERY_STALE_TIME", "30000");
+  vi.stubEnv("NEXT_PUBLIC_LOCALE", "en-US");
+}
+
 describe("DashboardPage", () => {
   beforeEach(() => {
+    vi.resetModules();
     vi.clearAllMocks();
+    stubEnv();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("renders the seven metrics with their titles", async () => {
@@ -93,19 +110,17 @@ describe("DashboardPage", () => {
     expect(screen.getByTestId("metrics").children).toHaveLength(7);
   });
 
-  // La página agrupa los miles con toLocaleString("es-ES"). La aserción no fija
-  // el separador porque depende del ICU con el que se compiló Node, pero sí
-  // que el número pasa por el formateo de locale y no por String().
-  //
-  // FIXME: el locale "es-ES" está hardcodeado en una interfaz que está en
-  // inglés; debería venir de configuración junto con el resto de los formatos.
-  it("formats the numbers with the locale grouping", async () => {
+  // El locale sale de NEXT_PUBLIC_LOCALE (default en-US): antes estaba escrito
+  // a mano como "es-ES" en una interfaz en inglés. La aserción no fija el
+  // separador porque depende del ICU con el que se compiló Node, pero sí que el
+  // número pasa por el formateo de locale y no por String().
+  it("formats the numbers with the configured locale", async () => {
     stubSummary();
 
     await renderPage();
 
     expect(
-      screen.getByText(`Totals Projects=${(1200).toLocaleString("es-ES")}`)
+      screen.getByText(`Totals Projects=${(1200).toLocaleString("en-US")}`)
     ).toBeTruthy();
     expect(screen.getByText(/Totals Projects=1[.,]?200/)).toBeTruthy();
   });

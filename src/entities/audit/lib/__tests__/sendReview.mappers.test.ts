@@ -58,17 +58,17 @@ describe("mapSendForReviewDTO", () => {
     expect(mapSendForReviewDTO(makeDTO({ status })).status).toBe(status);
   });
 
-  it("passes an unknown status through unchanged", () => {
-    // FIXME: la lista blanca `allowed` es decorativa: ambas ramas devuelven el
-    // mismo valor casteado a AuditStatus.
-    expect(mapSendForReviewDTO(makeDTO({ status: "surprise" })).status).toBe(
-      "surprise"
+  // La lista blanca filtra de verdad: lo que no está en ella cae al estado
+  // inicial en vez de entrar al dominio y romper los switches por estado.
+  it.each([
+    ["an unknown status", "surprise"],
+    ["an empty status", ""],
+  ])("falls back to the initial status for %s", (_label, status) => {
+    expect(mapSendForReviewDTO(makeDTO({ status })).status).toBe(
+      "draft_report_pending_review"
     );
   });
 
-  it("passes an empty status through unchanged", () => {
-    expect(mapSendForReviewDTO(makeDTO({ status: "" })).status).toBe("");
-  });
 
   it.each([
     ["true", true, true],

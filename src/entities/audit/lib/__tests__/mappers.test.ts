@@ -79,12 +79,11 @@ describe("mapAuditDtoToDomain", () => {
     expect(result.createdAt).toBe("");
     expect(result.updatedAt).toBe("");
     expect(result.findingsCount).toBeNull();
-    // FIXME: el modelo declara projectName/auditorName/facilityName como
-    // `string | null`; el mapper devuelve "" en lugar de null cuando faltan,
-    // lo que obliga a la UI a chequear ambos valores vacios.
-    expect(result.projectName).toBe("");
-    expect(result.auditorName).toBe("");
-    expect(result.facilityName).toBe("");
+    // Los nombres faltantes son null, como declara el modelo: devolver ""
+    // obligaba a la interfaz a chequear los dos valores vacíos.
+    expect(result.projectName).toBeNull();
+    expect(result.auditorName).toBeNull();
+    expect(result.facilityName).toBeNull();
   });
 
   it("applies the same defaults when optional fields are explicitly null", () => {
@@ -109,7 +108,7 @@ describe("mapAuditDtoToDomain", () => {
     expect(result.facilityId).toBeNull();
     expect(result.createdAt).toBe("");
     expect(result.findingsCount).toBeNull();
-    expect(result.projectName).toBe("");
+    expect(result.projectName).toBeNull();
   });
 
   it("keeps numeric zero for findings_count instead of treating it as absent", () => {
@@ -143,15 +142,15 @@ describe("mapAuditDtoToDomain", () => {
     expect(result.facilityId).toBe("fa-1");
   });
 
-  it("passes through an invalid date string without validating it", () => {
+  // Una fecha inválida queda vacía: antes llegaba tal cual al dominio y sólo
+  // fallaba al renderizarse como "Invalid Date".
+  it("normalizes an invalid date string to an empty string", () => {
     const result = mapAuditDtoToDomain(
       makeAuditDTO({ created_at: "not-a-date", updated_at: "2026-13-45" })
     );
 
-    // FIXME: no hay validacion de fecha; un valor invalido llega tal cual al
-    // dominio y solo falla al renderizarse. Deberia normalizarse a null o "".
-    expect(result.createdAt).toBe("not-a-date");
-    expect(result.updatedAt).toBe("2026-13-45");
+    expect(result.createdAt).toBe("");
+    expect(result.updatedAt).toBe("");
   });
 
   it("trims surrounding whitespace on dates", () => {
@@ -162,25 +161,33 @@ describe("mapAuditDtoToDomain", () => {
     expect(result.createdAt).toBe("2026-01-01T00:00:00Z");
   });
 
-  it("casts an unknown status without validating the allowed values", () => {
-    const result = mapAuditDtoToDomain(makeAuditDTO({ status: "weird_status" }));
+  // El estado se valida contra la lista de estados conocidos: antes se casteaba
+  // cualquier string a AuditStatus y entraba al dominio sin señalizarse.
+  it.each([
+    ["an unknown status", "weird_status"],
+    ["an empty status", ""],
+  ])("falls back to the initial status for %s", (_label, status) => {
+    const result = mapAuditDtoToDomain(makeAuditDTO({ status }));
 
-    // FIXME: el mapper castea cualquier string a AuditStatus; un estado
-    // desconocido del backend entra al dominio sin senalizarse.
-    expect(result.status).toBe("weird_status");
+    expect(result.status).toBe("draft_report_pending_review");
   });
 
-  it("maps an empty status to an empty string", () => {
-    const result = mapAuditDtoToDomain(makeAuditDTO({ status: "" }));
-
-    expect(result.status).toBe("");
+  it("keeps every known status", () => {
+    for (const status of [
+      "draft_report_pending_review",
+      "draft_report_in_review",
+      "final_report_sent_to_client",
+      "completed",
+    ] as const) {
+      expect(mapAuditDtoToDomain(makeAuditDTO({ status })).status).toBe(status);
+    }
   });
 
   it("defends against a missing flow_id and status at runtime", () => {
     const result = mapAuditDtoToDomain({ id: "a-1" } as never);
 
     expect(result.flowId).toBe("");
-    expect(result.status).toBe("");
+    expect(result.status).toBe("draft_report_pending_review");
   });
 });
 

@@ -202,8 +202,10 @@ export const mapAuditQuestionDTO = (dto: AuditQuestionDTO): AuditQuestion => {
       : [],
   };
 
+  // `!= null` y no truthy: un código vacío es un código presente y vacío, y
+  // descartarlo lo volvía indistinguible de "sin código".
   const code = dto.code ?? dto.question_code;
-  if (code) {
+  if (code != null) {
     base.code = code;
   }
   if (typeof dto.order === "number") {
@@ -234,8 +236,9 @@ export const mapAuditReportItemDTO = (
 };
 
 export const mapAuditCommentDTO = (dto: AuditCommentDTO): AuditComment => {
-  const page =
-    dto.page == null ? null : toNumber(dto.page as number | string);
+  // Una página no parseable se omite: convertirla en 0 la hacía pasar por una
+  // página válida y el comentario aparecía anclado a la primera hoja.
+  const page = parsePage(dto.page);
 
   return {
     id: dto.id,
@@ -384,4 +387,20 @@ export const mapAuditDetailDTOToDomain = (dto: AuditDetailDTO): AuditDetail => {
       : [],
     ...(dto.steps ? { steps: dto.steps } : {}),
   };
+};
+
+/** parsePage devuelve la página cuando es un entero utilizable, o null. */
+const parsePage = (raw: unknown): number | null => {
+  if (raw == null) return null;
+  if (typeof raw === "number") {
+    return Number.isFinite(raw) ? raw : null;
+  }
+  if (typeof raw !== "string") return null;
+
+  // Number("") es 0, así que la cadena vacía se descarta antes de convertir.
+  const trimmed = raw.trim();
+  if (trimmed === "") return null;
+
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : null;
 };

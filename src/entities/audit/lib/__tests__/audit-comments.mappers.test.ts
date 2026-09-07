@@ -40,16 +40,15 @@ describe("mapCreateAuditCommentInputToDTO", () => {
     expect(dto.content).toBe("padded");
   });
 
-  it("keeps a blank content as an empty string", () => {
-    const dto = mapCreateAuditCommentInputToDTO({
-      auditId: "a",
-      stepId: "s",
-      content: "   ",
-    });
-
-    // FIXME: el mapper no valida contenido vacio; se envia "" al backend en
-    // lugar de rechazar el input en el borde.
-    expect(dto.content).toBe("");
+  // Un comentario vacío se rechaza en el borde en vez de crear un registro sin
+  // contenido en el backend.
+  it.each([
+    ["blank content", "   "],
+    ["empty content", ""],
+  ])("rejects %s", (_label, content) => {
+    expect(() =>
+      mapCreateAuditCommentInputToDTO({ auditId: "a", stepId: "s", content })
+    ).toThrow(/content is required/);
   });
 });
 
@@ -188,14 +187,24 @@ describe("mapAuditCommentResponseDTOToDomain", () => {
     expect(result.updatedAt).toBe("2026-06-06T00:00:00Z");
   });
 
-  it("does not trim or validate the date strings", () => {
+  // Una fecha inválida queda vacía en vez de llegar a la interfaz y mostrarse
+  // como "Invalid Date".
+  it("normalizes an invalid date to an empty string", () => {
     const result = mapAuditCommentResponseDTOToDomain({
       id: "c-1",
       created_at: " not-a-date ",
     });
 
-    // FIXME: sin validacion de fecha, un valor invalido entra al dominio.
-    expect(result.createdAt).toBe(" not-a-date ");
+    expect(result.createdAt).toBe("");
+  });
+
+  it("keeps a valid date, trimmed", () => {
+    const result = mapAuditCommentResponseDTOToDomain({
+      id: "c-1",
+      created_at: "  2026-01-15T10:30:00Z  ",
+    });
+
+    expect(result.createdAt).toBe("2026-01-15T10:30:00Z");
   });
 });
 

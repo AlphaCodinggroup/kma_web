@@ -179,9 +179,9 @@ describe("mapAuditFindingDTO", () => {
       } as never)
     );
 
-    // FIXME: el modelo AuditFinding declara `qcComment` y `updatedAt` pero ni
-    // el DTO ni el mapper los contemplan, asi que esos datos del backend se
-    // pierden silenciosamente.
+    // El finding no tiene qcComment ni updatedAt: el backend no los expone en
+    // su FindingDetail, así que declararlos en el dominio era superficie
+    // muerta que aparentaba traer datos. El comentario de QC viaja en `notes`.
     expect(result).not.toHaveProperty("qcComment");
     expect(result).not.toHaveProperty("updatedAt");
   });
@@ -238,17 +238,17 @@ describe("mapAuditReviewDTO", () => {
     ).toBe(0);
   });
 
-  it("passes an unknown status through unchanged", () => {
-    // FIXME: `allowed.includes(raw) ? raw : raw` es un ternario inutil: ambas
-    // ramas devuelven lo mismo, asi que la lista blanca no valida nada.
-    expect(mapAuditReviewDTO(makeReviewDTO({ status: "surprise" })).status).toBe(
-      "surprise"
+  // La lista blanca filtra de verdad: lo que no está en ella cae al estado
+  // inicial en vez de entrar al dominio y romper los switches por estado.
+  it.each([
+    ["an unknown status", "surprise"],
+    ["an empty status", ""],
+  ])("falls back to the initial status for %s", (_label, status) => {
+    expect(mapAuditReviewDTO(makeReviewDTO({ status })).status).toBe(
+      "draft_report_pending_review"
     );
   });
 
-  it("passes an empty status through unchanged", () => {
-    expect(mapAuditReviewDTO(makeReviewDTO({ status: "" })).status).toBe("");
-  });
 
   it("does not normalize the created_at / updated_at strings", () => {
     const result = mapAuditReviewDTO(

@@ -1,3 +1,5 @@
+import { toAuditStatus } from "@entities/audit/lib/audit-status";
+import { toIsoDate, toIsoDateOrNull } from "@shared/lib/coerce";
 import type { AuditStatus } from "@entities/audit/model";
 import type { AuditReport } from "@entities/report/model/audit-report";
 
@@ -13,7 +15,9 @@ export type AuditReportDTO = {
   completed_at?: string | null;
 };
 
-const toStatus = (raw: string): AuditStatus => raw as AuditStatus;
+// El estado se valida contra la lista de estados conocidos: antes era un cast
+// y cualquier string entraba al dominio como AuditStatus.
+const toStatus = (raw: unknown): AuditStatus => toAuditStatus(raw);
 
 const toNullIfEmpty = (v: unknown): string | null => {
   if (typeof v !== "string") return null;
@@ -29,8 +33,10 @@ export const mapAuditReportDTO = (dto: AuditReportDTO): AuditReport => {
     status: toStatus(dto.status),
     reportName: toNullIfEmpty(dto.report_name ?? null),
     reportUrl: toNullIfEmpty(dto.report_url ?? null),
-    createdAt: dto.created_at,
-    updatedAt: dto.updated_at ?? null,
-    completedAt: dto.completed_at ?? null,
+    // Las fechas pasan por la misma validación que el resto de los campos:
+    // antes se copiaban tal cual y una inválida llegaba a la interfaz.
+    createdAt: toIsoDate(dto.created_at),
+    updatedAt: toIsoDateOrNull(dto.updated_at),
+    completedAt: toIsoDateOrNull(dto.completed_at),
   };
 };

@@ -9,6 +9,7 @@ import { useDashboardSummary } from "@features/dashboard/ui/useDashboardSummary"
 import { Retry } from "@shared/ui/Retry";
 import { formatIsoToYmdHm } from "@shared/lib/date";
 import type { Activity } from "@widgets/dashboard/DashboardActivitySection";
+import { PublicEnv } from "@shared/config/env";
 
 const DashboardPage: React.FC = () => {
   const { data, isLoading, isError, refetch } = useDashboardSummary();
@@ -17,8 +18,10 @@ const DashboardPage: React.FC = () => {
     const metrics = data?.metrics;
     if (!metrics) return [];
 
+    // El locale sale de la configuración: estaba escrito a mano como "es-ES"
+    // en una interfaz que está en inglés.
     const fmt = (value: number) =>
-      Number.isFinite(value) ? value.toLocaleString("es-ES") : "-";
+      Number.isFinite(value) ? value.toLocaleString(PublicEnv.locale) : "-";
 
     return [
       {

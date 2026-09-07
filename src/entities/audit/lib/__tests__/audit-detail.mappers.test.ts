@@ -152,10 +152,14 @@ describe("mapAuditQuestionDTO", () => {
     );
   });
 
-  it("drops an empty code because the mapper uses a truthy check", () => {
-    // FIXME: `if (code)` descarta el string vacio; deberia usar `!= null`
-    // para distinguir "sin codigo" de "codigo vacio".
-    expect(mapAuditQuestionDTO({ id: "q", code: "" })).not.toHaveProperty("code");
+  // Un código vacío es un código presente y vacío: descartarlo lo volvía
+  // indistinguible de "sin código".
+  it("keeps an empty code", () => {
+    expect(mapAuditQuestionDTO({ id: "q", code: "" }).code).toBe("");
+  });
+
+  it("omits the code when the DTO has none", () => {
+    expect(mapAuditQuestionDTO({ id: "q" })).not.toHaveProperty("code");
   });
 
   it("keeps order 0 because the mapper checks the type, not truthiness", () => {
@@ -387,10 +391,13 @@ describe("mapAuditCommentDTO", () => {
     expect(mapAuditCommentDTO({ id: "c-1", page: "5" }).page).toBe(5);
   });
 
-  it("turns an unparseable page into 0", () => {
-    // FIXME: una pagina invalida se convierte en 0, que es una pagina valida.
-    // Deberia omitirse la clave o propagarse null.
-    expect(mapAuditCommentDTO({ id: "c-1", page: "abc" }).page).toBe(0);
+  // Una página no parseable se omite: convertirla en 0 la hacía pasar por una
+  // página válida y el comentario quedaba anclado a la primera hoja.
+  it.each([
+    ["an unparseable page", "abc"],
+    ["an empty page", ""],
+  ])("omits %s", (_label, page) => {
+    expect(mapAuditCommentDTO({ id: "c-1", page })).not.toHaveProperty("page");
   });
 
   it.each([

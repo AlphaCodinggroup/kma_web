@@ -164,15 +164,18 @@ vi.mock("@shared/ui/confirm-dialog", () => ({
     onOpenChange,
     onConfirm,
     loading,
+    error,
   }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onConfirm: () => void;
     loading?: boolean;
+    error?: string | null;
   }) =>
     open ? (
       <div role="dialog" aria-label="confirm delete">
         <span data-testid="confirm-loading">{String(loading)}</span>
+        <span data-testid="confirm-error">{error ?? "none"}</span>
         <button onClick={onConfirm}>confirm delete</button>
         <button onClick={() => onOpenChange(false)}>cancel delete</button>
       </div>
@@ -490,9 +493,12 @@ describe("UsersPage", () => {
     await userEvent.click(screen.getByRole("button", { name: "confirm delete" }));
 
     await waitFor(() => expect(consoleError).toHaveBeenCalled());
-    // FIXME: al fallar el borrado sólo se apaga el spinner: el diálogo queda
-    // abierto sin ningún mensaje, así que el usuario no se entera del error.
+    // El diálogo queda abierto CON el mensaje del error: antes sólo se apagaba
+    // el spinner y el usuario no se enteraba de que el borrado había fallado.
     expect(screen.getByRole("dialog", { name: "confirm delete" })).toBeTruthy();
     expect(screen.getByTestId("confirm-loading").textContent).toBe("false");
+    await waitFor(() =>
+      expect(screen.getByTestId("confirm-error").textContent).toBe("conflict")
+    );
   });
 });

@@ -68,12 +68,11 @@ describe("mapUpdateAuditFindingInputToDTO", () => {
     });
   });
 
-  it("drops a null quantity so it can never be cleared", () => {
-    // FIXME: `UpdateAuditFindingInput.quantity` admite null, pero el mapper
-    // solo acepta `typeof === "number"`, asi que null se descarta en silencio
-    // y no hay forma de limpiar la cantidad.
+  // null vacía la cantidad: descartarlo hacía imposible borrarla, porque el
+  // backend interpreta la ausencia como "no cambies este campo".
+  it("sends a null quantity so it can be cleared", () => {
     expect(mapUpdateAuditFindingInputToDTO(makeInput({ quantity: null }))).toEqual(
-      {}
+      { quantity: null }
     );
   });
 

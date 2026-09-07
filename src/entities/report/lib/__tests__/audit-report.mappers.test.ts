@@ -107,7 +107,9 @@ describe("mapAuditReportDTO", () => {
     expect(result.reportUrl).toBe("/a.pdf");
   });
 
-  it("does not trim or normalize the date fields", () => {
+  // Las fechas pasan por la misma validación que el resto de los strings del
+  // DTO: antes se copiaban tal cual y una inválida llegaba a la interfaz.
+  it("trims a valid date and normalizes the invalid ones", () => {
     const result = mapAuditReportDTO(
       makeReportDTO({
         created_at: "  2026-01-01T00:00:00Z  ",
@@ -116,18 +118,19 @@ describe("mapAuditReportDTO", () => {
       })
     );
 
-    // FIXME: las fechas no pasan por toNullIfEmpty ni por validacion: un
-    // updated_at en blanco queda como "   " y una fecha invalida se propaga,
-    // a diferencia del resto de los strings del mismo DTO.
-    expect(result.createdAt).toBe("  2026-01-01T00:00:00Z  ");
-    expect(result.updatedAt).toBe("   ");
-    expect(result.completedAt).toBe("not-a-date");
+    expect(result.createdAt).toBe("2026-01-01T00:00:00Z");
+    expect(result.updatedAt).toBeNull();
+    expect(result.completedAt).toBeNull();
   });
 
-  it("casts an unknown status without validating it", () => {
-    // FIXME: `toStatus` es solo un cast; cualquier string entra como AuditStatus.
-    expect(mapAuditReportDTO(makeReportDTO({ status: "processing" })).status).toBe(
-      "processing"
+  // El estado se valida contra la lista de estados conocidos: antes era un
+  // cast y cualquier string entraba como AuditStatus.
+  it.each([
+    ["an unknown status", "processing"],
+    ["an empty status", ""],
+  ])("falls back to the initial status for %s", (_label, status) => {
+    expect(mapAuditReportDTO(makeReportDTO({ status })).status).toBe(
+      "draft_report_pending_review"
     );
   });
 });

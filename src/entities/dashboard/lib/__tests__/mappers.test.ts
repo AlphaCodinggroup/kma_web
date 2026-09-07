@@ -189,33 +189,41 @@ describe("mapRecentActivityDTO", () => {
       flowName: "",
       auditorId: "",
       auditorName: "",
-      completedAt: "",
+      completedAt: null,
     });
   });
 
-  it("maps a null completed_at to an empty string", () => {
-    // FIXME: `completedAt` es un string sin marca de ausencia: no se puede
-    // distinguir "sin fecha" de "fecha vacia" en la UI.
-    expect(mapRecentActivityDTO({ completed_at: null }).completedAt).toBe("");
+  // completedAt es nullable: como cadena no se podía distinguir "sin
+  // completar" de una fecha vacía.
+  it.each([
+    ["null", null],
+    ["absent", undefined],
+    ["an invalid date", "not-a-date"],
+    ["blank", "   "],
+  ])("maps a completed_at that is %s to null", (_label, completed_at) => {
+    expect(
+      mapRecentActivityDTO({ completed_at: completed_at as never }).completedAt
+    ).toBeNull();
   });
 
-  it("stringifies non-string values instead of dropping them", () => {
+  it("keeps a valid completed_at", () => {
+    expect(
+      mapRecentActivityDTO({ completed_at: "2026-01-15T10:30:00Z" }).completedAt
+    ).toBe("2026-01-15T10:30:00Z");
+  });
+
+  // Un valor que no es cadena se descarta: String() lo convertía en texto y un
+  // objeto terminaba en pantalla como "[object Object]".
+  it("drops values that are not strings", () => {
     const result = mapRecentActivityDTO({
       audit_id: 42 as never,
       completed_at: 1767225600000 as never,
+      project_name: {} as never,
     });
 
-    // FIXME: el mapper hace String(value) sobre cualquier tipo, asi que un
-    // timestamp numerico se convierte en el string del numero en vez de
-    // normalizarse a ISO.
-    expect(result.auditId).toBe("42");
-    expect(result.completedAt).toBe("1767225600000");
-  });
-
-  it("does not validate the completed_at format", () => {
-    expect(mapRecentActivityDTO({ completed_at: "not-a-date" }).completedAt).toBe(
-      "not-a-date"
-    );
+    expect(result.auditId).toBe("");
+    expect(result.completedAt).toBeNull();
+    expect(result.projectName).toBe("");
   });
 });
 

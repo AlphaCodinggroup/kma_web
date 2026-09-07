@@ -34,6 +34,8 @@ export interface Facility {
 export interface FacilityListPage {
   items: Facility[];
   limit?: number;
+  /** Total de facilities del listado, no de la página. */
+  total?: number;
   cursor?: string;
 }
 

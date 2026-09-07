@@ -63,7 +63,10 @@ describe("mapAuditReviewStatusChangeDTOToDomain", () => {
     expect(result.message).toBe("");
   });
 
-  it("passes an unknown status through without validating it", () => {
+  // Los estados se normalizan contra la lista de estados conocidos: el mapper
+  // confiaba en el tipado y un valor inesperado entraba al dominio sin
+  // señalizarse.
+  it("falls back to the initial status for an unknown one", () => {
     const result = mapAuditReviewStatusChangeDTOToDomain({
       audit_id: "audit-1",
       old_status: "surprise" as AuditStatus,
@@ -71,8 +74,7 @@ describe("mapAuditReviewStatusChangeDTOToDomain", () => {
       message: "",
     });
 
-    // FIXME: no hay normalizacion de estados; el mapper confia en el tipado y
-    // un valor inesperado del backend entra al dominio sin senalizarse.
-    expect(result.oldStatus).toBe("surprise");
+    expect(result.oldStatus).toBe("draft_report_pending_review");
+    expect(result.newStatus).toBe("completed");
   });
 });

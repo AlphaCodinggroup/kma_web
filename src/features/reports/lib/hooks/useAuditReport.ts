@@ -29,11 +29,13 @@ export function useAuditReport(auditId?: string, options?: Options) {
     ReturnType<typeof auditReportKey>
   >({
     queryKey: auditReportKey(auditId || ""),
-    enabled: isEnabled,
     queryFn: async () => auditReportRepo.getReport(auditId as string),
     staleTime: 5 * 60 * 1000,
     retry: 1,
     refetchOnWindowFocus: false,
     ...options,
+    // `enabled` va DESPUÉS del spread: puesto antes, el `enabled: true` del
+    // llamador pisaba el cálculo y la query se disparaba sin auditId.
+    enabled: isEnabled,
   });
 }

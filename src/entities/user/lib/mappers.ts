@@ -27,10 +27,14 @@ export function mapUserDTOtoDomain(dto: unknown): User {
   const id = u.id != null ? String(u.id) : "unknown";
   return {
     id,
-    name: (u.name ?? u.username ?? "User").toString(),
-    username: (u.username ?? u.name ?? "user").toString(),
+    // `??` no cubría el string vacío, así que un name en blanco del backend
+    // dejaba el nombre vacío en pantalla en vez de caer al username.
+    name: firstNonBlank(u.name, u.username, "User"),
+    username: firstNonBlank(u.username, u.name, "user"),
     email: u.email ?? null,
-    role: (u.role ?? "viewer") as Role,
+    // El rol se valida contra los roles conocidos: antes se casteaba cualquier
+    // string y un valor desconocido pasaba por rol válido.
+    role: toRole(u.role),
     avatarUrl: u.avatarUrl ?? null,
     lastLoginAt: u.lastLoginAt ?? null,
   };
@@ -72,4 +76,24 @@ export function mapCognitoClaimsToUser(
     avatarUrl: null,
     lastLoginAt: null,
   };
+}
+
+/** Roles de dominio; el resto de los grupos no habilita nada. */
+const ROLES: readonly Role[] = ["administrator", "admin", "auditor", "viewer"];
+
+/** toRole devuelve el rol cuando es conocido y "viewer" cuando no. */
+function toRole(raw: unknown): Role {
+  if (typeof raw !== "string") return "viewer";
+  const trimmed = raw.trim();
+  return ROLES.includes(trimmed as Role) ? (trimmed as Role) : "viewer";
+}
+
+/** firstNonBlank devuelve el primer valor con contenido. */
+function firstNonBlank(...candidates: unknown[]): string {
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim() !== "") {
+      return candidate;
+    }
+  }
+  return "";
 }

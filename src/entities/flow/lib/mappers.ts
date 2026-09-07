@@ -326,15 +326,26 @@ export function mapFlowStepToDTO(step: FlowStep): FlowStepDTO {
   }
 }
 
+/**
+ * Tipo de flow por defecto cuando el dominio no trae uno.
+ *
+ * Estaba escrito a mano dentro del mapper; acá queda con nombre y en un solo
+ * lugar.
+ */
+export const DEFAULT_FLOW_TYPE = "Navigation";
+
 export function mapFlowToDTO(flow: Flow): FlowDTO {
   return {
     id: flow.id,
     title: flow.title,
     description: flow.description || undefined,
     steps: flow.steps.map(mapFlowStepToDTO),
-    flow_type: flow.flowType || "Navigation",
+    flow_type: flow.flowType || DEFAULT_FLOW_TYPE,
     version: flow.version,
     is_active: flow.isActive,
+    // created_at viaja de vuelta: el backend reemplaza el item al versionar y
+    // sin este campo la fecha de creación original se perdía.
+    ...(flow.createdAt ? { created_at: flow.createdAt } : {}),
     updated_at: flow.updatedAt,
   };
 }

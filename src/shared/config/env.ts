@@ -56,6 +56,9 @@ const PublicSchema = z.object({
   // Polling de la generación del reporte. Estaban hardcodeados en el componente.
   NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS: z.string().optional(),
   NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS: z.string().optional(),
+  // Locale de los formatos de número y fecha. Estaba escrito a mano como
+  // "es-ES" dentro de la página del dashboard, en una interfaz en inglés.
+  NEXT_PUBLIC_LOCALE: z.string().optional(),
 });
 
 // Variables de servidor
@@ -114,6 +117,7 @@ function loadPublicEnv() {
       process.env.NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS,
     NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS:
       process.env.NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS,
+    NEXT_PUBLIC_LOCALE: process.env.NEXT_PUBLIC_LOCALE,
   });
 
   if (!parsed.success) {
@@ -143,6 +147,8 @@ function loadPublicEnv() {
       intervalMs: toInt(pub.NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS ?? "2000"),
       maxAttempts: toInt(pub.NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS ?? "60"),
     },
+    // La interfaz está en inglés, así que el default acompaña.
+    locale: pub.NEXT_PUBLIC_LOCALE ?? "en-US",
   } as const;
 }
 

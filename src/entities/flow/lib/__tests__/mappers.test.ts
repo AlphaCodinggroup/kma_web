@@ -666,11 +666,14 @@ describe("mapFlowToDTO", () => {
       flow_type: "Ramps",
       version: 2,
       is_active: true,
+      created_at: "2026-01-01T00:00:00Z",
       updated_at: "2026-01-02T00:00:00Z",
     });
   });
 
-  it("drops created_at on the way back to the DTO", () => {
+  // created_at viaja de vuelta: el backend reemplaza el item al versionar y sin
+  // este campo la fecha de creación original se perdía.
+  it("sends created_at back in the DTO", () => {
     const flow: Flow = {
       id: "flow-1",
       title: "Ramps",
@@ -679,8 +682,12 @@ describe("mapFlowToDTO", () => {
       createdAt: "2026-01-01T00:00:00Z",
     };
 
-    // FIXME: `created_at` no se envía de vuelta; si el backend hace un replace
-    // completo del documento puede perder la fecha de creacion.
+    expect(mapFlowToDTO(flow).created_at).toBe("2026-01-01T00:00:00Z");
+  });
+
+  it("omits created_at when the domain has none", () => {
+    const flow: Flow = { id: "flow-1", title: "Ramps", steps: [], version: 1 };
+
     expect(mapFlowToDTO(flow)).not.toHaveProperty("created_at");
   });
 
@@ -693,8 +700,7 @@ describe("mapFlowToDTO", () => {
       flowType: null,
     };
 
-    // FIXME: "Navigation" está hardcodeado en el mapper; debería venir de
-    // configuracion o del dominio.
+    // El default sale de DEFAULT_FLOW_TYPE, exportado por el mapper.
     expect(mapFlowToDTO(flow).flow_type).toBe("Navigation");
   });
 
