@@ -32,14 +32,14 @@ describe("deleteAudit", () => {
     expect(repo.delete).toHaveBeenCalledWith("audit-1");
   });
 
-  it("forwards an empty id without validating it", async () => {
+  // Sin la guarda, un id vacio le pegaba a DELETE /api/audits/ (la coleccion).
+  it("rejects an empty id without reaching the repository", async () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(undefined));
 
-    await deleteAudit("", { repo });
-
-    // FIXME: el caso de uso no valida el id, asi que un id vacio llega al
-    // repositorio y termina pegandole a DELETE /api/audits/ (lista completa).
-    expect(repo.delete).toHaveBeenCalledWith("");
+    await expect(deleteAudit("", { repo })).rejects.toThrow(
+      "deleteAudit: auditId is required"
+    );
+    expect(repo.delete).not.toHaveBeenCalled();
   });
 
   it("propagates the repository error", async () => {

@@ -1,4 +1,5 @@
 import type { Role, User } from "../model/sessions";
+import { parseCognitoGroups } from "@shared/auth/cognito-groups";
 
 /** UserDTO flexible para tolerar variantes del backend */
 export type UserDTO = {
@@ -35,15 +36,31 @@ export function mapUserDTOtoDomain(dto: unknown): User {
   };
 }
 
+// Orden de privilegio: si el token trae varios grupos, gana el más alto. Tomar
+// el primero dejaba el rol a merced del orden en que Cognito los devuelve.
+const ROLE_PRECEDENCE: readonly Role[] = [
+  "administrator",
+  "admin",
+  "auditor",
+  "viewer",
+];
+
+/** Elige el rol de dominio a partir de los grupos del token. */
+function pickRole(groups: string[]): Role {
+  const match = ROLE_PRECEDENCE.find((role) => groups.includes(role));
+  // Un grupo que no es un rol de dominio (por ejemplo "qc") se respeta tal
+  // cual, que es lo que hacía el mapper original.
+  return match ?? ((groups[0] ?? "viewer") as Role);
+}
+
 /** Claims (JWT Cognito access token) → Dominio (User) */
 export function mapCognitoClaimsToUser(
   claims: CognitoAccessTokenClaims
 ): User {
-  const group = Array.isArray(claims["cognito:groups"])
-    ? claims["cognito:groups"]?.[0]
-    : undefined;
-
-  const role = (group ?? "viewer") as Role;
+  // API Gateway serializa cognito:groups como "[admin qc]": leerlo sólo como
+  // array dejaba al usuario sin grupo y lo degradaba a "viewer", perdiendo el
+  // acceso a las pantallas de administración.
+  const role = pickRole(parseCognitoGroups(claims["cognito:groups"]));
   const username = claims.username || claims.sub || "user";
 
   return {

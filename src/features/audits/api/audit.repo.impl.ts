@@ -110,7 +110,9 @@ class AuditRepoHttp implements AuditRepo {
     if (params?.auditor) {
       searchParams.set('auditor', params.auditor);
     }
-    if (params?.limit) {
+    // `!= null` y no truthy: limit 0 es un valor que el backend entiende y
+    // descartarlo cambiaba silenciosamente la consulta.
+    if (params?.limit != null) {
       searchParams.set('limit', params.limit.toString());
     }
     if (params?.last_eval_id) {
@@ -142,7 +144,7 @@ class AuditRepoHttp implements AuditRepo {
   }
 
   async delete(auditId: string): Promise<void> {
-    const url = `${INTERNAL_API_URL}/${auditId}`;
+    const url = `${INTERNAL_API_URL}/${encodeURIComponent(auditId)}`;
 
     const res = await fetch(url, {
       method: "DELETE",

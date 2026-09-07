@@ -1,6 +1,7 @@
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
 import { serverEnv, PublicEnv } from "@shared/config/env";
 import { decodeJwtPayload } from "@shared/lib/jwt";
+import { parseCognitoGroups } from "@shared/auth/cognito-groups";
 
 /**
  * Verificación del access token de Cognito.
@@ -102,15 +103,5 @@ function reasonFor(error: unknown): VerificationFailure {
 
 /** Extrae los grupos de Cognito tolerando array o cadena. */
 export function groupsOf(claims: VerifiedClaims): string[] {
-  const raw: unknown = claims["cognito:groups"];
-  if (Array.isArray(raw)) return raw.map(String);
-  if (typeof raw === "string" && raw.trim() !== "") {
-    // API Gateway serializa los arrays como "[admin qc]".
-    return raw
-      .replace(/^\[|\]$/g, "")
-      .split(/[,\s]+/)
-      .map((group: string) => group.trim())
-      .filter(Boolean);
-  }
-  return [];
+  return parseCognitoGroups(claims["cognito:groups"]);
 }

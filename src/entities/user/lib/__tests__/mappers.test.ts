@@ -133,20 +133,37 @@ describe("mapCognitoClaimsToUser", () => {
     });
   });
 
-  it("uses the first cognito group as the role", () => {
+  // Gana el grupo más privilegiado, no el primero: el orden en que Cognito
+  // devuelve los grupos no está garantizado.
+  it("uses the most privileged cognito group as the role", () => {
     expect(
       mapCognitoClaimsToUser({ "cognito:groups": ["auditor", "admin"] }).role
-    ).toBe("auditor");
+    ).toBe("admin");
+  });
+
+  // Un grupo que no es un rol de dominio se respeta tal cual.
+  it("keeps a group that is not a domain role", () => {
+    expect(
+      mapCognitoClaimsToUser({ "cognito:groups": ["qc"] }).role
+    ).toBe("qc");
   });
 
   it("defaults the role to viewer for an empty groups array", () => {
     expect(mapCognitoClaimsToUser({ "cognito:groups": [] }).role).toBe("viewer");
   });
 
-  it("defaults the role to viewer when groups is not an array", () => {
+  // API Gateway serializa el claim como "[admin qc]": leerlo sólo como array
+  // degradaba al usuario a "viewer" y le quitaba el acceso de administración.
+  it.each([
+    ["admin", "admin"],
+    ["[admin]", "admin"],
+    ["[qc admin]", "admin"],
+    ["[qc]", "qc"],
+    ["", "viewer"],
+  ])("reads the group serialized as the string %s", (raw, expected) => {
     expect(
-      mapCognitoClaimsToUser({ "cognito:groups": "admin" as never }).role
-    ).toBe("viewer");
+      mapCognitoClaimsToUser({ "cognito:groups": raw as never }).role
+    ).toBe(expected);
   });
 
   it("falls back to sub for the username", () => {

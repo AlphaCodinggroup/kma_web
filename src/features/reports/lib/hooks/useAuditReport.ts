@@ -17,7 +17,10 @@ type Options = Omit<
 >;
 
 export function useAuditReport(auditId?: string, options?: Options) {
-  const isEnabled = options?.enabled ?? Boolean(auditId);
+  // Boolean(auditId) manda: con `enabled: true` explícito y sin auditId la
+  // query se disparaba igual y el repositorio recibía un id vacío. Es el patrón
+  // que ya usan el resto de los hooks del proyecto.
+  const isEnabled = Boolean(auditId) && (options?.enabled ?? true);
 
   return useQuery<
     AuditReport,

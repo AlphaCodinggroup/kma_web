@@ -58,15 +58,21 @@ httpClient.interceptors.request.use(
       config.baseURL = API_BASE_URL;
     }
 
-    // Content-Type JSON por defecto si no fue seteado
+    // Content-Type JSON por defecto si no trae uno con valor.
+    //
+    // Comprobar `"Content-Type" in headers` no servía: axios 1.x define la
+    // clave con valor undefined en los headers mergeados, así que la condición
+    // era siempre verdadera y el default nunca se asignaba. Con un body objeto
+    // axios lo resuelve solo; con un body string terminaba en
+    // application/x-www-form-urlencoded.
     if (
       config.method &&
       ["post", "put", "patch"].includes(config.method.toLowerCase())
     ) {
-      const hdrs = (config.headers ?? {}) as Record<string, unknown>;
-      const hasCT = "Content-Type" in hdrs || "content-type" in hdrs;
-      if (!hasCT) {
-        (config.headers as any)["Content-Type"] = "application/json";
+      const headers = (config.headers ?? {}) as Record<string, unknown>;
+      const current = headers["Content-Type"] ?? headers["content-type"];
+      if (current == null || current === "") {
+        headers["Content-Type"] = "application/json";
       }
     }
 

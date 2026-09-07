@@ -92,7 +92,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
     try {
       const res = await httpClient.get<
         ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
-      >(`${this.basePath}/${id}`);
+      >(`${this.basePath}/${encodeURIComponent(id)}`);
 
       const raw = res.data as
         | ProjectDTO
@@ -186,7 +186,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
 
       const res = await httpClient.patch<
         ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
-      >(`${this.basePath}/${params.id}`, body, {
+      >(`${this.basePath}/${encodeURIComponent(params.id)}`, body, {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -209,7 +209,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
   /** Elimina un proyecto */
   async deleteProject(id: ProjectId): Promise<void> {
     try {
-      await httpClient.delete<void>(`${this.basePath}/${id}`);
+      await httpClient.delete<void>(`${this.basePath}/${encodeURIComponent(id)}`);
     } catch (err) {
       throw toApiError(err);
     }
@@ -220,7 +220,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
     try {
       const res = await httpClient.post<
         ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
-      >(`${this.basePath}/${id}/archive`);
+      >(`${this.basePath}/${encodeURIComponent(id)}/archive`);
 
       const raw = res.data as
         | ProjectDTO

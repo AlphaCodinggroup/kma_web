@@ -12,6 +12,12 @@ export async function updateProject(
   params: UpdateProjectParams
 ): Promise<UpdateProjectResult> {
   const trimmedName = params.name?.trim();
+  // Un nombre en blanco viajaba como "" y dejaba el proyecto sin nombre: si se
+  // manda el campo, tiene que traer contenido.
+  if (trimmedName !== undefined && trimmedName === "") {
+    throw new Error("Project name is required");
+  }
+
   const trimmedCode = params.code?.trim();
   const trimmedDescription = params.description?.trim();
 

@@ -33,7 +33,9 @@ jobs:
         # ver docs/auditoria-2026-09/ESTADO.md en el repo del backend.
         run: npm run test:coverage
         env:
-          COVERAGE_MIN: ${{ vars.COVERAGE_MIN || '0' }}
+          # Sin valor rigen los pisos de vitest.config.ts, que sólo pueden
+          # subir. La variable de repositorio fuerza un mínimo único.
+          COVERAGE_MIN: ${{ vars.COVERAGE_MIN }}
 
       - uses: actions/upload-artifact@v4
         if: always()

@@ -17,6 +17,12 @@ export async function deleteProject(
   id: ProjectId,
   deps: DeleteProjectDeps = {}
 ): Promise<void> {
+  // Un id vacío llegaba al repositorio y terminaba pegándole al endpoint de
+  // colección en vez de al del recurso.
+  if (!id?.trim()) {
+    throw new Error("deleteProject: id is required");
+  }
+
   const repo = deps.projectsRepo ?? projectsRepoImpl;
   await repo.deleteProject(id);
 }

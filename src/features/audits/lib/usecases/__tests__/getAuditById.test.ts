@@ -50,13 +50,14 @@ describe("getAuditById", () => {
     expect(repo.getById).toHaveBeenCalledWith("audit-1");
   });
 
-  it("forwards an empty id without validating it", async () => {
+  // Sin la guarda, un id vacio se traducia en GET /api/audits/ (la coleccion).
+  it("rejects an empty id without reaching the repository", async () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(makeDetail()));
 
-    await getAuditById("", { repo });
-
-    // FIXME: sin validacion de id, un id vacio se traduce en GET /api/audits/.
-    expect(repo.getById).toHaveBeenCalledWith("");
+    await expect(getAuditById("", { repo })).rejects.toThrow(
+      "getAuditById: auditId is required"
+    );
+    expect(repo.getById).not.toHaveBeenCalled();
   });
 
   it("propagates the repository error", async () => {

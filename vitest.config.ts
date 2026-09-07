@@ -29,12 +29,16 @@ export default defineConfig({
         'app/**/error.tsx',
         'app/global-error.tsx',
       ],
-      // El umbral se sube a 90 a medida que se cubren los módulos pendientes.
+      // Piso, no objetivo: son los valores ya alcanzados, así que la cobertura
+      // sólo puede subir. Lo que falta para el 90% del plan es la capa de UI
+      // (páginas de app/(dashboard), src/features/*/ui, widgets y shared/ui);
+      // el BFF y las capas de datos y aplicación ya están cubiertos.
+      // COVERAGE_MIN fuerza un único mínimo para las cuatro métricas.
       thresholds: {
-        lines: Number(process.env.COVERAGE_MIN ?? 0),
-        statements: Number(process.env.COVERAGE_MIN ?? 0),
-        functions: Number(process.env.COVERAGE_MIN ?? 0),
-        branches: Number(process.env.COVERAGE_MIN ?? 0),
+        lines: Number(process.env.COVERAGE_MIN ?? 37),
+        statements: Number(process.env.COVERAGE_MIN ?? 37),
+        functions: Number(process.env.COVERAGE_MIN ?? 83),
+        branches: Number(process.env.COVERAGE_MIN ?? 90),
       },
     },
   },
