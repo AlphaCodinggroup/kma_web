@@ -17,19 +17,22 @@ interface FacilityOptionalFields {
  * válidos para el dominio, sin enviar `undefined`.
  */
 export function buildFacilityOptionalFields(
-  values: FacilityUpsertValues
+  values: FacilityUpsertValues,
 ): FacilityOptionalFields {
   const result: FacilityOptionalFields = {};
 
-  if (values.address && values.address.trim().length > 0) {
+  // `!= null` y no truthy: un campo vaciado a propósito viaja como cadena
+  // vacía para que el backend lo borre. Descartarlo hacía imposible limpiarlo,
+  // y el usuario veía el cambio como aplicado.
+  if (values.address != null) {
     result.address = values.address;
   }
 
-  if (values.city && values.city.trim().length > 0) {
+  if (values.city != null) {
     result.city = values.city;
   }
 
-  if (values.description && values.description.trim().length > 0) {
+  if (values.description != null) {
     result.description = values.description;
   }
 

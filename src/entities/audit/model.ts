@@ -9,6 +9,7 @@ export type AuditStatus =
 export interface Audit {
   id: string;
   flowId: string;
+  flowName?: string | null;
   version: number;
   projectId: string | null;
   facilityId: string | null;
@@ -20,9 +21,11 @@ export interface Audit {
   projectName: string | null;
   auditorName: string | null;
   facilityName: string | null;
+  findingsCount: number | null;
 }
 
 export type AuditType = {
   audits: Audit[];
   total: number;
+  last_eval_id?: string; // Present if there are more pages available
 };

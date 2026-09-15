@@ -12,14 +12,14 @@ import FinalReportHeader from "./FinalReportHeader";
 import CommentsSidebar from "./CommentsSidebar";
 import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
-import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
-import { useCompleteReviewAuditMutation } from "../lib/hooks/useCompleteReviewAuditMutation";
 import { Loading } from "@shared/ui/Loading";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
 import type { AuditStatus } from "@entities/audit/model";
 import { useUpdateAuditReviewStatus } from "../lib/hooks/useUpdateAuditReviewStatus";
 import AuditStatusSelector from "./AuditStatusSelector";
 import AuditFindingEditDialog from "./AuditFindingEditDialog";
+import ExportReportModal from "./ExportReportModal";
+import { useExportAuditReport } from "../lib/hooks/useExportAuditReport";
 
 export type ReportSeverity = "high" | "medium" | "low";
 
@@ -43,9 +43,6 @@ type CommentTarget = {
   title: string;
 };
 
-const POLL_INTERVAL_MS = 2000;
-const POLL_MAX_ATTEMPTS = 15; // ~30 segundos
-
 const AuditEditContent: React.FC<AuditEditContentProps> = ({
   id,
   auditDetail,
@@ -53,8 +50,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
 }) => {
   const [internalTab, setInternalTab] = useState<AuditEditTab>("questions");
   const [internalFilter, setInternalFilter] =
-    useState<QuestionsFilterMode>("no");
-  const [isPollingReport, setIsPollingReport] = useState(false);
+    useState<QuestionsFilterMode>("all");
 
   // Estado del panel de comentarios (cuando es undefined NO se muestra)
   const [selectedCommentTarget, setSelectedCommentTarget] = useState<
@@ -73,12 +69,14 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     refetch: refetchReviewDetail,
   } = useAuditReviewDetail(id);
 
-  const { mutateAsync, isPending } = useCompleteReviewAuditMutation();
   const { mutate: mutateStatus, isPending: isUpdatingStatus } =
     useUpdateAuditReviewStatus();
-
-  const { isFetching: isFetchingReport, refetch: refetchReport } =
-    useAuditReport(id, { enabled: false });
+  const refreshAfterQueue = useCallback(async () => {
+    await refetchReviewDetail();
+  }, [refetchReviewDetail]);
+  const exportReport = useExportAuditReport(id, {
+    onQueued: refreshAfterQueue,
+  });
 
   const findings: AuditFinding[] = reviewDetail?.findings ?? [];
   const status = reviewDetail?.status;
@@ -102,8 +100,8 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     setInternalTab(tab);
   }, []);
 
-  const handleToggleFilter = useCallback(() => {
-    setInternalFilter((prev) => (prev === "no" ? "all" : "no"));
+  const handleFilterChange = useCallback((mode: QuestionsFilterMode) => {
+    setInternalFilter(mode);
   }, []);
 
   const handleCloseSidebar = useCallback(() => {
@@ -147,52 +145,6 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     [id, mutateStatus, selectedStatus, status]
   );
 
-  const handleExport = useCallback(async () => {
-    try {
-      // Si está en revisión, cerramos la revisión primero
-      if (status === "draft_report_in_review") {
-        await mutateAsync({ auditId: id });
-        await refetchReviewDetail(); // refresca detalle para que status cambie
-      }
-
-      // Empezamos el polling del reporte
-      setIsPollingReport(true);
-
-      let finalUrl: string | null = null;
-
-      for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt++) {
-        const res = await refetchReport();
-
-        if (res.error) {
-          console.error("[FinalReport] Error fetching report:", res.error);
-          break;
-        }
-
-        const currentUrl = res.data?.reportUrl ?? null;
-
-        if (currentUrl && /^https?:\/\//.test(currentUrl)) {
-          finalUrl = currentUrl;
-          break; // tenemos URL válida, salimos del loop
-        }
-
-        // Seguimos esperando: 2s más
-        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-      }
-
-      if (finalUrl) {
-        window.open(finalUrl, "_blank", "noopener,noreferrer");
-      } else {
-        console.warn(
-          "[FinalReport] No reportUrl available after polling attempts."
-        );
-      }
-    } catch (err) {
-      console.error("[FinalReport] Error al exportar reporte:", err);
-    } finally {
-      setIsPollingReport(false);
-    }
-  }, [id, status, mutateAsync, refetchReviewDetail, refetchReport]);
-
   if (showLoadingOverlay) return <Loading />;
 
   return (
@@ -203,21 +155,28 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         <>
           <AuditQuestionsHeader
             filterMode={internalFilter}
-            onToggleFilter={handleToggleFilter}
+            onFilterChange={handleFilterChange}
             className="mt-2"
           />
           <AuditQuestionsList
+            auditId={id}
+            steps={auditDetail?.steps}
             items={questionsToRender}
             filterMode={internalFilter}
           />
         </>
       ) : (
-        <section className="w-full px-4 sm:px-6 lg:px-8" aria-live="polite">
+        <section className="w-full px-4 sm:px-6 lg:px-8">
           <div className="mb-3">
             <FinalReportHeader
-              onExport={handleExport}
+              onExport={exportReport.start}
               disabled={!findings.length}
-              exporting={isFetchingReport || isPending || isPollingReport}
+              exporting={exportReport.isBusy}
+              loadingLabel={
+                exportReport.progress.percent === null
+                  ? exportReport.progress.message
+                  : `${exportReport.progress.message} ${exportReport.progress.percent}%`
+              }
               rightAddon={
                 <AuditStatusSelector
                   value={selectedStatus}
@@ -266,11 +225,19 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         defaultValues={{
           quantity:
             typeof selectedFinding?.quantity === "number" &&
-            Number.isFinite(selectedFinding.quantity)
+              Number.isFinite(selectedFinding.quantity)
               ? selectedFinding.quantity
               : null,
           notes: selectedFinding?.notes ?? null,
         }}
+      />
+      <ExportReportModal
+        open={exportReport.isOpen}
+        progress={exportReport.progress}
+        filename={exportReport.filename}
+        onStop={exportReport.stopWaiting}
+        onRetry={exportReport.retry}
+        onClose={exportReport.close}
       />
     </div>
   );

@@ -10,4 +10,14 @@ export interface AuditReport {
   createdAt: string;
   updatedAt: string | null;
   completedAt: string | null;
+  reportProgress?: ReportProgress | null | undefined;
+}
+
+export interface ReportProgress {
+  requestId: string | null;
+  step: string | null;
+  photosDone: number | null;
+  photosTotal: number | null;
+  percent: number | null;
+  updatedAt: string | null;
 }

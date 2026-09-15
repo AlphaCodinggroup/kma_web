@@ -12,6 +12,7 @@ export interface ProjectsSearchCardProps {
   placeholder?: string;
   children?: React.ReactNode;
   className?: string;
+  onCreateClick?: () => void;
 }
 
 const ProjectsSearchCard: React.FC<ProjectsSearchCardProps> = ({

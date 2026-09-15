@@ -18,7 +18,7 @@ const routes = {
   sendForReview: (auditId: string) =>
     `${apiBase}/audits/${encodeURIComponent(auditId)}/send-for-review`,
   reviewStatus: (auditReviewId: string) =>
-    `${apiBase}/audit-reviews/${encodeURIComponent(auditReviewId)}`,
+    `${apiBase}/audits/audit-reviews/${encodeURIComponent(auditReviewId)}`,
 };
 
 export function createAuditReviewRepo(

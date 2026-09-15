@@ -9,6 +9,7 @@ import { useDashboardSummary } from "@features/dashboard/ui/useDashboardSummary"
 import { Retry } from "@shared/ui/Retry";
 import { formatIsoToYmdHm } from "@shared/lib/date";
 import type { Activity } from "@widgets/dashboard/DashboardActivitySection";
+import { PublicEnv } from "@shared/config/env";
 
 const DashboardPage: React.FC = () => {
   const { data, isLoading, isError, refetch } = useDashboardSummary();
@@ -17,46 +18,61 @@ const DashboardPage: React.FC = () => {
     const metrics = data?.metrics;
     if (!metrics) return [];
 
+    // El locale sale de la configuración: estaba escrito a mano como "es-ES"
+    // en una interfaz que está en inglés.
     const fmt = (value: number) =>
-      Number.isFinite(value) ? value.toLocaleString("es-ES") : "-";
+      Number.isFinite(value) ? value.toLocaleString(PublicEnv.locale) : "-";
 
     return [
       {
-        title: "Projects",
+        title: "Totals Projects",
         value: fmt(metrics.totalProjects),
-        subtitle: "Total projects",
+        subtitle: "Active Projects",
         icon: "brief-case",
       },
       {
-        title: "Completed projects",
-        value: fmt(metrics.totalProjectsComplete),
-        subtitle: "Finished projects",
-        icon: "check-circle-2",
+        title: "Totals Facilities",
+        value: fmt(metrics.totalFacilities),
+        subtitle: "Active Facilities",
+        icon: "building", // You might need to check if this icon exists in MetricCard or lucide
       },
       {
-        title: "Completed reports",
-        value: fmt(metrics.totalReportsComplete),
-        subtitle: "Reports closed",
-        icon: "file-text",
+        title: "Facilities Unassigned",
+        value: fmt(metrics.totalFacilitiesUnassigned),
+        subtitle: "Without assigned auditors",
+        icon: "alert-circle",
       },
       {
-        title: "Reports sent to client",
-        value: fmt(metrics.totalReportsSentToClient),
-        subtitle: "Delivered to client",
-        icon: "badge-check",
+        title: "Audits Completed",
+        value: fmt(metrics.totalAuditsCompleted),
+        subtitle: "Completed audits",
+        icon: "file-check",
       },
       {
-        title: "Reports ready for QC",
-        value: fmt(metrics.totalReportsReadyForQc),
-        subtitle: "Pending QC",
-        icon: "shield-check",
+        title: "Reports Pending Review",
+        value: fmt(metrics.totalDraftReportsPendingReview),
+        subtitle: "Drafts waiting for review",
+        icon: "clock",
+      },
+      {
+        title: "Reports In Review",
+        value: fmt(metrics.totalDraftReportsInReview),
+        subtitle: "Currently in review",
+        icon: "eye",
+      },
+      {
+        title: "Reports Sent",
+        value: fmt(metrics.totalFinalReportsSentToClient),
+        subtitle: "Final reports delivered",
+        icon: "send",
       },
     ];
   }, [data?.metrics]);
 
   const activityItems = useMemo<Activity[]>(() => {
     return (data?.recentActivity ?? []).map((item) => ({
-      project: item.projectName || "-",
+      // Let's format it as: Project | Facility - Flow
+      project: `${item.projectName} | ${item.facilityName} - ${item.flowName}`,
       auditor: item.auditorName || "-",
       time: item.completedAt ? formatIsoToYmdHm(item.completedAt) : "-",
       variant: "success",
@@ -68,7 +84,6 @@ const DashboardPage: React.FC = () => {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-extrabold">Dashboard</h1>
-          <p className="text-sm text-gray-700">Audit dashboard overview</p>
         </div>
         <button
           type="button"

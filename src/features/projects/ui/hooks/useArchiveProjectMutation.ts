@@ -24,7 +24,7 @@ export function useArchiveProjectMutation(): UseMutationResult<
     ArchiveProjectInput
   >({
     mutationFn: (input) => archiveProjectUseCase(input),
-    async onSuccess(_project: Project, variables) {
+    async onSuccess(_project: Project, _variables) {
       // Invalidamos la lista de proyectos. Asumimos que el listado
       // usa una queryKey base ["projects", ...] (parcial).
       await queryClient.invalidateQueries({ queryKey: ["projects"] });

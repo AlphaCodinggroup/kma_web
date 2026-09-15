@@ -2,6 +2,7 @@ export type UserId = string;
 
 export interface UserSummary {
   id: UserId;
+  cognitoId: string;
   name: string;
   email: string;
   role: string;

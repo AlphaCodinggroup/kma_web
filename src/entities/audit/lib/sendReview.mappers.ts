@@ -1,4 +1,4 @@
-import type { AuditStatus } from "@entities/audit/model";
+import { toAuditStatus } from "@entities/audit/lib/audit-status";
 import type {
   ReviewProgress,
   SendForReviewResult,
@@ -12,20 +12,7 @@ export type SendForReviewDTO = {
   review_ready?: boolean;
 };
 
-/** Normaliza una cadena a AuditStatus manteniendo valores “desconocidos” sin romper el tipado. */
-const toAuditStatus = (raw: string): AuditStatus => {
-  const allowed: AuditStatus[] = [
-    "draft_report_pending_review",
-    "draft_report_in_review",
-    "final_report_sent_to_client",
-    "completed",
-  ];
 
-  if (allowed.includes(raw as AuditStatus)) {
-    return raw as AuditStatus;
-  }
-  return raw as AuditStatus;
-};
 
 /** Mapea DTO → Dominio para el resultado inmediato de “Enviar para Revisión”. */
 export const mapSendForReviewDTO = (

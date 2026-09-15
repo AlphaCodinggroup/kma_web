@@ -118,9 +118,20 @@ Textarea.displayName = "Textarea";
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   isLoading?: boolean;
+  loadingLabel?: React.ReactNode | undefined;
 };
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, isLoading, disabled, children, ...props }, ref) => (
+  (
+    {
+      className,
+      isLoading,
+      loadingLabel = "Loading...",
+      disabled,
+      children,
+      ...props
+    },
+    ref
+  ) => (
     <button
       ref={ref}
       disabled={disabled || isLoading}
@@ -135,7 +146,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       )}
       {...props}
     >
-      {isLoading ? "Loading..." : children}
+      {isLoading ? loadingLabel : children}
     </button>
   )
 );

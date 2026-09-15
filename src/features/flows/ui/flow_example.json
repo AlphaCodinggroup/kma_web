@@ -1,0 +1,1307 @@
+{
+    "title": "Curb Ramps",
+    "description": "Accessibility verification for curb ramps following ADA standards.",
+    "flow_type": "Ramps",
+    "is_active": true,
+    "steps": [
+        {
+            "id": "CR-B01",
+            "type": "Question",
+            "text": "Is the curb ramp located on an accessible route?",
+            "yes_next": "CR-B02",
+            "no_next": "F01",
+            "barrier_id": "CR-B01"
+        },
+        {
+            "id": "F01",
+            "type": "Form",
+            "title": "Accessible Route - Data Input",
+            "next": "CR-B02",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                },
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity"
+                }
+            ]
+        },
+        {
+            "id": "CR-B02",
+            "type": "Question",
+            "text": "Is the curb ramp run running slope ≤ 8.3%?",
+            "yes_next": "CR-B03",
+            "no_next": "S01"
+        },
+        {
+            "id": "S01",
+            "type": "Select",
+            "title": "For existing facilities, are the following exceptions applicable?",
+            "options": [
+                {
+                    "label": ">10%–12.5% running slope with 3\" max rise",
+                    "next": "CR-B03"
+                },
+                {
+                    "label": ">8.3%–10% running slope with 6\" max rise",
+                    "next": "CR-B03"
+                },
+                {
+                    "label": "N/A or Neither",
+                    "next": "F02",
+                    "barrier_id": "CR-B02"
+                }
+            ]
+        },
+        {
+            "id": "F02",
+            "type": "Form",
+            "title": "Running Slope - Data Input",
+            "next": "CR-B03",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B03",
+            "type": "Question",
+            "text": "Is the curb ramp run cross slope ≤ 2%?",
+            "yes_next": "CR-B04",
+            "no_next": "F03",
+            "barrier_id": "CR-B03"
+        },
+        {
+            "id": "F03",
+            "type": "Form",
+            "title": "Cross Slope - Data Input",
+            "next": "CR-B04",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B04",
+            "type": "Question",
+            "text": "Is the ground surface of the curb ramp run free of changes in level?",
+            "yes_next": "CR-B05",
+            "no_next": "F04",
+            "barrier_id": "CR-B04"
+        },
+        {
+            "id": "F04",
+            "type": "Form",
+            "title": "Surface Level - Data Input",
+            "next": "CR-B05",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B05",
+            "type": "Question",
+            "text": "Is the clear width of the curb ramp run ≥ 36\"?",
+            "yes_next": "CR-B06",
+            "no_next": "F05",
+            "barrier_id": "CR-B05"
+        },
+        {
+            "id": "F05",
+            "type": "Form",
+            "title": "Curb Ramp Clear Width - Data Input",
+            "next": "CR-B06",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B06",
+            "type": "Question",
+            "text": "Do the landings prevent the accumulation of water?",
+            "yes_next": "CR-B07",
+            "no_next": "F06",
+            "barrier_id": "CR-B06"
+        },
+        {
+            "id": "F06",
+            "type": "Form",
+            "title": "Landing Drainage - Data Input",
+            "next": "CR-B07",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B07",
+            "type": "Question",
+            "text": "Are the adjacent surfaces at curb ramp transitions to walks, gutters, and streets at the same level?",
+            "yes_next": "CR-B08",
+            "no_next": "F07",
+            "barrier_id": "CR-B07"
+        },
+        {
+            "id": "F07",
+            "type": "Form",
+            "title": "Adjacent Surfaces - Data Input",
+            "next": "CR-B08",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B08",
+            "type": "Question",
+            "text": "Is the counter slope of the adjoining gutter and road surface ≤ 5%?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/8cr.png",
+            "yes_next": "CR-B09",
+            "no_next": "F08",
+            "barrier_id": "CR-B08"
+        },
+        {
+            "id": "F08",
+            "type": "Form",
+            "title": "Counter Slope - Data Input",
+            "next": "CR-B09",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B09",
+            "type": "Question",
+            "text": "Are curb ramp flares provided?",
+            "yes_next": "CR-B09A",
+            "no_next": "CR-B10"
+        },
+        {
+            "id": "CR-B09A",
+            "type": "Question",
+            "text": "Are the curb ramp flare slopes ≤ 10%?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/9cr.png",
+            "yes_next": "CR-B10",
+            "no_next": "F09",
+            "barrier_id": "CR-B09"
+        },
+        {
+            "id": "F09",
+            "type": "Form",
+            "title": "Curb Ramp Flares - Data Input",
+            "next": "CR-B10",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B10",
+            "type": "Question",
+            "text": "Is a landing provided at the top of the curb ramp?",
+            "yes_next": "CR-B10A",
+            "no_next": "CR-B16"
+        },
+        {
+            "id": "CR-B10A",
+            "type": "Question",
+            "text": "Is the landing at the top of the curb ramp ≥ 36\" long?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/10cr.png",
+            "yes_next": "CR-B11",
+            "no_next": "F11",
+            "barrier_id": "CR-B10"
+        },
+        {
+            "id": "F11",
+            "type": "Form",
+            "title": "Landing Length - Data Input",
+            "next": "CR-B11",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B11",
+            "type": "Question",
+            "text": "Is the landing clear width at least as wide as the curb ramp, excluding flared sides?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/11cr.png",
+            "yes_next": "CR-B12",
+            "no_next": "F12A",
+            "barrier_id": "CR-B11"
+        },
+        {
+            "id": "F12A",
+            "type": "Form",
+            "title": "Landing Clear Width - Data Input",
+            "next": "CR-B12",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B12",
+            "type": "Question",
+            "text": "Does the landing have cross-slopes ≤ 2%?",
+            "yes_next": "CR-B13",
+            "no_next": "F12",
+            "barrier_id": "CR-B12"
+        },
+        {
+            "id": "F12",
+            "type": "Form",
+            "title": "Landing Cross Slope - Data Input",
+            "next": "CR-B13",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B13",
+            "type": "Question",
+            "text": "Does the landing have running slopes ≤ 2%?",
+            "yes_next": "CR-B14",
+            "no_next": "CR-B14"
+        },
+        {
+            "id": "CR-B14",
+            "type": "Question",
+            "text": "Does the only connecting accessible route run parallel to the ramp run?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/13cr.png",
+            "yes_next": "CR-B15",
+            "no_next": "F14",
+            "barrier_id": "CR-B13"
+        },
+        {
+            "id": "F14",
+            "type": "Form",
+            "title": "Accessible Route Parallel - Data Input",
+            "next": "CR-B15",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B15",
+            "type": "Question",
+            "text": "Does the landing have running slopes ≤ 5%?",
+            "yes_next": "CR-B15A",
+            "no_next": "F15",
+            "barrier_id": "CR-B14"
+        },
+        {
+            "id": "F15",
+            "type": "Form",
+            "title": "Landing Slope ≤ 5% - Data Input",
+            "next": "CR-B15A",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "%"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B15A",
+            "type": "Question",
+            "text": "Are the curb ramps and flared sides located so that they do not project into vehicular lanes, parking spaces, or access aisles?",
+            "yes_next": "CR-B15B",
+            "no_next": "F15A",
+            "barrier_id": "CR-B15"
+        },
+        {
+            "id": "F15A",
+            "type": "Form",
+            "title": "Curb Ramp and Flared Sides - Data Input",
+            "next": "CR-B15B",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B15B",
+            "type": "Question",
+            "text": "Is this curb ramp located at a crossing?",
+            "yes_next": "CR-B15C",
+            "no_next": "END",
+            "conditional_no_next": {
+                "conditions": [
+                    {
+                        "step_id": "S01",
+                        "selected_option": "N/A or Neither"
+                    },
+                    {
+                        "step_id": "CR-B03",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B04",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B05",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B06",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B07",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B08",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B09A",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B10A",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B11",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B12",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B14",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B15",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B15A",
+                        "answer": "NO"
+                    }
+                ],
+                "next": "CR-QUANTITY-01",
+                "match_any": true
+            }
+        },
+        {
+            "id": "CR-B15C",
+            "type": "Question",
+            "text": "Are marked crossings provided?",
+            "yes_next": "CR-B16",
+            "no_next": "CR-B16A"
+        },
+        {
+            "id": "CR-B16",
+            "type": "Question",
+            "text": "Is the curb ramp wholly contained within them, excluding any flared sides?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/16cr.png",
+            "yes_next": "CR-B16A",
+            "no_next": "F15A",
+            "barrier_id": "CR-B16"
+        },
+        {
+            "id": "F15A",
+            "type": "Form",
+            "title": "Curb Ramp and Flared Sides - Data Input",
+            "next": "CR-B16A",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B16A",
+            "type": "Question",
+            "text": "Is this a diagonal curb ramp?",
+            "yes_next": "CR-B17",
+            "no_next": "CR-B21A"
+        },
+        {
+            "id": "CR-B17",
+            "type": "Question",
+            "text": "Are the curb ramp edges parallel to the direction of the pedestrian flow?",
+            "yes_next": "CR-B18",
+            "no_next": "F17",
+            "barrier_id": "CR-B17"
+        },
+        {
+            "id": "F17",
+            "type": "Form",
+            "title": "Curb Ramp Edge Alignment - Data Input",
+            "next": "CR-B18",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B18",
+            "type": "Question",
+            "text": "Is there a clear space ≥ 48\" provided at the bottom of the curb ramp outside active traffic lanes?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/18cr.png",
+            "yes_next": "CR-B19",
+            "no_next": "F18",
+            "barrier_id": "CR-B18"
+        },
+        {
+            "id": "F18",
+            "type": "Form",
+            "title": "Clear Space at Bottom - Data Input",
+            "next": "CR-B19",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B19",
+            "type": "Question",
+            "text": "Is there a segment of curb ≥ 24\" long located on each side of the curb ramp?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/19cr.png",
+            "yes_next": "CR-B19A",
+            "no_next": "F19",
+            "barrier_id": "CR-B19"
+        },
+        {
+            "id": "F19",
+            "type": "Form",
+            "title": "Curb Segment - Data Input",
+            "next": "CR-B19A",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B19A",
+            "type": "Question",
+            "text": "Is a marked crossing provided?",
+            "yes_next": "CR-B20",
+            "no_next": "CR-B21A"
+        },
+        {
+            "id": "CR-B20",
+            "type": "Question",
+            "text": "Is the clear space ≥ 48\" provided within the markings?",
+            "yes_next": "CR-B21",
+            "no_next": "F20",
+            "barrier_id": "CR-B20"
+        },
+        {
+            "id": "F20",
+            "type": "Form",
+            "title": "Marked Crossing Clear Space - Data Input",
+            "next": "CR-B21",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B21",
+            "type": "Question",
+            "text": "Are both segments of curb ≥ 24\" long provided within the marked crossing?",
+            "yes_next": "CR-B21A",
+            "no_next": "F21",
+            "barrier_id": "CR-B21"
+        },
+        {
+            "id": "F21",
+            "type": "Form",
+            "title": "Curb Segments within Marked Crossing - Data Input",
+            "next": "CR-B21A",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B21A",
+            "type": "Question",
+            "text": "Is there a raised island present within the pedestrian crossing?",
+            "yes_next": "CR-B22",
+            "no_next": "CR-B25A",
+            "conditional_no_next": {
+                "conditions": [
+                    {
+                        "step_id": "S01",
+                        "selected_option": "N/A or Neither"
+                    },
+                    {
+                        "step_id": "CR-B03",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B04",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B05",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B06",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B07",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B08",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B09A",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B10A",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B11",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B12",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B14",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B15",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B15A",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B16",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B17",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B18",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B19",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B20",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B21",
+                        "answer": "NO"
+                    }
+                ],
+                "next": "CR-QUANTITY-01",
+                "match_any": true
+            }
+        },
+        {
+            "id": "CR-B22",
+            "type": "Select",
+            "text": "Select one of the following island conditions:",
+            "options": [
+                {
+                    "label": "Island with cut-through",
+                    "next": "CR-B23"
+                },
+                {
+                    "label": "Island with curb ramps",
+                    "next": "CR-B24"
+                },
+                {
+                    "label": "Neither",
+                    "next": "F22",
+                    "barrier_id": "CR-B22"
+                }
+            ],
+            "barrier_id": "B22"
+        },
+        {
+            "id": "F22",
+            "type": "Form",
+            "title": "Island Condition - Data Input",
+            "next": "CR-QUANTITY-01",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B23",
+            "type": "Question",
+            "text": "Is the accessible route ≥ 36\" wide between curbs?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/23cr.jpg",
+            "yes_next": "CR-B25A",
+            "no_next": "F23",
+            "barrier_id": "CR-B23"
+        },
+        {
+            "id": "F23",
+            "type": "Form",
+            "title": "Accessible Route Width - Data Input",
+            "next": "CR-QUANTITY-01",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B24",
+            "type": "Question",
+            "text": "Does each curb ramp have a level ≥ 48\" long by ≥ 36\" wide area at the top of the curb ramp in the part of the island intersected by the crossings?",
+            "image": "https://kma-flows-images.s3.us-east-2.amazonaws.com/24cr.jpg",
+            "yes_next": "CR-B25",
+            "no_next": "F24",
+            "barrier_id": "CR-B24"
+        },
+        {
+            "id": "F24",
+            "type": "Form",
+            "title": "Curb Ramp Area Dimensions - Data Input",
+            "next": "CR-QUANTITY-01",
+            "fields": [
+                {
+                    "id": "length",
+                    "type": "number",
+                    "label": "Minimum length (inches)"
+                },
+                {
+                    "id": "width",
+                    "type": "number",
+                    "label": "Minimum width (inches)"
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B25",
+            "type": "Question",
+            "text": "Is each area ≥ 48\" x 36\" oriented so that the ≥ 48\" length is in the direction of the running slope of the curb ramp it serves?",
+            "yes_next": "CR-B25A",
+            "no_next": "F25",
+            "barrier_id": "CR-B25",
+            "conditional_yes_next": {
+                "conditions": [
+                    {
+                        "step_id": "CR-B22",
+                        "selected_option": "Neither"
+                    },
+                    {
+                        "step_id": "CR-B23",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B24",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B25",
+                        "answer": "NO"
+                    }
+                ],
+                "next": "CR-QUANTITY-01",
+                "match_any": true
+            }
+        },
+        {
+            "id": "F25",
+            "type": "Form",
+            "title": "Curb Ramp Area Orientation - Data Input",
+            "next": "CR-QUANTITY-01",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-QUANTITY-01",
+            "type": "Form",
+            "title": "Square feet of non-compliant route",
+            "next": "CR-B25A",
+            "metadata": {
+                "shared_quantity": {
+                    "applies_to_barriers": [
+                        "CR-B03",
+                        "CR-B04",
+                        "CR-B05",
+                        "CR-B06",
+                        "CR-B07",
+                        "CR-B08",
+                        "CR-B09",
+                        "CR-B10",
+                        "CR-B11",
+                        "CR-B12",
+                        "CR-B14",
+                        "CR-B15",
+                        "CR-B15A",
+                        "CR-B16",
+                        "CR-B17",
+                        "CR-B18",
+                        "CR-B19",
+                        "CR-B20",
+                        "CR-B21",
+                        "CR-B22",
+                        "CR-B23",
+                        "CR-B24",
+                        "CR-B25"
+                    ]
+                }
+            },
+            "fields": [
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity (sq. ft)",
+                    "placeholder": "Square feet of non-compliant route"
+                }
+            ]
+        },
+        {
+            "id": "CR-B25A",
+            "type": "Question",
+            "text": "Are detectable warnings provided?",
+            "yes_next": "CR-B27",
+            "no_next": "CR-B26"
+        },
+        {
+            "id": "CR-B26",
+            "type": "Question",
+            "text": "Is the facility used by state/local government to provide public transportation service (ex. bus or rail station)?",
+            "yes_next": "F26",
+            "no_next": "END",
+            "barrier_id": "CR-B26"
+        },
+        {
+            "id": "F26",
+            "type": "Form",
+            "title": "Public Transportation Facility - Data Input",
+            "next": "F29",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B27",
+            "type": "Question",
+            "text": "Do the detectable warnings extend the full width of the curb ramp, exclusive of flared sides?",
+            "yes_next": "CR-B28",
+            "no_next": "F27",
+            "barrier_id": "CR-B27"
+        },
+        {
+            "id": "F27",
+            "type": "Form",
+            "title": "Detectable Warnings Width - Data Input",
+            "next": "CR-B28",
+            "fields": [
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B28",
+            "type": "Question",
+            "text": "Do the detectable warnings extend ≥24” deep, measured from the back of the curb on the ramp surface?",
+            "yes_next": "CR-B29",
+            "no_next": "F28",
+            "barrier_id": "CR-B28"
+        },
+        {
+            "id": "F28",
+            "type": "Form",
+            "title": "Detectable Warnings Depth - Data Input",
+            "next": "CR-B29",
+            "fields": [
+                {
+                    "id": "measurements",
+                    "type": "number",
+                    "label": "Measurements",
+                    "unit": "\""
+                },
+                {
+                    "id": "photo",
+                    "type": "photo",
+                    "label": "Upload photo"
+                },
+                {
+                    "id": "notes",
+                    "type": "text",
+                    "label": "Notes (optional)"
+                }
+            ]
+        },
+        {
+            "id": "CR-B29",
+            "type": "Question",
+            "text": "Do the detectable warning surfaces contrast visually with adjacent walking surfaces?",
+            "yes_next": "END",
+            "no_next": "F29",
+            "barrier_id": "CR-B29",
+            "conditional_yes_next": {
+                "conditions": [
+                    {
+                        "step_id": "S01",
+                        "selected_option": "N/A or Neither"
+                    },
+                    {
+                        "step_id": "CR-B03",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B04",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B05",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B06",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B07",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B08",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B09A",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B10A",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B11",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B12",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B14",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B15",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B15A",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B16",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B17",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B18",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B19",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B20",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B21",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B22",
+                        "selected_option": "Neither"
+                    },
+                    {
+                        "step_id": "CR-B23",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B24",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B25",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B27",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B28",
+                        "answer": "NO"
+                    },
+                    {
+                        "step_id": "CR-B29",
+                        "answer": "NO"
+                    }
+                ],
+                "next": "F29",
+                "match_any": true
+            }
+        },
+        {
+            "id": "F29",
+            "type": "Form",
+            "next": "END",
+            "metadata": {
+                "shared_quantity": {
+                    "applies_to_barriers": [
+                        "CR-B27",
+                        "CR-B28",
+                        "CR-B29"
+                    ]
+                }
+            },
+            "fields": [
+                {
+                    "id": "quantity",
+                    "type": "number",
+                    "label": "Quantity",
+                    "placeholder": "# of curb ramps"
+                }
+            ]
+        },
+        {
+            "id": "END",
+            "type": "End"
+        }
+    ]
+}

@@ -9,6 +9,12 @@ import {
   ShieldCheck,
   BadgeCheck,
   Briefcase,
+  Building,
+  AlertCircle,
+  FileCheck,
+  Clock,
+  Eye,
+  Send,
   type LucideProps,
 } from "lucide-react";
 
@@ -19,7 +25,13 @@ type IconKey =
   | "user-plus"
   | "shield-check"
   | "badge-check"
-  | "brief-case";
+  | "brief-case"
+  | "building"
+  | "alert-circle"
+  | "file-check"
+  | "clock"
+  | "eye"
+  | "send";
 
 const ICONS: Record<IconKey, React.ComponentType<LucideProps>> = {
   "file-text": FileText,
@@ -29,6 +41,12 @@ const ICONS: Record<IconKey, React.ComponentType<LucideProps>> = {
   "shield-check": ShieldCheck,
   "badge-check": BadgeCheck,
   "brief-case": Briefcase,
+  "building": Building,
+  "alert-circle": AlertCircle,
+  "file-check": FileCheck,
+  "clock": Clock,
+  "eye": Eye,
+  "send": Send,
 };
 
 export type MetricCardProps = {

@@ -54,7 +54,7 @@ export class UsersRepoHttp implements UsersRepo {
 
   async updateUser(id: string, payload: UpdateUserPayload): Promise<void> {
     try {
-      await httpClient.patch(`${this.basePath}/${id}`, payload);
+      await httpClient.patch(`${this.basePath}/${encodeURIComponent(id)}`, payload);
     } catch (err) {
       throw toApiError(err);
     }
@@ -62,7 +62,7 @@ export class UsersRepoHttp implements UsersRepo {
 
   async deleteUser(id: string): Promise<void> {
     try {
-      await httpClient.delete(`${this.basePath}/${id}`);
+      await httpClient.delete(`${this.basePath}/${encodeURIComponent(id)}`);
     } catch (err) {
       throw toApiError(err);
     }

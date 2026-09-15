@@ -1,49 +1,12 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { PublicEnv, serverEnv } from "@shared/config/env";
+import { type NextRequest } from "next/server";
+import { LIST_LIMIT_MAX, proxyToBackend } from "@shared/api/backend-proxy";
 
-export async function GET() {
-  const { cookies: cookieCfg } = serverEnv();
-
-  const cookieStore = await cookies();
-  const token = cookieStore.get(cookieCfg.accessName)?.value;
-
-  if (!token)
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-
-  const upstreamUrl = `${PublicEnv.apiBaseUrl}/audits`;
-
-  try {
-    const res = await fetch(upstreamUrl, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
-
-    const contentType = res.headers.get("content-type") ?? "";
-
-    if (!res.ok) {
-      if (res.status === 401) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-      }
-      if (contentType.includes("application/json")) {
-        const body = await res.json();
-        return NextResponse.json(body, { status: res.status });
-      }
-      const text = await res.text();
-      return NextResponse.json(
-        { message: text || "Upstream error" },
-        { status: res.status }
-      );
-    }
-
-    const data = await res.json();
-    return NextResponse.json(data, { status: 200 });
-  } catch (err) {
-    console.error("[api/audits] upstream error:", err);
-    return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
-  }
+/** GET /api/audits -> GET {apiBaseUrl}/audits */
+export async function GET(req: NextRequest) {
+  return proxyToBackend(req, {
+    method: "GET",
+    path: "/audits",
+    forwardQuery: ["status", "auditor", "limit", "last_eval_id"],
+    numericQuery: { limit: LIST_LIMIT_MAX },
+  });
 }

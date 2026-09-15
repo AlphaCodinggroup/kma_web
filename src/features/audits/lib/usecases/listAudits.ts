@@ -1,9 +1,10 @@
 import type { AuditType } from "@entities/audit/model";
-import type { AuditRepo } from "@entities/audit/api/audit.repo";
+import type { AuditRepo, AuditListParams } from "@entities/audit/api/audit.repo";
 import auditRepoImpl from "@features/audits/api/audit.repo.impl";
 
 type Deps = {
   repo: AuditRepo;
+  params?: AuditListParams;
 };
 
 /**
@@ -12,8 +13,9 @@ type Deps = {
  */
 export async function listAudits(deps?: Partial<Deps>): Promise<AuditType> {
   const repo = deps?.repo ?? auditRepoImpl;
+  const params = deps?.params;
 
-  const audits = await repo.list();
+  const audits = await repo.list(params);
 
   return audits;
 }

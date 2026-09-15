@@ -1,14 +1,26 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { cn } from "@shared/lib/cn";
-import { Label, Input, Button, ErrorText, HelpText } from "@shared/ui/controls";
+import {
+  Label,
+  Input,
+  Button,
+  ErrorText,
+  HelpText,
+  Textarea,
+} from "@shared/ui/controls";
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalTitle,
-  ModalDescription,
   ModalFooter,
   ModalCloseButton,
 } from "@shared/ui/modal";
@@ -51,7 +63,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
   loading,
   error,
   titleOverride,
-  descriptionOverride,
+  descriptionOverride: _descriptionOverride,
   submitLabelOverride,
   className,
 }) => {
@@ -65,12 +77,12 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
       photoFile: null,
       clearPhoto: false,
     }),
-    [defaultValues]
+    [defaultValues],
   );
 
   const [values, setValues] = useState<FacilityUpsertValues>(initial);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
-    initial.photoUrl || null
+    initial.photoUrl || null,
   );
   const objectUrlRef = useRef<string | null>(null);
 
@@ -88,13 +100,13 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
   const handleChange = useCallback(
     <K extends keyof FacilityUpsertValues>(
       key: K,
-      val: FacilityUpsertValues[K]
+      val: FacilityUpsertValues[K],
     ) =>
       setValues((s) => ({
         ...s,
         [key]: val,
       })),
-    []
+    [],
   );
 
   const onSubmitInternal = useCallback(
@@ -107,11 +119,22 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
       const trimmedDescription = values.description?.trim();
       const trimmedPhotoUrl = values.photoUrl?.trim();
 
+      // Al editar, un campo vaciado se envía como cadena vacía para que el
+      // backend lo borre; descartarlo hacía imposible limpiarlo. Al crear no
+      // hay nada que borrar, así que los vacíos se omiten.
+      const keepEmpty = mode === "edit";
+      const optional = (value: string | undefined) =>
+        value || (keepEmpty && value !== undefined) ? value : undefined;
+
       const payload: FacilityUpsertValues = {
         name: trimmedName,
-        ...(trimmedAddress ? { address: trimmedAddress } : {}),
-        ...(trimmedCity ? { city: trimmedCity } : {}),
-        ...(trimmedDescription ? { description: trimmedDescription } : {}),
+        ...(optional(trimmedAddress) !== undefined
+          ? { address: trimmedAddress }
+          : {}),
+        ...(optional(trimmedCity) !== undefined ? { city: trimmedCity } : {}),
+        ...(optional(trimmedDescription) !== undefined
+          ? { description: trimmedDescription }
+          : {}),
         ...(values.photoFile ? { photoFile: values.photoFile } : {}),
         ...(trimmedPhotoUrl && !values.photoFile && !values.clearPhoto
           ? { photoUrl: trimmedPhotoUrl }
@@ -121,12 +144,15 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
 
       await onSubmit(payload);
     },
-    [onSubmit, values]
+    [mode, onSubmit, values],
   );
 
   const isSubmitting = loading === true;
   const isNameValid = values.name.trim().length > 0;
-  const disableSubmit = isSubmitting || !isNameValid;
+  const isAddressValid = (values.address ?? "").trim().length > 0;
+  const isCityValid = (values.city ?? "").trim().length > 0;
+  const disableSubmit =
+    isSubmitting || !isNameValid || !isAddressValid || !isCityValid;
 
   const handlePhotoChange = useCallback(
     (file: File | null) => {
@@ -148,7 +174,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
         handleChange("clearPhoto", false);
       }
     },
-    [handleChange, values.photoUrl]
+    [handleChange, values.photoUrl],
   );
 
   const handleRemovePhoto = useCallback(() => {
@@ -177,11 +203,6 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
     title:
       titleOverride ??
       (mode === "create" ? "Create New Facility" : "Edit Facility"),
-    description:
-      descriptionOverride ??
-      (mode === "create"
-        ? "Add a new facility location to the system"
-        : "Update facility information"),
     submit:
       submitLabelOverride ??
       (mode === "create" ? "Create Facility" : "Update Facility"),
@@ -190,22 +211,18 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent
-        className={cn(
-          "max-h-[calc(100vh-2rem)] overflow-y-auto",
-          className
-        )}
+        className={cn("max-h-[calc(100vh-2rem)] overflow-y-auto", className)}
       >
         <ModalCloseButton onClick={() => onOpenChange(false)} />
 
         <ModalHeader>
           <ModalTitle>{copy.title}</ModalTitle>
-          <ModalDescription>{copy.description}</ModalDescription>
         </ModalHeader>
 
         <form onSubmit={onSubmitInternal} className="space-y-5">
           {/* Facility Name */}
           <div>
-            <Label htmlFor="facility-name">Facility Name</Label>
+            <Label htmlFor="facility-name">Name</Label>
             <Input
               id="facility-name"
               placeholder={
@@ -216,13 +233,6 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               disabled={isSubmitting}
               required
             />
-            {isNameValid ? (
-              <HelpText>
-                Required - this identifies the facility in the system.
-              </HelpText>
-            ) : (
-              <ErrorText>Facility name is required</ErrorText>
-            )}
           </div>
 
           {/* Address */}
@@ -230,38 +240,40 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
             <Label htmlFor="facility-address">Address</Label>
             <Input
               id="facility-address"
-              placeholder="Enter facility address (optional)"
+              placeholder="Enter facility address"
               value={values.address ?? ""}
               onChange={(e) => handleChange("address", e.currentTarget.value)}
               disabled={isSubmitting}
+              required
             />
           </div>
 
-          {/* City */}
+          {/* City, State */}
           <div>
-            <Label htmlFor="facility-city">City</Label>
+            <Label htmlFor="facility-city">City, State</Label>
             <Input
               id="facility-city"
-              placeholder="Enter city (optional)"
+              placeholder="Enter city, state"
               value={values.city ?? ""}
               onChange={(e) => handleChange("city", e.currentTarget.value)}
               disabled={isSubmitting}
+              required
             />
           </div>
 
           {/* Description */}
           <div>
             <Label htmlFor="facility-description">Description</Label>
-            <Input
+            <Textarea
               id="facility-description"
-              placeholder="Enter description (optional)"
+              placeholder="Enter description"
               value={values.description ?? ""}
-              onChange={(e) => handleChange("description", e.currentTarget.value)}
+              onChange={(e) =>
+                handleChange("description", e.currentTarget.value)
+              }
               disabled={isSubmitting}
+              rows={4}
             />
-            <HelpText>
-              Short description of this facility (optional).
-            </HelpText>
           </div>
 
           {/* Photo upload */}
@@ -271,7 +283,9 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               id="facility-photo"
               type="file"
               accept="image/*"
-              onChange={(e) => handlePhotoChange(e.currentTarget.files?.[0] ?? null)}
+              onChange={(e) =>
+                handlePhotoChange(e.currentTarget.files?.[0] ?? null)
+              }
               disabled={isSubmitting}
             />
             {photoPreview ? (
@@ -293,9 +307,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
                   </Button>
                 </div>
               </div>
-            ) : (
-              <HelpText>Optional image.</HelpText>
-            )}
+            ) : null}
           </div>
 
           {error ? <ErrorText>{error}</ErrorText> : <HelpText>&nbsp;</HelpText>}

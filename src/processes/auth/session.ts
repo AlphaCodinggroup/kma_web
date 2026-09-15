@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { serverEnv } from "@shared/config/env";
-import { decodeJwtPayload } from "@shared/lib/jwt";
+import { verifyAccessToken } from "@shared/auth/verify-access-token";
 import {
   mapCognitoClaimsToUser,
   type CognitoAccessTokenClaims,
@@ -19,16 +19,15 @@ export async function getServerSession(): Promise<Session> {
 
   if (!raw) return makeSession(null);
 
-  const claims = decodeJwtPayload<CognitoAccessTokenClaims>(raw);
-  if (!claims) return makeSession(null);
-
-  const now = Math.floor(Date.now() / 1000);
-  if (typeof claims.exp === "number" && claims.exp < now) {
-    return makeSession(null);
-  }
+  // La firma se verifica contra el JWKS del pool: el rol del usuario sale de
+  // estos claims y antes se aceptaban sin comprobar nada.
+  const result = await verifyAccessToken(raw);
+  if (!result.ok) return makeSession(null);
 
   try {
-    const user = mapCognitoClaimsToUser(claims);
+    const user = mapCognitoClaimsToUser(
+      result.claims as unknown as CognitoAccessTokenClaims
+    );
     return makeSession(user);
   } catch {
     return makeSession(null);

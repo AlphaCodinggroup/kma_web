@@ -1,0 +1,13 @@
+.git
+.gitignore
+.next
+.env
+.env*.local
+*.md
+node_modules
+.github
+docs
+.vscode
+.turbo
+.vercel
+coverage

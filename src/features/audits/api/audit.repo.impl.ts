@@ -23,6 +23,9 @@ export class AuditsApiError extends Error {
 
 const INTERNAL_API_URL = `/api/audits`;
 
+/** Tope de páginas que se recorren al seguir el cursor del listado. */
+const MAX_LIST_PAGES = 50;
+
 // Helper para extraer robustamente el array de DTOs
 function extractDtos(data: unknown): AuditDTO[] {
   const d = data as any;
@@ -64,9 +67,9 @@ async function ensureOk(res: Response): Promise<void> {
 
     const msg =
       body &&
-      typeof body === "object" &&
-      "message" in body &&
-      (body as any).message
+        typeof body === "object" &&
+        "message" in body &&
+        (body as any).message
         ? (body as any).message
         : "Upstream error";
 
@@ -100,24 +103,76 @@ class AuditRepoHttp implements AuditRepo {
     return mapAuditDetailDTOToDomain(dto);
   }
 
-  async list(): Promise<AuditType> {
-    const res = await fetch(INTERNAL_API_URL, {
-      method: "GET",
+  async list(params?: import("@entities/audit/api/audit.repo").AuditListParams): Promise<AuditType> {
+    // Build query parameters
+    const searchParams = new URLSearchParams();
+
+    if (params?.status) {
+      searchParams.set('status', params.status);
+    }
+    if (params?.auditor) {
+      searchParams.set('auditor', params.auditor);
+    }
+    // `!= null` y no truthy: limit 0 es un valor que el backend entiende y
+    // descartarlo cambiaba silenciosamente la consulta.
+    if (params?.limit != null) {
+      searchParams.set('limit', params.limit.toString());
+    }
+    if (params?.last_eval_id) {
+      searchParams.set('last_eval_id', params.last_eval_id);
+    }
+
+    // El backend acota su propia página y devuelve `last_eval_id` aunque se
+    // pida un limit mayor. Sin seguir ese cursor, el listado se quedaba en la
+    // primera página del backend y una auditoría creada después nunca
+    // aparecía, con la paginación de la interfaz volviéndose decorativa.
+    const requested = params?.limit ?? Number.POSITIVE_INFINITY;
+    const dtos: ReturnType<typeof extractDtos> = [];
+    let cursor = params?.last_eval_id;
+    let total: number | undefined;
+    let lastEvalId: string | undefined;
+
+    for (let page = 0; page < MAX_LIST_PAGES; page += 1) {
+      if (cursor) searchParams.set("last_eval_id", cursor);
+      const pageUrl = searchParams.toString()
+        ? `${INTERNAL_API_URL}?${searchParams.toString()}`
+        : INTERNAL_API_URL;
+
+      const res = await fetch(pageUrl, {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
+      await ensureOk(res);
+
+      const data = await res.json();
+      dtos.push(...extractDtos(data));
+      total = (data as any).total ?? total;
+      lastEvalId = (data as any).last_eval_id;
+
+      if (!lastEvalId || dtos.length >= requested) break;
+      cursor = lastEvalId;
+    }
+
+    // Mapeo DTO → Dominio (status queda tal cual viene del backend)
+    const resp: AuditType = {
+      audits: dtos.map(mapAuditDtoToDomain),
+      total: total ?? dtos.length,
+      ...(lastEvalId ? { last_eval_id: lastEvalId } : {}),
+    };
+    return resp;
+  }
+
+  async delete(auditId: string): Promise<void> {
+    const url = `${INTERNAL_API_URL}/${encodeURIComponent(auditId)}`;
+
+    const res = await fetch(url, {
+      method: "DELETE",
       credentials: "include",
       cache: "no-store",
     });
 
     await ensureOk(res);
-
-    const data = await res.json();
-    const dtos = extractDtos(data);
-
-    // Mapeo DTO → Dominio (status queda tal cual viene del backend)
-    const resp: AuditType = {
-      audits: dtos.map(mapAuditDtoToDomain),
-      total: (data as any).total,
-    };
-    return resp;
   }
 }
 

@@ -27,12 +27,12 @@ export function useDeleteProjectMutation(
   return useMutation<void, ApiError, ProjectId>({
     mutationKey: ["projects", "delete"],
     mutationFn: (id: ProjectId) => deleteProject(id),
-    async onSuccess(data, variables, context) {
+    async onSuccess(_data, _variables, _context) {
       // invalidamos todas las variantes de ["projects", *]
       await queryClient.invalidateQueries({ queryKey: ["projects"] });
       if (options?.onSuccess) options.onSuccess();
     },
-    onError(error, variables, context) {
+    onError(error, _variables, _context) {
       if (options?.onError) options.onError(error);
     },
   });

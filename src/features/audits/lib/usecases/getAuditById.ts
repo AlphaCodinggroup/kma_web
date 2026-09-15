@@ -13,6 +13,12 @@ export async function getAuditById(
   auditId: string,
   deps?: Partial<Deps>
 ): Promise<AuditDetail> {
+  // Un id vacío llegaba al repositorio y terminaba pegándole al endpoint de
+  // colección en vez de al del recurso.
+  if (!auditId?.trim()) {
+    throw new Error("getAuditById: auditId is required");
+  }
+
   const repo = deps?.repo ?? auditRepoImpl;
   return repo.getById(auditId);
 }

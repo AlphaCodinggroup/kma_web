@@ -6,10 +6,11 @@
 // - Timeouts y valores tomados desde PublicEnv.
 // ------------------------------------------------------
 
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 import { PublicEnv } from "@shared/config/env";
 import { installErrorInterceptor } from "@shared/interceptors/error";
 import { installAuthInterceptor } from "@shared/interceptors/auth";
+import { handleSessionExpiration } from "@shared/lib/session-expiration-handler";
 
 // Si estás en browser y definiste NEXT_PUBLIC_API_BASE_URL, se usa para llamadas EXTERNAS.
 // Las rutas internas que empiecen con "/api/" se forzarán a same-origin más abajo.
@@ -28,8 +29,13 @@ export const httpClient = axios.create({
   },
 });
 
+// ⚠️ Order matters: auth interceptor MUST be installed FIRST so it sees
+// the raw AxiosError with .response.status === 401 before the error
+// interceptor normalises it into a plain ApiError.
+installAuthInterceptor(httpClient, {
+  onSessionExpired: handleSessionExpiration,
+});
 installErrorInterceptor(httpClient);
-installAuthInterceptor(httpClient);
 
 // ---------------------------
 // Interceptores
@@ -52,15 +58,21 @@ httpClient.interceptors.request.use(
       config.baseURL = API_BASE_URL;
     }
 
-    // Content-Type JSON por defecto si no fue seteado
+    // Content-Type JSON por defecto si no trae uno con valor.
+    //
+    // Comprobar `"Content-Type" in headers` no servía: axios 1.x define la
+    // clave con valor undefined en los headers mergeados, así que la condición
+    // era siempre verdadera y el default nunca se asignaba. Con un body objeto
+    // axios lo resuelve solo; con un body string terminaba en
+    // application/x-www-form-urlencoded.
     if (
       config.method &&
       ["post", "put", "patch"].includes(config.method.toLowerCase())
     ) {
-      const hdrs = (config.headers ?? {}) as Record<string, unknown>;
-      const hasCT = "Content-Type" in hdrs || "content-type" in hdrs;
-      if (!hasCT) {
-        (config.headers as any)["Content-Type"] = "application/json";
+      const headers = (config.headers ?? {}) as Record<string, unknown>;
+      const current = headers["Content-Type"] ?? headers["content-type"];
+      if (current == null || current === "") {
+        headers["Content-Type"] = "application/json";
       }
     }
 
@@ -70,22 +82,9 @@ httpClient.interceptors.request.use(
     return Promise.reject(
       new Error(
         error?.message ||
-          "Request interceptor failed before sending the request."
+        "Request interceptor failed before sending the request."
       )
     );
-  }
-);
-
-// Response: normalización de errores (se mantiene tu lógica)
-httpClient.interceptors.response.use(
-  (res) => res,
-  (err: AxiosError) => {
-    const message =
-      (err.response?.data as any)?.message ||
-      (typeof err.message === "string" && err.message) ||
-      "Network request failed.";
-    const enriched = new Error(message);
-    return Promise.reject(enriched);
   }
 );
 

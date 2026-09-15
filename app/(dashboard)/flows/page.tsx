@@ -2,16 +2,21 @@
 
 import React from "react";
 import PageHeader from "@shared/ui/page-header";
+// import { Button } from "@shared/ui/controls";
+// import { Plus } from "lucide-react";
 import {
   FlowsSection,
   type FlowItemVM,
 } from "@features/flows/ui/FlowSection";
 import SearchInput from "@shared/ui/search-input";
 import { useFlowsQuery } from "@features/flows/lib/useFlowsQuery";
+import { Loading } from "@shared/ui/Loading";
+
 
 export default function FlowsPage() {
   const [search, setSearch] = React.useState<string>("");
   const { data, isLoading, error } = useFlowsQuery(true);
+  const [isNavigating] = React.useState(false);
 
   const handleSearchChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,9 +31,6 @@ export default function FlowsPage() {
       id: f.id,
       title: f.title,
       description: f.description ?? "",
-      questionsCount: f.steps.filter(
-        (s) => s.type === "Question" || s.type === "Select"
-      ).length,
       flowId: f.id,
     }));
   }, [data]);
@@ -43,13 +45,7 @@ export default function FlowsPage() {
     );
   }, [search, flows]);
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-muted/40 backdrop-blur-sm z-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
+  if (isLoading || isNavigating) return <Loading text={isNavigating ? "Navigating to create a new flow..." : "Loading flows…"} />;
 
   if (error) {
     return (
@@ -62,16 +58,28 @@ export default function FlowsPage() {
   return (
     <main className="flex w-full flex-col gap-6">
       <PageHeader
-        title="Audit Flows"
+        title="Flows"
         subtitle="View all audit flow templates used in the system"
       />
 
-      <div className="max-w-full">
-        <SearchInput
-          placeholder="Search flows..."
-          value={search}
-          onChange={handleSearchChange}
-        />
+      <div className="max-w-full flex items-center gap-4">
+        <div className="flex-1">
+          <SearchInput
+            placeholder="Search flows..."
+            value={search}
+            onChange={handleSearchChange}
+          />
+        </div>
+        {/* <Button
+          onClick={() => {
+            setIsNavigating(true);
+            router.push("/flows/new");
+          }}
+          className="bg-black text-white hover:bg-gray-800 shadow-md gap-2 !w-auto px-6"
+        >
+          <Plus className="h-4 w-4" />
+          Create Flow
+        </Button> */}
       </div>
 
       <FlowsSection items={filtered} />

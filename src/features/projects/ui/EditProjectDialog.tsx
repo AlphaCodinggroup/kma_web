@@ -41,7 +41,7 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
     name: project.name,
     description: project.description ?? "",
     auditorIds: project.users?.map((u) => u.id) ?? [],
-    facilityIds: project.facilities?.map((f) => f.id) ?? [],
+    facilityIds: project.facilities?.map((f) => f.id).filter((id): id is string => Boolean(id)) ?? [],
   };
 
   return (

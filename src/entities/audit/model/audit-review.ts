@@ -13,8 +13,6 @@ export interface AuditFinding {
   notes?: string | null;
   photos: string[];
   includeInReport: boolean;
-  qcComment?: string | null;
-  updatedAt?: string | null;
   calculatedCost?: number;
 }
 

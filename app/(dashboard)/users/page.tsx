@@ -36,6 +36,7 @@ const UsersPage: React.FC = () => {
   const [editingUser, setEditingUser] = useState<UserSummary | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserSummary | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [createState, setCreateState] = useState<CreateState>({
     loading: false,
@@ -55,16 +56,20 @@ const UsersPage: React.FC = () => {
       (u) =>
         u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
     );
-  }, [data, query]);
+  }, [users, query]);
 
+  // Las dependencias son `users` y no `users.length`: un cambio de rol no
+  // altera la cantidad de usuarios, así que los conteos por rol quedaban
+  // congelados después de editar uno. El rol de QC es el grupo "qc" de
+  // Cognito, no "qc_manager", así que esa métrica contaba siempre cero.
   const metrics = useMemo(
     () => ({
       totalUsers: users.length,
       auditors: users.filter((u) => u.role === "auditor").length,
-      qcManagers: users.filter((u) => u.role === "qc_manager").length,
+      qcManagers: users.filter((u) => u.role === "qc").length,
       projectManagers: users.filter((u) => u.role === "admin").length,
     }),
-    [users.length]
+    [users]
   );
 
   const handleEdit = useCallback(
@@ -92,15 +97,21 @@ const UsersPage: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (!deletingUser) return;
     setIsDeleting(true);
+    setDeleteError(null);
     try {
       await usersRepoImpl.deleteUser(deletingUser.id);
       setIsDeleting(false);
       setDeletingUser(null);
       await refetch();
-    } catch (err: any) {
+    } catch (err) {
+      // El error se muestra en el diálogo: antes sólo se apagaba el spinner y
+      // el usuario no se enteraba de que el borrado había fallado.
       console.error("Failed to delete user", err);
       setIsDeleting(false);
-      // Optional: show error toast or alert, for now just log
+      setDeleteError(
+        (err as { message?: string })?.message ||
+          "Failed to delete the user. Please try again."
+      );
     }
   };
 
@@ -223,7 +234,12 @@ const UsersPage: React.FC = () => {
       {/* Delete Confirmation */}
       <ConfirmDialog
         open={!!deletingUser}
-        onOpenChange={(open) => !open && setDeletingUser(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeletingUser(null);
+            setDeleteError(null);
+          }
+        }}
         title="Delete User"
         description={
           <>
@@ -233,6 +249,7 @@ const UsersPage: React.FC = () => {
         confirmLabel="Delete User"
         onConfirm={handleConfirmDelete}
         loading={isDeleting}
+        error={deleteError}
       />
     </div>
   );

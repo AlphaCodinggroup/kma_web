@@ -10,6 +10,12 @@ import {
 } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { Button } from "@shared/ui/controls";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useUpdateAuditAnswerMutation } from "../lib/hooks/useUpdateAuditAnswerMutation";
+import type { AnswerItemUpdate } from "@entities/audit/model/audit-review-answer-update";
+import { flowsRepo } from "@features/flows/api/flows.repo.impl";
+import { httpClient } from "@shared/api/http.client";
 
 export type QuestionType = "yes_no" | "multiple_choice" | "number" | "text";
 
@@ -20,6 +26,9 @@ export interface AttachmentVM {
 }
 
 export interface AuditQuestionCardProps {
+  auditId?: string | undefined;
+  questionId?: string | undefined;
+  steps?: any[] | undefined;
   index?: number;
   text: string;
   type: QuestionType;
@@ -131,7 +140,6 @@ function AttachmentsList({
               onClick={
                 onViewAttachment ? () => onViewAttachment(att) : undefined
               }
-              // disabled={!onViewAttachment}
               aria-label={`View ${att.name}`}
               className={cn(
                 "h-8 rounded-lg border px-3 text-xs",
@@ -143,6 +151,152 @@ function AttachmentsList({
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/* ===== Dynamic Form Fields ===== */
+
+interface FlowFormField {
+  id: string;
+  type: "text" | "number" | "photo" | "button";
+  label: string;
+  placeholder?: string;
+  unit?: string;
+}
+
+function DynamicFormFields({
+  fields,
+  values,
+  onChange,
+}: {
+  fields: FlowFormField[];
+  values: Record<string, any>;
+  onChange: (key: string, value: any) => void;
+}) {
+  // Fallback: no fields defined in the flow → show generic form
+  if (!fields || fields.length === 0) {
+    return (
+      <div className="grid gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+            Quantity
+          </label>
+          <input
+            type="number"
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+            value={values.quantity ?? ""}
+            onChange={(e) => onChange("quantity", Number(e.target.value))}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+            Notes / Measurements
+          </label>
+          <textarea
+            className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
+            value={values.notes ?? ""}
+            onChange={(e) => onChange("notes", e.target.value)}
+          />
+        </div>
+        <div className="text-xs italic text-muted-foreground">
+          Use the &quot;Edit Finding&quot; dialog later to upload images.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4">
+      {fields.map((field) => {
+        if (field.type === "number") {
+          return (
+            <div key={field.id}>
+              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+                {field.label}
+                {field.unit && (
+                  <span className="ml-1 font-normal text-gray-400">
+                    ({field.unit})
+                  </span>
+                )}
+              </label>
+              <input
+                type="number"
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                placeholder={field.placeholder ?? ""}
+                value={values[field.id] ?? ""}
+                onChange={(e) =>
+                  onChange(
+                    field.id,
+                    e.target.value === "" ? "" : Number(e.target.value)
+                  )
+                }
+              />
+            </div>
+          );
+        }
+
+        if (field.type === "text") {
+          return (
+            <div key={field.id}>
+              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+                {field.label}
+              </label>
+              <textarea
+                className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                placeholder={field.placeholder ?? ""}
+                value={values[field.id] ?? ""}
+                onChange={(e) => onChange(field.id, e.target.value)}
+              />
+            </div>
+          );
+        }
+
+        if (field.type === "photo") {
+          const previews: string[] = values[field.id] ?? [];
+          return (
+            <div key={field.id}>
+              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+                {field.label}
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-black file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-gray-800"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files ?? []);
+                  const urls = files.map((f) => URL.createObjectURL(f));
+                  onChange(field.id, [...previews, ...urls]);
+                  // Store File objects under a prefixed key for later upload
+                  const existingFiles: File[] =
+                    values[`__files__${field.id}`] ?? [];
+                  onChange(`__files__${field.id}`, [
+                    ...existingFiles,
+                    ...files,
+                  ]);
+                }}
+              />
+              {previews.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {previews.map((src, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={i}
+                      src={src}
+                      alt={`preview ${i}`}
+                      className="h-16 w-16 rounded-md border object-cover shadow-sm"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // button type: skip rendering in edit form
+        return null;
+      })}
     </div>
   );
 }
@@ -180,6 +334,9 @@ function YesNoChip({ value }: { value: boolean }) {
 }
 
 const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
+  auditId,
+  questionId,
+  steps,
   index,
   text,
   type,
@@ -190,6 +347,161 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
   onViewAttachment,
   className,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [draftAnswer, setDraftAnswer] = useState<"YES" | "NO" | null>(null);
+  const [draftForm, setDraftForm] = useState<Record<string, any>>({});
+  const { mutateAsync: updateAnswer, isPending } =
+    useUpdateAuditAnswerMutation();
+
+  // Derive the FormStep fields from the flow steps for this question's NO path
+  // Supports recursive Form linking (loading subsequent Form fields)
+  const noNextFormFields = React.useMemo((): FlowFormField[] => {
+    if (!steps || !questionId) return [];
+    const questionStep = steps.find((s: any) => s.id === questionId);
+    if (!questionStep) return [];
+    
+    // Backend may use snake_case or camelCase
+    let nextIdToCheck = questionStep.no_next ?? questionStep.noNext;
+    const collectedFields: FlowFormField[] = [];
+    let sanityCounter = 0;
+    
+    while (nextIdToCheck && sanityCounter < 20) {
+      sanityCounter++;
+      const step = steps.find((s: any) => s.id === nextIdToCheck);
+      if (!step || step.type !== "Form") break;
+      
+      const stepFields = (step.fields ?? []) as FlowFormField[];
+      // We append any fields found. The keys usually don't overlap (e.g., measurements, notes vs quantity)
+      collectedFields.push(...stepFields);
+      
+      nextIdToCheck = step.next;
+    }
+    
+    return collectedFields;
+  }, [steps, questionId]);
+
+  const handleFormChange = (key: string, value: any) => {
+    setDraftForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async () => {
+    if (!draftAnswer || !auditId || !questionId) return;
+
+    const updates: AnswerItemUpdate[] = [
+      { step_id: questionId, answer: draftAnswer },
+    ];
+
+    if (draftAnswer === "NO") {
+      const questionStep = steps?.find((s: any) => s.id === questionId);
+      const noNextId = questionStep?.no_next ?? questionStep?.noNext;
+      
+      if (noNextId) {
+        setIsEditing(false); // Can be replaced by a general loading state if preferred, but isPending handles it locally
+        
+        const cleanValues: Record<string, unknown> = {};
+        
+        // 1. Process files if they exist
+        for (const [k, v] of Object.entries(draftForm)) {
+          if (k.startsWith("__files__")) {
+             const fieldId = k.replace("__files__", "");
+             const filesToUpload = v as File[];
+
+             if (filesToUpload.length > 0) {
+                 // Hit backend uploads lambda
+                 try {
+                     const uploadReq = {
+                         audit_id: auditId,
+                         files: filesToUpload.map(f => ({ name: f.name, step_id: noNextId }))
+                     };
+                     
+                     const { data: uploadRes } = await httpClient.post<{ urls: { file_name: string, upload_url: string, file_url: string }[] }>(
+                         "/api/uploads",
+                         uploadReq
+                     );
+
+                     const finalS3Urls: string[] = [];
+                     
+                     // PUT files
+                     for (let i = 0; i < filesToUpload.length; i++) {
+                         const file = filesToUpload[i];
+                         const presignedInfo = uploadRes.urls.find(u => u.file_name === file.name);
+                         if (presignedInfo) {
+                             await flowsRepo.uploadFile(presignedInfo.upload_url, file);
+                             finalS3Urls.push(presignedInfo.file_url);
+                         }
+                     }
+                     // Map to proper key. If field is 'photo', use 'photos'
+                     const targetKey = fieldId === "photo" ? "photos" : fieldId;
+                     // In case there were already existing strings under the array, append them
+                     const existingUrls = (draftForm[fieldId] || []).filter((u: any) => typeof u === "string" && !u.startsWith("blob:"));
+                     cleanValues[targetKey] = [...existingUrls, ...finalS3Urls];
+                 } catch (err) {
+                     console.error("Failed to upload files:", err);
+                     alert("Failed to upload files");
+                     return;
+                 }
+             }
+          }
+        }
+
+        // 2. Map remaining fields, ignore 'photo' since we mapped it to 'photos' above!
+        for (const [k, v] of Object.entries(draftForm)) {
+          if (!k.startsWith("__files__") && k !== "photo") {
+            cleanValues[k] = v;
+          }
+        }
+        
+        let currentFormId = noNextId;
+        let sanity = 0;
+        let pushedAnyForm = false;
+
+        while (currentFormId && sanity < 20) {
+          sanity++;
+          const formStep = steps?.find((s: any) => s.id === currentFormId);
+          if (!formStep || formStep.type !== "Form") break;
+          
+          const formFields = formStep.fields ?? [];
+          const formValues: Record<string, unknown> = {};
+          
+          // Only pull fields defined in this specific form
+          for (const field of formFields) {
+            const targetKey = field.id === "photo" ? "photos" : field.id;
+            if (cleanValues[targetKey] !== undefined) {
+              formValues[targetKey] = cleanValues[targetKey];
+            }
+          }
+          
+          updates.push({
+            step_id: currentFormId,
+            type: "form",
+            values: formValues,
+          });
+          pushedAnyForm = true;
+          
+          currentFormId = formStep.next;
+        }
+
+        // Dropback in case anything failed
+        if (!pushedAnyForm) {
+          updates.push({
+            step_id: noNextId,
+            type: "form",
+            values: cleanValues,
+          });
+        }
+      }
+    }
+
+    try {
+      await updateAnswer({ auditId, answers: updates });
+      setIsEditing(false);
+      alert("Answer updated successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update answer");
+    }
+  };
+
   const stylesContainerCard =
     "rounded-2xl border border-gray-100 bg-card p-6 shadow-sm sm:p-7";
   const hasChoice =
@@ -197,6 +509,117 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     answerValue !== undefined &&
     answerValue !== null &&
     String(answerValue).trim().length > 0;
+
+  /* ===== UNSURE (EDITABLE) ===== */
+  const isUnsure =
+    typeof answerValue === "string" && answerValue.toUpperCase() === "UNSURE";
+
+  if (isUnsure) {
+    if (isEditing) {
+      return (
+        <article
+          className={cn(
+            "rounded-2xl border border-blue-200 bg-blue-50/30 p-6 sm:p-7",
+            className
+          )}
+        >
+          <HeroSection
+            text={text}
+            pill={<SelectionPill label="UNSURE (Editing)" />}
+          />
+          <NotesSection {...(notes === undefined ? {} : { notes })} />
+
+          <div className="mt-6 border-t pt-4">
+            <h5 className="mb-3 text-sm font-semibold">Change Answer</h5>
+            <div className="mb-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setDraftAnswer("YES");
+                  setDraftForm({});
+                }}
+                className={cn(
+                  "inline-flex rounded-xl px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60",
+                  draftAnswer === "YES"
+                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                )}
+              >
+                YES
+              </button>
+              <button
+                type="button"
+                onClick={() => setDraftAnswer("NO")}
+                className={cn(
+                  "inline-flex rounded-xl px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60",
+                  draftAnswer === "NO"
+                    ? "bg-rose-600 text-white hover:bg-rose-700"
+                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                )}
+              >
+                NO
+              </button>
+            </div>
+
+            {draftAnswer === "NO" && (
+              <div className="mb-4 space-y-4 rounded-xl border bg-card p-4">
+                <h6 className="text-sm font-medium">Finding details</h6>
+                <DynamicFormFields
+                  fields={noNextFormFields}
+                  values={draftForm}
+                  onChange={handleFormChange}
+                />
+              </div>
+            )}
+
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={!draftAnswer || isPending}
+                className="inline-flex items-center justify-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-black/80 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Save Changes
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-xl bg-transparent px-4 py-2 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-100 disabled:opacity-50"
+                onClick={() => setIsEditing(false)}
+                disabled={isPending}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </article>
+      );
+    }
+
+    return (
+      <article
+        className={cn(
+          stylesContainerCard,
+          "border-orange-200 bg-orange-50/30",
+          className
+        )}
+      >
+        <HeroSection text={text} pill={<SelectionPill label="UNSURE" />} />
+        <NotesSection {...(notes === undefined ? {} : { notes })} />
+        <div className="mt-4 flex justify-start border-t pt-4">
+          <button
+            type="button"
+            className="inline-flex rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            onClick={() => setIsEditing(true)}
+          >
+            Resolve Answer...
+          </button>
+        </div>
+      </article>
+    );
+  }
 
   /* ===== YES ===== */
   if (answeredYes === true) {
@@ -222,7 +645,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     );
   }
 
-  /* ===== MULTIPLE CHOICE (estética YES, muestra opción) ===== */
+  /* ===== MULTIPLE CHOICE ===== */
   if (hasChoice) {
     return (
       <article className={cn(stylesContainerCard, className)}>

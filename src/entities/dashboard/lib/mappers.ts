@@ -1,3 +1,4 @@
+import { toIsoDateOrNull } from "@shared/lib/coerce";
 import type {
   DashboardSummary,
   DashboardMetrics,
@@ -7,10 +8,12 @@ import type {
 
 export type DashboardMetricsDTO = {
   total_projects?: number | null;
-  total_projects_complete?: number | null;
-  total_reports_complete?: number | null;
-  total_reports_sent_to_client?: number | null;
-  total_reports_ready_for_qc?: number | null;
+  total_facilities?: number | null;
+  total_facilities_unassigned?: number | null;
+  total_audits_completed?: number | null;
+  total_draft_reports_pending_review?: number | null;
+  total_draft_reports_in_review?: number | null;
+  total_final_reports_sent_to_client?: number | null;
 };
 
 export type ProjectFacilitySummaryDTO = {
@@ -25,6 +28,9 @@ export type RecentActivityDTO = {
   project_id?: string | null;
   project_name?: string | null;
   facility_id?: string | null;
+  facility_name?: string | null;
+  flow_id?: string | null;
+  flow_name?: string | null;
   auditor_id?: string | null;
   auditor_name?: string | null;
   completed_at?: string | null;
@@ -42,21 +48,22 @@ const toNumber = (value: unknown, fallback = 0): number => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const toString = (value: unknown): string => {
-  if (typeof value === "string") return value;
-  if (value === null || value === undefined) return "";
-  return String(value);
-};
+// Sólo se aceptan cadenas: `String(value)` sobre cualquier tipo convertía un
+// objeto del backend en "[object Object]" y lo mostraba tal cual en pantalla.
+const toString = (value: unknown): string =>
+  typeof value === "string" ? value : "";
 
 const mapDashboardMetricsDTO = (
   dto: DashboardMetricsDTO | null | undefined
 ): DashboardMetrics => {
   return {
     totalProjects: toNumber(dto?.total_projects, 0),
-    totalProjectsComplete: toNumber(dto?.total_projects_complete, 0),
-    totalReportsComplete: toNumber(dto?.total_reports_complete, 0),
-    totalReportsSentToClient: toNumber(dto?.total_reports_sent_to_client, 0),
-    totalReportsReadyForQc: toNumber(dto?.total_reports_ready_for_qc, 0),
+    totalFacilities: toNumber(dto?.total_facilities, 0),
+    totalFacilitiesUnassigned: toNumber(dto?.total_facilities_unassigned, 0),
+    totalAuditsCompleted: toNumber(dto?.total_audits_completed, 0),
+    totalDraftReportsPendingReview: toNumber(dto?.total_draft_reports_pending_review, 0),
+    totalDraftReportsInReview: toNumber(dto?.total_draft_reports_in_review, 0),
+    totalFinalReportsSentToClient: toNumber(dto?.total_final_reports_sent_to_client, 0),
   };
 };
 
@@ -79,9 +86,15 @@ export const mapRecentActivityDTO = (
     projectId: toString(dto.project_id),
     projectName: toString(dto.project_name),
     facilityId: toString(dto.facility_id),
+    facilityName: toString(dto.facility_name),
+    flowId: toString(dto.flow_id),
+    flowName: toString(dto.flow_name),
     auditorId: toString(dto.auditor_id),
     auditorName: toString(dto.auditor_name),
-    completedAt: toString(dto.completed_at),
+    // completedAt es nullable: como cadena no se podía distinguir "sin
+    // completar" de una fecha vacía, y la interfaz mostraba un guion en los dos
+    // casos sin poder diferenciarlos.
+    completedAt: toIsoDateOrNull(dto.completed_at),
   };
 };
 

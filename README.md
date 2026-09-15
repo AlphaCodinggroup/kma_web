@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KMA Web - Plataforma de Gestión de Auditorías
 
-## Getting Started
+Este documento describe la funcionalidad y el objetivo de negocio de los distintos módulos de la aplicación. La plataforma está diseñada para facilitar la planificación, ejecución y reporte de auditorías en diferentes instalaciones, permitiendo flujos dinámicos y revisiones exhaustivas.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🏗️ Módulos Principales (Perspectiva de Negocio)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. 📊 Dashboard (Tablero Principal)
+Es el centro de control del usuario al ingresar a la plataforma. 
+- **Objetivo:** Brindar una vista panorámica del estado operativo.
+- **¿Qué puede hacer el usuario?** Visualizar métricas clave como la cantidad de auditorías en curso, revisión o completadas, acceder rápidamente a la actividad reciente o retomar una evaluación que quedó a la mitad.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. 📂 Projects (Proyectos)
+Actúa como el agrupador organizativo de más alto nivel dentro de la empresa o consultora.
+- **Objetivo:** Organizar las auditorías y clientes de forma estructurada.
+- **¿Qué puede hacer el usuario?** Crear y gestionar proyectos (ej. "Adecuación ADA 2026 - Cliente X"). Permite mantener un orden lógico, agrupando dentro de cada proyecto las diferentes instalaciones que serán evaluadas y centralizando sus datos.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. 🏢 Facilities (Instalaciones / Sitios)
+Representa el espacio físico o lógico que será auditado.
+- **Objetivo:** Mantener un inventario detallado de los lugares a inspeccionar.
+- **¿Qué puede hacer el usuario?** Dar de alta, editar y gestionar sucursales, edificios o locaciones específicas. A cada "Facility" se le vinculan directamente sus auditorías correspondientes, permitiendo un seguimiento geográfico e individualizado del estado de cada locación.
 
-## Learn More
+### 4. 🔀 Flows (Flujos de Trabajo / Motor de Formularios)
+Es el motor dinámico que dicta **qué** y **cómo** se audita. 
+- **Objetivo:** Permitir flexibilidad total sin requerir desarrollo de software cuando cambia la normativa.
+- **¿Qué puede hacer el usuario administrador?** Diseñar plantillas de preguntas personalizadas. El usuario puede crear pasos con lógica condicional (ej. "Si la respuesta es NO, pedir forzosamente que se suba una foto y se tome la medida de la rampa"). Administra preguntas de opción múltiple, sí/no, textos y requerimientos de recolección de evidencia.
 
-To learn more about Next.js, take a look at the following resources:
+### 5. 📋 Audits (Auditorías y Revisión)
+Es el módulo operativo "de campo" y de control de calidad.
+- **Objetivo:** Ejecutar la inspección de la instalación y revisar el aseguramiento de calidad.
+- **¿Qué puede hacer el usuario?** 
+  - **Ejecución:** Seleccionar una instalación (`Facility`), elegir un flujo de inspección (`Flow`) y responder paso a paso, subiendo evidencia fotográfica y anotando observaciones.
+  - **Revisión y Edición:** Una vez completada, los supervisores (o los mismos auditores) pueden auditar los hallazgos. Se pueden editar preguntas marcadas temporalmente como *"Unsure"* (Inseguro) para decidir finalmente un "Sí o No" antes de generar el reporte final.
+  - **Findings (Hallazgos):** Gestionar puntualmente las áreas que no cumplen con la normativa.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 6. 📄 Reports (Informes Finales)
+El módulo de salida de información y entrega de valor al cliente.
+- **Objetivo:** Transformar los datos crudos de la auditoría en documentos consumibles y accionables.
+- **¿Qué puede hacer el usuario?** Visualizar el resumen de los fallos encontrados, filtrar resultados, generar informes consolidados y exportar el estado de cumplimiento de una instalación para presentarlo ante accionistas, clientes o entidades reguladoras.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 7. 👥 Users & Auth (Usuarios y Roles)
+Manejo de acceso al sistema y seguridad.
+- **Objetivo:** Proteger la información de las auditorías y segmentar los permisos.
+- **¿Qué puede hacer el usuario administrador?** Crear cuentas para nuevos auditores o personal interno, asignar roles (quién puede auditar, quién puede crear flujos, quién puede revisar) y gestionar las credenciales de ingreso a la plataforma de forma centralizada.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Flujo de Operación Típico
+1. El **Administrador** crea un **Flow** (Plantilla de preguntas) y un **Project**.
+2. Se dan de alta las **Facilities** correspondientes al Proyecto.
+3. El **Auditor** va a la instalación, abre el módulo de **Audits** y completa el Flow. En caso de duda en una pregunta grave, la marca como *"Unsure"*.
+4. Un experto revisa la web desde la base, entra a la Auditoría y edita la pregunta *"Unsure"* marcándola como *"No"*, pidiendo rellenar de inmediato las notas y cantidades que exige el sistema.
+5. Se genera finalmente un **Report** con todos los datos corregidos para enviarle al cliente.

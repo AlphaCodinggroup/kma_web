@@ -12,7 +12,7 @@ import axios, {
   type InternalAxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
-import { createApiError, type ApiError } from "@shared/interceptors/error";
+import { createApiError, isApiError, type ApiError } from "@shared/interceptors/error";
 
 // -----------------------------
 // Config / helpers internos
@@ -89,10 +89,40 @@ const refreshClient = axios.create({
 // -----------------------------
 
 /**
+ * Opciones para el interceptor de autenticación.
+ */
+export type AuthInterceptorOptions = {
+  /**
+   * Callback que se ejecuta cuando la sesión expira definitivamente
+   * (i.e., cuando el refresh falla).
+   */
+  onSessionExpired?: () => void | Promise<void>;
+};
+
+/**
+ * Obtiene el status HTTP del error, soportando tanto AxiosError como ApiError.
+ */
+function getErrorStatus(error: unknown): number | undefined {
+  // AxiosError path (interceptor sees raw error)
+  const axiosStatus = (error as AxiosError)?.response?.status;
+  if (axiosStatus) return axiosStatus;
+
+  // ApiError fallback (in case error was already normalised)
+  if (isApiError(error) && error.code === "UNAUTHORIZED") return 401;
+
+  return undefined;
+}
+
+/**
  * Instala el auth interceptor en una instancia de Axios (cliente).
  * - Debe llamarse una sola vez sobre httpClient.
+ * @param instance - Instancia de Axios donde instalar el interceptor
+ * @param options - Opciones del interceptor (ej. callback de sesión expirada)
  */
-export function installAuthInterceptor(instance: AxiosInstance): void {
+export function installAuthInterceptor(
+  instance: AxiosInstance,
+  options?: AuthInterceptorOptions
+): void {
   instance.interceptors.response.use(
     // Pasamos 2xx sin cambios
     (res: AxiosResponse) => res,
@@ -100,7 +130,7 @@ export function installAuthInterceptor(instance: AxiosInstance): void {
     // Manejamos errores
     async (error: AxiosError) => {
       try {
-        const status = error.response?.status;
+        const status = getErrorStatus(error);
         const originalConfig = (error.config || {}) as RetriableConfig;
         const url = originalConfig.url ?? "";
 
@@ -116,6 +146,17 @@ export function installAuthInterceptor(instance: AxiosInstance): void {
 
         // Evitar reintentos infinitos en la misma request
         if (originalConfig.__isRetry__ === true) {
+          // Si el retry falla nuevamente con 401, significa que el refresh no fue efectivo
+          // o la sesión sigue inválida. Forzamos el flujo de expiración.
+          if (options?.onSessionExpired) {
+            Promise.resolve(options.onSessionExpired()).catch((cbErr) => {
+              console.error(
+                "[AuthInterceptor] onSessionExpired callback failed in retry:",
+                cbErr
+              );
+            });
+          }
+
           // Ya reintentamos una vez y falló → propagamos UNAUTHORIZED
           throw <ApiError>{
             code: "UNAUTHORIZED",
@@ -145,7 +186,15 @@ export function installAuthInterceptor(instance: AxiosInstance): void {
               // OK → resolvemos la cola
               flushQueue(true);
             } catch (e) {
-              // Error de refresh → rechazamos la cola y propagamos
+              // Error de refresh → invocar callback de sesión expirada
+              // Fire-and-forget para no bloquear la propagación del error
+              if (options?.onSessionExpired) {
+                Promise.resolve(options.onSessionExpired()).catch((cbErr) => {
+                  console.error("[AuthInterceptor] onSessionExpired callback failed:", cbErr);
+                });
+              }
+
+              // Rechazamos la cola y propagamos
               flushQueue(false, e);
               throw e;
             } finally {

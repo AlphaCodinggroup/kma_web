@@ -4,6 +4,7 @@ import type {
 } from "@entities/facility/model";
 import type { FacilitiesRepo } from "@entities/facility/api/facilities.repo";
 import { facilitiesRepoImpl } from "@features/facilities/api/facilities.repo.impl";
+import { sanitizeFileName } from "@shared/lib/file";
 
 export type UpdateFacilityInput = UpdateFacilityParams & {
   photoFile?: File | null;
@@ -25,7 +26,7 @@ function assertValidUrl(url: string): void {
  */
 export async function updateFacilityUseCase(
   rawParams: UpdateFacilityInput,
-  repo: FacilitiesRepo = facilitiesRepoImpl
+  repo: FacilitiesRepo = facilitiesRepoImpl,
 ): Promise<UpdateFacilityResult> {
   const id = rawParams.id?.trim();
   if (!id) {
@@ -50,51 +51,53 @@ export async function updateFacilityUseCase(
 
   if (rawParams.address !== undefined) {
     const trimmed = rawParams.address.trim();
-    if (trimmed && trimmed.length > 500) {
+    if (trimmed.length > 500) {
       throw new Error("Address must have at most 500 characters");
     }
-    if (trimmed) {
-      payload.address = trimmed;
-    }
+    // El valor vacío se envía: omitirlo hacía imposible borrar el campo, el
+    // backend conservaba el valor viejo y la UI mostraba el cambio como hecho.
+    payload.address = trimmed;
   }
 
   if (rawParams.city !== undefined) {
     const trimmed = rawParams.city.trim();
-    if (trimmed && trimmed.length > 100) {
+    if (trimmed.length > 100) {
       throw new Error("City must have at most 100 characters");
     }
-    if (trimmed) {
-      payload.city = trimmed;
-    }
+    // El valor vacío se envía: omitirlo hacía imposible borrar el campo, el
+    // backend conservaba el valor viejo y la UI mostraba el cambio como hecho.
+    payload.city = trimmed;
   }
 
   if (rawParams.description !== undefined) {
     const trimmed = rawParams.description.trim();
-    if (trimmed && trimmed.length > 1000) {
+    if (trimmed.length > 1000) {
       throw new Error("Description must have at most 1000 characters");
     }
-    if (trimmed) {
-      payload.description = trimmed;
-    }
+    // El valor vacío se envía: omitirlo hacía imposible borrar el campo, el
+    // backend conservaba el valor viejo y la UI mostraba el cambio como hecho.
+    payload.description = trimmed;
   }
 
   if (rawParams.notes !== undefined) {
     const trimmed = rawParams.notes.trim();
-    if (trimmed && trimmed.length > 1000) {
+    if (trimmed.length > 1000) {
       throw new Error("Notes must have at most 1000 characters");
     }
-    if (trimmed) {
-      payload.notes = trimmed;
-    }
+    payload.notes = trimmed;
   }
 
   let photoUrl = rawParams.photoUrl?.trim() ?? undefined;
   if (rawParams.photoFile) {
     const file = rawParams.photoFile;
     const contentType = file.type || "application/octet-stream";
-    const signature = await repo.getUploadSignedUrl(file.name, contentType);
+    const signature = await repo.getUploadSignedUrl(
+      sanitizeFileName(file.name),
+      contentType,
+    );
     await repo.uploadFile(signature.uploadUrl, file);
-    photoUrl = signature.publicUrl;
+    // Se guarda la key, no una URL: el backend la prefirma al leer la facility.
+    photoUrl = signature.key;
     payload.photoUrl = photoUrl;
     payload.clearPhoto = false;
   } else if (photoUrl) {
@@ -110,6 +113,11 @@ export async function updateFacilityUseCase(
 
   if (rawParams.geo !== undefined) {
     payload.geo = rawParams.geo;
+  }
+
+  // La asignación a un proyecto vive en la facility: null la desasigna.
+  if (rawParams.projectId !== undefined) {
+    payload.projectId = rawParams.projectId;
   }
 
   return repo.update(payload);

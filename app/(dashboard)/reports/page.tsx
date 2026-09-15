@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import ReportsSearchCard from "@features/reports/ui/ReportsSearchCard";
 import ReportsListCard from "@features/reports/ui/ReportsListCard";
 import { useReportsListQuery } from "@features/reports/lib/hooks/useReportsQuery";
-import { useReportByIdQuery } from "@features/reports/lib/hooks/useReportByIdQuery";
 import PageHeader from "@shared/ui/page-header";
 import { useDebouncedSearch } from "@shared/lib/useDebouncedSearch";
 import { cn } from "@shared/lib/cn";
+import { useDeleteReport } from "@features/reports/lib/hooks/useDeleteReport";
+import { useDownloadReportFile } from "@features/reports/lib/hooks/useDownloadReportFile";
 
 const ReportsPage: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -22,7 +23,7 @@ const ReportsPage: React.FC = () => {
     refetch,
   } = useReportsListQuery();
 
-  const items = data?.items ?? [];
+  const items = useMemo(() => data?.items ?? [], [data?.items]);
 
   const filtered = useMemo(() => {
     const q = debouncedQuery;
@@ -41,75 +42,58 @@ const ReportsPage: React.FC = () => {
     });
   }, [items, debouncedQuery]);
 
-  /**
-   * Descarga del PDF usando el hook de detalle (useReportByIdQuery)
-   */
-
-  // ID de la auditoría para la que se está intentando descargar el reporte
-  const [downloadAuditId, setDownloadAuditId] = useState<string | null>(null);
-
   const {
-    data: downloadReport,
-    isLoading: isDownloadLoading,
-    isError: isDownloadError,
-    error: downloadError,
-  } = useReportByIdQuery({
-    id: downloadAuditId ?? undefined,
-    // Solo disparar la query cuando hay un ID seleccionado
-    enabled: Boolean(downloadAuditId),
-  });
-
-  // Handler que dispara la descarga para un ID
+    download: downloadReport,
+    activeId: downloadingId,
+  } = useDownloadReportFile();
   const handleDownload = useCallback(
-    (auditId: string) => setDownloadAuditId(auditId),
-    []
+    (auditId: string) => {
+      const report = items.find((item) => item.id === auditId);
+      if (!report) return;
+      void downloadReport(report).catch((error: unknown) => {
+        console.error("[ReportsPage] Error downloading report:", error);
+        alert("Error downloading the report. Please try again.");
+      });
+    },
+    [downloadReport, items]
   );
 
-  // Efecto que reacciona al resultado del hook de detalle
-  useEffect(() => {
-    if (!downloadAuditId) return;
-    if (isDownloadLoading) return;
-    if (isDownloadError) {
-      console.error("[ReportsPage] Error downloading report:", downloadError);
-      setDownloadAuditId(null);
-      return;
-    }
-    if (!downloadReport) return;
+  // Delete report functionality
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const deleteMutation = useDeleteReport();
 
-    const url = downloadReport.reportUrl;
-    const isValidUrl = url && /^https?:\/\//.test(url);
-
-    if (isValidUrl) {
-      window.open(url as string, "_blank", "noopener,noreferrer");
-    } else {
-      console.warn(
-        "[ReportsPage] Report URL not ready or invalid for auditId:",
-        downloadAuditId,
-        "status:",
-        downloadReport.status
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this report? This action cannot be undone."
       );
-    }
-    setDownloadAuditId(null);
-  }, [
-    downloadAuditId,
-    isDownloadLoading,
-    isDownloadError,
-    downloadReport,
-    downloadError,
-  ]);
+
+      if (!confirmed) return;
+
+      try {
+        setDeletingId(id);
+        await deleteMutation.mutateAsync(id);
+      } catch (err) {
+        console.error("[ReportsPage] Error deleting report:", err);
+        alert("Error deleting the report. Please try again.");
+      } finally {
+        setDeletingId(null);
+      }
+    },
+    [deleteMutation]
+  );
 
   return (
     <main className={cn("min-h-dvh overflow-hidden bg-white")}>
       <PageHeader
-        title="Generated Reports"
-        subtitle="View and download all audit reports"
+        title="Reports"
       />
 
       <div className="mb-6">
         <ReportsSearchCard
           query={query}
           onQueryChange={setQuery}
-          placeholder="Search by project name, auditor, or report ID…"
+          placeholder="Search reports..."
         />
       </div>
 
@@ -122,7 +106,9 @@ const ReportsPage: React.FC = () => {
         isError={isListError}
         onError={refetch}
         onDownload={handleDownload}
-        isDownloading={isDownloadLoading}
+        onDelete={handleDelete}
+        deletingId={deletingId}
+        downloadingId={downloadingId}
       />
     </main>
   );

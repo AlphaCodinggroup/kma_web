@@ -1,9 +1,11 @@
 export type DashboardMetrics = {
   totalProjects: number;
-  totalProjectsComplete: number;
-  totalReportsComplete: number;
-  totalReportsSentToClient: number;
-  totalReportsReadyForQc: number;
+  totalFacilities: number;
+  totalFacilitiesUnassigned: number;
+  totalAuditsCompleted: number;
+  totalDraftReportsPendingReview: number;
+  totalDraftReportsInReview: number;
+  totalFinalReportsSentToClient: number;
 };
 
 export type ProjectFacilitySummary = {
@@ -18,9 +20,13 @@ export type RecentActivityItem = {
   projectId: string;
   projectName: string;
   facilityId: string;
+  facilityName: string;
+  flowId: string;
+  flowName: string;
   auditorId: string;
   auditorName: string;
-  completedAt: string;
+  /** Fecha de finalización, o null si la auditoría no se completó. */
+  completedAt: string | null;
 };
 
 export type DashboardSummary = {

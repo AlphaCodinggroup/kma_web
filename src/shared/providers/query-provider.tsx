@@ -7,8 +7,6 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { PublicEnv } from "@shared/config/env";
 import { isApiError } from "@shared/interceptors/error";
 
 type Props = { children: ReactNode };
@@ -16,11 +14,11 @@ type Props = { children: ReactNode };
 /**
  * QueryProvider
  * - Provee un QueryClient único por sesión de UI.
- * - Configura defaults (staleTime desde env, retry conservador, sin refetch en focus).
- * - No depende de UI ni estilos.
+ * - Configura defaults optimizados para performance (staleTime 2min, gcTime 5min).
+ * - Redirige automáticamente a /login si detecta UNAUTHORIZED después de que
+ *   el interceptor de auth falló en refrescar la sesión.
  */
 export function QueryProvider({ children }: Props) {
-  const router = useRouter();
   const redirectingRef = useRef(false);
 
   const handleAuthError = (error: unknown) => {
@@ -28,8 +26,8 @@ export function QueryProvider({ children }: Props) {
     if (isApiError(error) && error.code === "UNAUTHORIZED") {
       redirectingRef.current = true;
       client.clear();
-      router.replace("/login");
-      router.refresh();
+      // Hard redirect — ensures browser clears all in-memory state
+      window.location.href = "/login";
     }
   };
 
@@ -44,8 +42,13 @@ export function QueryProvider({ children }: Props) {
         }),
         defaultOptions: {
           queries: {
-            staleTime: PublicEnv.queryStaleTimeMs,
-            retry: 2,
+            staleTime: 2 * 60 * 1000, // 2 minutes - industry standard
+            gcTime: 5 * 60 * 1000,    // 5 minutes garbage collection
+            retry: (failureCount, error) => {
+              // Never retry on auth errors — the interceptor already tried refresh
+              if (isApiError(error) && error.code === "UNAUTHORIZED") return false;
+              return failureCount < 2;
+            },
             refetchOnWindowFocus: false,
             refetchOnReconnect: true,
           },

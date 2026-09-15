@@ -36,18 +36,12 @@ export const AuditEditHeader: React.FC<AuditEditHeaderProps> = ({
   containerPaddingClassName = "px-4 sm:px-6 lg:px-8",
   rightActions,
   headingId = "audit-edit-heading",
-  flowName,
-  createdAt,
-  updatedAt,
+  flowName: _flowName,
+  createdAt: _createdAt,
+  updatedAt: _updatedAt,
 }) => {
   const router = useRouter();
   const label = backLabel ?? (backHref ? "Back" : "Go back");
-  const fmtDate = (value?: string | null) => {
-    if (!value) return null;
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
-    return d.toLocaleDateString();
-  };
 
   const handleBack = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onBack) {

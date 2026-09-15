@@ -52,7 +52,7 @@ const AuditEditTabsBar: React.FC<AuditEditTabsBarProps> = ({
               )}
               data-testid="tab-questions"
             >
-              Questions &amp; Attachments
+              Questions &amp; Answers
             </TabsTrigger>
 
             <TabsTrigger

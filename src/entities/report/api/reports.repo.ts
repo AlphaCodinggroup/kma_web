@@ -1,6 +1,5 @@
 import type {
   ReportListFilter,
-  ReportListItem,
   ReportListPage,
 } from "@entities/report/model/report-list";
 
@@ -14,7 +13,7 @@ export interface ReportsRepo {
   list(filter?: ReportListFilter): Promise<ReportListPage>;
 
   /**
-   * Obtiene un reporte por ID de auditoría.
+   * Elimina un reporte por ID de auditoría.
    */
-  getById(id: string): Promise<ReportListItem>;
+  delete(id: string): Promise<void>;
 }

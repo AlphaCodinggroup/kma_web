@@ -1,4 +1,4 @@
-import type { AuditStatus } from "@entities/audit/model";
+import { toAuditStatus } from "@entities/audit/lib/audit-status";
 import type {
   AuditFinding,
   AuditReviewDetail,
@@ -46,16 +46,7 @@ const toBool = (v: unknown, fallback = false): boolean => {
   return fallback;
 };
 
-/** Lista de estados conocidos; si llega uno nuevo, lo preservamos para no romper. */
-const toAuditStatus = (raw: string): AuditStatus => {
-  const allowed: AuditStatus[] = [
-    "draft_report_pending_review",
-    "draft_report_in_review",
-    "final_report_sent_to_client",
-    "completed",
-  ];
-  return (allowed.includes(raw as AuditStatus) ? raw : raw) as AuditStatus;
-};
+
 
 export const mapAuditFindingDTO = (dto: AuditFindingDTO): AuditFinding => {
   return {

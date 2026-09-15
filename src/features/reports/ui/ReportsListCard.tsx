@@ -14,9 +14,11 @@ export interface ReportsListCardProps {
   rightSlot?: React.ReactNode;
   isLoading: boolean;
   isError: boolean;
-  isDownloading: boolean;
+  downloadingId: string | null;
   onDownload: (id: string) => void;
+  onDelete: (id: string) => void;
   onError: () => void;
+  deletingId?: string | null;
 }
 
 const ReportsListCard: React.FC<ReportsListCardProps> = ({
@@ -28,9 +30,11 @@ const ReportsListCard: React.FC<ReportsListCardProps> = ({
   rightSlot,
   isLoading,
   isError,
-  isDownloading,
+  downloadingId,
   onDownload,
+  onDelete,
   onError,
+  deletingId,
 }) => {
   return (
     <section
@@ -58,10 +62,12 @@ const ReportsListCard: React.FC<ReportsListCardProps> = ({
         className="!border-0 !rounded-none"
         bodyMaxHeightClassName={cn("max-h-[520px]", bodyMaxHeightClassName)}
         onDownload={onDownload}
+        onDelete={onDelete}
+        deletingId={deletingId}
         isLoading={isLoading}
         onError={onError}
         isError={isError}
-        isDownloading={isDownloading}
+        downloadingId={downloadingId}
       />
     </section>
   );

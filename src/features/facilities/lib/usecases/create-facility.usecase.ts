@@ -4,6 +4,7 @@ import type {
 } from "@entities/facility/model";
 import type { FacilitiesRepo } from "@entities/facility/api/facilities.repo";
 import { facilitiesRepoImpl } from "@features/facilities/api/facilities.repo.impl";
+import { sanitizeFileName } from "@shared/lib/file";
 
 export type CreateFacilityInput = CreateFacilityParams & {
   photoFile?: File | null;
@@ -24,7 +25,7 @@ function assertValidUrl(url: string): void {
  */
 export async function createFacilityUseCase(
   rawParams: CreateFacilityInput,
-  repo: FacilitiesRepo = facilitiesRepoImpl
+  repo: FacilitiesRepo = facilitiesRepoImpl,
 ): Promise<CreateFacilityResult> {
   const name = rawParams.name.trim();
 
@@ -62,9 +63,13 @@ export async function createFacilityUseCase(
   if (rawParams.photoFile) {
     const file = rawParams.photoFile;
     const contentType = file.type || "application/octet-stream";
-    const signature = await repo.getUploadSignedUrl(file.name, contentType);
+    const signature = await repo.getUploadSignedUrl(
+      sanitizeFileName(file.name),
+      contentType,
+    );
     await repo.uploadFile(signature.uploadUrl, file);
-    photoUrl = signature.publicUrl;
+    // Se guarda la key, no una URL: el backend la prefirma al leer la facility.
+    photoUrl = signature.key;
   } else if (photoUrl) {
     assertValidUrl(photoUrl);
   }

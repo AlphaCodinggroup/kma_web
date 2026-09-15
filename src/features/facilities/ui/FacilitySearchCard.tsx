@@ -1,6 +1,7 @@
 "use client";
 
 import React, { type ReactNode } from "react";
+import { Archive } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import SearchInput from "@shared/ui/search-input";
 import TableHeader from "@shared/ui/table-header";
@@ -12,6 +13,8 @@ export interface FacilitySearchCardProps {
   children?: ReactNode;
   className?: string;
   placeholder?: string;
+  showArchived?: boolean;
+  onToggleArchived?: () => void;
 }
 
 const FacilitySearchCard: React.FC<FacilitySearchCardProps> = ({
@@ -21,6 +24,8 @@ const FacilitySearchCard: React.FC<FacilitySearchCardProps> = ({
   children,
   className,
   placeholder,
+  showArchived = false,
+  onToggleArchived,
 }) => {
   return (
     <section
@@ -32,8 +37,20 @@ const FacilitySearchCard: React.FC<FacilitySearchCardProps> = ({
       {/* Encabezado */}
       <TableHeader
         title="Facilities"
-        subtitle="Total facilities"
+        subtitle={showArchived ? "Archived facilities" : "Active facilities"}
         total={total}
+        action={
+          onToggleArchived ? (
+            <button
+              onClick={onToggleArchived}
+              className="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              aria-label={showArchived ? "Show active facilities" : "Show archived facilities"}
+            >
+              <Archive className="h-4 w-4" />
+              {showArchived ? "Show Active" : "Show Archived"}
+            </button>
+          ) : null
+        }
       />
 
       {/* Buscador */}

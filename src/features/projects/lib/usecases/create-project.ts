@@ -14,7 +14,7 @@ import type {
  */
 export async function createProject(
   repo: ProjectsRepo,
-  params: CreateProjectParams
+  params: CreateProjectParams,
 ): Promise<CreateProjectResult> {
   const safeStatus: ProjectStatus = params.status ?? "ACTIVE";
   const name = params.name.trim();
@@ -26,7 +26,7 @@ export async function createProject(
   const code = params.code?.trim();
   const description = params.description?.trim();
 
-  // Normalizamos arrays opcionales → siempre arrays
+  // Normalizamos los arrays opcionales → siempre arrays
   const users = params.users ?? [];
   const facilities = params.facilities ?? [];
 
