@@ -9,7 +9,7 @@ import type {
  */
 export async function updateProject(
   repo: ProjectsRepo,
-  params: UpdateProjectParams
+  params: UpdateProjectParams,
 ): Promise<UpdateProjectResult> {
   const trimmedName = params.name?.trim();
   // Un nombre en blanco viajaba como "" y dejaba el proyecto sin nombre: si se
@@ -28,7 +28,10 @@ export async function updateProject(
     ...(trimmedDescription !== undefined
       ? { description: trimmedDescription }
       : {}),
-    ...(params.users ? { users: params.users } : {}),
+    ...(params.users !== undefined ? { users: params.users } : {}),
+    ...(params.facilities !== undefined
+      ? { facilities: params.facilities }
+      : {}),
     ...(params.status ? { status: params.status } : {}),
   });
 }

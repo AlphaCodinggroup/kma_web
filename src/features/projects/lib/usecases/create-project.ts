@@ -14,7 +14,7 @@ import type {
  */
 export async function createProject(
   repo: ProjectsRepo,
-  params: CreateProjectParams
+  params: CreateProjectParams,
 ): Promise<CreateProjectResult> {
   const safeStatus: ProjectStatus = params.status ?? "ACTIVE";
   const name = params.name.trim();
@@ -26,8 +26,9 @@ export async function createProject(
   const code = params.code?.trim();
   const description = params.description?.trim();
 
-  // Normalizamos el array opcional → siempre array
+  // Normalizamos los arrays opcionales → siempre arrays
   const users = params.users ?? [];
+  const facilities = params.facilities ?? [];
 
   return await repo.create({
     name,
@@ -35,5 +36,6 @@ export async function createProject(
     ...(code ? { code } : {}),
     ...(description ? { description } : {}),
     users,
+    facilities,
   });
 }

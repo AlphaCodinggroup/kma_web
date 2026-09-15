@@ -1,8 +1,21 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { cn } from "@shared/lib/cn";
-import { Label, Input, Button, ErrorText, HelpText, Textarea } from "@shared/ui/controls";
+import {
+  Label,
+  Input,
+  Button,
+  ErrorText,
+  HelpText,
+  Textarea,
+} from "@shared/ui/controls";
 import {
   Modal,
   ModalContent,
@@ -19,7 +32,6 @@ export type FacilityUpsertValues = {
   address?: string | undefined;
   city?: string | undefined;
   description?: string | undefined;
-  notes?: string | undefined;
   photoUrl?: string | undefined;
   photoFile?: File | null;
   clearPhoto?: boolean;
@@ -61,17 +73,16 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
       address: defaultValues?.address ?? "",
       city: defaultValues?.city ?? "",
       description: defaultValues?.description ?? "",
-      notes: defaultValues?.notes ?? "",
       photoUrl: defaultValues?.photoUrl ?? "",
       photoFile: null,
       clearPhoto: false,
     }),
-    [defaultValues]
+    [defaultValues],
   );
 
   const [values, setValues] = useState<FacilityUpsertValues>(initial);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
-    initial.photoUrl || null
+    initial.photoUrl || null,
   );
   const objectUrlRef = useRef<string | null>(null);
 
@@ -89,13 +100,13 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
   const handleChange = useCallback(
     <K extends keyof FacilityUpsertValues>(
       key: K,
-      val: FacilityUpsertValues[K]
+      val: FacilityUpsertValues[K],
     ) =>
       setValues((s) => ({
         ...s,
         [key]: val,
       })),
-    []
+    [],
   );
 
   const onSubmitInternal = useCallback(
@@ -106,7 +117,6 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
       const trimmedAddress = values.address?.trim();
       const trimmedCity = values.city?.trim();
       const trimmedDescription = values.description?.trim();
-      const trimmedNotes = values.notes?.trim();
       const trimmedPhotoUrl = values.photoUrl?.trim();
 
       // Al editar, un campo vaciado se envía como cadena vacía para que el
@@ -125,7 +135,6 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
         ...(optional(trimmedDescription) !== undefined
           ? { description: trimmedDescription }
           : {}),
-        ...(optional(trimmedNotes) !== undefined ? { notes: trimmedNotes } : {}),
         ...(values.photoFile ? { photoFile: values.photoFile } : {}),
         ...(trimmedPhotoUrl && !values.photoFile && !values.clearPhoto
           ? { photoUrl: trimmedPhotoUrl }
@@ -135,14 +144,15 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
 
       await onSubmit(payload);
     },
-    [mode, onSubmit, values]
+    [mode, onSubmit, values],
   );
 
   const isSubmitting = loading === true;
   const isNameValid = values.name.trim().length > 0;
   const isAddressValid = (values.address ?? "").trim().length > 0;
   const isCityValid = (values.city ?? "").trim().length > 0;
-  const disableSubmit = isSubmitting || !isNameValid || !isAddressValid || !isCityValid;
+  const disableSubmit =
+    isSubmitting || !isNameValid || !isAddressValid || !isCityValid;
 
   const handlePhotoChange = useCallback(
     (file: File | null) => {
@@ -164,7 +174,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
         handleChange("clearPhoto", false);
       }
     },
-    [handleChange, values.photoUrl]
+    [handleChange, values.photoUrl],
   );
 
   const handleRemovePhoto = useCallback(() => {
@@ -201,10 +211,7 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent
-        className={cn(
-          "max-h-[calc(100vh-2rem)] overflow-y-auto",
-          className
-        )}
+        className={cn("max-h-[calc(100vh-2rem)] overflow-y-auto", className)}
       >
         <ModalCloseButton onClick={() => onOpenChange(false)} />
 
@@ -261,22 +268,11 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               id="facility-description"
               placeholder="Enter description"
               value={values.description ?? ""}
-              onChange={(e) => handleChange("description", e.currentTarget.value)}
+              onChange={(e) =>
+                handleChange("description", e.currentTarget.value)
+              }
               disabled={isSubmitting}
               rows={4}
-            />
-          </div>
-
-          {/* Notes */}
-          <div>
-            <Label htmlFor="facility-notes">Notes</Label>
-            <Textarea
-              id="facility-notes"
-              placeholder="Internal notes"
-              value={values.notes ?? ""}
-              onChange={(e) => handleChange("notes", e.currentTarget.value)}
-              disabled={isSubmitting}
-              rows={3}
             />
           </div>
 
@@ -287,7 +283,9 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
               id="facility-photo"
               type="file"
               accept="image/*"
-              onChange={(e) => handlePhotoChange(e.currentTarget.files?.[0] ?? null)}
+              onChange={(e) =>
+                handlePhotoChange(e.currentTarget.files?.[0] ?? null)
+              }
               disabled={isSubmitting}
             />
             {photoPreview ? (

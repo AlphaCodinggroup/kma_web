@@ -1,7 +1,16 @@
 "use client";
 
-import React, { useMemo, useState, useCallback, useImperativeHandle } from "react";
-import { ProjectsTable, type SortField, type SortOrder } from "@features/projects/ui/ProjectsTable";
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useImperativeHandle,
+} from "react";
+import {
+  ProjectsTable,
+  type SortField,
+  type SortOrder,
+} from "@features/projects/ui/ProjectsTable";
 import ProjectsSearchCard from "@features/projects/ui/ProjectsSearchCard";
 import CreateProjectDialog from "@features/projects/ui/CreateProjectDialog";
 import EditProjectDialog from "@features/projects/ui/EditProjectDialog";
@@ -20,446 +29,447 @@ import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQ
 import type { FacilityListFilter } from "@entities/facility/model";
 import type { ProjectUpsertValues } from "@features/projects/ui/ProjectsUpsertDialog";
 import { buildProjectOptionalFields } from "@features/projects/lib/buildProjectOptionalFields";
-import { syncProjectFacilities } from "@features/projects/lib/syncProjectFacilities";
 
 type ProjectsContentProps = {
-    createTriggerRef?: React.MutableRefObject<(() => void) | undefined>;
+  createTriggerRef?: React.MutableRefObject<(() => void) | undefined>;
 };
 
 export const ProjectsContent: React.FC<ProjectsContentProps> = ({
-    createTriggerRef,
+  createTriggerRef,
 }) => {
-    const [query, setQuery] = useState<string>("");
-    const [openCreate, setOpenCreate] = useState<boolean>(false);
-    const [openEdit, setOpenEdit] = useState<boolean>(false);
-    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [query, setQuery] = useState<string>("");
+  const [openCreate, setOpenCreate] = useState<boolean>(false);
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-    const [openDelete, setOpenDelete] = useState<boolean>(false);
-    const [projectToDelete, setProjectToDelete] = useState<{
-        id: string;
-        name: string;
-    } | null>(null);
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [projectToDelete, setProjectToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
-    const [openArchive, setOpenArchive] = useState<boolean>(false);
-    const [projectToArchive, setProjectToArchive] = useState<Project | null>(
-        null
+  const [openArchive, setOpenArchive] = useState<boolean>(false);
+  const [projectToArchive, setProjectToArchive] = useState<Project | null>(
+    null,
+  );
+
+  // Sorting state
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+
+  const debouncedQuery = useDebouncedSearch(query);
+
+  // Solo proyectos activos desde backend
+  const projectFilters = useMemo<ProjectListFilter | undefined>(() => {
+    return { status: "ACTIVE" };
+  }, []);
+
+  const { data, isLoading, isError, refetch } =
+    useProjectsQuery(projectFilters);
+
+  const projects = useMemo<Project[]>(() => data?.items ?? [], [data]);
+
+  // Flag común para cargar lookups cuando está abierto create o edit
+  const lookupEnabled = openCreate || openEdit;
+
+  // Auditors para los modales
+  const { data: auditorsData } = useUsersQuery(
+    { role: "auditor" },
+    lookupEnabled,
+  );
+
+  const auditors = useMemo<UserSummary[]>(
+    () => auditorsData?.items ?? [],
+    [auditorsData],
+  );
+
+  // Facilities activas para los modales
+  const facilitiesFilters = useMemo<FacilityListFilter>(() => {
+    return { status: "ACTIVE" };
+  }, []);
+
+  const { data: facilitiesData } = useFacilitiesQuery(
+    facilitiesFilters,
+    lookupEnabled,
+  );
+
+  const facilityOptions = useMemo(() => {
+    const fromQuery =
+      facilitiesData?.items?.map((f) => ({
+        id: f.id,
+        name: f.name,
+      })) ?? [];
+
+    const fromProjects = projects.flatMap((p) =>
+      (p.facilities ?? []).map((f) => ({
+        id: f.id,
+        name: f.name,
+      })),
     );
 
-    // Sorting state
-    const [sortField, setSortField] = useState<SortField | null>(null);
-    const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+    const map = new Map<string, string>();
+    for (const f of [...fromQuery, ...fromProjects]) {
+      if (!map.has(f.id)) {
+        map.set(f.id, f.name);
+      }
+    }
 
-    const debouncedQuery = useDebouncedSearch(query);
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [facilitiesData, projects]);
 
-    // Solo proyectos activos desde backend
-    const projectFilters = useMemo<ProjectListFilter | undefined>(() => {
-        return { status: "ACTIVE" };
-    }, []);
+  // Índices para mapear IDs → objetos { id, name }
+  const auditorById = useMemo(() => {
+    const map = new Map<string, UserSummary>();
+    for (const a of auditors) {
+      map.set(a.id, a);
+    }
+    return map;
+  }, [auditors]);
 
-    const { data, isLoading, isError, refetch } =
-        useProjectsQuery(projectFilters);
+  const facilityById = useMemo(() => {
+    return new Map(facilityOptions.map((facility) => [facility.id, facility]));
+  }, [facilityOptions]);
 
-    const projects = useMemo<Project[]>(() => data?.items ?? [], [data]);
+  // Mutations
+  const {
+    mutateAsync: createProject,
+    isPending: isCreating,
+    error: createError,
+  } = useCreateProjectMutation();
 
-    // Flag común para cargar lookups cuando está abierto create o edit
-    const lookupEnabled = openCreate || openEdit;
+  const {
+    mutateAsync: updateProject,
+    isPending: isUpdating,
+    error: updateError,
+  } = useUpdateProjectMutation();
 
-    // Auditors para los modales
-    const { data: auditorsData } = useUsersQuery(
-        { role: "auditor" },
-        lookupEnabled
-    );
+  const { mutate: deleteProject, isPending: isDeleting } =
+    useDeleteProjectMutation({
+      onSuccess: () => {
+        setOpenDelete(false);
+        setProjectToDelete(null);
+        refetch();
+      },
+      onError: (err) => console.error("Failed to delete project", err),
+    });
 
-    const auditors = useMemo<UserSummary[]>(
-        () => auditorsData?.items ?? [],
-        [auditorsData]
-    );
+  const { mutateAsync: archiveProject, isPending: isArchiving } =
+    useArchiveProjectMutation();
 
-    // Facilities activas para los modales
-    const facilitiesFilters = useMemo<FacilityListFilter>(() => {
-        return { status: "ACTIVE" };
-    }, []);
+  // Filtro local por texto (name, status, createdAt, users, facilities)
+  const filtered = useMemo<Project[]>(() => {
+    const list = projects ?? [];
+    const q = debouncedQuery.trim().toLowerCase();
+    if (!q) return list;
 
-    const { data: facilitiesData } = useFacilitiesQuery(
-        facilitiesFilters,
-        lookupEnabled
-    );
+    return list.filter((it) => {
+      const scalarMatch = [it.name, it.status, it.createdAt]
+        .filter(Boolean)
+        .some((field) => String(field).toLowerCase().includes(q));
 
-    const facilityOptions = useMemo(() => {
-        const fromQuery =
-            facilitiesData?.items?.map((f) => ({
-                id: f.id,
-                name: f.name,
+      const usersMatch = Array.isArray(it.users)
+        ? it.users.some((u) => u.name?.toLowerCase().includes(q))
+        : false;
+
+      const facilitiesMatch = Array.isArray(it.facilities)
+        ? it.facilities.some((f) => f.name?.toLowerCase().includes(q))
+        : false;
+
+      return scalarMatch || usersMatch || facilitiesMatch;
+    });
+  }, [projects, debouncedQuery]);
+
+  // Sort function
+  const handleSort = useCallback(
+    (field: SortField) => {
+      if (sortField === field) {
+        // Cycle through: asc -> desc -> null
+        if (sortOrder === "asc") {
+          setSortOrder("desc");
+        } else if (sortOrder === "desc") {
+          setSortOrder(null);
+          setSortField(null);
+        }
+      } else {
+        setSortField(field);
+        setSortOrder("asc");
+      }
+    },
+    [sortField, sortOrder],
+  );
+
+  // Apply sorting to filtered data
+  const sorted = useMemo<Project[]>(() => {
+    if (!sortField || !sortOrder) return filtered;
+
+    return [...filtered].sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+
+      switch (sortField) {
+        case "name":
+          aVal = a.name?.toLowerCase() ?? "";
+          bVal = b.name?.toLowerCase() ?? "";
+          break;
+        case "auditor":
+          aVal = a.users?.[0]?.name?.toLowerCase() ?? "";
+          bVal = b.users?.[0]?.name?.toLowerCase() ?? "";
+          break;
+        case "facility":
+          aVal = a.facilities?.[0]?.name?.toLowerCase() ?? "";
+          bVal = b.facilities?.[0]?.name?.toLowerCase() ?? "";
+          break;
+        case "status":
+          aVal = a.status ?? "";
+          bVal = b.status ?? "";
+          break;
+        case "createdAt":
+          aVal = a.createdAt ?? "";
+          bVal = b.createdAt ?? "";
+          break;
+        default:
+          return 0;
+      }
+
+      if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [filtered, sortField, sortOrder]);
+
+  // ---- Create ----
+  const handleCreateSubmit = useCallback(
+    async (values: ProjectUpsertValues) => {
+      try {
+        const users =
+          values.auditorIds
+            ?.map((id) => auditorById.get(id))
+            .filter((u): u is UserSummary => Boolean(u))
+            .map((u) => ({
+              id: u.id,
+              name: u.name?.trim() || u.email || u.id,
             })) ?? [];
 
-        const fromProjects = projects.flatMap((p) =>
-            (p.facilities ?? []).map((f) => ({
-                id: f.id,
-                name: f.name,
-            }))
-        );
+        const optionalFields = buildProjectOptionalFields(values);
 
-        const map = new Map<string, string>();
-        for (const f of [...fromQuery, ...fromProjects]) {
-            if (!map.has(f.id)) {
-                map.set(f.id, f.name);
-            }
-        }
+        const facilities =
+          values.facilityIds
+            ?.map((id) => facilityById.get(id))
+            .filter((facility): facility is { id: string; name: string } =>
+              Boolean(facility),
+            ) ?? [];
 
-        return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
-    }, [facilitiesData, projects]);
-
-    // Índices para mapear IDs → objetos { id, name }
-    const auditorById = useMemo(() => {
-        const map = new Map<string, UserSummary>();
-        for (const a of auditors) {
-            map.set(a.id, a);
-        }
-        return map;
-    }, [auditors]);
-
-
-    // Mutations
-    const {
-        mutateAsync: createProject,
-        isPending: isCreating,
-        error: createError,
-    } = useCreateProjectMutation();
-
-    const {
-        mutateAsync: updateProject,
-        isPending: isUpdating,
-        error: updateError,
-    } = useUpdateProjectMutation();
-
-    const { mutate: deleteProject, isPending: isDeleting } =
-        useDeleteProjectMutation({
-            onSuccess: () => {
-                setOpenDelete(false);
-                setProjectToDelete(null);
-                refetch();
-            },
-            onError: (err) => console.error("Failed to delete project", err),
+        await createProject({
+          name: values.name,
+          ...optionalFields,
+          users,
+          facilities,
+          status: "ACTIVE",
         });
 
-    const { mutateAsync: archiveProject, isPending: isArchiving } =
-        useArchiveProjectMutation();
+        setOpenCreate(false);
+        await refetch();
+      } catch (err) {
+        console.error("Failed to create project", err);
+      }
+    },
+    [createProject, refetch, auditorById, facilityById],
+  );
 
-    // Filtro local por texto (name, status, createdAt, users, facilities)
-    const filtered = useMemo<Project[]>(() => {
-        const list = projects ?? [];
-        const q = debouncedQuery.trim().toLowerCase();
-        if (!q) return list;
+  // ---- Edit ----
+  const handleEdit = useCallback(
+    (id: string) => {
+      const row = projects.find((r) => r.id === id);
+      if (!row) return;
+      setSelectedProject(row);
+      setOpenEdit(true);
+    },
+    [projects],
+  );
 
-        return list.filter((it) => {
-            const scalarMatch = [it.name, it.status, it.createdAt]
-                .filter(Boolean)
-                .some((field) => String(field).toLowerCase().includes(q));
+  const handleEditSubmit = useCallback(
+    async (values: ProjectUpsertValues & { id: string }) => {
+      try {
+        const users =
+          values.auditorIds
+            ?.map((id) => auditorById.get(id))
+            .filter((u): u is UserSummary => Boolean(u))
+            .map((u) => ({
+              id: u.id,
+              name: u.name?.trim() || u.email || u.id,
+            })) ?? [];
 
-            const usersMatch = Array.isArray(it.users)
-                ? it.users.some((u) => u.name?.toLowerCase().includes(q))
-                : false;
+        const optionalFields = buildProjectOptionalFields(values);
 
-            const facilitiesMatch = Array.isArray(it.facilities)
-                ? it.facilities.some((f) => f.name?.toLowerCase().includes(q))
-                : false;
+        const facilities =
+          values.facilityIds
+            ?.map((id) => facilityById.get(id))
+            .filter((facility): facility is { id: string; name: string } =>
+              Boolean(facility),
+            ) ?? [];
 
-            return scalarMatch || usersMatch || facilitiesMatch;
+        await updateProject({
+          id: values.id,
+          name: values.name,
+          ...optionalFields,
+          users,
+          facilities,
         });
-    }, [projects, debouncedQuery]);
 
-    // Sort function
-    const handleSort = useCallback((field: SortField) => {
-        if (sortField === field) {
-            // Cycle through: asc -> desc -> null
-            if (sortOrder === "asc") {
-                setSortOrder("desc");
-            } else if (sortOrder === "desc") {
-                setSortOrder(null);
-                setSortField(null);
-            }
-        } else {
-            setSortField(field);
-            setSortOrder("asc");
-        }
-    }, [sortField, sortOrder]);
+        setOpenEdit(false);
+        setSelectedProject(null);
+        await refetch();
+      } catch (err) {
+        console.error("Failed to update project", err);
+      }
+    },
+    [updateProject, refetch, auditorById, facilityById],
+  );
 
-    // Apply sorting to filtered data
-    const sorted = useMemo<Project[]>(() => {
-        if (!sortField || !sortOrder) return filtered;
+  // ---- Delete ----
+  const handleDelete = useCallback(
+    (id: string) => {
+      const row = projects.find((r) => r.id === id);
+      if (!row) return;
+      setProjectToDelete({ id: row.id, name: row.name });
+      setOpenDelete(true);
+    },
+    [projects],
+  );
 
-        return [...filtered].sort((a, b) => {
-            let aVal: any;
-            let bVal: any;
+  const confirmDelete = useCallback(async () => {
+    if (!projectToDelete) return;
+    deleteProject(projectToDelete.id);
+  }, [deleteProject, projectToDelete]);
 
-            switch (sortField) {
-                case "name":
-                    aVal = a.name?.toLowerCase() ?? "";
-                    bVal = b.name?.toLowerCase() ?? "";
-                    break;
-                case "auditor":
-                    aVal = a.users?.[0]?.name?.toLowerCase() ?? "";
-                    bVal = b.users?.[0]?.name?.toLowerCase() ?? "";
-                    break;
-                case "facility":
-                    aVal = a.facilities?.[0]?.name?.toLowerCase() ?? "";
-                    bVal = b.facilities?.[0]?.name?.toLowerCase() ?? "";
-                    break;
-                case "status":
-                    aVal = a.status ?? "";
-                    bVal = b.status ?? "";
-                    break;
-                case "createdAt":
-                    aVal = a.createdAt ?? "";
-                    bVal = b.createdAt ?? "";
-                    break;
-                default:
-                    return 0;
-            }
+  // ---- Archive ----
+  const handleArchive = useCallback(
+    (id: string) => {
+      const row = projects.find((r) => r.id === id);
+      if (!row) return;
+      setProjectToArchive(row);
+      setOpenArchive(true);
+    },
+    [projects],
+  );
 
-            if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
-            if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
-            return 0;
-        });
-    }, [filtered, sortField, sortOrder]);
+  const confirmArchive = useCallback(async () => {
+    if (!projectToArchive) return;
 
-    // ---- Create ----
-    const handleCreateSubmit = useCallback(
-        async (values: ProjectUpsertValues) => {
-            try {
-                const users =
-                    values.auditorIds
-                        ?.map((id) => auditorById.get(id))
-                        .filter((u): u is UserSummary => Boolean(u))
-                        .map((u) => ({
-                            id: u.id,
-                            name: u.name?.trim() || u.email || u.id,
-                        })) ?? [];
+    try {
+      await archiveProject({ id: projectToArchive.id });
+      setOpenArchive(false);
+      setProjectToArchive(null);
+      await refetch();
+    } catch (err) {
+      console.error("Failed to archive project", err);
+    }
+  }, [archiveProject, projectToArchive, refetch]);
 
-                const optionalFields = buildProjectOptionalFields(values);
+  // Expose create trigger to parent via ref
+  useImperativeHandle(
+    createTriggerRef,
+    () => () => {
+      setOpenCreate(true);
+    },
+    [],
+  );
 
-                const created = await createProject({
-                    name: values.name,
-                    ...optionalFields,
-                    users,
-                    status: "ACTIVE",
-                });
+  const handleOpenCreate = useCallback(() => {
+    setOpenCreate(true);
+  }, []);
 
-                // La asignación se escribe en el project_id de cada facility,
-                // que es de donde el proyecto deriva su lista.
-                await syncProjectFacilities({
-                    projectId: created.id,
-                    selectedIds: values.facilityIds ?? [],
-                });
+  return (
+    <>
+      <ProjectsSearchCard
+        total={filtered.length}
+        query={query}
+        onQueryChange={setQuery}
+        placeholder="Search projects by Project name, Auditor, facility or Status..."
+        onCreateClick={handleOpenCreate}
+      >
+        <ProjectsTable
+          items={sorted}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onArchive={handleArchive}
+          isError={isError}
+          isLoading={isLoading}
+          onError={refetch}
+          sortField={sortField}
+          sortOrder={sortOrder}
+          onSort={handleSort}
+        />
+      </ProjectsSearchCard>
 
-                setOpenCreate(false);
-                await refetch();
-            } catch (err) {
-                console.error("Failed to create project", err);
-            }
-        },
-        [createProject, refetch, auditorById]
-    );
+      {/* Crear */}
+      <CreateProjectDialog
+        open={openCreate}
+        onOpenChange={setOpenCreate}
+        facilities={facilityOptions}
+        auditors={auditors}
+        onSubmit={handleCreateSubmit}
+        loading={isCreating}
+        error={createError?.message ?? null}
+      />
 
-    // ---- Edit ----
-    const handleEdit = useCallback(
-        (id: string) => {
-            const row = projects.find((r) => r.id === id);
-            if (!row) return;
-            setSelectedProject(row);
-            setOpenEdit(true);
-        },
-        [projects]
-    );
+      {/* Editar */}
+      {selectedProject && (
+        <EditProjectDialog
+          open={openEdit}
+          onOpenChange={(o) => {
+            setOpenEdit(o);
+            if (!o) setSelectedProject(null);
+          }}
+          project={selectedProject}
+          auditors={auditors}
+          facilities={facilityOptions}
+          onSubmit={handleEditSubmit}
+          loading={isUpdating}
+          error={updateError?.message ?? null}
+        />
+      )}
 
-    const handleEditSubmit = useCallback(
-        async (values: ProjectUpsertValues & { id: string }) => {
-            try {
-                const users =
-                    values.auditorIds
-                        ?.map((id) => auditorById.get(id))
-                        .filter((u): u is UserSummary => Boolean(u))
-                        .map((u) => ({
-                            id: u.id,
-                            name: u.name?.trim() || u.email || u.id,
-                        })) ?? [];
+      {/* Eliminar */}
+      {projectToDelete && (
+        <ConfirmDialog
+          open={openDelete}
+          onOpenChange={(o) => {
+            setOpenDelete(o);
+            if (!o) setProjectToDelete(null);
+          }}
+          title={
+            <ConfirmTitle action="delete" subject={projectToDelete.name} />
+          }
+          description="This action cannot be undone."
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          loading={isDeleting}
+          onConfirm={confirmDelete}
+        />
+      )}
 
-                const optionalFields = buildProjectOptionalFields(values);
-
-                await updateProject({
-                    id: values.id,
-                    name: values.name,
-                    ...optionalFields,
-                    users,
-                });
-
-                // Las que se destildan quedan sin proyecto; las nuevas apuntan
-                // a este. El proyecto ya no guarda su propia lista.
-                const previousIds =
-                    projects
-                        .find((p) => p.id === values.id)
-                        ?.facilities?.map((f) => f.id) ?? [];
-
-                await syncProjectFacilities({
-                    projectId: values.id,
-                    selectedIds: values.facilityIds ?? [],
-                    previousIds,
-                });
-
-                setOpenEdit(false);
-                setSelectedProject(null);
-                await refetch();
-            } catch (err) {
-                console.error("Failed to update project", err);
-            }
-        },
-        [updateProject, refetch, auditorById, projects]
-    );
-
-    // ---- Delete ----
-    const handleDelete = useCallback(
-        (id: string) => {
-            const row = projects.find((r) => r.id === id);
-            if (!row) return;
-            setProjectToDelete({ id: row.id, name: row.name });
-            setOpenDelete(true);
-        },
-        [projects]
-    );
-
-    const confirmDelete = useCallback(async () => {
-        if (!projectToDelete) return;
-        deleteProject(projectToDelete.id);
-    }, [deleteProject, projectToDelete]);
-
-    // ---- Archive ----
-    const handleArchive = useCallback(
-        (id: string) => {
-            const row = projects.find((r) => r.id === id);
-            if (!row) return;
-            setProjectToArchive(row);
-            setOpenArchive(true);
-        },
-        [projects]
-    );
-
-    const confirmArchive = useCallback(async () => {
-        if (!projectToArchive) return;
-
-        try {
-            await archiveProject({ id: projectToArchive.id });
-            setOpenArchive(false);
-            setProjectToArchive(null);
-            await refetch();
-        } catch (err) {
-            console.error("Failed to archive project", err);
-        }
-    }, [archiveProject, projectToArchive, refetch]);
-
-    // Expose create trigger to parent via ref
-    useImperativeHandle(
-        createTriggerRef,
-        () => () => {
-            setOpenCreate(true);
-        },
-        []
-    );
-
-    const handleOpenCreate = useCallback(() => {
-        setOpenCreate(true);
-    }, []);
-
-    return (
-        <>
-            <ProjectsSearchCard
-                total={filtered.length}
-                query={query}
-                onQueryChange={setQuery}
-                placeholder="Search projects by Project name, Auditor, facility or Status..."
-                onCreateClick={handleOpenCreate}
-            >
-                <ProjectsTable
-                    items={sorted}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onArchive={handleArchive}
-                    isError={isError}
-                    isLoading={isLoading}
-                    onError={refetch}
-                    sortField={sortField}
-                    sortOrder={sortOrder}
-                    onSort={handleSort}
-                />
-            </ProjectsSearchCard>
-
-            {/* Crear */}
-            <CreateProjectDialog
-                open={openCreate}
-                onOpenChange={setOpenCreate}
-                facilities={facilityOptions}
-                auditors={auditors}
-                onSubmit={handleCreateSubmit}
-                loading={isCreating}
-                error={createError?.message ?? null}
+      {/* Archivar */}
+      {projectToArchive && (
+        <ConfirmDialog
+          open={openArchive}
+          onOpenChange={(o) => {
+            setOpenArchive(o);
+            if (!o) setProjectToArchive(null);
+          }}
+          title={
+            <ConfirmTitle
+              action="archive"
+              subject={projectToArchive.name ?? "this project"}
             />
-
-            {/* Editar */}
-            {selectedProject && (
-                <EditProjectDialog
-                    open={openEdit}
-                    onOpenChange={(o) => {
-                        setOpenEdit(o);
-                        if (!o) setSelectedProject(null);
-                    }}
-                    project={selectedProject}
-                    auditors={auditors}
-                    facilities={facilityOptions}
-                    onSubmit={handleEditSubmit}
-                    loading={isUpdating}
-                    error={updateError?.message ?? null}
-                />
-            )}
-
-            {/* Eliminar */}
-            {projectToDelete && (
-                <ConfirmDialog
-                    open={openDelete}
-                    onOpenChange={(o) => {
-                        setOpenDelete(o);
-                        if (!o) setProjectToDelete(null);
-                    }}
-                    title={
-                        <ConfirmTitle action="delete" subject={projectToDelete.name} />
-                    }
-                    description="This action cannot be undone."
-                    confirmLabel="Delete"
-                    cancelLabel="Cancel"
-                    loading={isDeleting}
-                    onConfirm={confirmDelete}
-                />
-            )}
-
-            {/* Archivar */}
-            {projectToArchive && (
-                <ConfirmDialog
-                    open={openArchive}
-                    onOpenChange={(o) => {
-                        setOpenArchive(o);
-                        if (!o) setProjectToArchive(null);
-                    }}
-                    title={
-                        <ConfirmTitle
-                            action="archive"
-                            subject={projectToArchive.name ?? "this project"}
-                        />
-                    }
-                    description="This project will be archived and removed from the active list, but it will not be deleted."
-                    confirmLabel="Archive"
-                    cancelLabel="Cancel"
-                    loading={isArchiving}
-                    onConfirm={confirmArchive}
-                />
-            )}
-        </>
-    );
+          }
+          description="This project will be archived and removed from the active list, but it will not be deleted."
+          confirmLabel="Archive"
+          cancelLabel="Cancel"
+          loading={isArchiving}
+          onConfirm={confirmArchive}
+        />
+      )}
+    </>
+  );
 };

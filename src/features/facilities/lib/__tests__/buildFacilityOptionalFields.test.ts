@@ -11,7 +11,7 @@ import { buildFacilityOptionalFields } from "../buildFacilityOptionalFields";
 // ---------------------------------------------------------------------------
 
 function makeValues(
-  overrides: Partial<FacilityUpsertValues> = {}
+  overrides: Partial<FacilityUpsertValues> = {},
 ): FacilityUpsertValues {
   return { name: "Facility 1", ...overrides };
 }
@@ -39,24 +39,28 @@ describe("buildFacilityOptionalFields", () => {
     ["a blank city", { city: "  " }, { city: "  " }],
     ["a filled city", { city: "Austin" }, { city: "Austin" }],
     ["an emptied description", { description: "" }, { description: "" }],
-    ["a filled description", { description: "Notes" }, { description: "Notes" }],
-    ["an emptied notes", { notes: "" }, { notes: "" }],
-    ["a filled notes", { notes: "Internal" }, { notes: "Internal" }],
+    [
+      "a filled description",
+      { description: "Notes" },
+      { description: "Notes" },
+    ],
   ])("maps %s", (_label, overrides, expected) => {
-    expect(buildFacilityOptionalFields(makeValues(overrides))).toEqual(expected);
+    expect(buildFacilityOptionalFields(makeValues(overrides))).toEqual(
+      expected,
+    );
   });
 
   it("trims the photo url when there is no file", () => {
     expect(
       buildFacilityOptionalFields(
-        makeValues({ photoUrl: "  https://cdn.test/a.png  " })
-      )
+        makeValues({ photoUrl: "  https://cdn.test/a.png  " }),
+      ),
     ).toEqual({ photoUrl: "https://cdn.test/a.png" });
   });
 
   it("drops a blank photo url", () => {
     expect(
-      buildFacilityOptionalFields(makeValues({ photoUrl: "   " }))
+      buildFacilityOptionalFields(makeValues({ photoUrl: "   " })),
     ).toEqual({});
   });
 
@@ -65,14 +69,14 @@ describe("buildFacilityOptionalFields", () => {
 
     expect(
       buildFacilityOptionalFields(
-        makeValues({ photoFile, photoUrl: "https://cdn.test/a.png" })
-      )
+        makeValues({ photoFile, photoUrl: "https://cdn.test/a.png" }),
+      ),
     ).toEqual({ photoFile });
   });
 
   it("sets clearPhoto when it is requested and there is no new file", () => {
     expect(
-      buildFacilityOptionalFields(makeValues({ clearPhoto: true }))
+      buildFacilityOptionalFields(makeValues({ clearPhoto: true })),
     ).toEqual({ clearPhoto: true });
   });
 
@@ -80,7 +84,7 @@ describe("buildFacilityOptionalFields", () => {
     const photoFile = makeFile();
 
     expect(
-      buildFacilityOptionalFields(makeValues({ clearPhoto: true, photoFile }))
+      buildFacilityOptionalFields(makeValues({ clearPhoto: true, photoFile })),
     ).toEqual({ photoFile });
   });
 
@@ -94,8 +98,8 @@ describe("buildFacilityOptionalFields", () => {
           city: "Austin",
           description: "Notes",
           photoFile,
-        })
-      )
+        }),
+      ),
     ).toEqual({
       address: "Main st. 1",
       city: "Austin",

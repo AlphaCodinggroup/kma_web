@@ -22,13 +22,13 @@ test.describe("Proyectos", () => {
 
     await page.goto("/projects");
     await expect(
-      page.getByRole("heading", { name: /projects & facilities/i })
+      page.getByRole("heading", { name: /projects & facilities/i }),
     ).toBeVisible();
 
     // Alta
     await page.getByRole("button", { name: "New Project" }).click();
     await expect(
-      page.getByRole("heading", { name: "Create New Project" })
+      page.getByRole("heading", { name: "Create New Project" }),
     ).toBeVisible();
     await page.locator("#project-name").fill(name);
     await page.getByRole("button", { name: "Create Project" }).click();
@@ -39,7 +39,7 @@ test.describe("Proyectos", () => {
     // Edición
     await row.getByRole("button", { name: /edit project/i }).click();
     await expect(
-      page.getByRole("heading", { name: "Edit Project" })
+      page.getByRole("heading", { name: "Edit Project" }),
     ).toBeVisible();
     await page.locator("#project-name").fill(renamed);
     await page.getByRole("button", { name: "Update Project" }).click();
@@ -82,7 +82,7 @@ test.describe("Facilities", () => {
 
     await page.getByRole("button", { name: "New Facility" }).click();
     await expect(
-      page.getByRole("heading", { name: "Create New Facility" })
+      page.getByRole("heading", { name: "Create New Facility" }),
     ).toBeVisible();
     await page.locator("#facility-name").fill(name);
     await page.locator("#facility-address").fill("1200 Market Street");
@@ -92,44 +92,70 @@ test.describe("Facilities", () => {
     const row = page.getByRole("row").filter({ hasText: name });
     await expect(row).toBeVisible({ timeout: 20_000 });
 
-    // Edición: notes es un campo propio y vaciar uno lo borra de verdad.
+    // Edición y persistencia de un campo opcional admitido por el backend.
     await row.getByRole("button", { name: /edit facility/i }).click();
     await expect(
-      page.getByRole("heading", { name: "Edit Facility" })
+      page.getByRole("heading", { name: "Edit Facility" }),
     ).toBeVisible();
     await page.locator("#facility-city").fill("Pittsburgh");
-    await page.locator("#facility-notes").fill("Nota interna del e2e");
+    await page.locator("#facility-description").fill("Descripción del e2e");
     await page.getByRole("button", { name: "Update Facility" }).click();
 
     const updated = page.getByRole("row").filter({ hasText: name });
     await expect(updated).toContainText("Pittsburgh", { timeout: 20_000 });
 
-    // La nota vuelve en su propio campo, sin pisar la descripción.
     await updated.getByRole("button", { name: /edit facility/i }).click();
-    await expect(page.locator("#facility-notes")).toHaveValue(
-      "Nota interna del e2e"
+    await expect(page.locator("#facility-description")).toHaveValue(
+      "Descripción del e2e",
     );
-    await expect(page.locator("#facility-description")).toHaveValue("");
 
     // Vaciar un campo opcional lo borra: antes se omitía del payload y el
     // backend conservaba el valor viejo. address y city no aplican porque el
     // formulario los exige.
-    await page.locator("#facility-notes").fill("");
+    await page.locator("#facility-description").fill("");
     await page.getByRole("button", { name: "Update Facility" }).click();
 
     await expect(
-      page.getByRole("heading", { name: "Edit Facility" })
+      page.getByRole("heading", { name: "Edit Facility" }),
     ).toBeHidden({ timeout: 20_000 });
     await updated.getByRole("button", { name: /edit facility/i }).click();
-    await expect(page.locator("#facility-notes")).toHaveValue("");
-    await page.getByRole("button", { name: /close|cancel/i }).first().click();
+    await expect(page.locator("#facility-description")).toHaveValue("");
+    await page
+      .getByRole("button", { name: /close|cancel/i })
+      .first()
+      .click();
 
-    await updated.getByRole("button", { name: /delete facility/i }).click();
+    // Archivar, recargar el listado archivado y restaurar comprueba que el
+    // estado persiste en backend antes del borrado definitivo.
+    await updated.getByRole("button", { name: /archive facility/i }).click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Archive", exact: true })
+      .click();
+    await expect(updated).toBeHidden({ timeout: 20_000 });
+
+    await page
+      .getByRole("button", { name: "Show archived facilities" })
+      .click();
+    const archived = page.getByRole("row").filter({ hasText: name });
+    await expect(archived).toBeVisible({ timeout: 20_000 });
+    await archived.getByRole("button", { name: /restore facility/i }).click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Restore", exact: true })
+      .click();
+    await expect(archived).toBeHidden({ timeout: 20_000 });
+
+    await page.getByRole("button", { name: "Show active facilities" }).click();
+    const restored = page.getByRole("row").filter({ hasText: name });
+    await expect(restored).toBeVisible({ timeout: 20_000 });
+
+    await restored.getByRole("button", { name: /delete facility/i }).click();
     await page
       .getByRole("button", { name: /^delete|^confirm/i })
       .last()
       .click();
-    await expect(updated).toBeHidden({ timeout: 20_000 });
+    await expect(restored).toBeHidden({ timeout: 20_000 });
 
     expect(serverErrors).toEqual([]);
   });
@@ -143,12 +169,12 @@ test.describe("Usuarios", () => {
 
     await page.goto("/users");
     await expect(
-      page.getByRole("heading", { name: /user management/i })
+      page.getByRole("heading", { name: /user management/i }),
     ).toBeVisible();
 
     await page.getByRole("button", { name: /add user/i }).click();
     await expect(
-      page.getByRole("heading", { name: "Add New User" })
+      page.getByRole("heading", { name: "Add New User" }),
     ).toBeVisible();
 
     await page.locator("#user-username").fill(name);
@@ -159,7 +185,9 @@ test.describe("Usuarios", () => {
     await page.getByRole("button", { name: "Create User" }).click();
 
     // El alta con rol QC tiene que funcionar: es el rol que revisa el reporte.
-    await expect(page.getByRole("heading", { name: "User Created" })).toBeVisible({
+    await expect(
+      page.getByRole("heading", { name: "User Created" }),
+    ).toBeVisible({
       timeout: 20_000,
     });
     await page.getByRole("button", { name: "Close" }).click();
@@ -198,7 +226,7 @@ test.describe("Flows", () => {
     // administrador.
     await page.getByRole("link", { name: "Edit flow" }).first().click();
     await expect(
-      page.getByRole("heading", { name: /edit flow:/i })
+      page.getByRole("heading", { name: /edit flow:/i }),
     ).toBeVisible({ timeout: 20_000 });
 
     expect(serverErrors).toEqual([]);
@@ -214,7 +242,7 @@ test.describe("Reportes", () => {
     // para afirmar que la página cargó alcanza con su buscador y el primer
     // encabezado del main.
     await expect(
-      page.getByRole("main").getByRole("heading", { name: "Reports" }).first()
+      page.getByRole("main").getByRole("heading", { name: "Reports" }).first(),
     ).toBeVisible();
 
     const search = page.getByPlaceholder(/search reports/i);

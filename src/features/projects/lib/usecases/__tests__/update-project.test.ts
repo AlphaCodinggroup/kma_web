@@ -49,7 +49,7 @@ describe("updateProject", () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(project));
 
     await expect(updateProject(repo, { id: "project-1" })).resolves.toBe(
-      project
+      project,
     );
     expect(repo.update).toHaveBeenCalledWith({ id: "project-1" });
   });
@@ -75,15 +75,18 @@ describe("updateProject", () => {
   it("forwards users, facilities and status when provided", async () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(makeProject()));
     const users = [{ id: "user-1", name: "User 1" }];
+    const facilities = [{ id: "facility-1", name: "Main Site" }];
     await updateProject(repo, {
       id: "project-1",
       users,
+      facilities,
       status: "ARCHIVED",
     });
 
     expect(repo.update).toHaveBeenCalledWith({
       id: "project-1",
       users,
+      facilities,
       status: "ARCHIVED",
     });
   });
@@ -91,12 +94,13 @@ describe("updateProject", () => {
   it("still sends empty collections because an empty array is truthy", async () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(makeProject()));
 
-    await updateProject(repo, { id: "project-1", users: [] });
+    await updateProject(repo, { id: "project-1", users: [], facilities: [] });
 
     // Un array vacío es truthy, así que sí se envía: documentamos el contrato real.
     expect(repo.update).toHaveBeenCalledWith({
       id: "project-1",
       users: [],
+      facilities: [],
     });
   });
 
@@ -106,7 +110,7 @@ describe("updateProject", () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(makeProject()));
 
     await expect(
-      updateProject(repo, { id: "project-1", name: "   " })
+      updateProject(repo, { id: "project-1", name: "   " }),
     ).rejects.toThrow("Project name is required");
     expect(repo.update).not.toHaveBeenCalled();
   });
@@ -115,7 +119,7 @@ describe("updateProject", () => {
     const repo = makeRepo(vi.fn().mockRejectedValue(new Error("not found")));
 
     await expect(updateProject(repo, { id: "project-1" })).rejects.toThrow(
-      "not found"
+      "not found",
     );
   });
 });

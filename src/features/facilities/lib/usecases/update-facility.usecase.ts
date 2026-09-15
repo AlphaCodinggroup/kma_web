@@ -26,7 +26,7 @@ function assertValidUrl(url: string): void {
  */
 export async function updateFacilityUseCase(
   rawParams: UpdateFacilityInput,
-  repo: FacilitiesRepo = facilitiesRepoImpl
+  repo: FacilitiesRepo = facilitiesRepoImpl,
 ): Promise<UpdateFacilityResult> {
   const id = rawParams.id?.trim();
   if (!id) {
@@ -84,8 +84,6 @@ export async function updateFacilityUseCase(
     if (trimmed.length > 1000) {
       throw new Error("Notes must have at most 1000 characters");
     }
-    // El valor vacío se envía: omitirlo hacía imposible borrar el campo, el
-    // backend conservaba el valor viejo y la UI mostraba el cambio como hecho.
     payload.notes = trimmed;
   }
 
@@ -93,7 +91,10 @@ export async function updateFacilityUseCase(
   if (rawParams.photoFile) {
     const file = rawParams.photoFile;
     const contentType = file.type || "application/octet-stream";
-    const signature = await repo.getUploadSignedUrl(sanitizeFileName(file.name), contentType);
+    const signature = await repo.getUploadSignedUrl(
+      sanitizeFileName(file.name),
+      contentType,
+    );
     await repo.uploadFile(signature.uploadUrl, file);
     // Se guarda la key, no una URL: el backend la prefirma al leer la facility.
     photoUrl = signature.key;

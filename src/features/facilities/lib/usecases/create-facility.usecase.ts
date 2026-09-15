@@ -25,7 +25,7 @@ function assertValidUrl(url: string): void {
  */
 export async function createFacilityUseCase(
   rawParams: CreateFacilityInput,
-  repo: FacilitiesRepo = facilitiesRepoImpl
+  repo: FacilitiesRepo = facilitiesRepoImpl,
 ): Promise<CreateFacilityResult> {
   const name = rawParams.name.trim();
 
@@ -63,7 +63,10 @@ export async function createFacilityUseCase(
   if (rawParams.photoFile) {
     const file = rawParams.photoFile;
     const contentType = file.type || "application/octet-stream";
-    const signature = await repo.getUploadSignedUrl(sanitizeFileName(file.name), contentType);
+    const signature = await repo.getUploadSignedUrl(
+      sanitizeFileName(file.name),
+      contentType,
+    );
     await repo.uploadFile(signature.uploadUrl, file);
     // Se guarda la key, no una URL: el backend la prefirma al leer la facility.
     photoUrl = signature.key;

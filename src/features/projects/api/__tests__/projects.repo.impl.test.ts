@@ -154,6 +154,7 @@ describe("ProjectsRepoHttp.create", () => {
       code: "PRJ-1",
       description: "First project",
       users: [{ id: "u-1", name: "Ada" }],
+      facilities: [{ id: "f-1", name: "Main Building" }],
       status: "ACTIVE",
     });
 
@@ -164,9 +165,10 @@ describe("ProjectsRepoHttp.create", () => {
         code: "PRJ-1",
         description: "First project",
         users: [{ id: "u-1", name: "Ada" }],
+        facilities: [{ facility_id: "f-1", name: "Main Building" }],
         status: "ACTIVE",
       },
-      JSON_HEADERS
+      JSON_HEADERS,
     );
   });
 
@@ -174,7 +176,6 @@ describe("ProjectsRepoHttp.create", () => {
   it.each([
     ["an empty code", { name: "N", code: "" }, { name: "N" }],
     ["an empty description", { name: "N", description: "" }, { name: "N" }],
-    ["an empty users array", { name: "N", users: [] }, { name: "N" }],
     ["only the name", { name: "N" }, { name: "N" }],
   ])("omits %s", async (_label, params, expectedBody) => {
     http.post.mockResolvedValueOnce({ data: projectDTO });
@@ -184,17 +185,36 @@ describe("ProjectsRepoHttp.create", () => {
     expect(http.post).toHaveBeenCalledWith(
       "/api/projects",
       expectedBody,
-      JSON_HEADERS
+      JSON_HEADERS,
     );
   });
 
-  it.each(wrappings)("unwraps %s from the create response", async (_label, payload) => {
-    http.post.mockResolvedValueOnce({ data: payload });
+  it("keeps empty collections so assignments can be cleared", async () => {
+    http.post.mockResolvedValueOnce({ data: projectDTO });
 
-    const created = await new ProjectsRepoHttp().create({ name: "N" });
+    await new ProjectsRepoHttp().create({
+      name: "N",
+      users: [],
+      facilities: [],
+    });
 
-    expect(created).toEqual(mapProjectFromDTO(projectDTO));
+    expect(http.post).toHaveBeenCalledWith(
+      "/api/projects",
+      { name: "N", users: [], facilities: [] },
+      JSON_HEADERS,
+    );
   });
+
+  it.each(wrappings)(
+    "unwraps %s from the create response",
+    async (_label, payload) => {
+      http.post.mockResolvedValueOnce({ data: payload });
+
+      const created = await new ProjectsRepoHttp().create({ name: "N" });
+
+      expect(created).toEqual(mapProjectFromDTO(projectDTO));
+    },
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -211,6 +231,7 @@ describe("ProjectsRepoHttp.update", () => {
       code: "PRJ-2",
       description: "Updated",
       users: [{ id: "u-2", name: "Alan" }],
+      facilities: [{ id: "f-2", name: "Warehouse" }],
       status: "ARCHIVED",
     });
 
@@ -221,9 +242,27 @@ describe("ProjectsRepoHttp.update", () => {
         code: "PRJ-2",
         description: "Updated",
         users: [{ id: "u-2", name: "Alan" }],
+        facilities: [{ facility_id: "f-2", name: "Warehouse" }],
         status: "ARCHIVED",
       },
-      JSON_HEADERS
+      JSON_HEADERS,
+    );
+  });
+
+  it("sends empty collections and strings when they are explicitly provided", async () => {
+    http.patch.mockResolvedValueOnce({ data: projectDTO });
+
+    await new ProjectsRepoHttp().update({
+      id: "p-1",
+      description: "",
+      users: [],
+      facilities: [],
+    });
+
+    expect(http.patch).toHaveBeenCalledWith(
+      "/api/projects/p-1",
+      { description: "", users: [], facilities: [] },
+      JSON_HEADERS,
     );
   });
 
@@ -235,17 +274,20 @@ describe("ProjectsRepoHttp.update", () => {
     expect(http.patch).toHaveBeenCalledWith(
       "/api/projects/p-1",
       {},
-      JSON_HEADERS
+      JSON_HEADERS,
     );
   });
 
-  it.each(wrappings)("unwraps %s from the update response", async (_label, payload) => {
-    http.patch.mockResolvedValueOnce({ data: payload });
+  it.each(wrappings)(
+    "unwraps %s from the update response",
+    async (_label, payload) => {
+      http.patch.mockResolvedValueOnce({ data: payload });
 
-    const updated = await new ProjectsRepoHttp().update({ id: "p-1" });
+      const updated = await new ProjectsRepoHttp().update({ id: "p-1" });
 
-    expect(updated).toEqual(mapProjectFromDTO(projectDTO));
-  });
+      expect(updated).toEqual(mapProjectFromDTO(projectDTO));
+    },
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -257,7 +299,7 @@ describe("ProjectsRepoHttp.deleteProject / archive", () => {
     http.delete.mockResolvedValueOnce({ data: undefined });
 
     await expect(
-      new ProjectsRepoHttp().deleteProject("p-1")
+      new ProjectsRepoHttp().deleteProject("p-1"),
     ).resolves.toBeUndefined();
 
     expect(http.delete).toHaveBeenCalledWith("/api/projects/p-1");
@@ -300,10 +342,13 @@ describe("ProjectsRepoHttp error normalisation", () => {
     ["archive", "post", () => repo().archive("p-1")],
   ];
 
-  it.each(cases)("%s propagates an ApiError untouched", async (_l, verb, run) => {
-    http[verb].mockRejectedValueOnce(apiError);
-    await expect(run()).rejects.toEqual(apiError);
-  });
+  it.each(cases)(
+    "%s propagates an ApiError untouched",
+    async (_l, verb, run) => {
+      http[verb].mockRejectedValueOnce(apiError);
+      await expect(run()).rejects.toEqual(apiError);
+    },
+  );
 
   it.each(cases)("%s wraps an unknown error", async (_l, verb, run) => {
     const raw = new Error("boom");

@@ -68,19 +68,17 @@ describe("mapCreateFacilityParamsToDTO", () => {
     });
   });
 
-  // notes es un campo propio de punta a punta: antes se escribía sobre
-  // description porque el backend no lo tenía.
-  it("sends notes in its own field", () => {
+  it("uses notes as the legacy description fallback", () => {
     const dto = mapCreateFacilityParamsToDTO({
       name: "F",
       notes: "some notes",
     });
 
-    expect(dto.notes).toBe("some notes");
-    expect(dto).not.toHaveProperty("description");
+    expect(dto.description).toBe("some notes");
+    expect(dto).not.toHaveProperty("notes");
   });
 
-  it("sends description and notes together", () => {
+  it("prefers description when both description and notes are present", () => {
     const dto = mapCreateFacilityParamsToDTO({
       name: "F",
       description: "the description",
@@ -88,7 +86,7 @@ describe("mapCreateFacilityParamsToDTO", () => {
     });
 
     expect(dto.description).toBe("the description");
-    expect(dto.notes).toBe("the notes");
+    expect(dto).not.toHaveProperty("notes");
   });
 
   it.each([
@@ -165,12 +163,14 @@ describe("mapUpdateFacilityParamsToDTO", () => {
     expect(dto).toEqual({ name: "", address: "", city: "" });
   });
 
-  // Actualizar sólo notes ya no sobrescribe description.
-  it("updates notes without touching description", () => {
-    const dto = mapUpdateFacilityParamsToDTO({ id: "fa-1", notes: "just notes" });
+  it("maps a legacy notes update to description", () => {
+    const dto = mapUpdateFacilityParamsToDTO({
+      id: "fa-1",
+      notes: "just notes",
+    });
 
-    expect(dto.notes).toBe("just notes");
-    expect(dto).not.toHaveProperty("description");
+    expect(dto.description).toBe("just notes");
+    expect(dto).not.toHaveProperty("notes");
   });
 
   it("clears the photo when clearPhoto is true", () => {
@@ -270,7 +270,7 @@ describe("mapFacilityFromDTO", () => {
         geo: null,
         project_id: null,
         updated_by: null,
-      })
+      }),
     );
 
     expect(result).not.toHaveProperty("address");
@@ -283,20 +283,18 @@ describe("mapFacilityFromDTO", () => {
     expect(result.projectId).toBe("");
   });
 
-  // Al leer, notes queda ausente si el backend no la trae: antes copiaba
-  // description y la interfaz no podía saber si había notas de verdad.
-  it("leaves notes absent when the DTO has none", () => {
+  it("keeps the legacy notes alias when only description is returned", () => {
     const result = mapFacilityFromDTO(
-      makeFacilityDTO({ description: "A description" })
+      makeFacilityDTO({ description: "A description" }),
     );
 
     expect(result.description).toBe("A description");
-    expect(result.notes).toBeUndefined();
+    expect(result.notes).toBe("A description");
   });
 
   it("reads notes from its own field", () => {
     const result = mapFacilityFromDTO(
-      makeFacilityDTO({ description: "A description", notes: "Some notes" })
+      makeFacilityDTO({ description: "A description", notes: "Some notes" }),
     );
 
     expect(result.description).toBe("A description");
@@ -305,7 +303,7 @@ describe("mapFacilityFromDTO", () => {
 
   it("keeps archived_at and archived_by null when they are explicitly null", () => {
     const result = mapFacilityFromDTO(
-      makeFacilityDTO({ archived_at: null, archived_by: null })
+      makeFacilityDTO({ archived_at: null, archived_by: null }),
     );
 
     expect(result.archivedAt).toBeNull();
@@ -313,14 +311,14 @@ describe("mapFacilityFromDTO", () => {
   });
 
   it("keeps an empty user_ids array", () => {
-    expect(mapFacilityFromDTO(makeFacilityDTO({ user_ids: [] })).userIds).toEqual(
-      []
-    );
+    expect(
+      mapFacilityFromDTO(makeFacilityDTO({ user_ids: [] })).userIds,
+    ).toEqual([]);
   });
 
   it("keeps empty strings for the optional text fields", () => {
     const result = mapFacilityFromDTO(
-      makeFacilityDTO({ address: "", city: "", photo_url: "" })
+      makeFacilityDTO({ address: "", city: "", photo_url: "" }),
     );
 
     expect(result.address).toBe("");
@@ -355,7 +353,9 @@ describe("mapFacilitiesListFromDTO", () => {
   });
 
   it("keeps a limit of 0 instead of treating it as absent", () => {
-    expect(mapFacilitiesListFromDTO({ facilities: [], limit: 0 }).limit).toBe(0);
+    expect(mapFacilitiesListFromDTO({ facilities: [], limit: 0 }).limit).toBe(
+      0,
+    );
   });
 
   it("omits limit and cursor when they are null", () => {
@@ -370,9 +370,9 @@ describe("mapFacilitiesListFromDTO", () => {
   });
 
   it("keeps an empty cursor string", () => {
-    expect(mapFacilitiesListFromDTO({ facilities: [], cursor: "" }).cursor).toBe(
-      ""
-    );
+    expect(
+      mapFacilitiesListFromDTO({ facilities: [], cursor: "" }).cursor,
+    ).toBe("");
   });
 
   // El total del backend se modela: antes se descartaba y la paginación de la

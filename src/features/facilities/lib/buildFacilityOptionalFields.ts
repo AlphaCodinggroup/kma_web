@@ -7,7 +7,6 @@ interface FacilityOptionalFields {
   address?: string;
   city?: string;
   description?: string;
-  notes?: string;
   photoFile?: File | null;
   photoUrl?: string;
   clearPhoto?: boolean;
@@ -18,7 +17,7 @@ interface FacilityOptionalFields {
  * válidos para el dominio, sin enviar `undefined`.
  */
 export function buildFacilityOptionalFields(
-  values: FacilityUpsertValues
+  values: FacilityUpsertValues,
 ): FacilityOptionalFields {
   const result: FacilityOptionalFields = {};
 
@@ -35,10 +34,6 @@ export function buildFacilityOptionalFields(
 
   if (values.description != null) {
     result.description = values.description;
-  }
-
-  if (values.notes != null) {
-    result.notes = values.notes;
   }
 
   if (values.clearPhoto && !values.photoFile) {

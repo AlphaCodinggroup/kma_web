@@ -4,10 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ProjectsRepo } from "@entities/projects/api/projects.repo";
-import type {
-  CreateProjectParams,
-  Project,
-} from "@entities/projects/model";
+import type { CreateProjectParams, Project } from "@entities/projects/model";
 import { createProject } from "../create-project";
 
 // ---------------------------------------------------------------------------
@@ -20,7 +17,6 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     name: "Project 1",
     status: "ACTIVE",
     users: [],
-    // El proyecto sigue devolviendo sus facilities: se derivan del project_id.
     facilities: [],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-02T00:00:00Z",
@@ -40,7 +36,7 @@ function makeRepo(create = vi.fn()): ProjectsRepo {
 }
 
 function makeParams(
-  overrides: Partial<CreateProjectParams> = {}
+  overrides: Partial<CreateProjectParams> = {},
 ): CreateProjectParams {
   return { name: "Project 1", ...overrides };
 }
@@ -62,7 +58,7 @@ describe("createProject", () => {
     const repo = makeRepo();
 
     await expect(createProject(repo, makeParams({ name }))).rejects.toThrow(
-      "Project name is required"
+      "Project name is required",
     );
     expect(repo.create).not.toHaveBeenCalled();
   });
@@ -76,6 +72,7 @@ describe("createProject", () => {
       name: "Project 1",
       status: "ACTIVE",
       users: [],
+      facilities: [],
     });
   });
 
@@ -85,7 +82,7 @@ describe("createProject", () => {
     await createProject(repo, makeParams({ status: "ARCHIVED" }));
 
     expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "ARCHIVED" })
+      expect.objectContaining({ status: "ARCHIVED" }),
     );
   });
 
@@ -98,7 +95,7 @@ describe("createProject", () => {
         name: "  Project 1  ",
         code: "  P-1  ",
         description: "  A description  ",
-      })
+      }),
     );
 
     expect(repo.create).toHaveBeenCalledWith({
@@ -107,21 +104,20 @@ describe("createProject", () => {
       code: "P-1",
       description: "A description",
       users: [],
+      facilities: [],
     });
   });
 
   it("drops code and description when they are blank", async () => {
     const repo = makeRepo(vi.fn().mockResolvedValue(makeProject()));
 
-    await createProject(
-      repo,
-      makeParams({ code: "   ", description: "   " })
-    );
+    await createProject(repo, makeParams({ code: "   ", description: "   " }));
 
     expect(repo.create).toHaveBeenCalledWith({
       name: "Project 1",
       status: "ACTIVE",
       users: [],
+      facilities: [],
     });
   });
 
@@ -132,7 +128,18 @@ describe("createProject", () => {
     await createProject(repo, makeParams({ users }));
 
     expect(repo.create).toHaveBeenCalledWith(
-      expect.objectContaining({ users })
+      expect.objectContaining({ users }),
+    );
+  });
+
+  it("forwards facilities when provided", async () => {
+    const repo = makeRepo(vi.fn().mockResolvedValue(makeProject()));
+    const facilities = [{ id: "facility-1", name: "Main Site" }];
+
+    await createProject(repo, makeParams({ facilities }));
+
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ facilities }),
     );
   });
 
@@ -140,7 +147,7 @@ describe("createProject", () => {
     const repo = makeRepo(vi.fn().mockRejectedValue(new Error("duplicated")));
 
     await expect(createProject(repo, makeParams())).rejects.toThrow(
-      "duplicated"
+      "duplicated",
     );
   });
 });

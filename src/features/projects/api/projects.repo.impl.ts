@@ -24,6 +24,10 @@ type ProjectUserDTO = {
   name: string;
 };
 
+type ProjectFacilityDTO = {
+  facility_id: string;
+  name: string;
+};
 
 /** Body esperado por el upstream para crear un proyecto */
 type CreateProjectRequestDTO = {
@@ -31,6 +35,7 @@ type CreateProjectRequestDTO = {
   code?: string;
   description?: string;
   users?: ProjectUserDTO[];
+  facilities?: ProjectFacilityDTO[];
   status?: "ACTIVE" | "ARCHIVED";
 };
 
@@ -40,6 +45,7 @@ type UpdateProjectRequestDTO = {
   code?: string;
   description?: string;
   users?: ProjectUserDTO[];
+  facilities?: ProjectFacilityDTO[];
   status?: "ACTIVE" | "ARCHIVED";
 };
 
@@ -89,9 +95,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
       >(`${this.basePath}/${encodeURIComponent(id)}`);
 
       const raw = res.data as
-        | ProjectDTO
-        | { project: ProjectDTO }
-        | { data: ProjectDTO };
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO };
 
       const dto: ProjectDTO =
         (raw as { project?: ProjectDTO }).project ??
@@ -111,11 +115,19 @@ export class ProjectsRepoHttp implements ProjectsRepo {
         name: params.name,
         ...(params.code ? { code: params.code } : {}),
         ...(params.description ? { description: params.description } : {}),
-        ...(params.users && params.users.length
+        ...(params.users !== undefined
           ? {
               users: params.users.map((u) => ({
                 id: u.id,
                 name: u.name,
+              })),
+            }
+          : {}),
+        ...(params.facilities !== undefined
+          ? {
+              facilities: params.facilities.map((facility) => ({
+                facility_id: facility.id,
+                name: facility.name,
               })),
             }
           : {}),
@@ -129,9 +141,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
       });
 
       const raw = res.data as
-        | ProjectDTO
-        | { project: ProjectDTO }
-        | { data: ProjectDTO };
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO };
 
       const dto: ProjectDTO =
         (raw as { project?: ProjectDTO }).project ??
@@ -148,14 +158,24 @@ export class ProjectsRepoHttp implements ProjectsRepo {
   async update(params: UpdateProjectParams): Promise<UpdateProjectResult> {
     try {
       const body: UpdateProjectRequestDTO = {
-        ...(params.name ? { name: params.name } : {}),
-        ...(params.code ? { code: params.code } : {}),
-        ...(params.description ? { description: params.description } : {}),
-        ...(params.users && params.users.length
+        ...(params.name !== undefined ? { name: params.name } : {}),
+        ...(params.code !== undefined ? { code: params.code } : {}),
+        ...(params.description !== undefined
+          ? { description: params.description }
+          : {}),
+        ...(params.users !== undefined
           ? {
               users: params.users.map((u) => ({
                 id: u.id,
                 name: u.name,
+              })),
+            }
+          : {}),
+        ...(params.facilities !== undefined
+          ? {
+              facilities: params.facilities.map((facility) => ({
+                facility_id: facility.id,
+                name: facility.name,
               })),
             }
           : {}),
@@ -169,9 +189,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
       });
 
       const raw = res.data as
-        | ProjectDTO
-        | { project: ProjectDTO }
-        | { data: ProjectDTO };
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO };
 
       const dto: ProjectDTO =
         (raw as { project?: ProjectDTO }).project ??
@@ -187,7 +205,9 @@ export class ProjectsRepoHttp implements ProjectsRepo {
   /** Elimina un proyecto */
   async deleteProject(id: ProjectId): Promise<void> {
     try {
-      await httpClient.delete<void>(`${this.basePath}/${encodeURIComponent(id)}`);
+      await httpClient.delete<void>(
+        `${this.basePath}/${encodeURIComponent(id)}`,
+      );
     } catch (err) {
       throw toApiError(err);
     }
@@ -201,9 +221,7 @@ export class ProjectsRepoHttp implements ProjectsRepo {
       >(`${this.basePath}/${encodeURIComponent(id)}/archive`);
 
       const raw = res.data as
-        | ProjectDTO
-        | { project: ProjectDTO }
-        | { data: ProjectDTO };
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO };
 
       const dto: ProjectDTO =
         (raw as { project?: ProjectDTO }).project ??

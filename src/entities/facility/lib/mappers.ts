@@ -50,7 +50,6 @@ export interface CreateFacilityRequestDTO {
   address?: string;
   city?: string;
   description?: string;
-  notes?: string;
   photo_url?: string;
   status?: "ACTIVE" | "ARCHIVED";
   geo?: {
@@ -68,7 +67,6 @@ export interface UpdateFacilityRequestDTO {
   address?: string;
   city?: string;
   description?: string;
-  notes?: string;
   photo_url?: string | null;
   status?: "ACTIVE" | "ARCHIVED";
   geo?: {
@@ -81,7 +79,7 @@ export interface UpdateFacilityRequestDTO {
  * Mapea CreateFacilityParams (dominio) → CreateFacilityRequestDTO (HTTP).
  */
 export function mapCreateFacilityParamsToDTO(
-  params: CreateFacilityParams
+  params: CreateFacilityParams,
 ): CreateFacilityRequestDTO {
   const dto: CreateFacilityRequestDTO = {
     name: params.name,
@@ -100,15 +98,10 @@ export function mapCreateFacilityParamsToDTO(
     dto.city = params.city;
   }
 
-  // description y notes son campos distintos de punta a punta: antes se
-  // colapsaban en description porque el backend no tenía notes, y editar uno
-  // sobrescribía el otro.
   if (params.description != null) {
     dto.description = params.description;
-  }
-
-  if (params.notes != null) {
-    dto.notes = params.notes;
+  } else if (params.notes != null) {
+    dto.description = params.notes;
   }
 
   if (params.photoUrl) {
@@ -132,7 +125,7 @@ export function mapCreateFacilityParamsToDTO(
  * Mapea UpdateFacilityParams (dominio) → UpdateFacilityRequestDTO (HTTP).
  */
 export function mapUpdateFacilityParamsToDTO(
-  params: UpdateFacilityParams
+  params: UpdateFacilityParams,
 ): UpdateFacilityRequestDTO {
   const dto: UpdateFacilityRequestDTO = {};
 
@@ -150,10 +143,8 @@ export function mapUpdateFacilityParamsToDTO(
 
   if (params.description != null) {
     dto.description = params.description;
-  }
-
-  if (params.notes != null) {
-    dto.notes = params.notes;
+  } else if (params.notes != null) {
+    dto.description = params.notes;
   }
 
   if (params.clearPhoto === true) {
@@ -211,6 +202,8 @@ export function mapFacilityFromDTO(dto: FacilityDTO): Facility {
 
   if (dto.notes != null) {
     facility.notes = dto.notes;
+  } else if (dto.description != null) {
+    facility.notes = dto.description;
   }
 
   if (dto.geo) {
@@ -243,7 +236,7 @@ export function mapFacilityFromDTO(dto: FacilityDTO): Facility {
  * Mapea la respuesta de Facilities al modelo de dominio paginado.
  */
 export function mapFacilitiesListFromDTO(
-  response: FacilitiesResponseDTO
+  response: FacilitiesResponseDTO,
 ): FacilityListPage {
   // Guarda sobre la respuesta: una malformada rompía el mapper en vez de
   // degradar a una página vacía.
