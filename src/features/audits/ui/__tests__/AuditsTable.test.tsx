@@ -323,9 +323,6 @@ describe("AuditsTable — compliance check on the edit button", () => {
   });
 
   it.each([
-    ["the boolean false", false],
-    ["the string NO", "NO"],
-    ["the string FALSE", "FALSE"],
     ["UNSURE", "UNSURE"],
     ["an unknown value", "maybe"],
     ["null", null],
@@ -354,6 +351,25 @@ describe("AuditsTable — compliance check on the edit button", () => {
       "Edit audit"
     );
   });
+
+  it.each([false, "NO", "FALSE"])(
+    "allows a negative navigation answer %s when the backend found no barriers",
+    async (answer) => {
+      const user = userEvent.setup();
+      const onEdit = vi.fn();
+      withDetail({
+        questions: [
+          { type: "yes_no", answer: true },
+          { type: "yes_no", answer },
+        ],
+      });
+      render(<AuditsTable items={complianceRow} onEdit={onEdit} onError={vi.fn()} />);
+      const button = screen.getByRole("button", { name: "Edit audit" });
+      expect(button).toHaveAttribute("title", "No findings, unsures, or blanks - fully compliant");
+      await user.click(button);
+      expect(onEdit).toHaveBeenCalledWith(complianceRow[0], true);
+    }
+  );
 
   it("is not compliant when the detail carries no questions field", () => {
     withDetail({});
