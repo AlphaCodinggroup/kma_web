@@ -223,7 +223,7 @@ function loadServerEnv() {
       issuer: env.COGNITO_ISSUER,
     },
     uploadProxy: {
-      allowedHosts: (env.UPLOAD_PROXY_ALLOWED_HOSTS ?? "")
+      allowedHosts: (env.UPLOAD_PROXY_ALLOWED_HOSTS ?? "kma-audit-bucket.s3.us-east-2.amazonaws.com")
         .split(",")
         .map((host) => host.trim().toLowerCase())
         .filter(Boolean),
