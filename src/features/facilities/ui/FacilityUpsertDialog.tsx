@@ -136,7 +136,10 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
           ? { description: trimmedDescription }
           : {}),
         ...(values.photoFile ? { photoFile: values.photoFile } : {}),
-        ...(trimmedPhotoUrl && !values.photoFile && !values.clearPhoto
+        ...(mode === "create" &&
+        trimmedPhotoUrl &&
+        !values.photoFile &&
+        !values.clearPhoto
           ? { photoUrl: trimmedPhotoUrl }
           : {}),
         ...(values.clearPhoto && !values.photoFile ? { clearPhoto: true } : {}),

@@ -548,11 +548,48 @@ describe("FacilitiesContent", () => {
         address: "1 Main Street",
         city: "Springfield",
         description: "Main production plant",
-        photoUrl: "https://cdn.kma.io/north.png",
       });
       expect(
         screen.queryByRole("heading", { name: "Edit Facility" }),
       ).not.toBeInTheDocument();
+    });
+
+    it("keeps the signed photo preview without sending it back when editing text", async () => {
+      const signedUrl = "https://example.test/facilities/photo.jpg?X-Amz-Signature=test";
+      state.data = { items: [{ ...facilityNorth, photoUrl: signedUrl }] };
+      renderContent();
+      await userEvent.click(within(rowFor("North Plant")).getByRole("button", { name: "Edit facility" }));
+      expect(screen.getByRole("img", { name: "Facility photo preview" })).toHaveAttribute("src", signedUrl);
+      await userEvent.clear(screen.getByLabelText("Description"));
+      await userEvent.type(screen.getByLabelText("Description"), "Updated description");
+      await userEvent.click(screen.getByRole("button", { name: "Update Facility" }));
+      expect(updateFacilityMock).toHaveBeenCalledWith(expect.objectContaining({ id: "f-north", description: "Updated description" }));
+      const payload = updateFacilityMock.mock.calls[0]?.[0];
+      expect(payload).not.toHaveProperty("photoUrl");
+      expect(payload).not.toHaveProperty("photoFile");
+      expect(payload).not.toHaveProperty("clearPhoto");
+    });
+
+    it("still submits an explicit photo removal", async () => {
+      renderContent();
+      await userEvent.click(within(rowFor("North Plant")).getByRole("button", { name: "Edit facility" }));
+      await userEvent.click(screen.getByRole("button", { name: "Remove" }));
+      await userEvent.click(screen.getByRole("button", { name: "Update Facility" }));
+      expect(updateFacilityMock).toHaveBeenCalledWith(expect.objectContaining({ id: "f-north", clearPhoto: true }));
+      expect(updateFacilityMock.mock.calls[0]?.[0]).not.toHaveProperty("photoUrl");
+    });
+
+    it("still submits a replacement photo file without the previous URL", async () => {
+      vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:replacement-photo");
+      vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+      renderContent();
+      await userEvent.click(within(rowFor("North Plant")).getByRole("button", { name: "Edit facility" }));
+      const file = new File(["photo"], "replacement.jpg", { type: "image/jpeg" });
+      await userEvent.upload(screen.getByLabelText("Photo"), file);
+      await userEvent.click(screen.getByRole("button", { name: "Update Facility" }));
+      expect(updateFacilityMock).toHaveBeenCalledWith(expect.objectContaining({ id: "f-north", photoFile: file }));
+      expect(updateFacilityMock.mock.calls[0]?.[0]).not.toHaveProperty("photoUrl");
+      expect(updateFacilityMock.mock.calls[0]?.[0]).not.toHaveProperty("clearPhoto");
     });
 
     // FIXME: vaciar un campo opcional debería llegar al submit como cadena
