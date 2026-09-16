@@ -62,6 +62,9 @@ export const SelectOptionDTOSchema = z.object({
   label: z.string(),
   next: z.string(),
   barrier_id: z.string().optional().nullable(),
+  yes_next: z.string().optional().nullable(),
+  no_next: z.string().optional().nullable(),
+  condition: ConditionDTOSchema.optional().nullable(),
 });
 
 export const SelectStepDTOSchema = StepBaseDTOSchema.extend({
