@@ -154,6 +154,7 @@ export function mapFlowStepDTO(dto: FlowStepDTO): FlowStep {
 export function mapFlowDTO(dto: FlowDTO): Flow {
   return {
     id: dto.id,
+    ...(dto.code !== undefined ? { code: dto.code } : {}),
     title: dto.title,
     description: dto.description ?? null,
     steps: dto.steps.map(mapFlowStepDTO),
@@ -351,6 +352,7 @@ export const DEFAULT_FLOW_TYPE = "Navigation";
 export function mapFlowToDTO(flow: Flow): FlowDTO {
   return {
     id: flow.id,
+    ...(flow.code !== undefined ? { code: flow.code } : {}),
     title: flow.title,
     description: flow.description || undefined,
     steps: flow.steps.map(mapFlowStepToDTO),
