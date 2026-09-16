@@ -81,7 +81,7 @@ export default function AuditEditPage(props: AuditEditPageProps) {
       <div className="mt-4 sm:mt-6">
         <AuditInfoPanel
           auditDate={memoed.createdAt}
-          completedDate={memoed.updatedAt}
+          completedDate={auditDetail?.completedDate ?? null}
           projectName={auditDetail?.projectName}
           facilityName={auditDetail?.facilityName}
           location={auditDetail?.location}

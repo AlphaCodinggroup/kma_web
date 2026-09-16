@@ -174,6 +174,21 @@ describe("AuditEditPage", () => {
     });
   });
 
+  it.each(["draft_report_pending_review", "draft_report_in_review", "completed"])(
+    "does not invent a completion date from updatedAt for %s",
+    async (status) => {
+      stubDetail({ data: makeDetail({ status, completedDate: null }) });
+      await renderPage({ id: "audit-1" });
+      expect(propsOf("panel").completedDate).toBeNull();
+    }
+  );
+
+  it("uses the explicit completion date instead of a later update", async () => {
+    stubDetail({ data: makeDetail({ completedDate: "2026-01-15T12:00:00Z" }) });
+    await renderPage({ id: "audit-1" });
+    expect(propsOf("panel").completedDate).toBe("2026-01-15T12:00:00Z");
+  });
+
   it("uses the review status as the default while there is no detail", async () => {
     stubDetail({ data: undefined, isLoading: true });
 
