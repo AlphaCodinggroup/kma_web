@@ -87,6 +87,7 @@ export const FlowStepDTOSchema = z.discriminatedUnion("type", [
 // -- Flow
 export const FlowDTOSchema = z.object({
   id: z.string(),
+  code: z.string().optional(),
   title: z.string(),
   description: z.string().optional().nullable(),
   steps: z.array(FlowStepDTOSchema),
