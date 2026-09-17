@@ -85,6 +85,42 @@ describe("PUT /api/uploads/proxy", () => {
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 
+  it("uploads to the deployed audit bucket when no override is configured", async () => {
+    vi.stubEnv("UPLOAD_PROXY_ALLOWED_HOSTS", undefined);
+    const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const { PUT } = await import("../route");
+    const target = "https://kma-audit-bucket.s3.us-east-2.amazonaws.com/qa-audit/F03/QA%20photo.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256";
+    const res = await PUT(proxyRequest(target));
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledWith(target, expect.objectContaining({
+      method: "PUT", redirect: "manual", body: expect.any(Buffer),
+      headers: { "Content-Type": "image/jpeg", "Content-Length": "9" },
+    }));
+  });
+
+  it.each([
+    "https://other-bucket.s3.us-east-2.amazonaws.com/image.jpg",
+    "https://kma-audit-bucket.s3.us-east-2.amazonaws.com.evil.example/image.jpg",
+    "http://169.254.169.254/latest/meta-data/",
+  ])("does not broaden the default allowlist to %s", async (target) => {
+    vi.stubEnv("UPLOAD_PROXY_ALLOWED_HOSTS", undefined);
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const { PUT } = await import("../route");
+    expect((await PUT(proxyRequest(target))).status).toBe(400);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it.each(["", "storage.example.com"])("respects an explicit override: %s", async (override) => {
+    vi.stubEnv("UPLOAD_PROXY_ALLOWED_HOSTS", override);
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const { PUT } = await import("../route");
+    expect((await PUT(proxyRequest("https://kma-audit-bucket.s3.us-east-2.amazonaws.com/image.jpg"))).status).toBe(400);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("acepta el host del backend sin configurarlo aparte", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
