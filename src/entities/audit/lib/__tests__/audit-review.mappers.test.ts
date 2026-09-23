@@ -20,10 +20,7 @@ function makeFindingDTO(
 ): AuditFindingDTO {
   return {
     question_code: "Q1",
-    answer: "YES",
-    quantity: 1,
-    cost: 10,
-    total_cost: 10,
+    answer: "NO",
     ...overrides,
   };
 }
@@ -48,142 +45,127 @@ function makeReviewDTO(overrides: Partial<AuditReviewDTO> = {}): AuditReviewDTO 
 // ---------------------------------------------------------------------------
 
 describe("mapAuditFindingDTO", () => {
-  it("maps every snake_case field to camelCase", () => {
+  it("maps the finding as GET /audits-review returns it", () => {
     const dto = makeFindingDTO({
       question_code: "Q-42",
       answer: "NO",
+      mitigation_id: "MIT-1",
       barrier_statement: "Step is too high",
       mitigation_statement: "Install a ramp",
       code_reference: "ADAS 4.8",
-      quantity: 2,
-      cost: 150.5,
-      unit: "ea",
-      total_cost: 301,
+      quantity: 2.5,
+      unit_cost: 150.5,
+      unit_of_measure: "LF",
+      measurements: [{ name: "Height", value: 45, unit: "in" }],
       notes: "Measured twice",
-      photos: ["a.jpg"],
-      include_in_report: true,
-      calculated_cost: 300,
+      photos: [
+        { url: "https://cdn/a.jpg", include_in_report: true },
+        { url: "https://cdn/b.jpg", include_in_report: false },
+      ],
+      calculated_cost: 376.25,
     });
 
     expect(mapAuditFindingDTO(dto)).toEqual({
       questionCode: "Q-42",
       answer: "NO",
+      mitigationId: "MIT-1",
       barrierStatement: "Step is too high",
       proposedMitigation: "Install a ramp",
       adasReference: "ADAS 4.8",
-      quantity: 2,
-      cost: 150.5,
-      unit: "ea",
-      totalCost: 301,
+      quantity: 2.5,
+      unitCost: 150.5,
+      unitOfMeasure: "LF",
+      measurements: [{ name: "Height", value: 45, unit: "in" }],
       notes: "Measured twice",
-      photos: ["a.jpg"],
-      includeInReport: true,
-      calculatedCost: 300,
+      photos: [
+        { url: "https://cdn/a.jpg", includeInReport: true },
+        { url: "https://cdn/b.jpg", includeInReport: false },
+      ],
+      calculatedCost: 376.25,
     });
   });
 
-  it("applies defaults when the optional fields are absent", () => {
-    const result = mapAuditFindingDTO(makeFindingDTO());
-
-    expect(result.barrierStatement).toBeNull();
-    expect(result.proposedMitigation).toBeNull();
-    expect(result.adasReference).toBeNull();
-    expect(result.unit).toBeNull();
-    expect(result.notes).toBeNull();
-    expect(result.photos).toEqual([]);
-    expect(result.includeInReport).toBe(false);
-    expect(result.calculatedCost).toBe(0);
-  });
-
-  it("applies the same defaults when the optional fields are null", () => {
+  it("falls back to the POST /reviews field names", () => {
     const result = mapAuditFindingDTO(
-      makeFindingDTO({
-        barrier_statement: null,
-        mitigation_statement: null,
-        code_reference: null,
-        unit: null,
-        notes: null,
-        photos: null,
-      })
+      makeFindingDTO({ cost: 12, unit: "EA", photos: ["https://cdn/a.jpg", " "] })
     );
 
-    expect(result.barrierStatement).toBeNull();
-    expect(result.proposedMitigation).toBeNull();
-    expect(result.adasReference).toBeNull();
-    expect(result.unit).toBeNull();
-    expect(result.notes).toBeNull();
-    expect(result.photos).toEqual([]);
+    expect(result.unitCost).toBe(12);
+    expect(result.unitOfMeasure).toBe("EA");
+    expect(result.photos).toEqual([{ url: "https://cdn/a.jpg", includeInReport: true }]);
   });
 
-  it("keeps numeric zeros for quantity, cost and total_cost", () => {
+  it("uses null or empty lists when the optional fields are absent", () => {
+    expect(mapAuditFindingDTO(makeFindingDTO())).toEqual({
+      questionCode: "Q1",
+      answer: "NO",
+      mitigationId: null,
+      barrierStatement: null,
+      proposedMitigation: null,
+      adasReference: null,
+      quantity: null,
+      unitCost: null,
+      unitOfMeasure: null,
+      measurements: [],
+      notes: null,
+      photos: [],
+      calculatedCost: null,
+    });
+  });
+
+  it("keeps numeric zeros and parses numeric strings", () => {
     const result = mapAuditFindingDTO(
-      makeFindingDTO({ quantity: 0, cost: 0, total_cost: 0, calculated_cost: 0 })
+      makeFindingDTO({
+        quantity: 0,
+        unit_cost: "12.5" as never,
+        calculated_cost: 0,
+      })
     );
 
     expect(result.quantity).toBe(0);
-    expect(result.cost).toBe(0);
-    expect(result.totalCost).toBe(0);
+    expect(result.unitCost).toBe(12.5);
     expect(result.calculatedCost).toBe(0);
-  });
-
-  it("parses numeric strings coming from the backend", () => {
-    const result = mapAuditFindingDTO(
-      makeFindingDTO({
-        quantity: "3" as never,
-        cost: "12.5" as never,
-        total_cost: "37.5" as never,
-      })
-    );
-
-    expect(result.quantity).toBe(3);
-    expect(result.cost).toBe(12.5);
-    expect(result.totalCost).toBe(37.5);
   });
 
   it.each([
     ["NaN", Number.NaN],
-    ["Infinity", Number.POSITIVE_INFINITY],
     ["non numeric string", "abc"],
     ["blank string", "   "],
     ["null", null],
-    ["undefined", undefined],
-  ])("falls back to 0 when quantity is %s", (_label, value) => {
-    expect(mapAuditFindingDTO(makeFindingDTO({ quantity: value as never })).quantity).toBe(
-      0
-    );
+  ])("maps a %s quantity to null", (_label, value) => {
+    expect(mapAuditFindingDTO(makeFindingDTO({ quantity: value as never })).quantity).toBeNull();
   });
 
-  it.each([
-    ["boolean true", true, true],
-    ["boolean false", false, false],
-    ['string "true"', "true", true],
-    ['string "TRUE"', "TRUE", true],
-    ['string "false"', "false", false],
-    ['string "yes"', "yes", false],
-    ["number 1", 1, true],
-    ["number 0", 0, false],
-    ["null", null, false],
-    ["undefined", undefined, false],
-  ])("maps include_in_report %s to %s", (_label, value, expected) => {
-    expect(
-      mapAuditFindingDTO(makeFindingDTO({ include_in_report: value as never }))
-        .includeInReport
-    ).toBe(expected);
-  });
-
-  it("never populates qcComment or updatedAt from the DTO", () => {
+  it("includes a photo in the report unless it says otherwise", () => {
     const result = mapAuditFindingDTO(
       makeFindingDTO({
-        qc_comment: "reviewer note",
-        updated_at: "2026-01-03T00:00:00Z",
-      } as never)
+        photos: [
+          { url: "https://cdn/a.jpg" },
+          { url: "https://cdn/b.jpg", include_in_report: null },
+          { url: "" },
+          null as never,
+        ],
+      })
     );
 
-    // El finding no tiene qcComment ni updatedAt: el backend no los expone en
-    // su FindingDetail, así que declararlos en el dominio era superficie
-    // muerta que aparentaba traer datos. El comentario de QC viaja en `notes`.
-    expect(result).not.toHaveProperty("qcComment");
-    expect(result).not.toHaveProperty("updatedAt");
+    expect(result.photos).toEqual([
+      { url: "https://cdn/a.jpg", includeInReport: true },
+      { url: "https://cdn/b.jpg", includeInReport: true },
+    ]);
+  });
+
+  it("drops measurements without a numeric value and blank names or units", () => {
+    const result = mapAuditFindingDTO(
+      makeFindingDTO({
+        measurements: [
+          { name: "", value: "3.2", unit: " " },
+          { name: "Width", value: null },
+          null as never,
+        ],
+      })
+    );
+
+    expect(result.measurements).toEqual([{ name: null, value: 3.2, unit: null }]);
   });
 });
 
@@ -192,6 +174,10 @@ describe("mapAuditFindingDTO", () => {
 // ---------------------------------------------------------------------------
 
 describe("mapAuditReviewDTO", () => {
+  it("defaults a missing project id to an empty string", () => {
+    expect(mapAuditReviewDTO({ ...makeReviewDTO(), project_id: undefined as never }).projectId).toBe("");
+  });
+
   it("maps the review envelope and its findings", () => {
     const result = mapAuditReviewDTO(
       makeReviewDTO({

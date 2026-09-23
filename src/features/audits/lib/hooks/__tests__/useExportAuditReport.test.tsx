@@ -237,6 +237,34 @@ describe("useExportAuditReport", () => {
     expect(result.current.progress.phase).toBe("done");
   });
 
+  it("finishes when the report is generated without downloading it", async () => {
+    const { result, rerender } = renderHook(() =>
+      useExportAuditReport("audit-1", { downloadWhenReady: false })
+    );
+    await act(async () => result.current.start());
+    expect(result.current.progress.phase).toBe("generating");
+
+    mocks.poll.data = readyReport;
+    rerender();
+
+    await waitFor(() => expect(result.current.progress.phase).toBe("done"));
+    expect(result.current.progress.message).toBe("Report approved and generated.");
+    expect(mocks.download).not.toHaveBeenCalled();
+  });
+
+  it("finishes at once without downloading when the report already exists", async () => {
+    mocks.refetch.mockResolvedValue({ data: readyReport });
+    const { result } = renderHook(() =>
+      useExportAuditReport("audit-1", { downloadWhenReady: false })
+    );
+
+    await act(async () => result.current.start());
+
+    expect(result.current.progress.phase).toBe("done");
+    expect(mocks.mutateAsync).not.toHaveBeenCalled();
+    expect(mocks.download).not.toHaveBeenCalled();
+  });
+
   it("times out with an actionable message", async () => {
     vi.useFakeTimers();
     const { result } = renderHook(() => useExportAuditReport("audit-1"));

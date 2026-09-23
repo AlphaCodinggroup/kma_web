@@ -4,10 +4,14 @@ import type {
   UpdateAuditFindingInput,
 } from "@entities/audit/model/audit-review-finding-update";
 
+/**
+ * Cuerpo de PATCH /audits-review/{id}/findings/{code}. El backend toma un
+ * `null` como "no cambies este campo": la cantidad no se puede vaciar y las
+ * notas se borran con "".
+ */
 export type UpdateAuditFindingDTO = {
-  /** null vacía la cantidad; ausente significa "no cambies este campo". */
-  quantity?: number | null;
-  notes?: string | null;
+  quantity?: number;
+  notes?: string;
   photos?: Array<{
     url: string;
     include_in_report?: boolean;
@@ -21,14 +25,12 @@ export type AuditFindingUpdateResponseDTO = {
   message?: string | null;
 };
 
+// Notas vacías (o null) se mandan como "" para borrarlas.
 const normalizeNotes = (
   notes: UpdateAuditFindingInput["notes"]
-): string | null | undefined => {
-  if (typeof notes === "string") {
-    const trimmed = notes.trim();
-    return trimmed === "" ? null : trimmed;
-  }
-  if (notes === null) return null;
+): string | undefined => {
+  if (typeof notes === "string") return notes.trim();
+  if (notes === null) return "";
   return undefined;
 };
 
@@ -50,15 +52,8 @@ export const mapUpdateAuditFindingInputToDTO = (
 ): UpdateAuditFindingDTO => {
   const payload: UpdateAuditFindingDTO = {};
 
-  // El dominio admite null para vaciar la cantidad: descartarlo hacía
-  // imposible borrarla, porque el backend interpreta la ausencia como "no
-  // cambies este campo".
-  if (input.quantity === null) {
-    payload.quantity = null;
-  } else if (
-    typeof input.quantity === "number" &&
-    Number.isFinite(input.quantity)
-  ) {
+  // Una cantidad null no se manda: el backend la ignora y no se puede vaciar.
+  if (typeof input.quantity === "number" && Number.isFinite(input.quantity)) {
     payload.quantity = input.quantity;
   }
 

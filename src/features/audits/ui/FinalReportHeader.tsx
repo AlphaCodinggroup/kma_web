@@ -2,58 +2,19 @@
 
 import * as React from "react";
 import { cn } from "@shared/lib/cn";
-import { Button } from "@shared/ui/controls";
 
 export interface FinalReportHeaderProps {
-  onExport?: (() => void) | undefined;
-  exporting?: boolean | undefined;
-  loadingLabel?: React.ReactNode | undefined;
-  disabled: boolean;
-  rightAddon?: React.ReactNode;
   className?: string;
 }
 
-const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
-  onExport,
-  exporting,
-  loadingLabel,
-  disabled = true,
-  rightAddon,
-  className,
-}) => {
-  const isDisabled = !onExport || !!exporting;
-
-  return (
-    <div
-      className={cn("bg-[var(--kma-bg)] px-4 py-3 sm:px-5 sm:py-4", className)}
-    >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <h2 className="text-base font-bold leading-none">Draft Report</h2>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {rightAddon}
-          <Button
-            type="button"
-            onClick={onExport}
-            disabled={isDisabled || disabled}
-            className={cn(
-              "h-9 rounded-xl border border-[var(--kma-border)] bg-[var(--kma-bg)] px-3 text-sm",
-              "hover:bg-[var(--kma-input)] focus-visible:ring-2 focus-visible:ring-black/20"
-            )}
-            aria-label="Export to PDF"
-            {...(typeof exporting !== "undefined"
-              ? { isLoading: exporting }
-              : {})}
-            loadingLabel={loadingLabel}
-          >
-            Export to PDF
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
+/** Encabezado de la pestaña Report. Las acciones viven en ReportActionBar. */
+const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({ className }) => (
+  <div className={cn("bg-[var(--kma-bg)] px-4 py-3 sm:px-5 sm:py-4", className)}>
+    <h2 className="text-base font-bold leading-none">Draft Report</h2>
+    <p className="mt-1 text-sm text-gray-600">
+      Preview in the final PDF format. Quantity and QC notes can be edited in place.
+    </p>
+  </div>
+);
 
 export default FinalReportHeader;
