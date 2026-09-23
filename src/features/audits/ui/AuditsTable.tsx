@@ -20,8 +20,13 @@ import Pagination from "@shared/ui/Pagination";
 import { useSession } from "@processes/auth/hooks";
 import { useAuditDetail } from "@features/audits/lib/hooks/useAuditDetail";
 
+/** Columnas que se pueden ocultar cuando el contexto ya las fija. */
+export type HideableAuditColumn = "project" | "facility";
+
 export interface AuditsTableProps {
   items: Audit[];
+  /** Columnas a ocultar (p. ej. dentro de la facility de un proyecto). */
+  hiddenColumns?: readonly HideableAuditColumn[] | undefined;
   onEdit?: (audit: Audit, isCompliant?: boolean) => void;
   onDelete?: (audit: Audit) => void;
   deletingId?: string | null;
@@ -127,6 +132,7 @@ const SmartEditButton = memo(({
  */
 const AuditsTable: React.FC<AuditsTableProps> = ({
   items,
+  hiddenColumns,
   onEdit,
   onDelete,
   deletingId,
@@ -147,6 +153,10 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const { isAdmin } = useSession();
+  const showProject = !hiddenColumns?.includes("project");
+  const showFacility = !hiddenColumns?.includes("facility");
+  // 7 columnas visibles por defecto, menos las ocultas.
+  const columnCount = 5 + (showProject ? 1 : 0) + (showFacility ? 1 : 0);
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -251,24 +261,28 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
-              <TableHead>
-                <button
-                  onClick={() => handleSort("project")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
-                >
-                  Project
-                  <SortIcon column="project" />
-                </button>
-              </TableHead>
-              <TableHead>
-                <button
-                  onClick={() => handleSort("facility")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
-                >
-                  Facility
-                  <SortIcon column="facility" />
-                </button>
-              </TableHead>
+              {showProject && (
+                <TableHead>
+                  <button
+                    onClick={() => handleSort("project")}
+                    className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  >
+                    Project
+                    <SortIcon column="project" />
+                  </button>
+                </TableHead>
+              )}
+              {showFacility && (
+                <TableHead>
+                  <button
+                    onClick={() => handleSort("facility")}
+                    className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  >
+                    Facility
+                    <SortIcon column="facility" />
+                  </button>
+                </TableHead>
+              )}
               <TableHead>
                 <button
                   onClick={() => handleSort("flow")}
@@ -313,7 +327,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
             {!hasItems && (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={columnCount}
                   className="py-10 text-center text-sm text-gray-500"
                 >
                   {emptyMessage}
@@ -328,8 +342,8 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                 key={`${row.id}-${row.version}`}
                 data-testid={`audit-row-${row.id}`}
               >
-                <TableCell>{row.projectName ?? "—"}</TableCell>
-                <TableCell>{row.facilityName ?? "—"}</TableCell>
+                {showProject && <TableCell>{row.projectName ?? "—"}</TableCell>}
+                {showFacility && <TableCell>{row.facilityName ?? "—"}</TableCell>}
                 <TableCell>{row.flowName ?? "—"}</TableCell>
                 <TableCell>{row.auditorName ?? "—"}</TableCell>
                 <TableCell>

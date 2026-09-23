@@ -20,6 +20,7 @@ export interface ReportListPage {
  * Filtros de búsqueda en dominio para listar reports.
  */
 export interface ReportListFilter {
+  projectId?: string;
   userId?: string;
   status?: AuditStatus;
   limit?: number;

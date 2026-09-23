@@ -6,10 +6,11 @@ import AuditInfoPanel from "@features/audits/ui/AuditInfoPanel";
 import AuditEditContent from "@features/audits/ui/AuditEditContent";
 import { useAuditDetail } from "@features/audits/lib/hooks/useAuditDetail";
 import { Retry } from "@shared/ui/Retry";
+import { resolveAuditBackHref } from "@features/audits/lib/audit-edit-href";
 
 /** Parámetros de ruta y query de esta página. */
 type AuditEditParams = { id: string };
-type AuditEditSearchParams = { auditor?: string };
+type AuditEditSearchParams = { auditor?: string; returnTo?: string };
 
 // El chequeo de tipos de Next 15 exige promesas en las props de página, pero en
 // runtime pueden llegar resueltas (tests, render directo): el guard cubre ambas.
@@ -75,7 +76,7 @@ export default function AuditEditPage(props: AuditEditPageProps) {
         status={memoed.status}
         createdAt={memoed.createdAt}
         updatedAt={memoed.updatedAt}
-        backHref="/audits"
+        backHref={resolveAuditBackHref(searchParams.returnTo)}
       />
 
       <div className="mt-4 sm:mt-6">

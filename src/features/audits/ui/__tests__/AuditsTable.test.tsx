@@ -774,3 +774,31 @@ describe("AuditsTable — pagination", () => {
     expect(onPageSizeChange).toHaveBeenCalledWith(50);
   });
 });
+
+describe("AuditsTable — hidden columns", () => {
+  it("drops the project and facility columns when asked", () => {
+    render(
+      <AuditsTable
+        items={[makeAudit()]}
+        hiddenColumns={["project", "facility"]}
+        onError={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByRole("button", { name: /^Project/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /^Facility/ })).toBeNull();
+    const row = screen.getByTestId("audit-row-audit-1");
+    expect(within(row).queryByText("Downtown Retrofit")).toBeNull();
+    expect(within(row).queryByText("Warehouse 7")).toBeNull();
+    expect(within(row).getByText("Ramps")).toBeInTheDocument();
+    expect(within(row).getAllByRole("cell")).toHaveLength(5);
+  });
+
+  it("spans the empty message over the visible columns only", () => {
+    render(
+      <AuditsTable items={[]} hiddenColumns={["facility"]} onError={vi.fn()} />
+    );
+
+    expect(screen.getByText("No audits found")).toHaveAttribute("colspan", "6");
+  });
+});

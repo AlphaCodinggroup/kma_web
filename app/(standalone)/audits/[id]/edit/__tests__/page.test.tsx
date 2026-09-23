@@ -72,12 +72,13 @@ function propsOf(testId: string) {
 
 /** params y searchParams, resueltos o como promesa, igual que los pasa Next. */
 type Params = { id: string } | Promise<{ id: string }>;
-type Search = { auditor?: string } | Promise<{ auditor?: string }>;
+type SearchValues = { auditor?: string; returnTo?: string };
+type Search = SearchValues | Promise<SearchValues>;
 
 // La página se tipa como pide Next 15 (promesas) pero en runtime acepta las dos
 // formas; el cast deja que los tests ejerciten ambas.
 const asParams = (params: Params) => params as Promise<{ id: string }>;
-const asSearch = (search: Search) => search as Promise<{ auditor?: string }>;
+const asSearch = (search: Search) => search as Promise<SearchValues>;
 
 // searchParams se omite cuando no hay: con exactOptionalPropertyTypes la
 // página lo declara opcional pero no admite un undefined explícito.
@@ -162,6 +163,18 @@ describe("AuditEditPage", () => {
       updatedAt: "2026-01-16T11:00:00Z",
       backHref: "/audits",
     });
+  });
+
+  it("goes back to the source project when returnTo names one", async () => {
+    await renderPage({ id: "audit-1" }, { returnTo: "/projects/project-1" });
+
+    expect(propsOf("header").backHref).toBe("/projects/project-1");
+  });
+
+  it("ignores a returnTo that is not a project page", async () => {
+    await renderPage({ id: "audit-1" }, { returnTo: "https://evil.example.com" });
+
+    expect(propsOf("header").backHref).toBe("/audits");
   });
 
   it("passes the project, facility and location to the panel", async () => {
