@@ -9,7 +9,7 @@ import type {
     QuestionStep,
     SelectStep
 } from "@entities/flow/model";
-import { Input, Label, Textarea, Button } from "@shared/ui/controls";
+import { Input, Label, Textarea } from "@shared/ui/controls";
 import {
     ArrowRight,
     CornerDownRight,
@@ -126,14 +126,15 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                             </div>
                         ) : (
                             isAdmin && (
-                                <Button
+                                <button
                                     type="button"
                                     onClick={onImageClick}
-                                    className="h-7 px-2 text-xs bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 shadow-sm gap-1"
+                                    className="inline-flex items-center h-7 px-2.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 border border-gray-200 rounded-lg shadow-xs gap-1.5 whitespace-nowrap transition-colors"
                                     title="Add reference image"
                                 >
-                                    <ImagePlus className="h-3 w-3" /> Add Image
-                                </Button>
+                                    <ImagePlus className="h-3.5 w-3.5 text-gray-500" />
+                                    <span>Add Image</span>
+                                </button>
                             )
                         )}
 
@@ -155,14 +156,14 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
             <div className="flex-1 overflow-y-auto p-4 space-y-5">
                 {/* STEP ID EDITABLE */}
                 <div>
-                    <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
                         Step ID
                     </Label>
                     <Input
                         value={selectedStep.id}
                         disabled={!isAdmin}
                         onChange={(e) => onUpdateStep(selectedStep.id, { id: e.target.value })}
-                        className="font-mono text-xs h-8 bg-gray-50/50"
+                        className="font-mono text-sm h-9 bg-gray-50/50"
                     />
                 </div>
 
@@ -171,7 +172,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* TITLE */}
                         <div>
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
                                 Title
                             </Label>
                             <Input
@@ -179,13 +180,13 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 disabled={!isAdmin}
                                 onChange={(e) => onUpdateStep(selectedStep.id, { title: e.target.value })}
                                 placeholder="Form step title..."
-                                className="text-xs font-medium"
+                                className="text-sm font-medium h-9"
                             />
                         </div>
 
                         {/* NEXT STEP */}
                         <div>
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
                                 Next Step
                             </Label>
                             <StepSelector
@@ -202,7 +203,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* EVIDENCE FIELDS */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block">
                                 Fields
                             </Label>
 
@@ -322,7 +323,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* QUESTION TEXT */}
                         <div>
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
                                 Question Text
                             </Label>
                             <Textarea
@@ -331,13 +332,13 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 onChange={(e) => onUpdateStep(selectedStep.id, { text: e.target.value })}
                                 placeholder="Enter question text"
                                 rows={3}
-                                className="text-xs"
+                                className="text-sm leading-relaxed"
                             />
                         </div>
 
                         {/* ROUTING: YES & NO */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block">
                                 ROUTING
                             </Label>
 
@@ -429,7 +430,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* TITLE / TEXT */}
                         <div>
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
                                 Title / Text
                             </Label>
                             <Textarea
@@ -440,13 +441,13 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 }
                                 placeholder="Select prompt title..."
                                 rows={2}
-                                className="text-xs"
+                                className="text-sm leading-relaxed"
                             />
                         </div>
 
                         {/* OPTIONS LIST */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block">
                                 Options
                             </Label>
 
@@ -509,13 +510,14 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 ))}
 
                                 {isAdmin && (
-                                    <Button
+                                    <button
                                         type="button"
                                         onClick={() => onAddOption(selectedStep.id)}
-                                        className="w-full h-8 px-3 gap-2 bg-black text-white hover:bg-gray-800 shadow-sm border-none text-xs"
+                                        className="w-full inline-flex items-center justify-center h-8 px-3 gap-1.5 bg-black text-white hover:bg-gray-800 rounded-lg shadow-sm text-xs font-semibold transition-colors"
                                     >
-                                        <Plus className="h-3.5 w-3.5" /> Add Option
-                                    </Button>
+                                        <Plus className="h-3.5 w-3.5" />
+                                        <span>Add Option</span>
+                                    </button>
                                 )}
                             </div>
                         </div>

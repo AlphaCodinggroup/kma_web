@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { Flow, FlowStep, FormStep, QuestionStep, SelectStep } from "@entities/flow/model";
-import { Input, Button } from "@shared/ui/controls";
+import { Input } from "@shared/ui/controls";
 import {
     Search,
     GripVertical,
@@ -98,29 +98,29 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                 <div className="flex flex-wrap items-center gap-1.5">
                     <span
                         className={cn(
-                            "font-mono text-[11px] px-2 py-0.5 rounded border font-medium flex items-center gap-1 whitespace-nowrap",
+                            "font-mono text-xs px-2.5 py-1 rounded-md border font-medium flex items-center gap-1.5 whitespace-nowrap",
                             q.yesNext
-                                ? "border-emerald-500/60 bg-emerald-50/70 text-emerald-800"
+                                ? "border-emerald-500/60 bg-emerald-50 text-emerald-800"
                                 : "border-amber-400 bg-amber-50 text-amber-800"
                         )}
                         title={q.yesNext ? `YES leads to ${q.yesNext}` : "Missing YES link"}
                     >
-                        YES <ArrowRight className="h-2.5 w-2.5 inline" /> {q.yesNext || "Missing"}
+                        YES <ArrowRight className="h-3 w-3 inline" /> {q.yesNext || "Missing"}
                     </span>
                     <span
                         className={cn(
-                            "font-mono text-[11px] px-2 py-0.5 rounded border font-medium flex items-center gap-1 whitespace-nowrap",
+                            "font-mono text-xs px-2.5 py-1 rounded-md border font-medium flex items-center gap-1.5 whitespace-nowrap",
                             q.noNext
-                                ? "border-red-400/70 bg-red-50/70 text-red-800"
+                                ? "border-red-400/70 bg-red-50 text-red-800"
                                 : "border-amber-400 bg-amber-50 text-amber-800"
                         )}
                         title={q.noNext ? `NO leads to ${q.noNext}` : "Missing NO link"}
                     >
-                        NO <ArrowRight className="h-2.5 w-2.5 inline" /> {q.noNext || "Missing"}
+                        NO <ArrowRight className="h-3 w-3 inline" /> {q.noNext || "Missing"}
                     </span>
                     {(q.conditionalYesNext || q.conditionalNoNext) && (
                         <span
-                            className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-800 border border-purple-300 font-semibold"
+                            className="font-mono text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-800 border border-purple-300 font-semibold"
                             title="Has conditional navigation"
                         >
                             COND
@@ -136,13 +136,13 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                 <div className="flex items-center">
                     {f.next ? (
                         <span
-                            className="font-mono text-[11px] px-2 py-0.5 rounded border border-gray-300 bg-gray-50 text-gray-700 font-medium flex items-center gap-1 whitespace-nowrap"
+                            className="font-mono text-xs px-2.5 py-1 rounded-md border border-gray-300 bg-gray-50 text-gray-700 font-medium flex items-center gap-1.5 whitespace-nowrap"
                             title={`Proceeds to ${f.next}`}
                         >
-                            NEXT <ArrowRight className="h-2.5 w-2.5 inline" /> {f.next}
+                            NEXT <ArrowRight className="h-3 w-3 inline" /> {f.next}
                         </span>
                     ) : (
-                        <span className="font-mono text-[11px] px-2 py-0.5 rounded border border-amber-400 bg-amber-50 text-amber-800 font-medium">
+                        <span className="font-mono text-xs px-2.5 py-1 rounded-md border border-amber-400 bg-amber-50 text-amber-800 font-medium">
                             Missing next step
                         </span>
                     )}
@@ -154,19 +154,19 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
             const s = step as SelectStep;
             if (s.options.length === 0) {
                 return (
-                    <span className="font-mono text-[11px] px-2 py-0.5 rounded border border-amber-400 bg-amber-50 text-amber-800 font-medium">
+                    <span className="font-mono text-xs px-2.5 py-1 rounded-md border border-amber-400 bg-amber-50 text-amber-800 font-medium">
                         No options
                     </span>
                 );
             }
 
             return (
-                <div className="flex flex-wrap items-center gap-1">
+                <div className="flex flex-wrap items-center gap-1.5">
                     {s.options.slice(0, 2).map((opt, idx) => (
                         <span
                             key={idx}
                             className={cn(
-                                "font-mono text-[11px] px-1.5 py-0.5 rounded border font-medium flex items-center gap-1 max-w-[150px] truncate",
+                                "font-mono text-xs px-2 py-0.5 rounded-md border font-medium flex items-center gap-1 max-w-[170px] truncate",
                                 opt.next
                                     ? "border-purple-300 bg-purple-50/60 text-purple-900"
                                     : "border-amber-400 bg-amber-50 text-amber-800"
@@ -174,12 +174,12 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                             title={`${opt.label} -> ${opt.next || "Missing"}`}
                         >
                             <span className="truncate">{opt.label}</span>
-                            <ArrowRight className="h-2.5 w-2.5 inline shrink-0" />
+                            <ArrowRight className="h-3 w-3 inline shrink-0" />
                             <span className="shrink-0">{opt.next || "?"}</span>
                         </span>
                     ))}
                     {s.options.length > 2 && (
-                        <span className="text-[10px] text-gray-500 font-mono px-1">
+                        <span className="text-xs text-gray-500 font-mono px-1">
                             +{s.options.length - 2} more
                         </span>
                     )}
@@ -189,7 +189,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
 
         if (step.type === "End") {
             return (
-                <span className="font-mono text-[11px] px-2 py-0.5 rounded border border-gray-300 bg-gray-100 text-gray-500 font-medium">
+                <span className="font-mono text-xs px-2.5 py-1 rounded-md border border-gray-300 bg-gray-100 text-gray-500 font-medium">
                     END
                 </span>
             );
@@ -204,61 +204,65 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
             <div className="p-4 border-b border-gray-200 bg-white shrink-0 space-y-3">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-base font-bold text-gray-900 tracking-tight">Flow Steps</h2>
+                        <h2 className="text-lg font-bold text-gray-900 tracking-tight">Flow Steps</h2>
                         <p className="text-xs text-gray-500">
                             {filteredSteps.length} of {flow.steps.length} total steps
                         </p>
                     </div>
 
                     {/* Botonera de añadir paso rápido */}
-                    <div className="flex items-center gap-1.5">
-                        <Button
+                    <div className="flex items-center gap-2">
+                        <button
                             type="button"
                             disabled={!isAdmin}
                             onClick={() => onAddStep("Question")}
-                            className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex items-center h-8 px-3 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 border border-gray-200 rounded-lg shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed gap-1.5 whitespace-nowrap"
                             title={!isAdmin ? "Only administrators can add steps" : "Add Question step"}
                         >
-                            <Plus className="h-3 w-3 mr-1 text-blue-600" /> Question
-                        </Button>
-                        <Button
+                            <Plus className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                            <span>Question</span>
+                        </button>
+                        <button
                             type="button"
                             disabled={!isAdmin}
                             onClick={() => onAddStep("Form")}
-                            className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex items-center h-8 px-3 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 border border-gray-200 rounded-lg shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed gap-1.5 whitespace-nowrap"
                             title={!isAdmin ? "Only administrators can add steps" : "Add Form step"}
                         >
-                            <Plus className="h-3 w-3 mr-1 text-emerald-600" /> Form
-                        </Button>
-                        <Button
+                            <Plus className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                            <span>Form</span>
+                        </button>
+                        <button
                             type="button"
                             disabled={!isAdmin}
                             onClick={() => onAddStep("Select")}
-                            className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex items-center h-8 px-3 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 border border-gray-200 rounded-lg shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed gap-1.5 whitespace-nowrap"
                             title={!isAdmin ? "Only administrators can add steps" : "Add Select step"}
                         >
-                            <Plus className="h-3 w-3 mr-1 text-purple-600" /> Select
-                        </Button>
-                        <Button
+                            <Plus className="h-3.5 w-3.5 text-purple-600 shrink-0" />
+                            <span>Select</span>
+                        </button>
+                        <button
                             type="button"
                             disabled={!isAdmin}
                             onClick={() => onAddStep("End")}
-                            className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex items-center h-8 px-3 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 border border-gray-200 rounded-lg shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed gap-1.5 whitespace-nowrap"
                             title={!isAdmin ? "Only administrators can add steps" : "Add End step"}
                         >
-                            <Plus className="h-3 w-3 mr-1 text-gray-600" /> End
-                        </Button>
+                            <Plus className="h-3.5 w-3.5 text-gray-600 shrink-0" />
+                            <span>End</span>
+                        </button>
                     </div>
                 </div>
 
                 {/* Input de Búsqueda */}
                 <div className="relative">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3.5 top-3 h-4 w-4 text-gray-400" />
                     <Input
                         value={searchTerm}
                         onChange={(e) => onSearchChange(e.target.value)}
                         placeholder="Search steps..."
-                        className="pl-9 h-9 text-xs bg-gray-50/50 border-gray-200 focus:bg-white"
+                        className="pl-10 h-10 text-sm bg-gray-50/50 border-gray-200 focus:bg-white rounded-lg"
                     />
                 </div>
             </div>
@@ -267,16 +271,16 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
             <div className="flex-1 overflow-y-auto min-h-0">
                 <table className="w-full border-collapse text-left">
                     <thead className="bg-gray-50/80 sticky top-0 z-10 border-b border-gray-200">
-                        <tr className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                            <th className="py-2.5 px-4 w-[110px]">ID</th>
-                            <th className="py-2.5 px-3 w-[85px]">Type</th>
-                            <th className="py-2.5 px-3 min-w-[180px]">Question / Title</th>
-                            <th className="py-2.5 px-3 min-w-[200px]">Routing</th>
-                            <th className="py-2.5 px-3 w-[100px]">Barriers</th>
-                            <th className="py-2.5 px-2 w-[40px]"></th>
+                        <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <th className="py-3 px-4 w-[120px]">ID</th>
+                            <th className="py-3 px-3 w-[90px]">Type</th>
+                            <th className="py-3 px-3 min-w-[200px]">Question / Title</th>
+                            <th className="py-3 px-3 min-w-[220px]">Routing</th>
+                            <th className="py-3 px-3 w-[120px]">Barriers</th>
+                            <th className="py-3 px-2 w-[40px]"></th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 text-xs">
+                    <tbody className="divide-y divide-gray-100 text-sm">
                         {filteredSteps.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="py-12 text-center text-gray-400">
@@ -306,7 +310,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                         className={cn(
                                             "group cursor-pointer transition-colors border-l-4",
                                             isSelected
-                                                ? "bg-gray-100/90 border-l-blue-600 font-medium text-gray-900"
+                                                ? "bg-blue-50/70 border-l-blue-600 font-medium text-gray-900"
                                                 : "border-l-transparent hover:bg-gray-50/80 text-gray-700",
                                             incomplete && !isSelected && "bg-amber-50/30",
                                             isDuplicateId && !isSelected && "bg-red-50/20",
@@ -315,14 +319,14 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                         )}
                                     >
                                         {/* ID */}
-                                        <td className="py-3 px-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-1.5 font-mono font-bold text-gray-900 text-xs">
+                                        <td className="py-3.5 px-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-2 font-mono font-bold text-gray-900 text-sm">
                                                 {searchTerm === "" && isAdmin && (
                                                     <span
                                                         className="cursor-grab active:cursor-grabbing text-gray-300 group-hover:text-gray-500 -ml-1"
                                                         title="Drag to reorder"
                                                     >
-                                                        <GripVertical className="h-3.5 w-3.5" />
+                                                        <GripVertical className="h-4 w-4" />
                                                     </span>
                                                 )}
                                                 <span className="font-bold">{step.id}</span>
@@ -336,22 +340,22 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                                 )}
                                                 {incomplete && (
                                                     <span title="Incomplete: missing step references">
-                                                        <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+                                                        <AlertTriangle className="h-4 w-4 text-amber-600" />
                                                     </span>
                                                 )}
                                             </div>
                                         </td>
 
                                         {/* Type */}
-                                        <td className="py-3 px-3 whitespace-nowrap">
-                                            <span className="font-mono text-xs text-gray-600">
+                                        <td className="py-3.5 px-3 whitespace-nowrap">
+                                            <span className="font-mono text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded">
                                                 {step.type}
                                             </span>
                                         </td>
 
                                         {/* Question / Title */}
-                                        <td className="py-3 px-3">
-                                            <div className="line-clamp-2 leading-relaxed text-gray-800">
+                                        <td className="py-3.5 px-3">
+                                            <div className="line-clamp-2 leading-relaxed text-gray-900 font-normal">
                                                 {step.type === "Question" && (step as QuestionStep).text}
                                                 {step.type === "Form" && (step as FormStep).title}
                                                 {step.type === "Select" &&
@@ -361,16 +365,16 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                         </td>
 
                                         {/* Routing */}
-                                        <td className="py-3 px-3">
+                                        <td className="py-3.5 px-3">
                                             {renderRouting(step)}
                                         </td>
 
                                         {/* Barriers */}
-                                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-gray-700">
+                                        <td className="py-3.5 px-3 whitespace-nowrap font-mono text-xs text-gray-700">
                                             {barriers ? (
                                                 <div className="flex flex-wrap gap-1">
                                                     {barriers.split(", ").map((b) => (
-                                                        <span key={b} className="px-1.5 py-0.5 rounded bg-gray-100 border border-gray-200 text-gray-700">
+                                                        <span key={b} className="px-2 py-0.5 rounded bg-gray-100 border border-gray-200 text-gray-700 text-xs">
                                                             {b}
                                                         </span>
                                                     ))}
@@ -381,7 +385,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                         </td>
 
                                         {/* Quick Actions (Delete) */}
-                                        <td className="py-3 px-2 text-right">
+                                        <td className="py-3.5 px-2 text-right">
                                             <button
                                                 type="button"
                                                 disabled={!isAdmin}
@@ -390,14 +394,14 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                                     if (isAdmin) onDeleteStep(step.id);
                                                 }}
                                                 className={cn(
-                                                    "p-1 text-gray-400 rounded transition-all",
+                                                    "p-1.5 text-gray-400 rounded transition-all",
                                                     isAdmin
                                                         ? "opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50"
                                                         : "opacity-40 cursor-not-allowed"
                                                 )}
                                                 title={!isAdmin ? "Only administrators can delete steps" : "Delete step"}
                                             >
-                                                <Trash2 className="h-3.5 w-3.5" />
+                                                <Trash2 className="h-4 w-4" />
                                             </button>
                                         </td>
                                     </tr>

@@ -769,42 +769,42 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                             <span className="hidden md:inline-flex text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-200">
                                 Unsaved changes
                             </span>
-                            <Button
+                            <button
                                 type="button"
                                 onClick={handleClearFlow}
-                                className="h-9 px-3 gap-1.5 text-xs bg-white text-red-600 hover:bg-red-50 border border-red-200 shadow-xs"
+                                className="inline-flex items-center h-9 px-3 gap-1.5 text-xs font-semibold bg-white text-red-600 hover:bg-red-50 border border-red-200 rounded-lg shadow-xs transition-colors whitespace-nowrap disabled:opacity-50"
                                 disabled={isSaving || !isAdmin}
                                 title={!isAdmin ? "Only administrators can discard changes" : "Descartar cambios y volver al estado inicial"}
                             >
                                 <RotateCcw className="h-3.5 w-3.5" />
-                                Discard
-                            </Button>
+                                <span>Discard</span>
+                            </button>
                         </>
                     )}
 
-                    <Button
+                    <button
                         type="button"
                         onClick={handleExport}
-                        className="h-9 px-3.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 shadow-xs font-medium"
+                        className="inline-flex items-center h-9 px-3.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 border border-gray-300 rounded-lg shadow-xs transition-colors gap-1.5 whitespace-nowrap"
                         title="Export flow as JSON"
                     >
-                        <Download className="h-3.5 w-3.5 mr-1 text-gray-500" />
-                        Export
-                    </Button>
+                        <Download className="h-3.5 w-3.5 text-gray-500" />
+                        <span>Export</span>
+                    </button>
 
-                    <Button
+                    <button
                         type="button"
                         className={cn(
-                            "h-9 px-4 text-xs font-semibold bg-black text-white hover:bg-gray-800 shadow-sm transition-all disabled:opacity-50",
+                            "inline-flex items-center h-9 px-4 text-xs font-semibold bg-black text-white hover:bg-gray-800 rounded-lg shadow-sm transition-all disabled:opacity-50 gap-1.5 whitespace-nowrap",
                             isSaving ? "opacity-80" : ""
                         )}
                         onClick={handleSave}
                         disabled={isSaving || !isAdmin}
                         title={!isAdmin ? "Only administrators can save flows" : "Save Flow"}
                     >
-                        {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Save className="h-3.5 w-3.5 mr-1" />}
-                        {isSaving ? "Saving..." : "Save Flow"}
-                    </Button>
+                        {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                        <span>{isSaving ? "Saving..." : "Save Flow"}</span>
+                    </button>
                 </div>
             </div>
 
