@@ -4,7 +4,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import type { Audit } from "@entities/audit/model";
-import type { FacilityListFilter } from "@entities/facility/model";
 import type { Project } from "@entities/projects/model";
 import { useProjectQuery } from "@features/projects/ui/hooks/useProjectQuery";
 import { useProjectFormLookups } from "@features/projects/ui/hooks/useProjectFormLookups";
@@ -14,7 +13,7 @@ import EditProjectDialog from "@features/projects/ui/EditProjectDialog";
 import type { ProjectUpsertValues } from "@features/projects/ui/ProjectsUpsertDialog";
 import { buildProjectOptionalFields } from "@features/projects/lib/buildProjectOptionalFields";
 import { projectDetailHref } from "@features/projects/lib/project-href";
-import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
+import { useProjectFacilitiesQuery } from "@features/facilities/ui/hooks/useProjectFacilitiesQuery";
 import { useProjectAudits } from "@features/audits/lib/hooks/useProjectAudits";
 import { useOpenAuditReview } from "@features/audits/lib/hooks/useOpenAuditReview";
 import { useDeleteAudit } from "@features/audits/lib/hooks/useDeleteAudit";
@@ -41,9 +40,6 @@ import {
   summarizeProjectAudits,
 } from "@widgets/project-detail/lib/project-sections";
 
-// La dirección y la ciudad salen del listado de facilities activas: el backend
-// todavía no filtra facilities por proyecto.
-const ACTIVE_FACILITIES: FacilityListFilter = { status: "ACTIVE" };
 const EMPTY_PROJECTS: readonly Project[] = [];
 
 export interface ProjectDetailViewProps {
@@ -64,7 +60,8 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
     error: projectError,
     refetch: refetchProject,
   } = useProjectQuery(projectId);
-  const { data: facilitiesData } = useFacilitiesQuery(ACTIVE_FACILITIES);
+  // La dirección y la ciudad salen de las facilities del propio proyecto.
+  const { data: projectFacilities } = useProjectFacilitiesQuery(projectId);
   const {
     audits,
     isLoading: isAuditsLoading,
@@ -80,8 +77,8 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
 
   // ---- Secciones y resumen ----
   const facilitiesById = useMemo(
-    () => new Map((facilitiesData?.items ?? []).map((f) => [f.id, f])),
-    [facilitiesData]
+    () => new Map((projectFacilities ?? []).map((f) => [f.id, f])),
+    [projectFacilities]
   );
   const allSections = useMemo(
     () => (project ? groupAuditsByFacility(project, audits, facilitiesById) : []),

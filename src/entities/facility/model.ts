@@ -30,6 +30,21 @@ export interface Facility {
   archivedBy?: string | null;
 }
 
+/**
+ * Facility tal como la lista un proyecto (GET /projects/:id/facilities).
+ *
+ * Sólo `id`, `projectId` y `name` están siempre: si la fila de la facility ya
+ * no existe, el backend devuelve únicamente lo que guarda el proyecto.
+ */
+export interface ProjectFacility {
+  id: FacilityId;
+  projectId: ProjectId;
+  name: string;
+  status?: FacilityStatus;
+  address?: string;
+  city?: string;
+}
+
 /** Página de resultados de Facilities (paginación por limit + cursor). */
 export interface FacilityListPage {
   items: Facility[];

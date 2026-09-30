@@ -8,6 +8,7 @@ import {
   mapUpdateFacilityParamsToDTO,
   mapFacilityFromDTO,
   mapFacilitiesListFromDTO,
+  mapProjectFacilitiesFromDTO,
   type FacilityDTO,
 } from "../mappers";
 import type {
@@ -392,5 +393,87 @@ describe("mapFacilitiesListFromDTO", () => {
     const page = mapFacilitiesListFromDTO(response as never);
 
     expect(page.items).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// mapProjectFacilitiesFromDTO
+// ---------------------------------------------------------------------------
+
+describe("mapProjectFacilitiesFromDTO", () => {
+  it("maps the wrapped response with address, city and status", () => {
+    const result = mapProjectFacilitiesFromDTO({
+      status: "success",
+      data: {
+        facilities: [
+          {
+            facility_id: "f-1",
+            project_id: "p-1",
+            name: "HQ",
+            status: "ARCHIVED",
+            address: "1 Main St",
+            city: "Boston",
+          },
+        ],
+        total: 1,
+      },
+    });
+
+    expect(result).toEqual([
+      {
+        id: "f-1",
+        projectId: "p-1",
+        name: "HQ",
+        status: "ARCHIVED",
+        address: "1 Main St",
+        city: "Boston",
+      },
+    ]);
+  });
+
+  it("accepts a response without the envelope", () => {
+    const result = mapProjectFacilitiesFromDTO({
+      facilities: [{ facility_id: "f-1", name: "HQ" }],
+    });
+
+    expect(result.map((f) => f.id)).toEqual(["f-1"]);
+  });
+
+  it("keeps a facility whose row is gone with only what the project stores", () => {
+    const [facility] = mapProjectFacilitiesFromDTO({
+      data: { facilities: [{ facility_id: "f-2", project_id: "p-1", name: "Annex" }] },
+    });
+
+    expect(facility).toEqual({ id: "f-2", projectId: "p-1", name: "Annex" });
+    expect(facility).not.toHaveProperty("status");
+    expect(facility).not.toHaveProperty("address");
+    expect(facility).not.toHaveProperty("city");
+  });
+
+  it("does not invent an address or city that comes empty", () => {
+    const [facility] = mapProjectFacilitiesFromDTO({
+      facilities: [{ facility_id: "f-1", name: "HQ", address: "", city: null }],
+    });
+
+    expect(facility).not.toHaveProperty("address");
+    expect(facility).not.toHaveProperty("city");
+  });
+
+  it("drops items without an id", () => {
+    const result = mapProjectFacilitiesFromDTO({
+      facilities: [{ name: "No id" }, { facility_id: "", name: "Empty id" }, null],
+    });
+
+    expect(result).toEqual([]);
+  });
+
+  it.each([
+    ["undefined", undefined],
+    ["null", null],
+    ["a string", "oops"],
+    ["an object without facilities", {}],
+    ["facilities that are not a list", { data: { facilities: "no" } }],
+  ])("degrades to an empty list for %s", (_label, response) => {
+    expect(mapProjectFacilitiesFromDTO(response)).toEqual([]);
   });
 });

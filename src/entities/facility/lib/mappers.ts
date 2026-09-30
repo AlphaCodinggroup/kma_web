@@ -1,6 +1,7 @@
 import { asArray, toFiniteNumber } from "@shared/lib/coerce";
 import type {
   Facility,
+  ProjectFacility,
   FacilityListPage,
   CreateFacilityParams,
   UpdateFacilityParams,
@@ -259,4 +260,40 @@ export function mapFacilitiesListFromDTO(
   }
 
   return page;
+}
+
+/**
+ * Ítem del listado de facilities de un proyecto. Salvo `facility_id`, todo es
+ * opcional: una facility cuya fila ya no existe llega sólo con id y nombre.
+ */
+export interface ProjectFacilityDTO {
+  facility_id: string;
+  project_id?: string | null;
+  name?: string | null;
+  status?: "ACTIVE" | "ARCHIVED" | null;
+  address?: string | null;
+  city?: string | null;
+}
+
+/**
+ * Mapea la respuesta de GET /projects/:id/facilities, con o sin el sobre
+ * `{ status, data: { facilities } }`, a facilities de dominio. Descarta los
+ * ítems sin id y no inventa los campos que no vienen.
+ */
+export function mapProjectFacilitiesFromDTO(response: unknown): ProjectFacility[] {
+  const root = (response ?? {}) as {
+    data?: { facilities?: unknown } | null;
+    facilities?: unknown;
+  };
+
+  return asArray<ProjectFacilityDTO>(root.data?.facilities ?? root.facilities)
+    .filter((dto) => typeof dto?.facility_id === "string" && dto.facility_id !== "")
+    .map((dto) => ({
+      id: dto.facility_id,
+      projectId: dto.project_id ?? "",
+      name: dto.name ?? "",
+      ...(dto.status ? { status: dto.status } : {}),
+      ...(dto.address ? { address: dto.address } : {}),
+      ...(dto.city ? { city: dto.city } : {}),
+    }));
 }

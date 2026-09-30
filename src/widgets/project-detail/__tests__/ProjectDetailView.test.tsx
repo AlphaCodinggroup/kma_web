@@ -22,6 +22,7 @@ const state = {
     isError: false,
   },
   facilities: [] as { id: string; address?: string; city?: string }[],
+  facilitiesProjectId: undefined as string | undefined,
   reports: [] as { id: string; reportName: string | null; reportUrl: string | null }[],
   downloadingId: null as string | null,
   isAdmin: true,
@@ -65,8 +66,11 @@ vi.mock("@features/projects/ui/hooks/useProjectQuery", () => ({
     refetch: refetchProject,
   }),
 }));
-vi.mock("@features/facilities/ui/hooks/useFacilitiesQuery", () => ({
-  useFacilitiesQuery: () => ({ data: { items: state.facilities } }),
+vi.mock("@features/facilities/ui/hooks/useProjectFacilitiesQuery", () => ({
+  useProjectFacilitiesQuery: (projectId?: string) => {
+    state.facilitiesProjectId = projectId;
+    return { data: state.facilities };
+  },
 }));
 vi.mock("@features/audits/lib/hooks/useProjectAudits", () => ({
   useProjectAudits: () => ({ ...state.audits, refetch: refetchAudits }),
@@ -232,6 +236,7 @@ beforeEach(() => {
     isError: false,
   };
   state.facilities = [{ id: "f-1", address: "12 Main St", city: "Boston" }];
+  state.facilitiesProjectId = undefined;
   state.reports = [];
   state.downloadingId = null;
   state.isAdmin = true;
@@ -316,6 +321,12 @@ describe("ProjectDetailView — sections and summary", () => {
     expect(first).toHaveTextContent("12 Main St · Boston");
     expect(second).toHaveAttribute("aria-expanded", "false");
     expect(within(screen.getByTestId("audits-table")).getByText("audit-1")).toBeInTheDocument();
+  });
+
+  it("reads the address and city from the facilities of the viewed project", () => {
+    renderView();
+
+    expect(state.facilitiesProjectId).toBe("project-1");
   });
 
   it("summarizes the facilities and the audits", () => {
