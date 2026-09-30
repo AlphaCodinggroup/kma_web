@@ -65,17 +65,18 @@ a backend limitation is documentation, not proof; check the backend before repea
   `audit_in_progress`. `toAuditStatus` (`src/entities/audit/lib/audit-status.ts`) falls back to
   `draft_report_pending_review` for an unknown status, so an in-progress mobile audit shows as
   pending review in the web.
-- `CONFIRMED:` `app/api/audits/route.ts` only forwards `status`, `auditor`, `limit`, `last_eval_id`.
-  The backend accepts `project_id` and, when given it, includes completed audits (unlike the
-  default listing). `useProjectAudits.ts`'s comment that "the backend doesn't filter by project" is
-  stale; wiring `project_id` through the BFF removes its two-call, client-side-filter workaround.
-- `CONFIRMED:` `GET /projects/{id}/facilities` on the backend now returns each facility's full detail
-  (address, city, status). `ProjectDetailView.tsx` still fetches every active facility instead.
-- `CONFIRMED:` `UpdateFindingRequest` on the backend accepts `measurements: [{name, value}]` and an
-  optional `?mitigation_id=` to disambiguate a shared `question_code`.
-  `audit-review-finding-update.mappers.ts`'s `UpdateAuditFindingDTO` has no `measurements` field, and
-  `ReportPreview.tsx` locks the measurement field with the string "Editable once the backend supports
-  it" — that lock is now stale on the backend side.
+- `CONFIRMED:` `GET /audits` filters by `project_id`, and with it returns every status, completed
+  included (without it the backend excludes completed audits). The BFF forwards it
+  (`app/api/audits/route.ts`) and `useProjectAudits.ts` makes one query with it.
+- `CONFIRMED:` `ProjectDetailView.tsx` reads address and city from `GET /projects/{id}/facilities`
+  (`useProjectFacilitiesQuery`). That endpoint returns each facility's detail, but a facility whose
+  row no longer exists comes back with only id, project id and name, so `ProjectFacility` keeps every
+  other field optional and the mapper does not invent them.
+- `CONFIRMED:` the finding `PATCH` takes `measurements: [{name, value}]` (the full list, in order:
+  same length and names as the stored ones, only the value changes) and an optional
+  `?mitigation_id=` for two findings that share a `question_code`. `useReportDrafts.ts` sends
+  `mitigationId` only when a code repeats among the loaded findings, keying that finding's draft by
+  `code#mitigationId`; `ReportPreview.tsx` edits each measurement with the PDF's positional label.
 - `CONFIRMED (send-for-review mismatch):` `sendReview.mappers.ts`'s `SendForReviewDTO` expects
   `audit_review_id` and `review_ready`; the backend's `SendForReviewResponse` sends neither. So
   `auditReviewId` is always undefined, `usePoollAuditReview.ts`'s polling never starts, and
