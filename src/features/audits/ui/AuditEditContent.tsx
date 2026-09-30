@@ -12,14 +12,14 @@ import FinalReportHeader from "./FinalReportHeader";
 import CommentsSidebar from "./CommentsSidebar";
 import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
-import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
-import { useCompleteReviewAuditMutation } from "../lib/hooks/useCompleteReviewAuditMutation";
 import { Loading } from "@shared/ui/Loading";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
 import type { AuditStatus } from "@entities/audit/model";
 import { useUpdateAuditReviewStatus } from "../lib/hooks/useUpdateAuditReviewStatus";
 import AuditStatusSelector from "./AuditStatusSelector";
 import AuditFindingEditDialog from "./AuditFindingEditDialog";
+import ExportReportModal from "./ExportReportModal";
+import { useExportAuditReport } from "../lib/hooks/useExportAuditReport";
 
 export type ReportSeverity = "high" | "medium" | "low";
 
@@ -43,11 +43,6 @@ type CommentTarget = {
   title: string;
 };
 
-const POLL_INTERVAL_MS = 2000;
-// El worker (SQS -> ReportsWorker) puede tardar más de 30s en generar/subir el PDF.
-// Subimos el máximo para evitar que el usuario tenga que intentar 2-3 veces.
-const POLL_MAX_ATTEMPTS = 60; // ~2 minutos
-
 const AuditEditContent: React.FC<AuditEditContentProps> = ({
   id,
   auditDetail,
@@ -56,7 +51,6 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const [internalTab, setInternalTab] = useState<AuditEditTab>("questions");
   const [internalFilter, setInternalFilter] =
     useState<QuestionsFilterMode>("all");
-  const [isPollingReport, setIsPollingReport] = useState(false);
 
   // Estado del panel de comentarios (cuando es undefined NO se muestra)
   const [selectedCommentTarget, setSelectedCommentTarget] = useState<
@@ -75,12 +69,14 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     refetch: refetchReviewDetail,
   } = useAuditReviewDetail(id);
 
-  const { mutateAsync, isPending } = useCompleteReviewAuditMutation();
   const { mutate: mutateStatus, isPending: isUpdatingStatus } =
     useUpdateAuditReviewStatus();
-
-  const { isFetching: isFetchingReport, refetch: refetchReport } =
-    useAuditReport(id, { enabled: false });
+  const refreshAfterQueue = useCallback(async () => {
+    await refetchReviewDetail();
+  }, [refetchReviewDetail]);
+  const exportReport = useExportAuditReport(id, {
+    onQueued: refreshAfterQueue,
+  });
 
   const findings: AuditFinding[] = reviewDetail?.findings ?? [];
   const status = reviewDetail?.status;
@@ -149,75 +145,6 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     [id, mutateStatus, selectedStatus, status]
   );
 
-  const handleExport = useCallback(async () => {
-    try {
-      // Abrir la pestaña inmediatamente (gesto del usuario) para evitar que el browser
-      // bloquee el popup cuando el URL esté listo (porque el polling es async).
-      // Si el popup es bloqueado, hacemos fallback a navegar en la misma pestaña.
-      const popup = window.open("about:blank", "_blank", "noopener,noreferrer");
-      if (popup) {
-        try {
-          popup.document.title = "Generating PDF...";
-          popup.document.body.innerHTML =
-            "<p style=\"font-family: sans-serif; padding: 16px;\">Generating PDF... please wait.</p>";
-        } catch {
-          // ignore: algunos browsers restringen escribir en el popup
-        }
-      }
-
-      // Para que se genere el PDF, primero hay que disparar el proceso en backend.
-      // El endpoint `complete-review` encola el trabajo (SQS -> ReportsWorker) y luego
-      // `GET /api/reports/{id}` empieza a devolver `reportUrl` cuando esté listo.
-      await mutateAsync({ auditId: id });
-      await refetchReviewDetail(); // refresca status/datos antes de hacer polling
-
-      // Empezamos el polling del reporte
-      setIsPollingReport(true);
-
-      let finalUrl: string | null = null;
-
-      for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt++) {
-        const res = await refetchReport();
-
-        if (res.error) {
-          console.error("[FinalReport] Error fetching report:", res.error);
-          break;
-        }
-
-        const currentUrl = res.data?.reportUrl ?? null;
-
-        if (currentUrl && /^https?:\/\//.test(currentUrl)) {
-          finalUrl = currentUrl;
-          break; // tenemos URL válida, salimos del loop
-        }
-
-        // Seguimos esperando: 2s más
-        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-      }
-
-      if (finalUrl) {
-        if (popup && !popup.closed) {
-          popup.location.href = finalUrl;
-          popup.focus();
-        } else {
-          // Fallback cuando el popup fue bloqueado/cerrado.
-          window.location.href = finalUrl;
-        }
-      } else {
-        console.warn(
-          "[FinalReport] No reportUrl available after polling attempts."
-        );
-        if (popup && !popup.closed) {
-          popup.close();
-        }
-      }
-    } catch (err) {
-      console.error("[FinalReport] Error al exportar reporte:", err);
-    } finally {
-      setIsPollingReport(false);
-    }
-  }, [id, status, mutateAsync, refetchReviewDetail, refetchReport]);
-
   if (showLoadingOverlay) return <Loading />;
 
   return (
@@ -239,12 +166,17 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
           />
         </>
       ) : (
-        <section className="w-full px-4 sm:px-6 lg:px-8" aria-live="polite">
+        <section className="w-full px-4 sm:px-6 lg:px-8">
           <div className="mb-3">
             <FinalReportHeader
-              onExport={handleExport}
+              onExport={exportReport.start}
               disabled={!findings.length}
-              exporting={isFetchingReport || isPending || isPollingReport}
+              exporting={exportReport.isBusy}
+              loadingLabel={
+                exportReport.progress.percent === null
+                  ? exportReport.progress.message
+                  : `${exportReport.progress.message} ${exportReport.progress.percent}%`
+              }
               rightAddon={
                 <AuditStatusSelector
                   value={selectedStatus}
@@ -298,6 +230,14 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
               : null,
           notes: selectedFinding?.notes ?? null,
         }}
+      />
+      <ExportReportModal
+        open={exportReport.isOpen}
+        progress={exportReport.progress}
+        filename={exportReport.filename}
+        onStop={exportReport.stopWaiting}
+        onRetry={exportReport.retry}
+        onClose={exportReport.close}
       />
     </div>
   );

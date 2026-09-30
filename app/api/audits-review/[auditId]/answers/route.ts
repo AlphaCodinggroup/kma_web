@@ -1,51 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { PublicEnv, serverEnv } from "@shared/config/env";
+import { type NextRequest } from "next/server";
+import { pathSegment, proxyToBackend } from "@shared/api/backend-proxy";
 
 type RouteContext = { params: Promise<{ auditId: string }> };
 
+/** PUT /api/audits-review/:auditId/answers */
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   const { auditId } = await params;
+  const id = pathSegment(auditId, "Audit id");
+  if (!id.ok) return id.response;
 
-  const { cookies: cookieCfg } = serverEnv();
-  const cookieStore = await cookies();
-  const token = cookieStore.get(cookieCfg.accessName)?.value;
-  if (!token)
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-
-  const upstreamUrl = `${PublicEnv.apiBaseUrl.replace(
-    /\/$/,
-    ""
-  )}/audits-review/${encodeURIComponent(auditId)}/answers`;
-
-  let payload: unknown = {};
-  try {
-    payload = await req.json();
-  } catch {
-    payload = {};
-  }
-
-  try {
-    const res = await fetch(upstreamUrl, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-      body: JSON.stringify(payload),
-    });
-
-    const contentType = res.headers.get("content-type") ?? "";
-    const isJson = contentType.includes("application/json");
-    const body = isJson
-      ? await res.json().catch(() => ({}))
-      : { message: await res.text() };
-
-    return NextResponse.json(body, { status: res.status });
-  } catch (err) {
-    console.error(`[api/audits-review/[auditId]/answers] upstream error:`, err);
-    return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
-  }
+  return proxyToBackend(req, {
+    method: "PUT",
+    path: `/audits-review/${id.value}/answers`,
+    expectJson: true,
+  });
 }

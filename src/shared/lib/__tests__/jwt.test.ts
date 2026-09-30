@@ -26,10 +26,12 @@ describe("decodeJwtPayload", () => {
   });
 
   it("returns typed payload via generic parameter", () => {
-    interface CustomClaims {
+    // Un type (no interface) satisface Record<string, unknown> sin necesitar
+    // una firma de índice explícita.
+    type CustomClaims = {
       sub: string;
       role: string;
-    }
+    };
     const token = makeJwt({ sub: "u1", role: "admin" });
 
     const result = decodeJwtPayload<CustomClaims>(token);

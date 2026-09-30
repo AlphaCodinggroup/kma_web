@@ -100,7 +100,7 @@ export async function POST() {
   const refresh = jar.get(env.cookies.refreshName)?.value;
 
   if (!refresh) {
-    clearSessionCookies();
+    await clearSessionCookies();
     return NextResponse.json(
       {
         ok: false as const,
@@ -115,7 +115,7 @@ export async function POST() {
     // Intercambio de refresh → nuevo access (y opcional refresh)
     const tokens = await initiateAuthWithRefreshToken(refresh);
 
-    setSessionCookies({
+    await setSessionCookies({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken ?? "",
       accessTtlSeconds: tokens.expiresInSeconds,
@@ -131,7 +131,7 @@ export async function POST() {
       err.code === "NotAuthorizedException" ||
       err.code === "FORBIDDEN";
     if (isAuthError) {
-      clearSessionCookies();
+      await clearSessionCookies();
     }
 
     const status = isAuthError

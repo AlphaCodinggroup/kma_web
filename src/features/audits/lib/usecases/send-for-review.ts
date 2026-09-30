@@ -10,6 +10,12 @@ export function makeSendForReviewUsecase(deps: {
   const { repo } = deps;
 
   return async (auditId: string): Promise<SendForReviewResult> => {
+    // Un id vacío llegaba al repositorio y terminaba pegándole al endpoint de
+    // colección en vez de al del recurso.
+    if (!auditId?.trim()) {
+      throw new Error("sendForReview: auditId is required");
+    }
+
     const result = await repo.sendForReview(auditId);
     return result;
   };

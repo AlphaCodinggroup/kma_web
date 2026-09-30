@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import PageHeader from "@shared/ui/page-header";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@shared/ui/tabs";
 import { ProjectsContent } from "@features/projects/ui/ProjectsContent";
 import { FacilitiesContent } from "@features/facilities/ui/FacilitiesContent";

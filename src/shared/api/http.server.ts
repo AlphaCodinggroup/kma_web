@@ -91,7 +91,10 @@ export function createServerHttp(
         if (raw) {
           setHeaderSafe(config, "Authorization", `Bearer ${raw}`);
         }
-      } catch {}
+      } catch {
+        // Sin cookies disponibles la petición sigue sin Authorization; el
+        // backend responderá 401 y el interceptor de errores lo traduce.
+      }
     }
     return config;
   });

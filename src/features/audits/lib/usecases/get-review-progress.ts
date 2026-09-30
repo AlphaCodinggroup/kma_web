@@ -12,6 +12,10 @@ export function makeGetReviewProgressUsecase(deps: {
   const { repo } = deps;
 
   return async (auditReviewId: string): Promise<ReviewProgress> => {
+    if (!auditReviewId?.trim()) {
+      throw new Error("getReviewProgress: auditReviewId is required");
+    }
+
     const progress = await repo.pollReview(auditReviewId);
     return progress;
   };

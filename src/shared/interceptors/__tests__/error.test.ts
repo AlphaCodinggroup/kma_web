@@ -361,3 +361,181 @@ describe("createApiError", () => {
     expect(result.message).toBe("custom");
   });
 });
+
+// ---------------------------------------------------------------------------
+// isApiError — solapamiento con AxiosError
+// ---------------------------------------------------------------------------
+
+describe("isApiError — AxiosError overlap", () => {
+  // Un AxiosError trae `code` y `message` string (code = "ERR_NETWORK", etc.),
+  // así que sin la guarda de `isAxiosError` se lo daba por ya normalizado y
+  // createApiError lo devolvía crudo a quien lo llamara directo.
+  it("does not mistake an AxiosError with a code for an ApiError", () => {
+    const axiosErr = fakeAxiosError({ code: "ERR_NETWORK", message: "boom" });
+
+    expect(isApiError(axiosErr)).toBe(false);
+
+    const normalised = createApiError(axiosErr);
+    expect(normalised).not.toBe(axiosErr);
+    expect(normalised.code).toBe("NETWORK_ERROR");
+  });
+
+  it("normalises an AxiosError without code", () => {
+    const axiosErr = fakeAxiosError({ status: 404, data: {} });
+
+    expect(isApiError(axiosErr)).toBe(false);
+    expect(createApiError(axiosErr).code).toBe("NOT_FOUND");
+  });
+
+  it("returns an already normalised ApiError untouched", () => {
+    const apiError = { code: "NOT_FOUND", message: "missing" } as const;
+
+    expect(isApiError(apiError)).toBe(true);
+    expect(createApiError(apiError)).toBe(apiError);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// installErrorInterceptor
+// ---------------------------------------------------------------------------
+
+describe("installErrorInterceptor", () => {
+  /** Instancia aislada con un adapter que devuelve lo que pida cada caso. */
+  async function createClient(
+    respond: (config: unknown) => Promise<unknown>
+  ) {
+    const axios = (await import("axios")).default;
+    const { installErrorInterceptor } = await import("../error");
+    const client = axios.create({ baseURL: "" });
+    installErrorInterceptor(client);
+    client.defaults.adapter = respond as never;
+    return client;
+  }
+
+  /** Construye una respuesta o un AxiosError según el status. */
+  function responderFor(status: number, data: unknown) {
+    return async (config: unknown) => {
+      const { AxiosError } = await import("axios");
+      const res = {
+        status,
+        statusText: "",
+        data,
+        headers: {},
+        config,
+      };
+      if (status >= 400) {
+        throw new AxiosError(
+          `Request failed with status code ${status}`,
+          "ERR_BAD_RESPONSE",
+          config as never,
+          null,
+          res as never
+        );
+      }
+      return res;
+    };
+  }
+
+  it("passes 2xx responses through untouched", async () => {
+    const client = await createClient(responderFor(200, { ok: true }));
+
+    const res = await client.get("/things");
+
+    expect(res.status).toBe(200);
+    expect(res.data).toEqual({ ok: true });
+  });
+
+  // Tabla status → código de dominio, verificando además status/url/method.
+  it.each([
+    [400, "BAD_REQUEST"],
+    [401, "UNAUTHORIZED"],
+    [403, "FORBIDDEN"],
+    [404, "NOT_FOUND"],
+    [409, "CONFLICT"],
+    [422, "UNPROCESSABLE_ENTITY"],
+    [429, "RATE_LIMITED"],
+    [500, "SERVER_ERROR"],
+  ])("normalises HTTP %i into %s with status and message", async (status, code) => {
+    const client = await createClient(responderFor(status, { message: "nope" }));
+
+    const err = (await client
+      .get("/things")
+      .catch((e: unknown) => e)) as ApiError;
+
+    expect(err).toEqual({
+      code,
+      message: "nope",
+      details: expect.objectContaining({
+        status,
+        url: "/things",
+        method: "GET",
+      }),
+    });
+  });
+
+  it("normalises a network error that never got a response", async () => {
+    const client = await createClient(async (config: unknown) => {
+      const { AxiosError } = await import("axios");
+      throw new AxiosError(
+        "Network Error",
+        "ERR_NETWORK",
+        config as never,
+        null
+      );
+    });
+
+    const err = (await client
+      .get("/things")
+      .catch((e: unknown) => e)) as ApiError;
+
+    expect(err.code).toBe("NETWORK_ERROR");
+    expect(err.message).toBe("Network Error");
+    expect(err.details).toMatchObject({
+      status: undefined,
+      axiosCode: "ERR_NETWORK",
+      response: undefined,
+    });
+  });
+
+  it("normalises a timeout", async () => {
+    const client = await createClient(async (config: unknown) => {
+      const { AxiosError } = await import("axios");
+      throw new AxiosError(
+        "timeout of 1000ms exceeded",
+        "ECONNABORTED",
+        config as never,
+        null
+      );
+    });
+
+    const err = (await client
+      .get("/things")
+      .catch((e: unknown) => e)) as ApiError;
+
+    expect(err.code).toBe("TIMEOUT");
+  });
+
+  it.each([
+    ["a plain-text body", "<html>Bad gateway</html>"],
+    ["an array body", [1, 2, 3]],
+    ["a null body", null],
+  ])("falls back to the axios message with %s", async (_label, body) => {
+    const client = await createClient(responderFor(502, body));
+
+    const err = (await client
+      .get("/things")
+      .catch((e: unknown) => e)) as ApiError;
+
+    expect(err.code).toBe("SERVER_ERROR");
+    expect(err.message).toBe("Request failed with status code 502");
+    expect(err.details).toMatchObject({ status: 502, response: body });
+  });
+
+  it("keeps the ApiError contract for every normalised error", async () => {
+    const client = await createClient(responderFor(418, {}));
+
+    const err = (await client.get("/things").catch((e: unknown) => e)) as ApiError;
+
+    expect(isApiError(err)).toBe(true);
+  });
+});

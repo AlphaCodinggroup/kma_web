@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import { Pencil, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
@@ -41,7 +41,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   items,
   onEdit,
   onDelete,
-  onArchive,
+  onArchive: _onArchive,
   emptyMessage = "No projects found",
   className,
   isLoading = false,

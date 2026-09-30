@@ -5,7 +5,8 @@ import type {
 } from "@entities/audit/model/audit-review-finding-update";
 
 export type UpdateAuditFindingDTO = {
-  quantity?: number;
+  /** null vacía la cantidad; ausente significa "no cambies este campo". */
+  quantity?: number | null;
   notes?: string | null;
   photos?: Array<{
     url: string;
@@ -49,7 +50,15 @@ export const mapUpdateAuditFindingInputToDTO = (
 ): UpdateAuditFindingDTO => {
   const payload: UpdateAuditFindingDTO = {};
 
-  if (typeof input.quantity === "number" && Number.isFinite(input.quantity)) {
+  // El dominio admite null para vaciar la cantidad: descartarlo hacía
+  // imposible borrarla, porque el backend interpreta la ausencia como "no
+  // cambies este campo".
+  if (input.quantity === null) {
+    payload.quantity = null;
+  } else if (
+    typeof input.quantity === "number" &&
+    Number.isFinite(input.quantity)
+  ) {
     payload.quantity = input.quantity;
   }
 

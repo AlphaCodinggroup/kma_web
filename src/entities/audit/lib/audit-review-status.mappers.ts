@@ -1,3 +1,4 @@
+import { toAuditStatus } from "@entities/audit/lib/audit-status";
 import type { AuditStatus } from "@entities/audit/model";
 import type {
   AuditReviewStatusChange,
@@ -25,7 +26,10 @@ export const mapAuditReviewStatusChangeDTOToDomain = (
   dto: AuditReviewStatusChangeDTO
 ): AuditReviewStatusChange => ({
   auditId: dto.audit_id,
-  oldStatus: dto.old_status,
-  newStatus: dto.new_status,
+  // Los estados se normalizan contra la lista de estados conocidos: el mapper
+  // confiaba en el tipado y un valor inesperado del backend entraba al dominio
+  // sin señalizarse.
+  oldStatus: toAuditStatus(dto.old_status),
+  newStatus: toAuditStatus(dto.new_status),
   message: dto.message,
 });

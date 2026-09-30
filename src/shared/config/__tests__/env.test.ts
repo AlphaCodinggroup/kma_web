@@ -145,7 +145,46 @@ describe("publicEnv", () => {
       httpTimeoutMs: 5000,
       queryStaleTimeMs: 30000,
       apiBaseUrl: "https://api.example.com",
+      // Polling del reporte: configurable, con valores por defecto.
+      reportPoll: { intervalMs: 2000, maxAttempts: 60 },
+      reportEstimateMs: 30000,
+      reportTimeoutMs: 180000,
+      reportDownloadMode: "stream",
+      reportStreamMaxBytes: 200 * 1024 * 1024,
+      locale: "en-US",
     });
+  });
+
+  it("loads every report export setting from the environment", async () => {
+    for (const [k, v] of Object.entries(validPublicVars)) {
+      vi.stubEnv(k, v);
+    }
+    vi.stubEnv("NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS", "1500");
+    vi.stubEnv("NEXT_PUBLIC_REPORT_POLL_MAX_ATTEMPTS", "90");
+    vi.stubEnv("NEXT_PUBLIC_REPORT_ESTIMATE_MS", "45000");
+    vi.stubEnv("NEXT_PUBLIC_REPORT_TIMEOUT_MS", "240000");
+    vi.stubEnv("NEXT_PUBLIC_REPORT_DOWNLOAD_MODE", "anchor");
+    vi.stubEnv("NEXT_PUBLIC_REPORT_STREAM_MAX_MB", "64");
+
+    const { publicEnv } = await import("../env");
+    const env = publicEnv();
+
+    expect(env.reportPoll).toEqual({ intervalMs: 1500, maxAttempts: 90 });
+    expect(env.reportEstimateMs).toBe(45000);
+    expect(env.reportTimeoutMs).toBe(240000);
+    expect(env.reportDownloadMode).toBe("anchor");
+    expect(env.reportStreamMaxBytes).toBe(64 * 1024 * 1024);
+  });
+
+  it("rejects an unsupported report download mode", async () => {
+    for (const [k, v] of Object.entries(validPublicVars)) {
+      vi.stubEnv(k, v);
+    }
+    vi.stubEnv("NEXT_PUBLIC_REPORT_DOWNLOAD_MODE", "popup");
+
+    const { publicEnv } = await import("../env");
+
+    expect(() => publicEnv()).toThrow("Invalid public environment configuration");
   });
 
   it("caches the result (singleton)", async () => {

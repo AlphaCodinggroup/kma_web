@@ -7,6 +7,7 @@ import { Button } from "@shared/ui/controls";
 export interface FinalReportHeaderProps {
   onExport?: (() => void) | undefined;
   exporting?: boolean | undefined;
+  loadingLabel?: React.ReactNode | undefined;
   disabled: boolean;
   rightAddon?: React.ReactNode;
   className?: string;
@@ -15,6 +16,7 @@ export interface FinalReportHeaderProps {
 const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
   onExport,
   exporting,
+  loadingLabel,
   disabled = true,
   rightAddon,
   className,
@@ -22,7 +24,9 @@ const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
   const isDisabled = !onExport || !!exporting;
 
   return (
-    <div className={cn("bg-card/50 px-4 py-3 sm:px-5 sm:py-4", className)}>
+    <div
+      className={cn("bg-[var(--kma-bg)] px-4 py-3 sm:px-5 sm:py-4", className)}
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h2 className="text-base font-bold leading-none">Draft Report</h2>
@@ -35,13 +39,14 @@ const FinalReportHeader: React.FC<FinalReportHeaderProps> = ({
             onClick={onExport}
             disabled={isDisabled || disabled}
             className={cn(
-              "h-9 rounded-xl border bg-background px-3 text-sm",
-              "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"
+              "h-9 rounded-xl border border-[var(--kma-border)] bg-[var(--kma-bg)] px-3 text-sm",
+              "hover:bg-[var(--kma-input)] focus-visible:ring-2 focus-visible:ring-black/20"
             )}
             aria-label="Export to PDF"
             {...(typeof exporting !== "undefined"
               ? { isLoading: exporting }
               : {})}
+            loadingLabel={loadingLabel}
           >
             Export to PDF
           </Button>

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "fix-**"]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality:
+    name: Lint, tipos y tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm run test:run
+
+      - name: Cobertura
+        # El umbral sube a medida que se cubren los módulos pendientes;
+        # ver docs/auditoria-2026-09/ESTADO.md en el repo del backend.
+        run: npm run test:coverage
+        env:
+          # Sin valor rigen los pisos de vitest.config.ts, que sólo pueden
+          # subir. La variable de repositorio fuerza un mínimo único.
+          COVERAGE_MIN: ${{ vars.COVERAGE_MIN }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-coverage
+          path: coverage/
+          retention-days: 7
+
+  build:
+    name: Build de producción
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Valores de compilación; en ejecución los provee el entorno real.
+          NEXT_PUBLIC_APP_NAME: KMA Web
+          NEXT_PUBLIC_APP_ENV: production
+          NEXT_PUBLIC_API_BASE_URL: https://api.example.com/api
+          NEXT_PUBLIC_AUTH_BASE_URL: https://auth.example.com
+          NEXT_PUBLIC_HTTP_TIMEOUT_MS: "20000"
+          NEXT_PUBLIC_QUERY_STALE_TIME: "30000"
+          COGNITO_REGION: us-east-2
+          COGNITO_CLIENT_ID: build-placeholder
+          SESSION_COOKIE_NAME: kma_session
+          ACCESS_TOKEN_COOKIE_NAME: kma_access_token
+          REFRESH_TOKEN_COOKIE_NAME: kma_refresh_token
+          COOKIE_SECURE: "true"
+          COOKIE_SAMESITE: Lax
+          HTTP_RETRY_MAX_ATTEMPTS: "3"
+          HTTP_RETRY_BASE_DELAY_MS: "1000"

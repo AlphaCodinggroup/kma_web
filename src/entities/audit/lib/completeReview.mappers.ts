@@ -18,6 +18,17 @@ export function mapCompleteReviewResponseDTOToDomain(
     auditId: dto.audit_id,
     status: dto.status,
     message: dto.message ?? "",
-    requestId: dto.request_id,
+    // Un request_id vacío no permite seguir la generación del reporte: se
+    // corta acá en vez de propagarlo y dejar al poller consultando "".
+    requestId: requireRequestId(dto.request_id),
   };
+}
+
+/** requireRequestId valida el identificador con el que se sigue el reporte. */
+function requireRequestId(raw: unknown): string {
+  const trimmed = typeof raw === "string" ? raw.trim() : "";
+  if (trimmed === "") {
+    throw new Error("mapCompleteReviewDTO: request_id is required");
+  }
+  return trimmed;
 }

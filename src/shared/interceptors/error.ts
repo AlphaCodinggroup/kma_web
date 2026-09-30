@@ -17,11 +17,13 @@ export type ApiError = Readonly<{
 // Type guard para detectar ApiError
 export function isApiError(input: unknown): input is ApiError {
   if (!input || typeof input !== "object") return false;
-  const any = input as Record<string, unknown>;
+  // Un AxiosError también tiene `code` y `message` string (por ejemplo
+  // code: "ERR_NETWORK"), así que sin esta guarda se lo daba por normalizado y
+  // createApiError lo devolvía crudo a quien lo llamara directo.
+  if ("isAxiosError" in input) return false;
+  const candidate = input as Record<string, unknown>;
   return (
-    typeof any.code === "string" &&
-    typeof any.message === "string" &&
-    (any.details === undefined || typeof any.details !== "undefined")
+    typeof candidate.code === "string" && typeof candidate.message === "string"
   );
 }
 
@@ -203,10 +205,8 @@ export function createApiErrorFromAxios(err: AxiosError): ApiError {
  * Normaliza cualquier error desconocido a ApiError seguro.
  */
 export function createApiError(input: unknown): ApiError {
-  // Si ya es ApiError, lo devolvemos tal cual
-  if (isApiError(input)) return input;
-
-  // Si es AxiosError, normalizamos como tal
+  // El AxiosError se resuelve primero: es el caso que hay que normalizar y el
+  // que más se parece a un ApiError ya hecho.
   const maybeAxios = input as Partial<AxiosError>;
   if (
     maybeAxios &&
@@ -215,6 +215,9 @@ export function createApiError(input: unknown): ApiError {
   ) {
     return createApiErrorFromAxios(maybeAxios as AxiosError);
   }
+
+  // Si ya es ApiError, lo devolvemos tal cual
+  if (isApiError(input)) return input;
 
   // Si es Error estándar u objeto con message
   const message =
@@ -241,10 +244,11 @@ export function createApiError(input: unknown): ApiError {
 export function installErrorInterceptor(instance: AxiosInstance): void {
   instance.interceptors.response.use(
     (res) => res, // éxito tal cual
-    (err: AxiosError) => {
-      // Convertimos SIEMPRE a ApiError para un manejo consistente en capas superiores
-      const apiErr = createApiErrorFromAxios(err);
-      return Promise.reject(apiErr);
+    (err: unknown) => {
+      // createApiError y no createApiErrorFromAxios: el interceptor de auth
+      // corre antes y puede propagar un ApiError ya normalizado. Tratarlo como
+      // AxiosError lo degradaba a UNKNOWN_ERROR porque no tiene `response`.
+      return Promise.reject(createApiError(err));
     }
   );
 }

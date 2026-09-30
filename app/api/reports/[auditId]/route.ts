@@ -1,88 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PublicEnv, serverEnv } from "@shared/config/env";
-import { cookies } from "next/headers";
+import { type NextRequest } from "next/server";
+import { pathSegment, proxyToBackend } from "@shared/api/backend-proxy";
 
-export async function GET(
-  _req: NextRequest,
-  ctx: { params: Promise<{ auditId: string }> }
-) {
-  const { auditId } = await ctx.params;
+type RouteContext = { params: Promise<{ auditId: string }> };
 
-  const { cookies: cookieCfg } = serverEnv();
-  const cookieStore = await cookies();
-  const token = cookieStore.get(cookieCfg.accessName)?.value;
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
+/** GET /api/reports/:auditId -> GET {apiBaseUrl}/reports/:auditId */
+export async function GET(req: NextRequest, { params }: RouteContext) {
+  const { auditId } = await params;
+  const id = pathSegment(auditId, "Report id");
+  if (!id.ok) return id.response;
 
-  const upstreamBase = PublicEnv.apiBaseUrl.replace(/\/$/, "");
-  const upstreamUrl = `${upstreamBase}/reports/${encodeURIComponent(auditId)}`;
-
-  try {
-    const res = await fetch(upstreamUrl, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
-
-    const contentType = res.headers.get("content-type") ?? "";
-    const isJson = contentType.includes("application/json");
-
-    if (!res.ok) {
-      const body = isJson
-        ? await res.json().catch(() => ({}))
-        : { message: await res.text() };
-      return NextResponse.json(body, { status: res.status });
-    }
-
-    const data = isJson ? await res.json().catch(() => ({})) : {};
-    return NextResponse.json(data, { status: res.status });
-  } catch (err) {
-    console.error("[api/reports] upstream error:", err);
-    return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
-  }
+  return proxyToBackend(req, { method: "GET", path: `/reports/${id.value}` });
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  ctx: { params: Promise<{ auditId: string }> }
-) {
-  const { auditId } = await ctx.params;
+/** DELETE /api/reports/:auditId -> DELETE {apiBaseUrl}/reports/:auditId */
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
+  const { auditId } = await params;
+  const id = pathSegment(auditId, "Report id");
+  if (!id.ok) return id.response;
 
-  const { cookies: cookieCfg } = serverEnv();
-  const cookieStore = await cookies();
-  const token = cookieStore.get(cookieCfg.accessName)?.value;
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  const upstreamBase = PublicEnv.apiBaseUrl.replace(/\/$/, "");
-  const upstreamUrl = `${upstreamBase}/reports/${encodeURIComponent(auditId)}`;
-
-  try {
-    const res = await fetch(upstreamUrl, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!res.ok) {
-      const contentType = res.headers.get("content-type") ?? "";
-      const isJson = contentType.includes("application/json");
-      const body = isJson
-        ? await res.json().catch(() => ({}))
-        : { message: await res.text() };
-      return NextResponse.json(body, { status: res.status });
-    }
-
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (err) {
-    console.error("[api/reports:delete] upstream error:", err);
-    return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });
-  }
+  return proxyToBackend(req, {
+    method: "DELETE",
+    path: `/reports/${id.value}`,
+  });
 }

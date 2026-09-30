@@ -30,9 +30,13 @@ export interface CreateUserDialogProps {
     defaultValues?: Partial<CreateUserValues>;
 }
 
+// Los valores son los nombres de los grupos de Cognito, que es lo que el
+// backend valida con GetGroup. "qc_manager" no es un grupo: el alta de un
+// usuario de QC respondía 400 "invalid role" y no se podía crear el rol que
+// hace la revisión del reporte.
 const ROLE_OPTIONS = [
     { value: "auditor", label: "Auditor" },
-    { value: "qc_manager", label: "QC Manager" },
+    { value: "qc", label: "QC Manager" },
     { value: "admin", label: "Administrator" },
 ];
 

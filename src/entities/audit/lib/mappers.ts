@@ -1,4 +1,6 @@
-import type { Audit, AuditStatus, IsoDateString } from "@entities/audit/model";
+import { toIsoDate } from "@shared/lib/coerce";
+import { toAuditStatus } from "@entities/audit/lib/audit-status";
+import type { Audit, IsoDateString } from "@entities/audit/model";
 
 export type AuditDTO = {
   id: string;
@@ -27,10 +29,10 @@ const emptyToNull = (v?: string | null): string | null => {
   return s === "" ? null : s;
 };
 
-const toIsoOrEmpty = (v?: string | null): IsoDateString => {
-  const s = (v ?? "").trim();
-  return s as IsoDateString; // si viene vacío lo dejamos vacío
-};
+// Valida la fecha además de recortarla: antes una inválida llegaba tal cual al
+// dominio y sólo fallaba al renderizarse como "Invalid Date".
+const toIsoOrEmpty = (v?: string | null): IsoDateString =>
+  toIsoDate(v) as IsoDateString;
 
 /** ========= Audit mapping ========= */
 
@@ -41,15 +43,17 @@ export const mapAuditDtoToDomain = (dto: AuditDTO): Audit => {
     flowName: dto.flow_name ?? null,
     version: dto.flow_version ?? 1,
     projectId: emptyToNull(dto.project_id),
-    projectName: dto.project_name ?? "",
+    // El modelo declara estos nombres como `string | null`: devolver "" cuando
+    // faltan obligaba a la interfaz a chequear los dos valores vacíos.
+    projectName: dto.project_name ?? null,
     facilityId: emptyToNull(dto.facility_id),
-    status: (dto.status ?? "") as AuditStatus,
+    status: toAuditStatus(dto.status),
     createdBy: emptyToNull(dto.created_by),
     updatedBy: emptyToNull(dto.updated_by),
     createdAt: toIsoOrEmpty(dto.created_at),
     updatedAt: toIsoOrEmpty(dto.updated_at),
-    auditorName: dto.auditor_name ?? "",
-    facilityName: dto.facility_name ?? "",
+    auditorName: dto.auditor_name ?? null,
+    facilityName: dto.facility_name ?? null,
     findingsCount: dto.findings_count ?? null,
   };
 };

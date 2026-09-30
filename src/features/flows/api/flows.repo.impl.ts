@@ -79,7 +79,7 @@ export class FlowsHttpRepo implements FlowsRepo {
 
   async getById(id: FlowId): Promise<Flow | null> {
     try {
-      const res = await httpClient.get<unknown>(`${INTERNAL_API_URL}/${id}`);
+      const res = await httpClient.get<unknown>(`${INTERNAL_API_URL}/${encodeURIComponent(id)}`);
 
       const raw = res.data;
       const dto = FlowDTOSchema.parse(raw);
@@ -129,7 +129,6 @@ export class FlowsHttpRepo implements FlowsRepo {
 
   async create(flow: Flow): Promise<Flow> {
     const dto = mapFlowToDTO(flow);
-    console.log(JSON.stringify(dto));
 
     try {
       const res = await httpClient.post<Flow>(INTERNAL_API_URL, dto);
@@ -145,7 +144,7 @@ export class FlowsHttpRepo implements FlowsRepo {
     const dto = mapFlowToDTO(flow);
 
     try {
-      const res = await httpClient.put<Flow>(`${INTERNAL_API_URL}/${id}`, dto);
+      const res = await httpClient.put<Flow>(`${INTERNAL_API_URL}/${encodeURIComponent(id)}`, dto);
       return res.data;
     } catch (err) {
       const status = extractStatus(err);
@@ -156,7 +155,7 @@ export class FlowsHttpRepo implements FlowsRepo {
 
   async delete(id: FlowId): Promise<void> {
     try {
-      await httpClient.delete(`${INTERNAL_API_URL}/${id}`);
+      await httpClient.delete(`${INTERNAL_API_URL}/${encodeURIComponent(id)}`);
     } catch (err) {
       const status = extractStatus(err);
       const message = extractErrorMessage(err, "Failed to delete flow");
