@@ -3,7 +3,7 @@
  * total), fotos que no se imprimen, y edición en el lugar de cantidad,
  * mediciones y notas.
  */
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
@@ -176,6 +176,26 @@ describe("ReportPreview — editing in place", () => {
     expect(setDraft).toHaveBeenCalledWith("Q-1", { quantity: "35" });
     expect(setDraft).toHaveBeenCalledWith("Q-1", { notes: "Slippery surface!" });
     expect(screen.getByText("QC note (not printed in the PDF):")).toBeInTheDocument();
+  });
+
+  it("accepts fractional quantities without rounding them", async () => {
+    const setDraft = vi.fn();
+    renderPreview({
+      editable: true,
+      drafts: makeDrafts({
+        setDraft,
+        draftOf: () => ({ quantity: "", notes: "", measurements: ["45"] }),
+      }),
+    });
+    const input = screen.getByRole("spinbutton", { name: "Quantity of finding 1" });
+
+    // `step="any"` evita que el navegador rechace 2,5 o 0,125 como inválidos.
+    expect(input).toHaveAttribute("step", "any");
+    expect(input).toHaveAttribute("min", "0");
+
+    fireEvent.change(input, { target: { value: "2.5" } });
+
+    expect(setDraft).toHaveBeenCalledWith("Q-1", { quantity: "2.5" });
   });
 
   it("edits each measurement in place, with its unit", async () => {
