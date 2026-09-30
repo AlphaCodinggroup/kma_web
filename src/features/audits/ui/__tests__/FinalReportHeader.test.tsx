@@ -12,7 +12,7 @@ describe("FinalReportHeader", () => {
 
     expect(screen.getByRole("heading", { name: "Draft Report" })).toBeInTheDocument();
     expect(
-      screen.getByText("Preview in the final PDF format. Quantity and QC notes can be edited in place.")
+      screen.getByText("Preview in the final PDF format. Quantity, measurements and QC notes can be edited in place.")
     ).toBeInTheDocument();
     expect(screen.queryByRole("button")).toBeNull();
   });
