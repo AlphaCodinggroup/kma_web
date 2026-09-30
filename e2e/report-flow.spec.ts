@@ -175,22 +175,31 @@ test.describe("Flujo de reporte por la interfaz", () => {
       page.getByText(/not located on an accessible route/i).first()
     ).toBeVisible({ timeout: 30_000 });
 
-    // Un solo barrier con cantidad 2 y costo unitario 1250.
-    await expect(page.getByText(/2,500|2500/).first()).toBeVisible();
+    // Un solo barrier con cantidad 2 y costo unitario 1250, con el formato
+    // del PDF: "$2,500" en la fila y en el total de la facility.
+    await expect(page.getByTestId("report-total")).toContainText("$2,500");
+
+    // Approve genera el PDF sin descargarlo; después se descarga aparte.
+    await page.getByRole("button", { name: "Approve" }).click();
+    await expect(
+      page.getByRole("progressbar", { name: "Report export progress" })
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Report ready" })).toBeVisible({
+      timeout: 120_000,
+    });
+    await page.getByRole("button", { name: "Close" }).click();
 
     const pagesBefore = page.context().pages().length;
     const downloadPromise = page.waitForEvent("download", {
       timeout: 120_000,
     });
-    await page.getByLabel("Export to PDF").click();
-    await expect(
-      page.getByRole("progressbar", { name: "Report export progress" })
-    ).toBeVisible();
+    const downloadButton = page.getByRole("button", { name: "Download" });
+    await expect(downloadButton).toBeEnabled({ timeout: 60_000 });
+    await downloadButton.click();
 
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toMatch(/\.pdf$/);
     expect(page.context().pages()).toHaveLength(pagesBefore);
-    await expect(page.getByRole("status")).toContainText(/downloaded/i);
   });
 
   test("una auditoría sin hallazgos no ofrece reporte", async ({ page, request }) => {

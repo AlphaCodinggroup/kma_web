@@ -43,6 +43,7 @@ export function makeFacilitiesRepo(
 ): FacilitiesRepo {
   return {
     getFacilities: vi.fn(),
+    getByProject: vi.fn(),
     getById: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),

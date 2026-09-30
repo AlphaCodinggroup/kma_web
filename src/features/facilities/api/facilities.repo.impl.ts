@@ -8,6 +8,7 @@ import type {
   FacilityListPage,
   FacilityId,
   Facility,
+  ProjectFacility,
   CreateFacilityParams,
   CreateFacilityResult,
   UpdateFacilityParams,
@@ -16,6 +17,7 @@ import type {
 import {
   mapFacilitiesListFromDTO,
   mapFacilityFromDTO,
+  mapProjectFacilitiesFromDTO,
   type FacilitiesResponseDTO,
   type FacilityDTO,
   type CreateFacilityRequestDTO,
@@ -68,6 +70,21 @@ export class FacilitiesRepoHttp implements FacilitiesRepo {
       });
 
       return mapFacilitiesListFromDTO(res.data);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
+
+  /**
+   * Facilities de un proyecto, con dirección y ciudad.
+   * GET /api/projects/:id/facilities
+   */
+  async getByProject(projectId: string): Promise<ProjectFacility[]> {
+    try {
+      const res = await httpClient.get<unknown>(
+        `/api/projects/${encodeURIComponent(projectId)}/facilities`
+      );
+      return mapProjectFacilitiesFromDTO(res.data);
     } catch (err) {
       throw toApiError(err);
     }

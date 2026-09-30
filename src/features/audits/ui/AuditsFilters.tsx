@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { X } from "lucide-react";
-import { Button } from "@shared/ui/controls";
+import { ClearFiltersButton, FilterSelect } from "@shared/ui/filter-select";
 import type { AuditorOption } from "@features/audits/lib/hooks/useAuditors";
 
 export interface AuditsFiltersProps {
@@ -38,43 +37,21 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
 
     return (
         <div className="flex items-center gap-2">
-            {/* Auditor Filter */}
-            <select
+            <FilterSelect
                 value={auditorFilter}
-                onChange={(e) => onAuditorChange(e.target.value)}
-                className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-            >
-                <option value="">All Auditors</option>
-                {availableAuditors.map((auditor) => (
-                    <option key={auditor.id} value={auditor.id}>
-                        {auditor.name}
-                    </option>
-                ))}
-            </select>
-
-            {/* Status Filter */}
-            <select
+                onChange={onAuditorChange}
+                allLabel="All Auditors"
+                options={availableAuditors.map((auditor) => ({
+                    value: auditor.id,
+                    label: auditor.name,
+                }))}
+            />
+            <FilterSelect
                 value={statusFilter}
-                onChange={(e) => onStatusChange(e.target.value)}
-                className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-            >
-                {STATUS_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
-
-            {/* Clear Filters Button */}
-            {hasActiveFilters && (
-                <Button
-                    onClick={onClearFilters}
-                    className="h-9 w-9 p-0 rounded-md bg-red-50 hover:bg-red-100 transition-all duration-200 border border-red-300 hover:border-red-500"
-                    aria-label="Clear filters"
-                >
-                    <X className="h-5 w-5 stroke-[2.5] text-red-600" />
-                </Button>
-            )}
+                onChange={onStatusChange}
+                options={STATUS_OPTIONS}
+            />
+            {hasActiveFilters && <ClearFiltersButton onClick={onClearFilters} />}
         </div>
     );
 };

@@ -1,15 +1,18 @@
 "use client";
 
-import React, { useMemo, use } from "react";
+import React, { useEffect, useMemo, useState, use } from "react";
+import { useRouter } from "next/navigation";
 import AuditEditHeader from "@features/audits/ui/AuditEditHeader";
 import AuditInfoPanel from "@features/audits/ui/AuditInfoPanel";
 import AuditEditContent from "@features/audits/ui/AuditEditContent";
 import { useAuditDetail } from "@features/audits/lib/hooks/useAuditDetail";
 import { Retry } from "@shared/ui/Retry";
+import { resolveAuditBackHref } from "@features/audits/lib/audit-edit-href";
+import ConfirmDialog from "@shared/ui/confirm-dialog";
 
 /** Parámetros de ruta y query de esta página. */
 type AuditEditParams = { id: string };
-type AuditEditSearchParams = { auditor?: string };
+type AuditEditSearchParams = { auditor?: string; returnTo?: string };
 
 // El chequeo de tipos de Next 15 exige promesas en las props de página, pero en
 // runtime pueden llegar resueltas (tests, render directo): el guard cubre ambas.
@@ -37,6 +40,23 @@ export default function AuditEditPage(props: AuditEditPageProps) {
     isError: isAuditDetailError,
     refetch: refetchAuditDetail,
   } = useAuditDetail(auditId);
+
+  // Cambios sin guardar en la vista previa del reporte: se confirma antes de salir.
+  const router = useRouter();
+  const backHref = resolveAuditBackHref(searchParams.returnTo);
+  const [isDirty, setIsDirty] = useState(false);
+  const [confirmLeave, setConfirmLeave] = useState(false);
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      // Algunos navegadores todavía exigen returnValue para mostrar el aviso.
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [isDirty]);
 
   const memoed = useMemo(() => {
     const title = auditDetail?.flowName ?? "";
@@ -75,7 +95,8 @@ export default function AuditEditPage(props: AuditEditPageProps) {
         status={memoed.status}
         createdAt={memoed.createdAt}
         updatedAt={memoed.updatedAt}
-        backHref="/audits"
+        backHref={backHref}
+        {...(isDirty ? { onBack: () => setConfirmLeave(true) } : {})}
       />
 
       <div className="mt-4 sm:mt-6">
@@ -94,8 +115,22 @@ export default function AuditEditPage(props: AuditEditPageProps) {
           id={auditId}
           auditDetail={auditDetail}
           isAuditDetailLoading={isAuditDetailLoading}
+          onDirtyChange={setIsDirty}
         />
       </div>
+
+      <ConfirmDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        title="Discard unsaved changes?"
+        description="The report has changes that were not saved. Leaving now discards them."
+        confirmLabel="Discard and leave"
+        cancelLabel="Stay"
+        onConfirm={() => {
+          setConfirmLeave(false);
+          router.push(backHref);
+        }}
+      />
     </main>
   );
 }

@@ -54,10 +54,24 @@ const isAbortError = (error: unknown) =>
 
 type Options = {
   onQueued?: (() => void | Promise<void>) | undefined;
+  /**
+   * Descarga el PDF apenas está listo (por defecto). En false termina al
+   * generarse, sin descargar: es el caso de Approve.
+   */
+  downloadWhenReady?: boolean | undefined;
+};
+
+const readyProgress: ExportProgress = {
+  phase: "done",
+  percent: 100,
+  message: "Report approved and generated.",
+  bytes: null,
+  error: null,
 };
 
 export function useExportAuditReport(auditId: string, options: Options = {}) {
   const env = publicEnv();
+  const downloadWhenReady = options.downloadWhenReady ?? true;
   const [progress, setProgress] = useState<ExportProgress>(initialProgress);
   const [requestId, setRequestId] = useState<string | null>(null);
   const [filename, setFilename] = useState("report.pdf");
@@ -136,6 +150,19 @@ export function useExportAuditReport(auditId: string, options: Options = {}) {
     [download]
   );
 
+  // El PDF ya está disponible: se descarga o, en modo Approve, se termina acá.
+  const finishReady = useCallback(
+    async (report: AuditReport, run: number) => {
+      if (downloadWhenReady) {
+        await finishDownload(report, run);
+        return;
+      }
+      if (runRef.current !== run) return;
+      setProgress(readyProgress);
+    },
+    [downloadWhenReady, finishDownload]
+  );
+
   const start = useCallback(async () => {
     const run = ++runRef.current;
     downloadStartedRef.current = false;
@@ -155,7 +182,7 @@ export function useExportAuditReport(auditId: string, options: Options = {}) {
       const current = (await reportQuery.refetch()).data;
       if (runRef.current !== run) return;
       if (current && hasDownloadUrl(current)) {
-        await finishDownload(current, run);
+        await finishReady(current, run);
         return;
       }
 
@@ -184,13 +211,13 @@ export function useExportAuditReport(auditId: string, options: Options = {}) {
         error,
       });
     }
-  }, [auditId, completeReview, finishDownload, options, reportQuery, resetDownload]);
+  }, [auditId, completeReview, finishReady, options, reportQuery, resetDownload]);
 
   useEffect(() => {
     if (progress.phase !== "generating") return;
     const report = pollQuery.data;
     if (report && hasDownloadUrl(report)) {
-      void finishDownload(report, runRef.current);
+      void finishReady(report, runRef.current);
       return;
     }
 
@@ -216,7 +243,7 @@ export function useExportAuditReport(auditId: string, options: Options = {}) {
     }));
   }, [
     env.reportEstimateMs,
-    finishDownload,
+    finishReady,
     pollQuery.data,
     progress.phase,
     requestId,

@@ -154,14 +154,20 @@ describe("AuditRepoHttp.list", () => {
       "/api/audits?status=completed&auditor=Ada+Lovelace",
     ],
     [
+      "only the project",
+      { project_id: "project-1" },
+      "/api/audits?project_id=project-1",
+    ],
+    [
       "every filter",
       {
         status: "completed",
         auditor: "ada",
+        project_id: "project-1",
         limit: 25,
         last_eval_id: "cursor-1",
       },
-      "/api/audits?status=completed&auditor=ada&limit=25&last_eval_id=cursor-1",
+      "/api/audits?status=completed&auditor=ada&project_id=project-1&limit=25&last_eval_id=cursor-1",
     ],
   ])("builds the URL with %s", async (_label, params, expectedUrl) => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ audits: [auditDTO] }));

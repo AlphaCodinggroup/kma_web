@@ -1,11 +1,13 @@
 /**
  * Contenido de la pantalla de edición de auditoría: pestañas, filtro de
- * preguntas, cambio de estado, panel de comentarios, diálogo de hallazgo y el
- * flujo de exportación del reporte final.
+ * preguntas, panel de comentarios y el reporte con formato PDF: edición en el
+ * lugar, cambios sin guardar, aprobación y descarga.
  */
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ReactNode } from "react";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
 import type { AuditFinding, AuditReviewDetail } from "@entities/audit/model/audit-review";
 import type { ExportProgress } from "@entities/report/model/export-progress";
@@ -27,72 +29,80 @@ vi.mock("@features/audits/lib/hooks/useAuditReviewDetail", () => ({
   }),
 }));
 
-const startExport = vi.fn();
-const retryExport = vi.fn();
-const stopExport = vi.fn();
-const closeExport = vi.fn();
-const exportState: {
+const session = { isAdmin: true };
+vi.mock("@processes/auth/hooks", () => ({
+  useSession: () => session,
+}));
+
+const draftsState = {
+  isDirty: false,
+  hasErrors: false,
+  isSaving: false,
+  saveError: null as string | null,
+};
+const saveDrafts = vi.fn();
+const discardDrafts = vi.fn();
+vi.mock("@features/audits/lib/hooks/useReportDrafts", () => ({
+  useReportDrafts: () => ({
+    ...draftsState,
+    draftOf: () => ({ quantity: "", notes: "" }),
+    setDraft: vi.fn(),
+    errorOf: () => null,
+    costOf: () => 0,
+    save: saveDrafts,
+    discard: discardDrafts,
+  }),
+}));
+
+const startApprove = vi.fn();
+const exportOptionsSpy = vi.fn();
+const approveState: {
   isBusy: boolean;
   isOpen: boolean;
-  filename: string;
   progress: ExportProgress;
 } = {
   isBusy: false,
   isOpen: false,
-  filename: "report.pdf",
-  progress: {
-    phase: "idle" as const,
-    percent: null as number | null,
-    message: "",
-    bytes: null,
-    error: null,
-  },
+  progress: { phase: "idle", percent: null, message: "", bytes: null, error: null },
 };
 vi.mock("@features/audits/lib/hooks/useExportAuditReport", () => ({
-  useExportAuditReport: () => ({
-    ...exportState,
-    start: startExport,
-    retry: retryExport,
-    stopWaiting: stopExport,
-    close: closeExport,
-  }),
+  useExportAuditReport: (_id: string, options: unknown) => {
+    exportOptionsSpy(options);
+    return {
+      ...approveState,
+      filename: "report.pdf",
+      start: startApprove,
+      retry: vi.fn(),
+      stopWaiting: vi.fn(),
+      close: vi.fn(),
+    };
+  },
+}));
+
+const reportState = {
+  data: undefined as { id: string; reportName: string | null; reportUrl: string | null } | undefined,
+};
+const auditReportOptionsSpy = vi.fn();
+vi.mock("@features/reports/lib/hooks/useAuditReport", () => ({
+  useAuditReport: (_id: string, options: unknown) => {
+    auditReportOptionsSpy(options);
+    return { data: reportState.data };
+  },
+}));
+
+const download = vi.fn();
+const downloadState = { activeId: null as string | null };
+vi.mock("@features/reports/lib/hooks/useDownloadReportFile", () => ({
+  useDownloadReportFile: () => ({ download, activeId: downloadState.activeId }),
 }));
 
 vi.mock("@features/audits/ui/ExportReportModal", () => ({
   __esModule: true,
-  default: ({
-    open,
-    progress,
-    filename,
-    onStop,
-    onRetry,
-    onClose,
-  }: {
-    open: boolean;
-    progress: { message: string };
-    filename: string;
-    onStop: () => void;
-    onRetry: () => void;
-    onClose: () => void;
-  }) => (
-    <div data-testid="export-modal">
-      <span>{String(open)}</span>
-      <span>{progress.message}</span>
-      <span>{filename}</span>
-      <button onClick={onStop}>stop export</button>
-      <button onClick={onRetry}>retry export</button>
-      <button onClick={onClose}>close export</button>
+  default: (props: { open: boolean; activeTitle?: string; showFilename?: boolean }) => (
+    <div data-testid="approve-modal">
+      {String(props.open)} {props.activeTitle} {String(props.showFilename)}
     </div>
   ),
-}));
-
-const mutateStatus = vi.fn();
-const statusState = { isPending: false };
-vi.mock("@features/audits/lib/hooks/useUpdateAuditReviewStatus", () => ({
-  useUpdateAuditReviewStatus: () => ({
-    mutate: mutateStatus,
-    isPending: statusState.isPending,
-  }),
 }));
 
 // Los hijos pesados se reducen a stubs que exponen sus props: cada uno tiene su
@@ -119,37 +129,33 @@ vi.mock("@features/audits/ui/AuditQuestionsList", () => ({
   ),
 }));
 
-vi.mock("@features/audits/ui/ReportItemsTable", () => ({
+vi.mock("@features/audits/ui/ReportPreview", () => ({
   __esModule: true,
   default: ({
-    items,
-    loading,
-    error,
-    onError,
+    findings,
+    facilityName,
+    location,
+    editable,
+    canComment,
     onAddComment,
-    onEditFinding,
   }: {
-    items: AuditFinding[];
-    loading?: boolean;
-    error?: boolean;
-    onError?: () => void;
+    findings: AuditFinding[];
+    facilityName: string;
+    location?: string | null;
+    editable: boolean;
+    canComment: boolean;
     onAddComment: (row: AuditFinding, index: number) => void;
-    onEditFinding?: (row: AuditFinding, index: number) => void;
   }) => (
-    <div data-testid="report-items">
-      <span data-testid="report-count">{items.length}</span>
-      <span data-testid="report-loading">{String(Boolean(loading))}</span>
-      <span data-testid="report-error">{String(Boolean(error))}</span>
-      <button onClick={onError}>table retry</button>
-      {items.map((item, index) => (
-        <div key={index}>
-          <button onClick={() => onAddComment(item, index)}>
-            comment {index}
-          </button>
-          <button onClick={() => onEditFinding?.(item, index)}>
-            edit {index}
-          </button>
-        </div>
+    <div data-testid="report-preview">
+      <span data-testid="preview-count">{findings.length}</span>
+      <span data-testid="preview-facility">{facilityName}</span>
+      <span data-testid="preview-location">{location ?? "none"}</span>
+      <span data-testid="preview-editable">{String(editable)}</span>
+      <span data-testid="preview-can-comment">{String(canComment)}</span>
+      {findings.map((item, index) => (
+        <button key={index} onClick={() => onAddComment(item, index)}>
+          comment {index}
+        </button>
       ))}
     </div>
   ),
@@ -175,50 +181,22 @@ vi.mock("@features/audits/ui/CommentsSidebar", () => ({
   ),
 }));
 
-vi.mock("@features/audits/ui/AuditFindingEditDialog", () => ({
-  __esModule: true,
-  default: ({
-    open,
-    onOpenChange,
-    auditId,
-    questionCode,
-    defaultValues,
-  }: {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    auditId: string;
-    questionCode?: string | null;
-    defaultValues?: { quantity: number | null; notes: string | null };
-  }) => (
-    <div data-testid="finding-dialog">
-      <span data-testid="dialog-open">{String(open)}</span>
-      <span data-testid="dialog-audit-id">{auditId}</span>
-      <span data-testid="dialog-code">{questionCode}</span>
-      <span data-testid="dialog-quantity">
-        {String(defaultValues?.quantity)}
-      </span>
-      <span data-testid="dialog-notes">{String(defaultValues?.notes)}</span>
-      <button onClick={() => onOpenChange(false)}>close dialog</button>
-    </div>
-  ),
-}));
-
 // ---- import after mocks ----
-import AuditEditContent from "../AuditEditContent";
+import AuditEditContent, { type AuditEditContentProps } from "../AuditEditContent";
 
 const makeFinding = (overrides: Partial<AuditFinding> = {}): AuditFinding => ({
   questionCode: "Q-1",
   answer: "NO",
+  mitigationId: "MIT-1",
   barrierStatement: "Ramp slope over the limit",
   proposedMitigation: "Rebuild the ramp",
   adasReference: "ADA 405.2",
   quantity: 2,
-  cost: 100,
-  unit: "ea",
-  totalCost: 200,
+  unitCost: 100,
+  unitOfMeasure: "EA",
+  measurements: [],
   notes: "Measured at 10%",
   photos: [],
-  includeInReport: true,
   calculatedCost: 200,
   ...overrides,
 });
@@ -245,6 +223,8 @@ const makeAuditDetail = (
   version: 1,
   projectId: "project-1",
   facilityId: "facility-1",
+  facilityName: "House 2",
+  location: "North entrance",
   status: "draft_report_in_review",
   auditDate: "2026-01-01T00:00:00Z",
   questions: [
@@ -257,65 +237,56 @@ const makeAuditDetail = (
   ...overrides,
 });
 
+let queryClient: QueryClient;
+
+function renderContent(props: Partial<AuditEditContentProps> = {}) {
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+  return render(
+    <AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} {...props} />,
+    { wrapper }
+  );
+}
+
+async function openReportTab(props: Partial<AuditEditContentProps> = {}) {
+  const utils = renderContent(props);
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("tab", { name: "Report" }));
+  return { ...utils, user };
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
+  queryClient = new QueryClient();
+  vi.spyOn(queryClient, "invalidateQueries").mockResolvedValue(undefined);
+  vi.stubGlobal("alert", vi.fn());
   reviewDetailState.data = makeReviewDetail();
   reviewDetailState.isLoading = false;
   reviewDetailState.isError = false;
-  exportState.isBusy = false;
-  exportState.isOpen = false;
-  exportState.filename = "report.pdf";
-  exportState.progress = {
-    phase: "idle",
-    percent: null,
-    message: "",
-    bytes: null,
-    error: null,
-  };
-  statusState.isPending = false;
-  refetchReviewDetail.mockResolvedValue({ data: reviewDetailState.data });
-
-  vi.spyOn(console, "error").mockImplementation(() => {});
-  vi.spyOn(console, "warn").mockImplementation(() => {});
+  session.isAdmin = true;
+  draftsState.isDirty = false;
+  draftsState.hasErrors = false;
+  draftsState.isSaving = false;
+  draftsState.saveError = null;
+  approveState.isBusy = false;
+  approveState.isOpen = false;
+  approveState.progress = { phase: "idle", percent: null, message: "", bytes: null, error: null };
+  reportState.data = undefined;
+  downloadState.activeId = null;
 });
-
-afterEach(() => {
-  vi.useRealTimers();
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
-});
-
-/**
- * Abre la pestaña de reporte, montando el componente si el caso no lo hizo.
- *
- * Algunos casos renderizan con props propias antes de llamar al helper y otros
- * se apoyan sólo en él; sin este monte perezoso, esos últimos fallaban con el
- * body vacío.
- */
-const openReportTab = async () => {
-  const user = userEvent.setup();
-  if (!screen.queryByTestId("audit-edit-content")) {
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-  }
-  await user.click(screen.getByRole("tab", { name: "Report" }));
-  return user;
-};
 
 describe("AuditEditContent — loading", () => {
   it("shows the loading overlay while the review detail loads", () => {
     reviewDetailState.isLoading = true;
-    const { container } = render(
-      <AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />
-    );
+    const { container } = renderContent();
 
     expect(container.querySelector(".animate-spin")).toBeInTheDocument();
     expect(screen.queryByTestId("audit-edit-content")).not.toBeInTheDocument();
   });
 
   it("shows the loading overlay while the audit detail loads", () => {
-    const { container } = render(
-      <AuditEditContent id="audit-1" auditDetail={undefined} isAuditDetailLoading />
-    );
+    const { container } = renderContent({ auditDetail: undefined, isAuditDetailLoading: true });
 
     expect(container.querySelector(".animate-spin")).toBeInTheDocument();
   });
@@ -323,85 +294,86 @@ describe("AuditEditContent — loading", () => {
 
 describe("AuditEditContent — questions tab", () => {
   it("renders the questions tab by default", () => {
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
+    renderContent();
 
-    expect(screen.getByTestId("audit-edit-content")).toBeInTheDocument();
     expect(screen.getByTestId("questions-count")).toHaveTextContent("2");
-    expect(screen.getByTestId("questions-audit-id")).toHaveTextContent(
-      "audit-1"
-    );
+    expect(screen.getByTestId("questions-audit-id")).toHaveTextContent("audit-1");
     expect(screen.getByTestId("questions-steps")).toHaveTextContent("2");
-    expect(screen.getByTestId("questions-filter")).toHaveTextContent("all");
-    expect(screen.getByText("All Answers")).toBeInTheDocument();
-  });
-
-  it("renders an empty question list when there is no audit detail", () => {
-    render(<AuditEditContent id="audit-1" auditDetail={undefined} />);
-
-    expect(screen.getByTestId("questions-count")).toHaveTextContent("0");
-    expect(screen.getByTestId("questions-steps")).toHaveTextContent("none");
+    expect(screen.queryByTestId("report-preview")).not.toBeInTheDocument();
   });
 
   it("forwards the picked filter to the question list", async () => {
-    const user = userEvent.setup();
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
+    renderContent();
 
-    await user.selectOptions(
-      screen.getByLabelText("Filter questions"),
-      "unsure"
-    );
+    await userEvent.selectOptions(screen.getByLabelText("Filter questions"), "unsure");
 
     expect(screen.getByTestId("questions-filter")).toHaveTextContent("unsure");
   });
+});
 
-  it("switches to the report tab and back to the questions tab", async () => {
-    const user = await openReportTab();
+describe("AuditEditContent — report preview", () => {
+  it("shows the findings of the review with the facility and location of the audit", async () => {
+    await openReportTab();
 
-    expect(screen.getByTestId("report-items")).toBeInTheDocument();
-    expect(screen.queryByTestId("questions-list")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Draft Report" })).toBeInTheDocument();
+    expect(screen.getByTestId("preview-count")).toHaveTextContent("1");
+    expect(screen.getByTestId("preview-facility")).toHaveTextContent("House 2");
+    expect(screen.getByTestId("preview-location")).toHaveTextContent("North entrance");
+  });
 
-    await user.click(screen.getByRole("tab", { name: "Questions & Answers" }));
+  it("names a facility placeholder without audit detail", async () => {
+    await openReportTab({ auditDetail: undefined });
 
-    expect(screen.getByTestId("questions-list")).toBeInTheDocument();
+    expect(screen.getByTestId("preview-facility")).toHaveTextContent("Facility");
+  });
+
+  it.each([
+    ["an admin with the audit in review", true, "draft_report_in_review", "true"],
+    ["an admin with the audit pending review", true, "draft_report_pending_review", "false"],
+    ["an admin with the audit completed", true, "completed", "false"],
+    ["another role", false, "draft_report_in_review", "false"],
+  ] as const)("edits in place only for %s", async (_label, isAdmin, status, expected) => {
+    session.isAdmin = isAdmin;
+    reviewDetailState.data = makeReviewDetail({ status });
+
+    await openReportTab();
+
+    expect(screen.getByTestId("preview-editable")).toHaveTextContent(expected);
+  });
+
+  it("offers a retry when the report fails to load", async () => {
+    reviewDetailState.isError = true;
+    const { user } = await openReportTab();
+
+    await user.click(screen.getByRole("button", { name: "Retry" }));
+
+    expect(refetchReviewDetail).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId("report-preview")).not.toBeInTheDocument();
+  });
+
+  it("tells the page whether there are unsaved changes", async () => {
+    const onDirtyChange = vi.fn();
+    draftsState.isDirty = true;
+
+    renderContent({ onDirtyChange });
+
+    expect(onDirtyChange).toHaveBeenLastCalledWith(true);
   });
 });
 
-describe("AuditEditContent — report tab", () => {
-  beforeEach(() => {
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-  });
-
-  it("renders the findings table with the review findings", async () => {
-    await openReportTab();
-
-    expect(screen.getByTestId("report-count")).toHaveTextContent("1");
-    expect(screen.getByTestId("report-loading")).toHaveTextContent("false");
-    expect(screen.getByTestId("report-error")).toHaveTextContent("false");
-    expect(screen.getByText("Draft Report")).toBeInTheDocument();
-  });
-
-  it("wires the table retry to the review detail refetch", async () => {
-    const user = await openReportTab();
-
-    await user.click(screen.getByRole("button", { name: "table retry" }));
-
-    expect(refetchReviewDetail).toHaveBeenCalledTimes(1);
-  });
-
+describe("AuditEditContent — comments", () => {
   it("opens the comments sidebar with the question code and the barrier statement", async () => {
-    const user = await openReportTab();
+    const { user } = await openReportTab();
 
     await user.click(screen.getByRole("button", { name: "comment 0" }));
 
     expect(screen.getByTestId("sidebar-audit-id")).toHaveTextContent("audit-1");
     expect(screen.getByTestId("sidebar-id")).toHaveTextContent("Q-1");
-    expect(screen.getByTestId("sidebar-title")).toHaveTextContent(
-      "Ramp slope over the limit"
-    );
+    expect(screen.getByTestId("sidebar-title")).toHaveTextContent("Ramp slope over the limit");
   });
 
   it("closes the comments sidebar", async () => {
-    const user = await openReportTab();
+    const { user } = await openReportTab();
 
     await user.click(screen.getByRole("button", { name: "comment 0" }));
     await user.click(screen.getByRole("button", { name: "close sidebar" }));
@@ -409,242 +381,146 @@ describe("AuditEditContent — report tab", () => {
     expect(screen.queryByTestId("comments-sidebar")).not.toBeInTheDocument();
   });
 
-  it("opens the finding dialog with the finding defaults", async () => {
-    const user = await openReportTab();
-
-    await user.click(screen.getByRole("button", { name: "edit 0" }));
-
-    expect(screen.getByTestId("dialog-open")).toHaveTextContent("true");
-    expect(screen.getByTestId("dialog-audit-id")).toHaveTextContent("audit-1");
-    expect(screen.getByTestId("dialog-code")).toHaveTextContent("Q-1");
-    expect(screen.getByTestId("dialog-quantity")).toHaveTextContent("2");
-    expect(screen.getByTestId("dialog-notes")).toHaveTextContent(
-      "Measured at 10%"
-    );
-  });
-
-  it("clears the selected finding when the dialog closes", async () => {
-    const user = await openReportTab();
-
-    await user.click(screen.getByRole("button", { name: "edit 0" }));
-    await user.click(screen.getByRole("button", { name: "close dialog" }));
-
-    expect(screen.getByTestId("dialog-open")).toHaveTextContent("false");
-    expect(screen.getByTestId("dialog-code")).toBeEmptyDOMElement();
-    expect(screen.getByTestId("dialog-quantity")).toHaveTextContent("null");
-    expect(screen.getByTestId("dialog-notes")).toHaveTextContent("null");
-  });
-});
-
-describe("AuditEditContent — comment and dialog fallbacks", () => {
-  it("falls back to the item index and the mitigation when there is no code or barrier", async () => {
-    reviewDetailState.data = makeReviewDetail({
-      findings: [
-        makeFinding({
-          questionCode: "",
-          barrierStatement: null,
-          proposedMitigation: "Rebuild the ramp",
-        }),
-      ],
-    });
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    const user = await openReportTab();
+  it.each([
+    ["the mitigation", { questionCode: undefined as unknown as string, barrierStatement: null }, "report-item-1", "Rebuild the ramp"],
+    ["Item N", { barrierStatement: null, proposedMitigation: null }, "Q-1", "Item 1"],
+  ])("falls back to %s as the comment title", async (_label, overrides, id, title) => {
+    reviewDetailState.data = makeReviewDetail({ findings: [makeFinding(overrides)] });
+    const { user } = await openReportTab();
 
     await user.click(screen.getByRole("button", { name: "comment 0" }));
 
-    // questionCode vacío es falsy para `??`... pero "" no lo es: se conserva.
-    expect(screen.getByTestId("sidebar-id")).toBeEmptyDOMElement();
-    expect(screen.getByTestId("sidebar-title")).toHaveTextContent(
-      "Rebuild the ramp"
-    );
-  });
-
-  it("falls back to Item N when neither statement is present", async () => {
-    reviewDetailState.data = makeReviewDetail({
-      findings: [
-        makeFinding({
-          barrierStatement: null,
-          proposedMitigation: null,
-        }),
-      ],
-    });
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    const user = await openReportTab();
-
-    await user.click(screen.getByRole("button", { name: "comment 0" }));
-
-    expect(screen.getByTestId("sidebar-title")).toHaveTextContent("Item 1");
-  });
-
-  it("normalizes a non finite quantity to null in the dialog defaults", async () => {
-    reviewDetailState.data = makeReviewDetail({
-      findings: [makeFinding({ quantity: Number.NaN, notes: null })],
-    });
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    const user = await openReportTab();
-
-    await user.click(screen.getByRole("button", { name: "edit 0" }));
-
-    expect(screen.getByTestId("dialog-quantity")).toHaveTextContent("null");
-    expect(screen.getByTestId("dialog-notes")).toHaveTextContent("null");
-  });
-
-  it("uses the item index as the comment target when the finding has no code", async () => {
-    reviewDetailState.data = makeReviewDetail({
-      findings: [
-        makeFinding({ questionCode: undefined as unknown as string }),
-      ],
-    });
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    const user = await openReportTab();
-
-    await user.click(screen.getByRole("button", { name: "comment 0" }));
-
-    expect(screen.getByTestId("sidebar-id")).toHaveTextContent(
-      "report-item-1"
-    );
+    expect(screen.getByTestId("sidebar-id")).toHaveTextContent(id);
+    expect(screen.getByTestId("sidebar-title")).toHaveTextContent(title);
   });
 });
 
-describe("AuditEditContent — status selector", () => {
-  it("reflects the review status", async () => {
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
+describe("AuditEditContent — save, approve and download", () => {
+  it("saves and discards the drafts from the banner", async () => {
+    draftsState.isDirty = true;
+    const { user } = await openReportTab();
+
+    expect(screen.getByText("Changes detected — save to continue")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(screen.getByRole("button", { name: "Discard" }));
+
+    expect(saveDrafts).toHaveBeenCalledTimes(1);
+    expect(discardDrafts).toHaveBeenCalledTimes(1);
+  });
+
+  it("approves without downloading", async () => {
+    const { user } = await openReportTab();
+
+    expect(exportOptionsSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ downloadWhenReady: false })
+    );
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    expect(startApprove).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId("approve-modal")).toHaveTextContent("Approving report false");
+  });
+
+  it("refreshes the review after queueing the approval", async () => {
     await openReportTab();
 
-    expect(screen.getByRole("combobox", { name: "" })).toHaveValue(
-      "draft_report_in_review"
+    const [options] = exportOptionsSpy.mock.lastCall as [{ onQueued: () => Promise<void> }];
+    await options.onQueued();
+
+    expect(refetchReviewDetail).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["the audit is not in review", { status: "completed" as const }],
+    ["there are no findings", { findings: [] }],
+  ])("does not approve when %s", async (_label, overrides) => {
+    reviewDetailState.data = makeReviewDetail(overrides);
+
+    await openReportTab();
+
+    expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
+  });
+
+  it("does not approve while there are unsaved changes", async () => {
+    draftsState.isDirty = true;
+
+    await openReportTab();
+
+    expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
+  });
+
+  it("keeps Return disabled until the backend supports it", async () => {
+    await openReportTab();
+
+    expect(screen.getByRole("button", { name: "Return" })).toBeDisabled();
+  });
+
+  it("reloads the audit, the review and the report once approved", async () => {
+    approveState.progress = { ...approveState.progress, phase: "done" };
+
+    await openReportTab();
+
+    expect(refetchReviewDetail).toHaveBeenCalled();
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["audits", "detail", "audit-1"],
+    });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["reports", "by-audit", "audit-1"],
+    });
+    expect(auditReportOptionsSpy).toHaveBeenLastCalledWith({ enabled: true });
+  });
+
+  it.each([
+    ["in review", "draft_report_in_review", false],
+    ["sent to the client", "final_report_sent_to_client", true],
+    ["completed", "completed", true],
+  ] as const)("looks for the report only once it exists (%s)", async (_label, status, enabled) => {
+    reviewDetailState.data = makeReviewDetail({ status });
+
+    await openReportTab();
+
+    expect(auditReportOptionsSpy).toHaveBeenLastCalledWith({ enabled });
+  });
+
+  it("downloads the report of the project", async () => {
+    const report = { id: "audit-1", reportName: "Boston", reportUrl: "https://cdn/r.pdf" };
+    reportState.data = report;
+    reviewDetailState.data = makeReviewDetail({ status: "completed" });
+    download.mockResolvedValue({});
+    const { user } = await openReportTab();
+
+    await user.click(screen.getByRole("button", { name: "Download" }));
+
+    expect(download).toHaveBeenCalledWith(report);
+  });
+
+  it("warns when the download fails", async () => {
+    reportState.data = { id: "audit-1", reportName: "Boston", reportUrl: "https://cdn/r.pdf" };
+    reviewDetailState.data = makeReviewDetail({ status: "completed" });
+    download.mockRejectedValue(new Error("network"));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { user } = await openReportTab();
+
+    await user.click(screen.getByRole("button", { name: "Download" }));
+
+    await vi.waitFor(() =>
+      expect(alert).toHaveBeenCalledWith("Error downloading the report. Please try again.")
     );
   });
 
-  it("sends the picked status", async () => {
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    const user = await openReportTab();
+  it("does not download without a report url", async () => {
+    reportState.data = { id: "audit-1", reportName: "Boston", reportUrl: null };
 
-    const select = screen.getByDisplayValue("Draft Report In Review");
-    await user.selectOptions(select, "completed");
-
-    expect(mutateStatus).toHaveBeenCalledTimes(1);
-    expect(mutateStatus.mock.calls[0]![0]).toEqual({
-      auditId: "audit-1",
-      status: "completed",
-    });
-    expect(screen.getByDisplayValue("Completed")).toBeInTheDocument();
-  });
-
-  it("rolls the status back when the mutation reports an error", async () => {
-    mutateStatus.mockImplementation(
-      (
-        _input: unknown,
-        options: { onError: () => void }
-      ) => options.onError()
-    );
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    const user = await openReportTab();
-
-    await user.selectOptions(
-      screen.getByDisplayValue("Draft Report In Review"),
-      "completed"
-    );
-
-    expect(
-      screen.getByDisplayValue("Draft Report In Review")
-    ).toBeInTheDocument();
-  });
-
-  it("disables the selector while there is no review status", async () => {
-    reviewDetailState.data = makeReviewDetail({
-      status: undefined as unknown as AuditReviewDetail["status"],
-    });
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
     await openReportTab();
 
-    expect(screen.getByRole("combobox")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Download" })).toBeDisabled();
   });
 
-  it("does not send anything when the review has no status", async () => {
-    // Sin status el handler corta antes de llamar a la mutación.
-    reviewDetailState.data = makeReviewDetail({
-      status: undefined as unknown as AuditReviewDetail["status"],
-    });
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
+  it("shows the download in progress", async () => {
+    reportState.data = { id: "audit-1", reportName: "Boston", reportUrl: "https://cdn/r.pdf" };
+    downloadState.activeId = "audit-1";
+
     await openReportTab();
 
-    fireEvent.change(screen.getByRole("combobox"), {
-      target: { value: "completed" },
-    });
-
-    expect(mutateStatus).not.toHaveBeenCalled();
-  });
-
-  it("disables the selector while the status update is in flight", async () => {
-    statusState.isPending = true;
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-
-    expect(screen.getByRole("combobox")).toBeDisabled();
-  });
-});
-
-describe("AuditEditContent — report export", () => {
-  it("disables the export button when there are no findings", async () => {
-    reviewDetailState.data = makeReviewDetail({ findings: [] });
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-
-    expect(screen.getByLabelText("Export to PDF")).toBeDisabled();
-  });
-
-  it("starts the orchestrated export without opening a tab", async () => {
-    const open = vi.fn();
-    vi.stubGlobal("open", open);
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-
-    await userEvent.click(screen.getByLabelText("Export to PDF"));
-
-    expect(startExport).toHaveBeenCalledTimes(1);
-    expect(open).not.toHaveBeenCalled();
-  });
-
-  it("shows the phase and percent while export is active", async () => {
-    exportState.isBusy = true;
-    exportState.isOpen = true;
-    exportState.progress = {
-      phase: "generating",
-      percent: 42,
-      message: "Rendering the PDF…",
-      bytes: null,
-      error: null,
-    };
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-    await openReportTab();
-
-    const button = screen.getByLabelText("Export to PDF");
-    expect(button).toBeDisabled();
-    expect(button).toHaveTextContent("Rendering the PDF… 42%");
-    expect(screen.getByTestId("export-modal")).toHaveTextContent("true");
-    expect(screen.getByTestId("export-modal")).toHaveTextContent("report.pdf");
-  });
-
-  it("forwards modal actions to the export orchestrator", async () => {
-    exportState.isOpen = true;
-    render(<AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />);
-
-    await userEvent.click(screen.getByRole("button", { name: "stop export" }));
-    await userEvent.click(screen.getByRole("button", { name: "retry export" }));
-    await userEvent.click(screen.getByRole("button", { name: "close export" }));
-
-    expect(stopExport).toHaveBeenCalledTimes(1);
-    expect(retryExport).toHaveBeenCalledTimes(1);
-    expect(closeExport).toHaveBeenCalledTimes(1);
-  });
-
-  it("does not put aria-live on the whole report section", async () => {
-    const { container } = render(
-      <AuditEditContent id="audit-1" auditDetail={makeAuditDetail()} />
-    );
-    await openReportTab();
-
-    expect(container.querySelector("section[aria-live]")).toBeNull();
+    expect(screen.getByRole("button", { name: "Download" })).toBeDisabled();
   });
 });

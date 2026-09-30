@@ -1,5 +1,6 @@
 import type {
   Facility,
+  ProjectFacility,
   FacilityId,
   FacilityListFilter,
   FacilityListPage,
@@ -30,6 +31,11 @@ export interface FacilitiesRepo {
    * Lista de facilities con filtros opcionales.
    */
   getFacilities(filters?: FacilityListFilter): Promise<FacilityListPage>;
+
+  /**
+   * Facilities asociadas a un proyecto, con su dirección y ciudad.
+   */
+  getByProject(projectId: string): Promise<ProjectFacility[]>;
 
   /**
    * Detalle de una facility por su ID.

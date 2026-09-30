@@ -1,41 +1,36 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@shared/lib/cn";
 import AuditEditTabsBar, { type AuditEditTab } from "./AuditEditTabsBar";
 import AuditQuestionsList, { type QuestionItemVM } from "./AuditQuestionsList";
 import AuditQuestionsHeader, {
   type QuestionsFilterMode,
 } from "./AuditQuestionsHeader";
-import ReportItemsTable from "./ReportItemsTable";
+import ReportPreview from "./ReportPreview";
+import ReportActionBar from "./ReportActionBar";
 import FinalReportHeader from "./FinalReportHeader";
 import CommentsSidebar from "./CommentsSidebar";
 import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
+import { auditDetailKey } from "../lib/hooks/useAuditDetail";
+import { useReportDrafts } from "../lib/hooks/useReportDrafts";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { Loading } from "@shared/ui/Loading";
+import { Retry } from "@shared/ui/Retry";
 import type { AuditDetail } from "@entities/audit/model/audit-detail";
-import type { AuditStatus } from "@entities/audit/model";
-import { useUpdateAuditReviewStatus } from "../lib/hooks/useUpdateAuditReviewStatus";
-import AuditStatusSelector from "./AuditStatusSelector";
-import AuditFindingEditDialog from "./AuditFindingEditDialog";
 import ExportReportModal from "./ExportReportModal";
 import { useExportAuditReport } from "../lib/hooks/useExportAuditReport";
-
-export type ReportSeverity = "high" | "medium" | "low";
-
-export interface ReportItemVM {
-  id: string;
-  title: string;
-  severity: ReportSeverity;
-  photos?: string[];
-  quantity?: number | null;
-  unitPrice?: number | null;
-}
+import { useAuditReport } from "@features/reports/lib/hooks/useAuditReport";
+import { useDownloadReportFile } from "@features/reports/lib/hooks/useDownloadReportFile";
+import { useSession } from "@processes/auth/hooks";
 
 export interface AuditEditContentProps {
   id: string;
   auditDetail: AuditDetail | undefined;
   isAuditDetailLoading?: boolean;
+  /** Avisa si la vista previa tiene cambios sin guardar. */
+  onDirtyChange?: ((dirty: boolean) => void) | undefined;
 }
 
 type CommentTarget = {
@@ -43,11 +38,20 @@ type CommentTarget = {
   title: string;
 };
 
+// Estados en los que ya existe el PDF del proyecto.
+const REPORTED_STATUSES = new Set(["final_report_sent_to_client", "completed"]);
+
+const hasDownloadUrl = (url: string | null | undefined) =>
+  Boolean(url && /^https?:\/\//.test(url));
+
 const AuditEditContent: React.FC<AuditEditContentProps> = ({
   id,
   auditDetail,
   isAuditDetailLoading,
+  onDirtyChange,
 }) => {
+  const queryClient = useQueryClient();
+  const { isAdmin } = useSession();
   const [internalTab, setInternalTab] = useState<AuditEditTab>("questions");
   const [internalFilter, setInternalFilter] =
     useState<QuestionsFilterMode>("all");
@@ -57,11 +61,6 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     CommentTarget | undefined
   >(undefined);
 
-  const [editOpen, setEditOpen] = useState(false);
-  const [selectedFinding, setSelectedFinding] = useState<AuditFinding | null>(
-    null
-  );
-
   const {
     data: reviewDetail,
     isLoading,
@@ -69,32 +68,57 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     refetch: refetchReviewDetail,
   } = useAuditReviewDetail(id);
 
-  const { mutate: mutateStatus, isPending: isUpdatingStatus } =
-    useUpdateAuditReviewStatus();
+  const findings: AuditFinding[] = useMemo(
+    () => reviewDetail?.findings ?? [],
+    [reviewDetail?.findings]
+  );
+  const status = reviewDetail?.status;
+  // Sólo un admin edita, y sólo con la auditoría en revisión (lo exige el backend).
+  const editable = isAdmin && status === "draft_report_in_review";
+  const drafts = useReportDrafts(id, findings);
+
+  useEffect(() => {
+    onDirtyChange?.(drafts.isDirty);
+  }, [drafts.isDirty, onDirtyChange]);
+
+  // ---- Approve: aprueba y genera el PDF, sin descargarlo ----
   const refreshAfterQueue = useCallback(async () => {
     await refetchReviewDetail();
   }, [refetchReviewDetail]);
-  const exportReport = useExportAuditReport(id, {
+  const approveFlow = useExportAuditReport(id, {
     onQueued: refreshAfterQueue,
+    downloadWhenReady: false,
   });
+  const approved = approveFlow.progress.phase === "done";
 
-  const findings: AuditFinding[] = reviewDetail?.findings ?? [];
-  const status = reviewDetail?.status;
+  // ---- Download: el PDF del proyecto, una vez aprobado ----
+  const reportEnabled = Boolean(status && REPORTED_STATUSES.has(status)) || approved;
+  const { data: report } = useAuditReport(id, { enabled: reportEnabled });
+  const { download, activeId: downloadingId } = useDownloadReportFile();
+  const canDownload = hasDownloadUrl(report?.reportUrl);
+
+  useEffect(() => {
+    if (!approved) return;
+    // El estado y el PDF cambian del lado del backend: se vuelven a leer.
+    void refetchReviewDetail();
+    void queryClient.invalidateQueries({ queryKey: auditDetailKey(id) });
+    void queryClient.invalidateQueries({ queryKey: ["reports", "by-audit", id] });
+  }, [approved, id, queryClient, refetchReviewDetail]);
+
+  const handleDownload = useCallback(() => {
+    if (!report) return;
+    void download(report).catch((error: unknown) => {
+      console.error("[AuditEditContent] Error downloading report:", error);
+      alert("Error downloading the report. Please try again.");
+    });
+  }, [download, report]);
+
   const hasSidebar = Boolean(selectedCommentTarget);
   const questionsToRender = useMemo(
     () => (auditDetail?.questions ?? []) as unknown as QuestionItemVM[],
     [auditDetail?.questions]
   );
   const showLoadingOverlay = isLoading || isAuditDetailLoading;
-  const [selectedStatus, setSelectedStatus] = useState<AuditStatus | undefined>(
-    status
-  );
-
-  useEffect(() => {
-    if (status) {
-      setSelectedStatus(status);
-    }
-  }, [status]);
 
   const handleChangeTab = useCallback((tab: AuditEditTab) => {
     setInternalTab(tab);
@@ -118,33 +142,6 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     });
   }, []);
 
-  const handleOpenEditFinding = useCallback((row: AuditFinding) => {
-    setSelectedFinding(row);
-    setEditOpen(true);
-  }, []);
-
-  const handleEditDialogOpenChange = useCallback((open: boolean) => {
-    setEditOpen(open);
-    if (!open) {
-      setSelectedFinding(null);
-    }
-  }, []);
-
-  const handleChangeStatus = useCallback(
-    (next: AuditStatus) => {
-      if (!id || !status) return;
-      const previous = selectedStatus ?? status;
-      setSelectedStatus(next);
-      mutateStatus(
-        { auditId: id, status: next },
-        {
-          onError: () => setSelectedStatus(previous),
-        }
-      );
-    },
-    [id, mutateStatus, selectedStatus, status]
-  );
-
   if (showLoadingOverlay) return <Loading />;
 
   return (
@@ -167,77 +164,69 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
         </>
       ) : (
         <section className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="mb-3">
-            <FinalReportHeader
-              onExport={exportReport.start}
-              disabled={!findings.length}
-              exporting={exportReport.isBusy}
-              loadingLabel={
-                exportReport.progress.percent === null
-                  ? exportReport.progress.message
-                  : `${exportReport.progress.message} ${exportReport.progress.percent}%`
-              }
-              rightAddon={
-                <AuditStatusSelector
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  disabled={!status || isLoading || isAuditDetailLoading}
-                  isLoading={isUpdatingStatus}
-                />
-              }
+          <FinalReportHeader className="mb-3" />
+
+          {isError ? (
+            <Retry
+              text="The report could not be loaded."
+              onClick={() => void refetchReviewDetail()}
             />
-          </div>
+          ) : (
+            <div className={cn("flex gap-4", "flex-col md:flex-row")}>
+              <div
+                className={cn(
+                  "min-w-0 flex-1",
+                  hasSidebar && "md:max-h-[70vh] md:overflow-y-auto pr-1"
+                )}
+              >
+                <ReportPreview
+                  findings={findings}
+                  facilityName={auditDetail?.facilityName ?? "Facility"}
+                  location={auditDetail?.location}
+                  editable={editable}
+                  drafts={drafts}
+                  canComment={isAdmin}
+                  onAddComment={handleOpenComments}
+                />
+              </div>
 
-          <div className={cn("flex gap-4", "flex-col md:flex-row")}>
-            <div
-              className={cn(
-                "min-w-0 flex-1",
-                hasSidebar && "md:max-h-[70vh] md:overflow-y-auto pr-1"
+              {hasSidebar && (
+                <CommentsSidebar
+                  auditId={id}
+                  selected={selectedCommentTarget}
+                  onClose={handleCloseSidebar}
+                  className="md:w-[380px]"
+                />
               )}
-            >
-              <ReportItemsTable
-                items={findings}
-                loading={isLoading}
-                error={isError}
-                onError={refetchReviewDetail}
-                onAddComment={handleOpenComments}
-                onEditFinding={handleOpenEditFinding}
-              />
             </div>
+          )}
 
-            {hasSidebar && (
-              <CommentsSidebar
-                auditId={id}
-                selected={selectedCommentTarget}
-                onClose={handleCloseSidebar}
-                className="md:w-[380px]"
-              />
-            )}
-          </div>
+          <ReportActionBar
+            isDirty={drafts.isDirty}
+            hasErrors={drafts.hasErrors}
+            isSaving={drafts.isSaving}
+            saveError={drafts.saveError}
+            onSave={() => void drafts.save()}
+            onDiscard={drafts.discard}
+            canApprove={editable && findings.length > 0}
+            approving={approveFlow.isBusy}
+            onApprove={() => void approveFlow.start()}
+            canDownload={canDownload}
+            downloading={Boolean(report) && downloadingId === report?.id}
+            onDownload={handleDownload}
+          />
         </section>
       )}
 
-      <AuditFindingEditDialog
-        open={editOpen}
-        onOpenChange={handleEditDialogOpenChange}
-        auditId={id}
-        questionCode={selectedFinding?.questionCode ?? ""}
-        defaultValues={{
-          quantity:
-            typeof selectedFinding?.quantity === "number" &&
-              Number.isFinite(selectedFinding.quantity)
-              ? selectedFinding.quantity
-              : null,
-          notes: selectedFinding?.notes ?? null,
-        }}
-      />
       <ExportReportModal
-        open={exportReport.isOpen}
-        progress={exportReport.progress}
-        filename={exportReport.filename}
-        onStop={exportReport.stopWaiting}
-        onRetry={exportReport.retry}
-        onClose={exportReport.close}
+        open={approveFlow.isOpen}
+        progress={approveFlow.progress}
+        filename={approveFlow.filename}
+        onStop={approveFlow.stopWaiting}
+        onRetry={approveFlow.retry}
+        onClose={approveFlow.close}
+        activeTitle="Approving report"
+        showFilename={false}
       />
     </div>
   );

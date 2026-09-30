@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import type { Route } from "next";
 import AuditsTable from "@features/audits/ui/AuditsTable";
 import AuditsToolbar from "@features/audits/ui/AuditsToolBar";
 import { cn } from "@shared/lib/cn";
@@ -11,22 +9,11 @@ import useListAudits from "@features/audits/lib/hooks/useListAudits";
 import { useDeleteAudit } from "@features/audits/lib/hooks/useDeleteAudit";
 import { useAuditors } from "@features/audits/lib/hooks/useAuditors";
 import type { Audit } from "@entities/audit/model";
-import { useSendForReviewAudit } from "@features/audits/lib/hooks/useSendForReviewAudit";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-  ModalFooter,
-} from "@shared/ui/modal";
-import { Button } from "@shared/ui/controls";
+import { useOpenAuditReview } from "@features/audits/lib/hooks/useOpenAuditReview";
+import NoReportNeededModal from "@features/audits/ui/NoReportNeededModal";
 
 const AuditsPage: React.FC = () => {
-  const router = useRouter();
   const [query, setQuery] = useState<string>("");
-  const [pendingAuditId, setPendingAuditId] = useState<string | null>(null);
-  const [noFindingsDialogOpen, setNoFindingsDialogOpen] = useState(false);
 
   // Filter state
   const [auditorFilter, setAuditorFilter] = useState<string>("");
@@ -53,11 +40,11 @@ const AuditsPage: React.FC = () => {
   // Fetch auditors from API
   const { auditors: availableAuditors } = useAuditors();
 
-  const { start: startSendForReview, sendResult } = useSendForReviewAudit({
-    refetchIntervalMs: 5000,
-    stopWhenReady: true,
-    onReady: () => refetch(),
-  });
+  const {
+    openReview: handleEdit,
+    editingId,
+    noReportNeeded,
+  } = useOpenAuditReview({ onReady: () => refetch() });
 
   // Detect pagination mode: server-side if last_eval_id present, client-side otherwise
   const paginationMode = useMemo(() => {
@@ -128,7 +115,6 @@ const AuditsPage: React.FC = () => {
   }, []);
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
 
   const handleDelete = useCallback(
     async (audit: Audit) => {
@@ -150,43 +136,6 @@ const AuditsPage: React.FC = () => {
     },
     [deleteMutation]
   );
-
-  const handleEdit = useCallback(
-    (audit: Audit, isCompliant?: boolean) => {
-      if (isCompliant) {
-        setNoFindingsDialogOpen(true);
-        return;
-      }
-      if (audit.status === "draft_report_pending_review") {
-        setEditingId(audit.id);
-        startSendForReview(audit.id);
-        setPendingAuditId(audit.id);
-        return;
-      }
-      setEditingId(audit.id);
-      const auditorName = audit.auditorName ?? audit.createdBy ?? "";
-      const baseHref = `/audits/${encodeURIComponent(
-        audit.id
-      )}/edit` as Route<`/audits/${string}/edit`>;
-      const href =
-        auditorName.trim().length > 0
-          ? (`${baseHref}?auditor=${encodeURIComponent(
-            auditorName
-          )}` as Route<`/audits/${string}/edit`>)
-          : baseHref;
-      router.push(href);
-    },
-    [router, startSendForReview]
-  );
-
-  useEffect(() => {
-    if (!sendResult || !pendingAuditId) return;
-    const href = `/audits/${encodeURIComponent(
-      pendingAuditId
-    )}/edit` as Route<`/audits/${string}/edit`>;
-    router.push(href);
-    setPendingAuditId(null);
-  }, [sendResult, pendingAuditId, router]);
 
   return (
     <main className={cn("min-h-dv hoverflow-hidden bg-white")}>
@@ -225,25 +174,10 @@ const AuditsPage: React.FC = () => {
           onPageSizeChange={setPageSize}
         />
       </div>
-      <Modal open={noFindingsDialogOpen} onOpenChange={setNoFindingsDialogOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>No Report Needed</ModalTitle>
-            <ModalDescription>
-              This audit has no findings — all answers are compliant. No report will be generated.
-            </ModalDescription>
-          </ModalHeader>
-          <ModalFooter>
-            <Button
-              type="button"
-              onClick={() => setNoFindingsDialogOpen(false)}
-              className="bg-black hover:opacity-80 rounded-xl w-full"
-            >
-              OK
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <NoReportNeededModal
+        open={noReportNeeded.open}
+        onOpenChange={noReportNeeded.onOpenChange}
+      />
     </main>
   );
 };
