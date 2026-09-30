@@ -78,8 +78,13 @@ const SmartEditButton = memo(({
     staleTime: Infinity,
   });
 
-  // The backend determines findings. A NO can select a compliant flow branch;
-  // only missing or uncertain answers require review when findings are zero.
+  // Una auditoría es "conforme" cuando el backend no encontró hallazgos y todas
+  // las preguntas de sí/no tienen una respuesta clara. Un "No" puede ser la
+  // rama conforme del flow (p. ej. «¿Es una rampa diagonal?»), así que sólo
+  // las respuestas faltantes o UNSURE obligan a revisar.
+  //
+  // Comparar contra "YES" nunca podía acertar: los pasos Form y Select no
+  // llevan respuesta y el mapper normaliza "YES" a booleano `true`.
   let isRed = false;
   if (checkAnswers && detail) {
     const yesNoAnswers = (detail.questions ?? [])
