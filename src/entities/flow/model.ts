@@ -7,6 +7,7 @@ export type FlowId = string;
 
 export interface Flow {
   id: FlowId;
+  code?: string | undefined;
   title: string;
   description?: string | null;
   steps: FlowStep[];
