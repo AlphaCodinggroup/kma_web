@@ -27,6 +27,12 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
     const [isExpanded, setIsExpanded] = React.useState(!!conditional);
     const [isEnabled, setIsEnabled] = React.useState(!!conditional);
 
+    // Sincroniza la expansión al cambiar de paso o al actualizar el flow
+    React.useEffect(() => {
+        setIsEnabled(!!conditional);
+        setIsExpanded(!!conditional);
+    }, [currentStepId, flow, conditional]);
+
     // Obtener los pasos que aparecen antes del paso actual (pueden ser referenciados en condiciones)
     const currentStepIndex = flow.steps.findIndex((s) => s.id === currentStepId);
     const availableSteps = flow.steps.slice(0, currentStepIndex);
@@ -44,8 +50,10 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
         if (disabled) return;
         setIsEnabled(enabled);
         if (enabled) {
+            setIsExpanded(true);
             onChange({ conditions: [], next: "", match_any: false });
         } else {
+            setIsExpanded(false);
             onChange(undefined);
         }
     };
@@ -83,32 +91,36 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
 
     return (
         <div className="space-y-2 border-t pt-3">
-            <button
-                type="button"
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full flex items-center justify-between p-2.5 bg-purple-50 hover:bg-purple-100/70 border border-purple-200 rounded-lg transition-colors text-left"
-            >
-                <div className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        checked={isEnabled}
-                        disabled={disabled}
-                        onChange={(e) => handleToggle(e.target.checked)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="rounded border-purple-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                    />
-                    <span className="text-xs font-semibold text-purple-900 uppercase tracking-wider">{label}</span>
-                    {isEnabled && conditional && (
-                        <span className="text-[10px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded-full font-medium">
-                            {conditional.conditions.length} cond.
-                        </span>
-                    )}
-                </div>
-                {isExpanded ? <ChevronUp className="h-4 w-4 text-purple-600" /> : <ChevronDown className="h-4 w-4 text-purple-600" />}
-            </button>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                {label}
+            </Label>
+            <div className="space-y-2">
+                <button
+                    type="button"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="w-full flex items-center justify-between p-2.5 bg-purple-50 hover:bg-purple-100/70 border border-purple-200 rounded-lg transition-colors text-left"
+                >
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            checked={isEnabled}
+                            disabled={disabled}
+                            onChange={(e) => handleToggle(e.target.checked)}
+                            onClick={(e) => e.stopPropagation()}
+                            className="rounded border-purple-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                        />
+                        <span className="text-xs font-semibold text-purple-900 uppercase tracking-wider">{label}</span>
+                        {isEnabled && conditional && (
+                            <span className="text-[10px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded-full font-medium">
+                                {conditional.conditions.length} condition(s)
+                            </span>
+                        )}
+                    </div>
+                    {isExpanded ? <ChevronUp className="h-4 w-4 text-purple-600" /> : <ChevronDown className="h-4 w-4 text-purple-600" />}
+                </button>
 
-            {isExpanded && isEnabled && conditional && (
-                <div className="p-3 border border-purple-200 rounded-lg bg-purple-50/20 space-y-3">
+                {isExpanded && isEnabled && conditional && (
+                    <div className="p-4 border border-purple-200 rounded-lg bg-purple-50/20 space-y-3">
                     <p className="text-xs text-gray-500">{description}</p>
 
                     {/* Paso de destino */}
@@ -230,6 +242,7 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 };

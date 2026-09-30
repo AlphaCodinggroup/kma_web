@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField } from "@entities/flow/model";
-import { Button, Input } from "@shared/ui/controls";
+import { Button } from "@shared/ui/controls";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
 import {
     Save,
@@ -730,29 +730,36 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         <div className="h-[calc(100vh-100px)] flex flex-col gap-3">
             {/* Top Bar / Header conforme al mockup */}
             <div className="flex items-center justify-between gap-4 px-1 py-1">
-                {/* Título & contador de nodos */}
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex items-center gap-2 min-w-0">
-                        <input
-                            value={flow.title}
-                            disabled={!isAdmin}
-                            onChange={(e) => setFlow({ ...flow, title: e.target.value })}
-                            className="text-xl sm:text-2xl font-bold bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-400 focus:bg-white rounded px-1.5 py-0.5 text-gray-900 transition-all focus:outline-none truncate"
-                            placeholder="Untitled Flow"
-                        />
-                        <span className="text-sm font-medium text-gray-400 whitespace-nowrap">
-                            · {flow.steps.length} {flow.steps.length === 1 ? "node" : "nodes"}
-                        </span>
-                    </div>
+                {/* Título & contador de nodos & descripción */}
+                <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-center gap-2 min-w-0">
+                            <input
+                                value={flow.title}
+                                onChange={(e) => setFlow({ ...flow, title: e.target.value })}
+                                className="text-xl sm:text-2xl font-bold bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-400 focus:bg-white rounded px-1.5 py-0.5 text-gray-900 transition-all focus:outline-none truncate"
+                                placeholder="Untitled Flow"
+                            />
+                            <span className="text-sm font-medium text-gray-400 whitespace-nowrap">
+                                · {flow.steps.length} {flow.steps.length === 1 ? "node" : "nodes"}
+                            </span>
+                        </div>
 
-                    <button
-                        type="button"
-                        onClick={() => setShowHelpModal(true)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors shrink-0"
-                        title="How to create a flow"
-                    >
-                        <Info className="h-4 w-4" />
-                    </button>
+                        <button
+                            type="button"
+                            onClick={() => setShowHelpModal(true)}
+                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors shrink-0"
+                            title="How to create a flow"
+                        >
+                            <Info className="h-4 w-4" />
+                        </button>
+                    </div>
+                    <input
+                        value={flow.description ?? ""}
+                        onChange={(e) => setFlow({ ...flow, description: e.target.value })}
+                        className="text-xs text-gray-500 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-400 focus:bg-white rounded px-1.5 py-0.5 max-w-md placeholder:text-gray-400 transition-all focus:outline-none"
+                        placeholder="Add a description (optional)..."
+                    />
                 </div>
 
                 {/* Acciones principales: Discard, Export, Save Flow */}
@@ -767,7 +774,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                 onClick={handleClearFlow}
                                 className="h-9 px-3 gap-1.5 text-xs bg-white text-red-600 hover:bg-red-50 border border-red-200 shadow-xs"
                                 disabled={isSaving || !isAdmin}
-                                title={!isAdmin ? "Only administrators can discard changes" : "Discard unsaved changes"}
+                                title={!isAdmin ? "Only administrators can discard changes" : "Descartar cambios y volver al estado inicial"}
                             >
                                 <RotateCcw className="h-3.5 w-3.5" />
                                 Discard
@@ -1042,6 +1049,37 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                                     <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
                                     <div>
                                         <span className="font-medium text-amber-700">Incomplete Step:</span> Means a &quot;Next Step&quot; is missing. You must fill all links before saving.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                                <span className="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">
+                                    5
+                                </span>
+                                Advanced: Double Dipping &amp; Shared Forms
+                            </h3>
+                            <div className="ml-8 space-y-3 text-sm">
+                                <p className="text-gray-700">
+                                    <strong>&quot;Double Dipping&quot;</strong> allows you to reuse a single Form step for multiple different barriers or scenarios. This is powerful for grouping findings.
+                                </p>
+
+                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 space-y-2">
+                                    <p className="font-semibold text-purple-900 text-xs uppercase">How to setup Double Dipping:</p>
+                                    <ol className="list-decimal list-inside space-y-1 text-gray-700 ml-1">
+                                        <li>Create a single <strong>Form</strong> step (e.g. &quot;Record Barrier Quantity&quot;).</li>
+                                        <li>Create your <strong>Questions</strong> (e.g. &quot;Is the door too heavy?&quot;, &quot;Is the knob accessible?&quot;).</li>
+                                        <li>Set the <strong>Barrier ID</strong> on each Question to their respective barrier code.</li>
+                                        <li>Point the failing branch of both Questions to the <strong>same Form step</strong>.</li>
+                                    </ol>
+                                </div>
+
+                                <div className="flex items-start gap-2 pt-1">
+                                    <Info className="h-4 w-4 text-purple-500 mt-0.5 shrink-0" />
+                                    <div className="text-gray-600 text-xs">
+                                        <strong>Auto-Calculation:</strong> When you save, the system automatically detects all the &quot;Double Dippings&quot; and calculates the &quot;Shared Quantity&quot; logic for you. You do not need to manually assign Barrier IDs to the Form.
                                     </div>
                                 </div>
                             </div>

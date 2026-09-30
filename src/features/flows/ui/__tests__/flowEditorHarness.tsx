@@ -147,7 +147,10 @@ export function comboboxIn(labelText: string | RegExp): HTMLElement {
 
 /** Bloques de opciones del paso Select, en orden de render. */
 export function optionBlocks(): HTMLElement[] {
-  const container = fieldRow("Options").lastElementChild;
+  const row = fieldRow("Options");
+  const container =
+    row.querySelector("div.space-y-3") ??
+    row.lastElementChild;
   if (!container) throw new Error("Options container not found");
   return Array.from(container.children).filter(
     (el): el is HTMLElement => el.tagName === "DIV"
@@ -156,7 +159,11 @@ export function optionBlocks(): HTMLElement[] {
 
 /** Bloques de campos del paso Form, en orden de render. */
 export function fieldBlocks(): HTMLElement[] {
-  const container = fieldRow("Fields").lastElementChild?.lastElementChild;
+  const row = fieldRow("Fields");
+  const container =
+    row.querySelector("div.space-y-3.pt-1") ??
+    row.lastElementChild?.lastElementChild ??
+    row.lastElementChild;
   if (!container) throw new Error("Fields container not found");
   return Array.from(container.children).filter(
     (el): el is HTMLElement => el.tagName === "DIV"
@@ -165,9 +172,11 @@ export function fieldBlocks(): HTMLElement[] {
 
 /**
  * Botón de borrado (sólo icono, sin nombre accesible) de un bloque:
- * siempre es el último botón del bloque.
+ * siempre es el último botón del bloque o el botón con título delete.
  */
 export function lastButtonIn(block: HTMLElement): HTMLElement {
+  const deleteBtn = within(block).queryByTitle(/delete/i);
+  if (deleteBtn) return deleteBtn;
   const buttons = within(block).getAllByRole("button");
   const last = buttons[buttons.length - 1];
   if (!last) throw new Error("No buttons found in block");
@@ -176,9 +185,11 @@ export function lastButtonIn(block: HTMLElement): HTMLElement {
 
 /** Columna izquierda del editor (buscador + lista de pasos + botones de alta). */
 export function sidebar(): HTMLElement {
-  const panel = screen
-    .getByPlaceholderText("Search steps...")
-    .closest("div.w-80");
+  const input = screen.getByPlaceholderText("Search steps...");
+  const panel =
+    input.closest("div.rounded-xl") ??
+    input.closest("div.w-80") ??
+    input.closest("div.flex-1");
   if (!panel) throw new Error("Sidebar not found");
   return panel as HTMLElement;
 }
@@ -188,7 +199,7 @@ export function sidebarCard(stepId: string): HTMLElement {
   const idLabel = within(sidebar()).getByText(stepId, {
     selector: "span.font-bold",
   });
-  const card = idLabel.closest("div.p-3");
+  const card = idLabel.closest("tr") ?? idLabel.closest("div.p-3");
   if (!card) throw new Error(`Sidebar card not found for ${stepId}`);
   return card as HTMLElement;
 }
@@ -218,7 +229,10 @@ export function conditionalToggle(branch: "YES" | "NO"): HTMLElement {
 
 /** Panel desplegado del editor condicional (null si está colapsado). */
 export function conditionalPanel(branch: "YES" | "NO"): HTMLElement | null {
-  return conditionalRow(branch).querySelector("div.p-4");
+  return (
+    conditionalRow(branch).querySelector("div.p-4") ??
+    conditionalRow(branch).querySelector("div.p-3")
+  );
 }
 
 function requirePanel(branch: "YES" | "NO"): HTMLElement {

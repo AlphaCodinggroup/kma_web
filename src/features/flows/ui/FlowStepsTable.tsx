@@ -9,10 +9,6 @@ import {
     AlertTriangle,
     Trash2,
     Plus,
-    HelpCircle,
-    FileText,
-    List,
-    CheckCircle2,
     ArrowRight
 } from "lucide-react";
 import { cn } from "@shared/lib/cn";
@@ -215,42 +211,44 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                     </div>
 
                     {/* Botonera de añadir paso rápido */}
-                    {isAdmin && (
-                        <div className="flex items-center gap-1.5">
-                            <Button
-                                type="button"
-                                onClick={() => onAddStep("Question")}
-                                className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm"
-                                title="Add Question step"
-                            >
-                                <Plus className="h-3 w-3 mr-1 text-blue-600" /> Question
-                            </Button>
-                            <Button
-                                type="button"
-                                onClick={() => onAddStep("Form")}
-                                className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm"
-                                title="Add Form step"
-                            >
-                                <Plus className="h-3 w-3 mr-1 text-emerald-600" /> Form
-                            </Button>
-                            <Button
-                                type="button"
-                                onClick={() => onAddStep("Select")}
-                                className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm"
-                                title="Add Select step"
-                            >
-                                <Plus className="h-3 w-3 mr-1 text-purple-600" /> Select
-                            </Button>
-                            <Button
-                                type="button"
-                                onClick={() => onAddStep("End")}
-                                className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm"
-                                title="Add End step"
-                            >
-                                <Plus className="h-3 w-3 mr-1 text-gray-600" /> End
-                            </Button>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                        <Button
+                            type="button"
+                            disabled={!isAdmin}
+                            onClick={() => onAddStep("Question")}
+                            className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            title={!isAdmin ? "Only administrators can add steps" : "Add Question step"}
+                        >
+                            <Plus className="h-3 w-3 mr-1 text-blue-600" /> Question
+                        </Button>
+                        <Button
+                            type="button"
+                            disabled={!isAdmin}
+                            onClick={() => onAddStep("Form")}
+                            className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            title={!isAdmin ? "Only administrators can add steps" : "Add Form step"}
+                        >
+                            <Plus className="h-3 w-3 mr-1 text-emerald-600" /> Form
+                        </Button>
+                        <Button
+                            type="button"
+                            disabled={!isAdmin}
+                            onClick={() => onAddStep("Select")}
+                            className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            title={!isAdmin ? "Only administrators can add steps" : "Add Select step"}
+                        >
+                            <Plus className="h-3 w-3 mr-1 text-purple-600" /> Select
+                        </Button>
+                        <Button
+                            type="button"
+                            disabled={!isAdmin}
+                            onClick={() => onAddStep("End")}
+                            className="h-7 px-2.5 text-xs bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            title={!isAdmin ? "Only administrators can add steps" : "Add End step"}
+                        >
+                            <Plus className="h-3 w-3 mr-1 text-gray-600" /> End
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Input de Búsqueda */}
@@ -259,7 +257,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                     <Input
                         value={searchTerm}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        placeholder="Search by ID or question..."
+                        placeholder="Search steps..."
                         className="pl-9 h-9 text-xs bg-gray-50/50 border-gray-200 focus:bg-white"
                     />
                 </div>
@@ -327,7 +325,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                                         <GripVertical className="h-3.5 w-3.5" />
                                                     </span>
                                                 )}
-                                                <span>{step.id}</span>
+                                                <span className="font-bold">{step.id}</span>
                                                 {isDuplicateId && (
                                                     <span
                                                         className="text-[10px] text-red-600 bg-red-100 border border-red-300 px-1 py-0.2 rounded font-sans"
@@ -337,7 +335,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                                     </span>
                                                 )}
                                                 {incomplete && (
-                                                    <span title="Incomplete step: missing next reference">
+                                                    <span title="Incomplete: missing step references">
                                                         <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
                                                     </span>
                                                 )}
@@ -346,8 +344,8 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
 
                                         {/* Type */}
                                         <td className="py-3 px-3 whitespace-nowrap">
-                                            <span className="font-mono text-xs text-gray-500 lowercase">
-                                                {step.type.toLowerCase()}
+                                            <span className="font-mono text-xs text-gray-600">
+                                                {step.type}
                                             </span>
                                         </td>
 
@@ -369,24 +367,38 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
 
                                         {/* Barriers */}
                                         <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-gray-700">
-                                            {barriers || <span className="text-gray-300">-</span>}
+                                            {barriers ? (
+                                                <div className="flex flex-wrap gap-1">
+                                                    {barriers.split(", ").map((b) => (
+                                                        <span key={b} className="px-1.5 py-0.5 rounded bg-gray-100 border border-gray-200 text-gray-700">
+                                                            {b}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <span className="text-gray-300">-</span>
+                                            )}
                                         </td>
 
                                         {/* Quick Actions (Delete) */}
                                         <td className="py-3 px-2 text-right">
-                                            {isAdmin && (
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onDeleteStep(step.id);
-                                                    }}
-                                                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"
-                                                    title="Delete step"
-                                                >
-                                                    <Trash2 className="h-3.5 w-3.5" />
-                                                </button>
-                                            )}
+                                            <button
+                                                type="button"
+                                                disabled={!isAdmin}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (isAdmin) onDeleteStep(step.id);
+                                                }}
+                                                className={cn(
+                                                    "p-1 text-gray-400 rounded transition-all",
+                                                    isAdmin
+                                                        ? "opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50"
+                                                        : "opacity-40 cursor-not-allowed"
+                                                )}
+                                                title={!isAdmin ? "Only administrators can delete steps" : "Delete step"}
+                                            >
+                                                <Trash2 className="h-3.5 w-3.5" />
+                                            </button>
                                         </td>
                                     </tr>
                                 );

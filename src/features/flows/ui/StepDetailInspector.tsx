@@ -17,12 +17,10 @@ import {
     Trash2,
     ImagePlus,
     X,
-    Info,
-    Camera
+    Info
 } from "lucide-react";
 import { StepSelector } from "./StepSelector";
 import { ConditionalNavEditor } from "./ConditionalNavEditor";
-import { cn } from "@shared/lib/cn";
 
 export interface StepDetailInspectorProps {
     selectedStep: FlowStep | null;
@@ -64,7 +62,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-gray-400 bg-white border border-gray-200 rounded-xl shadow-sm text-center">
                 <CornerDownRight className="h-8 w-8 mb-2 opacity-30 text-gray-400" />
                 <p className="text-sm font-medium text-gray-600">No step selected</p>
-                <p className="text-xs text-gray-400 mt-1">Select a step from the table on the left to edit its details</p>
+                <p className="text-xs text-gray-400 mt-1">Select a step from the sidebar to edit</p>
             </div>
         );
     }
@@ -86,7 +84,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                             </span>
                         </div>
                         <p className="text-xs text-gray-500 mt-0.5">
-                            {selectedStep.type} · Editing step details
+                            <span>{selectedStep.type}</span> · <span>Editing step details</span>
                         </p>
                     </div>
 
@@ -134,7 +132,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                     className="h-7 px-2 text-xs bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 shadow-sm gap-1"
                                     title="Add reference image"
                                 >
-                                    <ImagePlus className="h-3 w-3" /> Photo
+                                    <ImagePlus className="h-3 w-3" /> Add Image
                                 </Button>
                             )
                         )}
@@ -144,7 +142,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 type="button"
                                 onClick={() => onDeleteStep(selectedStep.id)}
                                 className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                                title="Delete step"
+                                title="Delete current step"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </button>
@@ -158,7 +156,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                 {/* STEP ID EDITABLE */}
                 <div>
                     <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                        STEP ID
+                        Step ID
                     </Label>
                     <Input
                         value={selectedStep.id}
@@ -174,7 +172,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                         {/* TITLE */}
                         <div>
                             <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                                TITLE
+                                Title
                             </Label>
                             <Input
                                 value={(selectedStep as FormStep).title}
@@ -188,7 +186,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                         {/* NEXT STEP */}
                         <div>
                             <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                                NEXT STEP
+                                Next Step
                             </Label>
                             <StepSelector
                                 value={(selectedStep as FormStep).next}
@@ -204,180 +202,112 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* EVIDENCE FIELDS */}
                         <div className="space-y-3 pt-2">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                                    EVIDENCE FIELDS
-                                </Label>
-                            </div>
+                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                                Fields
+                            </Label>
 
-                            {/* Botones de acción rápida: + Quantity, + Measurement, + Photo, + Notes */}
-                            {isAdmin && (
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                    <button
-                                        type="button"
-                                        onClick={() => onAddField(selectedStep.id, "quantity")}
-                                        disabled={(selectedStep as FormStep).fields.some((f) => f.id === "quantity")}
-                                        className={cn(
-                                            "px-2.5 py-1 text-xs font-semibold rounded shadow-sm transition-colors",
-                                            (selectedStep as FormStep).fields.some((f) => f.id === "quantity")
-                                                ? "bg-black text-white"
-                                                : "bg-gray-700 text-white hover:bg-gray-800"
-                                        )}
-                                    >
-                                        + Quantity
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => onAddField(selectedStep.id, "measurements")}
-                                        className={cn(
-                                            "px-2.5 py-1 text-xs font-semibold rounded shadow-sm transition-colors",
-                                            (selectedStep as FormStep).fields.some((f) => f.id.startsWith("measurements"))
-                                                ? "bg-black text-white"
-                                                : "bg-gray-700 text-white hover:bg-gray-800"
-                                        )}
-                                    >
-                                        + Measurement
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => onAddField(selectedStep.id, "photo")}
-                                        disabled={(selectedStep as FormStep).fields.some((f) => f.id === "photo")}
-                                        className={cn(
-                                            "px-2.5 py-1 text-xs font-semibold rounded shadow-sm transition-colors",
-                                            (selectedStep as FormStep).fields.some((f) => f.id === "photo")
-                                                ? "bg-black text-white"
-                                                : "bg-gray-700 text-white hover:bg-gray-800"
-                                        )}
-                                    >
-                                        + Photo
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => onAddField(selectedStep.id, "notes")}
-                                        disabled={(selectedStep as FormStep).fields.some((f) => f.id === "notes")}
-                                        className={cn(
-                                            "px-2.5 py-1 text-xs font-semibold rounded shadow-sm transition-colors",
-                                            (selectedStep as FormStep).fields.some((f) => f.id === "notes")
-                                                ? "bg-black text-white"
-                                                : "bg-gray-700 text-white hover:bg-gray-800"
-                                        )}
-                                    >
-                                        + Notes
-                                    </button>
-                                </div>
-                            )}
+                            <div className="space-y-4">
+                                {/* Botones de acción rápida: + Quantity, + Measurement, + Photo, + Notes */}
+                                {isAdmin && (
+                                    <div className="flex flex-row flex-wrap items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => onAddField(selectedStep.id, "quantity")}
+                                            disabled={(selectedStep as FormStep).fields.some((f) => f.id === "quantity")}
+                                            className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            <Plus className="h-3 w-3 mr-1" /> Quantity
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => onAddField(selectedStep.id, "measurements")}
+                                            className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm transition-colors"
+                                        >
+                                            <Plus className="h-3 w-3 mr-1" /> Measurement
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => onAddField(selectedStep.id, "photo")}
+                                            disabled={(selectedStep as FormStep).fields.some((f) => f.id === "photo")}
+                                            className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            <Plus className="h-3 w-3 mr-1" /> Photo
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => onAddField(selectedStep.id, "notes")}
+                                            disabled={(selectedStep as FormStep).fields.some((f) => f.id === "notes")}
+                                            className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            <Plus className="h-3 w-3 mr-1" /> Notes
+                                        </button>
+                                    </div>
+                                )}
 
-                            {/* Renderizado de campos configurados */}
-                            <div className="space-y-3 pt-1">
-                                {(selectedStep as FormStep).fields.map((field, fIdx) => (
-                                    <div
-                                        key={`${field.id}-${fIdx}`}
-                                        className="border border-gray-200 rounded-lg p-3 bg-white shadow-xs space-y-2 relative group"
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 font-mono">
-                                                {field.id === "photo"
-                                                    ? "PHOTO"
-                                                    : field.id === "notes"
-                                                    ? "NOTES (OPTIONAL)"
-                                                    : field.id.startsWith("measurements")
-                                                    ? "MEASUREMENT"
-                                                    : field.label.toUpperCase()}
-                                            </span>
-                                            {isAdmin && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => onDeleteField(selectedStep.id, fIdx)}
-                                                    className="text-gray-400 hover:text-red-500 p-0.5 rounded"
-                                                    title="Remove field"
-                                                >
-                                                    <Trash2 className="h-3 w-3" />
-                                                </button>
+                                {/* Form Fields List */}
+                                <div className="space-y-2">
+                                    {(selectedStep as FormStep).fields.map((field, fIdx) => (
+                                        <div key={fIdx} className="flex flex-col gap-2 bg-gray-50 p-2.5 rounded-lg border border-gray-200">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-20 text-xs font-mono text-gray-500 shrink-0">{field.type}</div>
+                                                <Input
+                                                    className="h-8 text-sm flex-1 bg-white"
+                                                    value={field.label}
+                                                    disabled={!isAdmin}
+                                                    onChange={(e) => onUpdateField(selectedStep.id, fIdx, { label: e.target.value })}
+                                                />
+                                                {field.id.startsWith("measurements") && (
+                                                    <select
+                                                        value={field.unit ?? '"'}
+                                                        disabled={!isAdmin}
+                                                        onChange={(e) => onUpdateField(selectedStep.id, fIdx, { unit: e.target.value })}
+                                                        className="h-8 text-sm border border-gray-300 rounded-md px-2 bg-white shrink-0"
+                                                    >
+                                                        <option value={'"'}>in (&quot;)</option>
+                                                        <option value={"cm"}>cm</option>
+                                                        <option value={"%"}>%</option>
+                                                    </select>
+                                                )}
+                                                {isAdmin && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => onDeleteField(selectedStep.id, fIdx)}
+                                                        className="text-gray-400 hover:text-red-500 p-1 shrink-0"
+                                                        title="Delete field"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                            {(field.type === "text" || field.type === "number") && (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-20 text-xs text-gray-400 shrink-0 text-right pr-2">Placeholder</div>
+                                                    <Input
+                                                        className="h-8 text-xs flex-1 bg-white"
+                                                        placeholder="Optional placeholder..."
+                                                        value={field.placeholder ?? ""}
+                                                        disabled={!isAdmin}
+                                                        onChange={(e) => onUpdateField(selectedStep.id, fIdx, { placeholder: e.target.value })}
+                                                    />
+                                                </div>
                                             )}
                                         </div>
-
-                                        {/* Field Photo Preview Box */}
-                                        {field.type === "photo" && (
-                                            <div className="border border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-center bg-gray-50/50">
-                                                <Camera className="h-5 w-5 text-gray-400 mb-1" />
-                                                <span className="text-xs text-emerald-600 font-medium">Upload photo</span>
-                                                <span className="text-[10px] text-gray-400">Captured in audit mobile app</span>
-                                            </div>
-                                        )}
-
-                                        {/* Field Notes Textarea */}
-                                        {field.id === "notes" && (
-                                            <Textarea
-                                                value={field.placeholder || ""}
-                                                disabled={!isAdmin}
-                                                onChange={(e) =>
-                                                    onUpdateField(selectedStep.id, fIdx, {
-                                                        placeholder: e.target.value,
-                                                        label: field.label
-                                                    })
-                                                }
-                                                placeholder="Add contextual notes..."
-                                                className="text-xs resize-none h-16 bg-gray-50/50"
-                                            />
-                                        )}
-
-                                        {/* Field Measurement Number + Unit */}
-                                        {field.id.startsWith("measurements") && (
-                                            <div className="flex items-center gap-2">
-                                                <Input
-                                                    type="text"
-                                                    value={field.label}
-                                                    disabled={!isAdmin}
-                                                    onChange={(e) =>
-                                                        onUpdateField(selectedStep.id, fIdx, { label: e.target.value })
-                                                    }
-                                                    className="h-8 text-xs flex-1"
-                                                    placeholder="Measurement label"
-                                                />
-                                                <select
-                                                    value={field.unit ?? '"'}
-                                                    disabled={!isAdmin}
-                                                    onChange={(e) =>
-                                                        onUpdateField(selectedStep.id, fIdx, { unit: e.target.value })
-                                                    }
-                                                    className="h-8 text-xs border border-gray-300 rounded-md px-2 bg-white shrink-0"
-                                                >
-                                                    <option value={'"'}>in (&quot;)</option>
-                                                    <option value={"cm"}>cm</option>
-                                                    <option value={"%"}>%</option>
-                                                </select>
-                                            </div>
-                                        )}
-
-                                        {/* Field Quantity or Generic Text */}
-                                        {field.id === "quantity" && (
-                                            <div className="flex items-center gap-2">
-                                                <Input
-                                                    type="text"
-                                                    value={field.label}
-                                                    disabled={!isAdmin}
-                                                    onChange={(e) =>
-                                                        onUpdateField(selectedStep.id, fIdx, { label: e.target.value })
-                                                    }
-                                                    className="h-8 text-xs flex-1"
-                                                    placeholder="Quantity"
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
                         {/* SHARED QUANTITY INFO */}
                         <div className="pt-2 border-t space-y-1.5">
                             <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                                SHARED QUANTITY
+                                Shared Quantity
                             </Label>
                             <div className="p-3 bg-purple-50/60 border border-purple-200 rounded-lg text-xs text-purple-900 leading-relaxed">
                                 <Info className="h-3.5 w-3.5 inline mr-1 text-purple-600" />
+                                Barrier IDs will be calculated and saved automatically when you click &quot;Save Flow&quot;.
+                                <br />
                                 <span>
-                                    Detected barriers:{" "}
+                                    Current detected barriers (saved):{" "}
                                     <strong className="font-mono">
                                         {(selectedStep as FormStep).metadata?.sharedQuantity?.appliesToBarriers?.join(", ") || "(None)"}
                                     </strong>
@@ -393,13 +323,13 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                         {/* QUESTION TEXT */}
                         <div>
                             <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                                QUESTION TEXT
+                                Question Text
                             </Label>
                             <Textarea
                                 value={(selectedStep as QuestionStep).text}
                                 disabled={!isAdmin}
                                 onChange={(e) => onUpdateStep(selectedStep.id, { text: e.target.value })}
-                                placeholder="Enter question text..."
+                                placeholder="Enter question text"
                                 rows={3}
                                 className="text-xs"
                             />
@@ -413,10 +343,9 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                             {/* YES Next */}
                             <div className="space-y-1">
-                                <div className="flex items-center gap-1 text-xs font-semibold text-emerald-800">
-                                    <span>YES</span>
-                                    <ArrowRight className="h-3 w-3" />
-                                </div>
+                                <Label className="flex items-center gap-1 text-xs font-semibold text-emerald-800 cursor-pointer">
+                                    Yes <ArrowRight className="h-3 w-3 inline" />
+                                </Label>
                                 <StepSelector
                                     value={(selectedStep as QuestionStep).yesNext}
                                     onChange={(id) =>
@@ -433,10 +362,9 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                             {/* NO Next */}
                             <div className="space-y-1">
-                                <div className="flex items-center gap-1 text-xs font-semibold text-red-800">
-                                    <span>NO</span>
-                                    <ArrowRight className="h-3 w-3" />
-                                </div>
+                                <Label className="flex items-center gap-1 text-xs font-semibold text-red-800 cursor-pointer">
+                                    No <ArrowRight className="h-3 w-3 inline" />
+                                </Label>
                                 <StepSelector
                                     value={(selectedStep as QuestionStep).noNext}
                                     onChange={(id) =>
@@ -455,7 +383,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                         {/* BARRIER ID */}
                         <div className="pt-2">
                             <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                                BARRIER ID
+                                Barrier ID
                             </Label>
                             <Input
                                 value={(selectedStep as QuestionStep).barrierId || ""}
@@ -502,7 +430,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                         {/* TITLE / TEXT */}
                         <div>
                             <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                                TITLE / TEXT
+                                Title / Text
                             </Label>
                             <Textarea
                                 value={(selectedStep as SelectStep).title || (selectedStep as SelectStep).text || ""}
@@ -518,20 +446,9 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* OPTIONS LIST */}
                         <div className="space-y-3 pt-2">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                                    OPTIONS
-                                </Label>
-                                {isAdmin && (
-                                    <Button
-                                        type="button"
-                                        onClick={() => onAddOption(selectedStep.id)}
-                                        className="h-6 px-2 text-[11px] bg-black text-white hover:bg-gray-800"
-                                    >
-                                        <Plus className="h-3 w-3 mr-1" /> Option
-                                    </Button>
-                                )}
-                            </div>
+                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                                Options
+                            </Label>
 
                             <div className="space-y-3">
                                 {(selectedStep as SelectStep).options.map((option, idx) => (
@@ -539,17 +456,6 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                         key={idx}
                                         className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2 relative"
                                     >
-                                        {isAdmin && (
-                                            <button
-                                                type="button"
-                                                onClick={() => onDeleteOption(selectedStep.id, idx)}
-                                                className="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1"
-                                                title="Delete option"
-                                            >
-                                                <Trash2 className="h-3.5 w-3.5" />
-                                            </button>
-                                        )}
-
                                         <div>
                                             <span className="text-[10px] font-bold text-gray-400 block mb-0.5">LABEL</span>
                                             <Input
@@ -588,8 +494,29 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                                 className="h-8 text-xs font-mono bg-white"
                                             />
                                         </div>
+
+                                        {isAdmin && (
+                                            <button
+                                                type="button"
+                                                onClick={() => onDeleteOption(selectedStep.id, idx)}
+                                                className="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1"
+                                                title="Delete option"
+                                            >
+                                                <Trash2 className="h-3.5 w-3.5" />
+                                            </button>
+                                        )}
                                     </div>
                                 ))}
+
+                                {isAdmin && (
+                                    <Button
+                                        type="button"
+                                        onClick={() => onAddOption(selectedStep.id)}
+                                        className="w-full h-8 px-3 gap-2 bg-black text-white hover:bg-gray-800 shadow-sm border-none text-xs"
+                                    >
+                                        <Plus className="h-3.5 w-3.5" /> Add Option
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </>
