@@ -137,7 +137,7 @@ const AuditFindingEditDialog: React.FC<AuditFindingEditDialogProps> = ({
                 value={quantity}
                 onChange={(e) => setQuantity(e.currentTarget.value)}
                 min="0"
-                step="1"
+                step="any"
                 placeholder="e.g. 25"
                 disabled={isSubmitting}
               />
