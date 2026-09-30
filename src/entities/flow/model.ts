@@ -83,6 +83,9 @@ export interface SelectOption {
   label: string;
   next: string;
   barrierId?: string | undefined;
+  yesNext?: string | undefined;
+  noNext?: string | undefined;
+  condition?: Condition | undefined;
 }
 
 export interface SelectStep extends BaseStep {
