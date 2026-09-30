@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   return proxyToBackend(req, {
     method: "GET",
     path: "/audits",
-    forwardQuery: ["status", "auditor", "limit", "last_eval_id"],
+    forwardQuery: ["status", "auditor", "project_id", "limit", "last_eval_id"],
     numericQuery: { limit: LIST_LIMIT_MAX },
   });
 }

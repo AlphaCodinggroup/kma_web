@@ -1,6 +1,6 @@
 /**
- * Auditorías de un proyecto: une las en curso y las completadas (el backend
- * excluye las completadas si no se pide el estado) y filtra por proyecto.
+ * Auditorías de un proyecto: una sola consulta al backend con `project_id`,
+ * que ya devuelve todos los estados, completadas incluidas.
  */
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -41,66 +41,49 @@ type ListState = {
   isError?: boolean;
 };
 
-const refetchInProgress = vi.fn();
-const refetchCompleted = vi.fn();
+const refetch = vi.fn();
 
-function stubLists(inProgress: ListState = {}, completed: ListState = {}) {
-  useListAudits.mockImplementation((opts?: { status?: string }) => {
-    const isCompleted = opts?.status === "completed";
-    const state = isCompleted ? completed : inProgress;
-    return {
-      data: state.audits ? { audits: state.audits, total: state.audits.length } : undefined,
-      isLoading: state.isLoading ?? false,
-      isFetching: state.isFetching ?? false,
-      isError: state.isError ?? false,
-      refetch: isCompleted ? refetchCompleted : refetchInProgress,
-    };
+function stubList(state: ListState = {}) {
+  useListAudits.mockReturnValue({
+    data: state.audits ? { audits: state.audits, total: state.audits.length } : undefined,
+    isLoading: state.isLoading ?? false,
+    isFetching: state.isFetching ?? false,
+    isError: state.isError ?? false,
+    refetch,
   });
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
-  stubLists();
+  stubList();
 });
 
 describe("useProjectAudits", () => {
-  it("asks for the audits in progress and the completed ones", () => {
+  it("asks the backend for the project's audits in a single query", () => {
     renderHook(() => useProjectAudits("project-1"));
 
-    expect(useListAudits).toHaveBeenCalledWith({ enabled: true });
-    expect(useListAudits).toHaveBeenCalledWith({ enabled: true, status: "completed" });
+    expect(useListAudits).toHaveBeenCalledTimes(1);
+    expect(useListAudits).toHaveBeenCalledWith({
+      enabled: true,
+      projectId: "project-1",
+    });
   });
 
-  it("keeps only the audits of the project from both lists", () => {
-    stubLists(
-      {
-        audits: [
-          makeAudit({ id: "a" }),
-          makeAudit({ id: "other", projectId: "project-2" }),
-        ],
-      },
-      { audits: [makeAudit({ id: "b", status: "completed" })] }
-    );
+  it("returns what the backend sent, completed audits included", () => {
+    stubList({
+      audits: [
+        makeAudit({ id: "a" }),
+        makeAudit({ id: "b", status: "completed" }),
+      ],
+    });
 
     const { result } = renderHook(() => useProjectAudits("project-1"));
 
     expect(result.current.audits.map((a) => a.id)).toEqual(["a", "b"]);
   });
 
-  it("lists an audit that shows up in both responses once", () => {
-    stubLists(
-      { audits: [makeAudit({ id: "a" })] },
-      { audits: [makeAudit({ id: "a", status: "completed" })] }
-    );
-
-    const { result } = renderHook(() => useProjectAudits("project-1"));
-
-    expect(result.current.audits).toHaveLength(1);
-    expect(result.current.audits[0]?.status).toBe("completed");
-  });
-
   it("does not fetch nor return audits without a project", () => {
-    stubLists({ audits: [makeAudit()] });
+    stubList({ audits: [makeAudit()] });
 
     const { result } = renderHook(() => useProjectAudits(undefined));
 
@@ -108,32 +91,21 @@ describe("useProjectAudits", () => {
     expect(result.current.audits).toEqual([]);
   });
 
-  it.each([
-    ["in progress", { isLoading: true }, {}],
-    ["completed", {}, { isLoading: true }],
-  ])("is loading while the %s list loads", (_label, inProgress, completed) => {
-    stubLists(inProgress, completed);
+  it("reports loading, fetching and error from the query", () => {
+    stubList({ isLoading: true, isFetching: true, isError: true });
 
     const { result } = renderHook(() => useProjectAudits("project-1"));
 
     expect(result.current.isLoading).toBe(true);
-  });
-
-  it("reports an error and fetching from either list", () => {
-    stubLists({ isFetching: true }, { isError: true });
-
-    const { result } = renderHook(() => useProjectAudits("project-1"));
-
-    expect(result.current.isError).toBe(true);
     expect(result.current.isFetching).toBe(true);
+    expect(result.current.isError).toBe(true);
   });
 
-  it("refetches both lists", async () => {
+  it("refetches the query", async () => {
     const { result } = renderHook(() => useProjectAudits("project-1"));
 
     await result.current.refetch();
 
-    expect(refetchInProgress).toHaveBeenCalledTimes(1);
-    expect(refetchCompleted).toHaveBeenCalledTimes(1);
+    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });

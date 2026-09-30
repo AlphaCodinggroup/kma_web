@@ -113,6 +113,9 @@ class AuditRepoHttp implements AuditRepo {
     if (params?.auditor) {
       searchParams.set('auditor', params.auditor);
     }
+    if (params?.project_id) {
+      searchParams.set('project_id', params.project_id);
+    }
     // `!= null` y no truthy: limit 0 es un valor que el backend entiende y
     // descartarlo cambiaba silenciosamente la consulta.
     if (params?.limit != null) {

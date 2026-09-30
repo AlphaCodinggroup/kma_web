@@ -9,6 +9,7 @@ export type UseListAuditsOptions = {
   // Filter and pagination params
   status?: string;
   auditor?: string;
+  projectId?: string;
   limit?: number;
   last_eval_id?: string;
 };
@@ -27,10 +28,18 @@ export default function useListAudits(opts?: UseListAuditsOptions) {
 
   if (opts?.status) params.status = opts.status;
   if (opts?.auditor) params.auditor = opts.auditor;
+  if (opts?.projectId) params.project_id = opts.projectId;
   if (opts?.last_eval_id) params.last_eval_id = opts.last_eval_id;
 
   return useQuery<AuditType, Error>({
-    queryKey: ["audits", "list", opts?.status, opts?.auditor, opts?.last_eval_id],
+    queryKey: [
+      "audits",
+      "list",
+      opts?.status,
+      opts?.auditor,
+      opts?.last_eval_id,
+      opts?.projectId,
+    ],
     queryFn: () => listAudits({ params }),
     placeholderData: keepPreviousData,
     enabled: opts?.enabled ?? true,
@@ -43,7 +52,7 @@ export default function useListAudits(opts?: UseListAuditsOptions) {
 /** Prefetch opcional para Server/SSR. */
 export async function prefetchListAudits(queryClient: QueryClient) {
   await queryClient.prefetchQuery({
-    queryKey: ["audits", "list", undefined, undefined, undefined],
+    queryKey: ["audits", "list", undefined, undefined, undefined, undefined],
     queryFn: () => listAudits(),
     staleTime: 60_000,
   });
