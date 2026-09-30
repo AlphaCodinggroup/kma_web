@@ -79,12 +79,12 @@ const SmartEditButton = memo(({
   });
 
   // Una auditoría es "conforme" cuando el backend no encontró hallazgos y todas
-  // las preguntas de sí/no fueron respondidas afirmativamente.
+  // las preguntas de sí/no tienen una respuesta clara. Un "No" puede ser la
+  // rama conforme del flow (p. ej. «¿Es una rampa diagonal?»), así que sólo
+  // las respuestas faltantes o UNSURE obligan a revisar.
   //
-  // La comprobación anterior comparaba contra la cadena "YES" sobre todos los
-  // pasos. Nunca podía acertar por dos motivos: los pasos Form y Select no
-  // llevan respuesta, y el mapper normaliza "YES" a booleano `true`. El aviso
-  // de "No Report Needed" era, en la práctica, código muerto.
+  // Comparar contra "YES" nunca podía acertar: los pasos Form y Select no
+  // llevan respuesta y el mapper normaliza "YES" a booleano `true`.
   let isRed = false;
   if (checkAnswers && detail) {
     const yesNoAnswers = (detail.questions ?? [])
@@ -92,7 +92,8 @@ const SmartEditButton = memo(({
       .map((q) => normalizeYesNo(q.answer));
 
     isRed =
-      yesNoAnswers.length > 0 && yesNoAnswers.every((answer) => answer === "YES");
+      yesNoAnswers.length > 0 &&
+      yesNoAnswers.every((answer) => answer === "YES" || answer === "NO");
   }
 
   return (
