@@ -125,6 +125,16 @@ describe("ReportPreview — PDF layout", () => {
     expect(screen.getByText("+2 not in the report")).toBeInTheDocument();
   });
 
+  it("shows a photo again when a grouped finding repeats the same url", () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const photo = { url: "https://cdn/same.jpg", includeInReport: true };
+    renderPreview({ findings: [makeFinding({ photos: [photo, photo, photo] })] });
+
+    expect(screen.getAllByRole("img", { name: /^Photo/ })).toHaveLength(3);
+    expect(consoleError).not.toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+
   it("says when there are no findings", () => {
     renderPreview({ findings: [] });
 

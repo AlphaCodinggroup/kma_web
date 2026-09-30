@@ -223,7 +223,7 @@ function FindingRows({
             {shownPhotos.map((photo, photoIndex) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                key={photo.url}
+                key={`${photo.url}#${photoIndex}`}
                 src={photo.url}
                 alt={`Photo ${photoIndex + 1} of ${rowLabel}`}
                 loading="lazy"
