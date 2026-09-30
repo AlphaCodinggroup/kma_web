@@ -1,7 +1,7 @@
 /**
  * Vista previa del reporte: estructura del PDF (barra, columnas, filas y
- * total), fotos que no se imprimen, y edición en el lugar de cantidad y notas
- * con la medición bloqueada.
+ * total), fotos que no se imprimen, y edición en el lugar de cantidad,
+ * mediciones y notas.
  */
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -31,10 +31,14 @@ const makeFinding = (overrides: Partial<AuditFinding> = {}): AuditFinding => ({
 
 function makeDrafts(overrides: Partial<ReportPreviewDrafts> = {}): ReportPreviewDrafts {
   return {
-    draftOf: (code) =>
-      code === "Q-1" ? { quantity: "3", notes: "Slippery surface" } : { quantity: "", notes: "" },
+    keyOf: (finding) => finding.questionCode,
+    draftOf: (key) =>
+      key === "Q-1"
+        ? { quantity: "3", notes: "Slippery surface", measurements: ["45"] }
+        : { quantity: "", notes: "", measurements: [] },
     setDraft: vi.fn(),
     errorOf: () => null,
+    measurementErrorOf: () => null,
     costOf: (finding) => finding.calculatedCost ?? 0,
     ...overrides,
   };
@@ -130,7 +134,7 @@ describe("ReportPreview — PDF layout", () => {
 
   it("hides the note row when there is no note to read", () => {
     renderPreview({
-      drafts: makeDrafts({ draftOf: () => ({ quantity: "3", notes: "" }) }),
+      drafts: makeDrafts({ draftOf: () => ({ quantity: "3", notes: "", measurements: ["45"] }) }),
     });
 
     expect(screen.queryByText("QC note (not printed in the PDF):")).toBeNull();
@@ -164,13 +168,95 @@ describe("ReportPreview — editing in place", () => {
     expect(screen.getByText("QC note (not printed in the PDF):")).toBeInTheDocument();
   });
 
-  it("locks the measurement until the backend supports it", () => {
-    renderPreview({ editable: true });
+  it("edits each measurement in place, with its unit", async () => {
+    const setDraft = vi.fn();
+    renderPreview({ editable: true, drafts: makeDrafts({ setDraft }) });
 
+    const input = screen.getByRole("spinbutton", { name: "Measurement of finding 1" });
+    expect(input).toHaveValue(45);
+    expect(input.closest("label")).toHaveTextContent('Measurement:"');
+
+    await userEvent.type(input, "5");
+
+    expect(setDraft).toHaveBeenCalledWith("Q-1", { measurements: ["455"] });
+  });
+
+  it("labels the measurements by position, like the PDF", () => {
+    renderPreview({
+      editable: true,
+      findings: [
+        makeFinding({
+          measurements: [
+            { name: "width", value: 30, unit: "in." },
+            { name: "slope", value: 2, unit: "%" },
+            { name: "depth", value: 4, unit: null },
+          ],
+        }),
+      ],
+      drafts: makeDrafts({
+        draftOf: () => ({ quantity: "3", notes: "", measurements: ["30", "2", "4"] }),
+      }),
+    });
+
+    expect(screen.getByRole("spinbutton", { name: "Measurement of finding 1" })).toBeInTheDocument();
+    expect(screen.getByRole("spinbutton", { name: "Measurement 1 of finding 1" })).toBeInTheDocument();
+    expect(screen.getByRole("spinbutton", { name: "Measurement 2 of finding 1" })).toBeInTheDocument();
     expect(
-      screen.getByRole("img", { name: "Editable once the backend supports it" })
-    ).toBeInTheDocument();
+      screen.getByRole("spinbutton", { name: "Measurement of finding 1" }).closest("label")
+    ).toHaveTextContent("Measurement:IN");
+  });
+
+  it("shows the measurement error next to its field", () => {
+    renderPreview({
+      editable: true,
+      drafts: makeDrafts({
+        measurementErrorOf: (_key, index) => (index === 0 ? "Enter a number" : null),
+      }),
+    });
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Enter a number");
+    expect(screen.getByRole("spinbutton", { name: "Measurement of finding 1" })).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+  });
+
+  it("warns that a measurement of 0 is not printed", () => {
+    renderPreview({
+      editable: true,
+      drafts: makeDrafts({
+        draftOf: () => ({ quantity: "3", notes: "", measurements: ["0"] }),
+      }),
+    });
+
+    expect(screen.getByText("0 is not printed in the PDF")).toBeInTheDocument();
+  });
+
+  it("prints the measurements as the PDF does when it is not editable", () => {
+    renderPreview({ editable: false });
+
+    expect(screen.getByText('Measurement: 45"')).toBeInTheDocument();
     expect(screen.queryByRole("spinbutton", { name: /Measurement/ })).toBeNull();
+  });
+
+  it("keys the drafts by the finding key when a question code repeats", async () => {
+    const setDraft = vi.fn();
+    renderPreview({
+      editable: true,
+      findings: [
+        makeFinding({ mitigationId: "MIT-1" }),
+        makeFinding({ mitigationId: "MIT-2", quantity: 1 }),
+      ],
+      drafts: makeDrafts({
+        keyOf: (finding) => `${finding.questionCode}#${finding.mitigationId}`,
+        draftOf: () => ({ quantity: "1", notes: "", measurements: ["45"] }),
+        setDraft,
+      }),
+    });
+
+    await userEvent.type(screen.getByRole("spinbutton", { name: "Quantity of finding 2" }), "0");
+
+    expect(setDraft).toHaveBeenCalledWith("Q-1#MIT-2", { quantity: "10" });
   });
 
   it("shows the quantity error", () => {
@@ -186,7 +272,9 @@ describe("ReportPreview — editing in place", () => {
   it("warns that a quantity of 0 removes the cost", () => {
     renderPreview({
       editable: true,
-      drafts: makeDrafts({ draftOf: () => ({ quantity: "0", notes: "" }) }),
+      drafts: makeDrafts({
+        draftOf: () => ({ quantity: "0", notes: "", measurements: ["45"] }),
+      }),
     });
 
     expect(screen.getByText("0 removes the cost")).toBeInTheDocument();
@@ -196,7 +284,9 @@ describe("ReportPreview — editing in place", () => {
     renderPreview({
       editable: true,
       findings: [makeFinding({ quantity: null, unitOfMeasure: "lf" })],
-      drafts: makeDrafts({ draftOf: () => ({ quantity: "", notes: "" }) }),
+      drafts: makeDrafts({
+        draftOf: () => ({ quantity: "", notes: "", measurements: ["45"] }),
+      }),
     });
 
     expect(screen.getByRole("spinbutton", { name: "Quantity of finding 1" })).toHaveValue(null);

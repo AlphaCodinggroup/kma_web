@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Lock, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import type { FindingDraft } from "@features/audits/lib/hooks/useReportDrafts";
 import { cn } from "@shared/lib/cn";
@@ -10,14 +10,19 @@ import {
   formatQuantityValue,
   formatReportCurrency,
   formatUnitCostLine,
+  measurementLabel,
+  measurementUnitLabel,
   mitigationUnitLabel,
 } from "@shared/lib/report-format";
 
 /** Lo que la vista previa necesita de los borradores (ver useReportDrafts). */
 export interface ReportPreviewDrafts {
-  draftOf: (code: string) => FindingDraft;
-  setDraft: (code: string, patch: Partial<FindingDraft>) => void;
-  errorOf: (code: string) => string | null;
+  /** Clave del borrador de un hallazgo: su código, más la mitigación si el código se repite. */
+  keyOf: (finding: AuditFinding) => string;
+  draftOf: (key: string) => FindingDraft;
+  setDraft: (key: string, patch: Partial<FindingDraft>) => void;
+  errorOf: (key: string) => string | null;
+  measurementErrorOf: (key: string, index: number) => string | null;
   costOf: (finding: AuditFinding) => number;
 }
 
@@ -25,7 +30,7 @@ export interface ReportPreviewProps {
   findings: readonly AuditFinding[];
   facilityName: string;
   location?: string | null | undefined;
-  /** Cantidad y notas editables (admin, auditoría en revisión). */
+  /** Cantidad, mediciones y notas editables (admin, auditoría en revisión). */
   editable: boolean;
   drafts: ReportPreviewDrafts;
   canComment: boolean;
@@ -36,14 +41,13 @@ export interface ReportPreviewProps {
 const COLUMN_WIDTHS = ["5.08%", "25.43%", "13.93%", "23.43%", "24.43%", "7.7%"];
 const HEADERS = ["#", "Barrier Statement", "Code", "Photo", "Proposed Mitigation", "Cost"];
 const MAX_PHOTOS = 3;
-const MEASUREMENT_LOCKED = "Editable once the backend supports it";
 
 const cell = "border border-black px-2 py-2 align-top";
 
 /**
  * Vista previa del reporte con el formato del PDF: la barra de la facility,
- * la tabla de hallazgos y el total. En modo edición la cantidad y las notas se
- * cambian en el lugar; la medición se muestra bloqueada.
+ * la tabla de hallazgos y el total. En modo edición la cantidad, las mediciones
+ * y las notas se cambian en el lugar.
  */
 const ReportPreview: React.FC<ReportPreviewProps> = ({
   findings,
@@ -88,7 +92,7 @@ const ReportPreview: React.FC<ReportPreviewProps> = ({
             ) : (
               findings.map((finding, index) => (
                 <FindingRows
-                  key={finding.questionCode}
+                  key={drafts.keyOf(finding)}
                   finding={finding}
                   index={index}
                   location={location}
@@ -132,8 +136,9 @@ function FindingRows({
   onAddComment,
 }: FindingRowsProps) {
   const code = finding.questionCode;
-  const draft = drafts.draftOf(code);
-  const error = drafts.errorOf(code);
+  const key = drafts.keyOf(finding);
+  const draft = drafts.draftOf(key);
+  const error = drafts.errorOf(key);
   const unitLabel = mitigationUnitLabel(finding.unitOfMeasure);
   const measurementLines = formatMeasurementLines(finding.measurements);
   const printedPhotos = finding.photos.filter((photo) => photo.includeInReport);
@@ -167,16 +172,47 @@ function FindingRows({
 
         <td className={cell}>
           <p className="whitespace-pre-line">{finding.barrierStatement ?? "—"}</p>
-          {measurementLines.map((line, lineIndex) => (
-            <p key={lineIndex} className="flex items-center gap-1">
-              {line}
-              {editable && (
-                <span role="img" title={MEASUREMENT_LOCKED} aria-label={MEASUREMENT_LOCKED}>
-                  <Lock className="h-3.5 w-3.5 text-gray-400" aria-hidden="true" />
-                </span>
-              )}
-            </p>
-          ))}
+          {editable
+            ? finding.measurements.map((measurement, measurementIndex) => {
+                const label = measurementLabel(measurementIndex);
+                const unit = measurementUnitLabel(measurement.unit);
+                const raw = draft.measurements[measurementIndex] ?? "";
+                const measurementError = drafts.measurementErrorOf(key, measurementIndex);
+                return (
+                  <div key={measurementIndex}>
+                    <label className="flex items-center gap-1">
+                      {label}:
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        step="any"
+                        min={0}
+                        value={raw}
+                        onChange={(e) => {
+                          const next = [...draft.measurements];
+                          next[measurementIndex] = e.target.value;
+                          drafts.setDraft(key, { measurements: next });
+                        }}
+                        aria-label={`${label} of ${rowLabel}`}
+                        aria-invalid={Boolean(measurementError)}
+                        className={cn(
+                          "h-7 w-20 rounded border px-1.5 text-[13px]",
+                          measurementError ? "border-red-500" : "border-gray-400"
+                        )}
+                      />
+                      {unit}
+                    </label>
+                    {measurementError ? (
+                      <p className="text-xs text-red-600" role="alert">
+                        {measurementError}
+                      </p>
+                    ) : raw.trim() !== "" && Number(raw) === 0 ? (
+                      <p className="text-xs text-amber-700">0 is not printed in the PDF</p>
+                    ) : null}
+                  </div>
+                );
+              })
+            : measurementLines.map((line, lineIndex) => <p key={lineIndex}>{line}</p>)}
           {location ? <p>Location: {location}</p> : null}
         </td>
 
@@ -216,7 +252,7 @@ function FindingRows({
                       step="any"
                       min={0}
                       value={draft.quantity}
-                      onChange={(e) => drafts.setDraft(code, { quantity: e.target.value })}
+                      onChange={(e) => drafts.setDraft(key, { quantity: e.target.value })}
                       aria-label={`Quantity of ${rowLabel}`}
                       aria-invalid={Boolean(error)}
                       className={cn(
@@ -257,7 +293,7 @@ function FindingRows({
               {editable ? (
                 <textarea
                   value={notes}
-                  onChange={(e) => drafts.setDraft(code, { notes: e.target.value })}
+                  onChange={(e) => drafts.setDraft(key, { notes: e.target.value })}
                   aria-label={`QC note for ${rowLabel}`}
                   rows={1}
                   className="min-h-8 w-full rounded border border-gray-300 bg-white px-2 py-1 text-[13px] text-black"

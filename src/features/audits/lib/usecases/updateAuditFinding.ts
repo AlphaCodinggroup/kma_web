@@ -18,7 +18,8 @@ export async function updateAuditFinding(
   deps: Partial<Deps> = {}
 ): Promise<AuditFindingUpdateResult> {
   const repo = deps.auditReviewRepo ?? defaultDeps.auditReviewRepo;
-  const { auditId, questionCode, quantity, notes, photos } = input;
+  const { auditId, questionCode, mitigationId, quantity, notes, photos, measurements } =
+    input;
 
   if (!auditId) {
     throw new Error("updateAuditFinding: auditId is required");
@@ -30,10 +31,11 @@ export async function updateAuditFinding(
   const hasQuantity = typeof quantity !== "undefined";
   const hasNotes = typeof notes !== "undefined";
   const hasPhotos = typeof photos !== "undefined";
+  const hasMeasurements = typeof measurements !== "undefined";
 
-  if (!hasQuantity && !hasNotes && !hasPhotos) {
+  if (!hasQuantity && !hasNotes && !hasPhotos && !hasMeasurements) {
     throw new Error(
-      "updateAuditFinding: at least one field (quantity, notes or photos) must be provided"
+      "updateAuditFinding: at least one field (quantity, notes, photos or measurements) must be provided"
     );
   }
 
@@ -41,10 +43,20 @@ export async function updateAuditFinding(
     throw new Error("updateAuditFinding: quantity must be a finite number");
   }
 
+  if (measurements?.some((m) => !Number.isFinite(m.value) || m.value < 0)) {
+    throw new Error(
+      "updateAuditFinding: every measurement must be a finite number of 0 or more"
+    );
+  }
+
   const payload: UpdateAuditFindingInput = {
     auditId,
     questionCode,
   };
+
+  if (mitigationId) {
+    payload.mitigationId = mitigationId;
+  }
 
   if (hasQuantity) {
     payload.quantity = quantity;
@@ -56,6 +68,10 @@ export async function updateAuditFinding(
 
   if (hasPhotos) {
     payload.photos = photos;
+  }
+
+  if (hasMeasurements) {
+    payload.measurements = measurements;
   }
 
   return repo.updateFinding(payload);

@@ -252,6 +252,23 @@ describe("updateFinding", () => {
       { notes: "" },
     ],
     [
+      "measurements, with a blank name sent as an empty string",
+      {
+        auditId: "audit-1",
+        questionCode: "Q1",
+        measurements: [
+          { name: "width", value: 30 },
+          { name: null, value: 0 },
+        ],
+      },
+      {
+        measurements: [
+          { name: "width", value: 30 },
+          { name: "", value: 0 },
+        ],
+      },
+    ],
+    [
       "nothing but the identifiers",
       { auditId: "audit-1", questionCode: "Q1" },
       {},
@@ -271,6 +288,23 @@ describe("updateFinding", () => {
       expectedBody
     );
     expect(mapUpdateAuditFindingInputToDTO(input)).toEqual(expectedBody);
+  });
+
+  it("sends the mitigation as a query param when the code is ambiguous", async () => {
+    http.patch.mockResolvedValueOnce({ data: findingDTO });
+
+    await createAuditReviewDetailRepo().updateFinding({
+      auditId: "audit-1",
+      questionCode: "Q1",
+      mitigationId: "MIT-2",
+      quantity: 2,
+    });
+
+    expect(http.patch).toHaveBeenCalledWith(
+      `${API_BASE}/audits-review/audit-1/findings/Q1`,
+      { quantity: 2 },
+      { params: { mitigation_id: "MIT-2" } }
+    );
   });
 
   it("maps the response into the domain result", async () => {

@@ -139,6 +139,32 @@ describe("PATCH /api/audits-review/[auditId]/findings/[questionCode]", () => {
     );
   });
 
+  it("encodes a grouped question code so the backend can match its tokens", async () => {
+    const fetchMock = vi.fn(async () => jsonResponse({}));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { PATCH } = await import("../route");
+    await PATCH(patchRequest(), context("a-1", "Q1, Q2"));
+
+    const [upstream] = fetchMock.mock.calls[0] as unknown as FetchArgs;
+    expect(String(upstream)).toBe(
+      "https://api.example.com/api/audits-review/a-1/findings/Q1%2C%20Q2"
+    );
+  });
+
+  it("forwards mitigation_id, the only query param the backend reads here", async () => {
+    const fetchMock = vi.fn(async () => jsonResponse({}));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { PATCH } = await import("../route");
+    await PATCH(patchRequest(`${url}?mitigation_id=MIT-2&secret=x`), context("a-1", "q-1"));
+
+    const [upstream] = fetchMock.mock.calls[0] as unknown as FetchArgs;
+    const params = new URL(String(upstream)).searchParams;
+    expect(params.get("mitigation_id")).toBe("MIT-2");
+    expect(params.has("secret")).toBe(false);
+  });
+
   it("does not forward query params from the incoming request", async () => {
     const fetchMock = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal("fetch", fetchMock);

@@ -76,10 +76,13 @@ export function createAuditReviewDetailRepo(
       input: UpdateAuditFindingInput
     ): Promise<AuditFindingUpdateResult> {
       const payload = mapUpdateAuditFindingInputToDTO(input);
-      const { data } = await client.patch<AuditFindingUpdateResponseDTO>(
-        routes.updateFinding(input.auditId, input.questionCode),
-        payload
-      );
+      const url = routes.updateFinding(input.auditId, input.questionCode);
+      // mitigation_id sólo viaja cuando el código de pregunta es ambiguo.
+      const { data } = input.mitigationId
+        ? await client.patch<AuditFindingUpdateResponseDTO>(url, payload, {
+            params: { mitigation_id: input.mitigationId },
+          })
+        : await client.patch<AuditFindingUpdateResponseDTO>(url, payload);
       return mapAuditFindingUpdateResponseDTOToDomain(data);
     },
   };

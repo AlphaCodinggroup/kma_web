@@ -29,6 +29,14 @@ export const formatCompactNumber = (value: number) => String(value);
 
 const MEASUREMENT_LABELS = ["Measurement", "Measurement 1", "Measurement 2"];
 
+/** Etiqueta de la medición en esa posición: la misma que imprime el PDF. */
+export const measurementLabel = (index: number): string =>
+  MEASUREMENT_LABELS[index] ?? "Measurement";
+
+/** Unidad de una medición tal como se imprime ("in." → "IN", sin unidad → ""). */
+export const measurementUnitLabel = (unit: string | null | undefined): string =>
+  normalizeUnitLabel(unit);
+
 /**
  * Líneas de medición del PDF. Las etiquetas son posicionales: la primera es
  * "Measurement", la segunda "Measurement 1", la tercera "Measurement 2".
@@ -40,8 +48,9 @@ export function formatMeasurementLines(
   const lines: string[] = [];
   measurements.forEach((measurement, index) => {
     if (!(measurement.value > 0)) return;
-    const label = MEASUREMENT_LABELS[index] ?? "Measurement";
-    lines.push(`${label}: ${formatMeasurementValue(measurement.value, measurement.unit)}`);
+    lines.push(
+      `${measurementLabel(index)}: ${formatMeasurementValue(measurement.value, measurement.unit)}`
+    );
   });
   return lines;
 }

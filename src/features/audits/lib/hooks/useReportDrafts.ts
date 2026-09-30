@@ -5,12 +5,22 @@ import type { UpdateAuditFindingInput } from "@entities/audit/model/audit-review
 import { updateAuditFinding } from "@features/audits/lib/usecases/updateAuditFinding";
 import { auditReviewDetailKey } from "./useAuditReviewDetail";
 
-/** Lo que el QC edita en la vista previa, tal como está escrito en los campos. */
-export type FindingDraft = { quantity: string; notes: string };
+/**
+ * Lo que el QC edita en la vista previa, tal como está escrito en los campos.
+ * `measurements` lleva un texto por medición, en el orden del hallazgo.
+ */
+export type FindingDraft = {
+  quantity: string;
+  notes: string;
+  measurements: string[];
+};
+
+const EMPTY_DRAFT: FindingDraft = { quantity: "", notes: "", measurements: [] };
 
 const toDraft = (finding: AuditFinding): FindingDraft => ({
   quantity: finding.quantity === null ? "" : String(finding.quantity),
   notes: finding.notes ?? "",
+  measurements: finding.measurements.map((measurement) => String(measurement.value)),
 });
 
 const parseQuantity = (raw: string): number | null => {
@@ -20,13 +30,26 @@ const parseQuantity = (raw: string): number | null => {
   return Number.isFinite(value) ? value : Number.NaN;
 };
 
+/** Qué medidas cambiaron, por posición. */
+function changedMeasurements(original: FindingDraft, draft: FindingDraft): number[] {
+  const changed: number[] = [];
+  draft.measurements.forEach((raw, index) => {
+    const saved = original.measurements[index] ?? "";
+    if (raw.trim() !== saved.trim() && parseQuantity(raw) !== parseQuantity(saved)) {
+      changed.push(index);
+    }
+  });
+  return changed;
+}
+
 /** Qué cambió respecto del hallazgo guardado. */
 function diffDraft(original: FindingDraft, draft: FindingDraft) {
   const quantity =
     parseQuantity(draft.quantity) !== parseQuantity(original.quantity) &&
     draft.quantity.trim() !== original.quantity.trim();
   const notes = draft.notes.trim() !== original.notes.trim();
-  return { quantity, notes };
+  const measurements = changedMeasurements(original, draft);
+  return { quantity, notes, measurements };
 }
 
 /**
@@ -42,7 +65,32 @@ function validateQuantity(raw: string): string | null {
 }
 
 /**
- * Borradores de la vista previa del reporte, por código de pregunta.
+ * Error de una medición: el backend pide un número finito de 0 o más, y no
+ * hay forma de vaciarla.
+ */
+function validateMeasurement(raw: string): string | null {
+  const value = parseQuantity(raw);
+  if (value === null) return "Enter a measurement";
+  if (Number.isNaN(value)) return "Enter a number";
+  if (value < 0) return "Measurement can't be negative";
+  return null;
+}
+
+type Change = {
+  key: string;
+  finding: AuditFinding;
+  draft: FindingDraft;
+  quantity: boolean;
+  notes: boolean;
+  measurements: number[];
+};
+
+/**
+ * Borradores de la vista previa del reporte, por hallazgo.
+ *
+ * La clave de un hallazgo es su código de pregunta. Sólo cuando dos hallazgos
+ * comparten código (dos variantes de catálogo) se le suma el id de mitigación,
+ * que además viaja al backend para que sepa cuál editar.
  *
  * Guardar manda un PATCH por hallazgo, de a uno: el backend no tiene carga
  * masiva ni control de concurrencia, y en paralelo se pisan. Los que fallan
@@ -54,24 +102,46 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  const sharedCodes = useMemo(() => {
+    const seen = new Set<string>();
+    const shared = new Set<string>();
+    for (const finding of findings) {
+      if (seen.has(finding.questionCode)) shared.add(finding.questionCode);
+      seen.add(finding.questionCode);
+    }
+    return shared;
+  }, [findings]);
+
+  const keyOf = useCallback(
+    (finding: Pick<AuditFinding, "questionCode" | "mitigationId">): string =>
+      sharedCodes.has(finding.questionCode) && finding.mitigationId
+        ? `${finding.questionCode}#${finding.mitigationId}`
+        : finding.questionCode,
+    [sharedCodes]
+  );
+
+  const byKey = useMemo(
+    () => new Map(findings.map((finding) => [keyOf(finding), finding])),
+    [findings, keyOf]
+  );
+
   const originals = useMemo(
-    () => new Map(findings.map((finding) => [finding.questionCode, toDraft(finding)])),
-    [findings]
+    () => new Map(findings.map((finding) => [keyOf(finding), toDraft(finding)])),
+    [findings, keyOf]
   );
 
   const draftOf = useCallback(
-    (code: string): FindingDraft =>
-      drafts[code] ?? originals.get(code) ?? { quantity: "", notes: "" },
+    (key: string): FindingDraft => drafts[key] ?? originals.get(key) ?? EMPTY_DRAFT,
     [drafts, originals]
   );
 
   const setDraft = useCallback(
-    (code: string, patch: Partial<FindingDraft>) => {
+    (key: string, patch: Partial<FindingDraft>) => {
       setSaveError(null);
       setDrafts((current) => ({
         ...current,
-        [code]: {
-          ...(current[code] ?? originals.get(code) ?? { quantity: "", notes: "" }),
+        [key]: {
+          ...(current[key] ?? originals.get(key) ?? EMPTY_DRAFT),
           ...patch,
         },
       }));
@@ -80,31 +150,45 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
   );
 
   const changes = useMemo(() => {
-    const list: { code: string; draft: FindingDraft; quantity: boolean; notes: boolean }[] = [];
-    for (const [code, draft] of Object.entries(drafts)) {
-      const original = originals.get(code);
-      if (!original) continue;
+    const list: Change[] = [];
+    for (const [key, draft] of Object.entries(drafts)) {
+      const original = originals.get(key);
+      const finding = byKey.get(key);
+      if (!original || !finding) continue;
       const diff = diffDraft(original, draft);
-      if (diff.quantity || diff.notes) list.push({ code, draft, ...diff });
+      if (diff.quantity || diff.notes || diff.measurements.length > 0) {
+        list.push({ key, finding, draft, ...diff });
+      }
     }
     return list;
-  }, [drafts, originals]);
+  }, [drafts, originals, byKey]);
 
   const errors = useMemo(() => {
-    const result: Record<string, string> = {};
+    const quantity: Record<string, string> = {};
+    const measurements: Record<string, string> = {};
     for (const change of changes) {
-      const error = change.quantity ? validateQuantity(change.draft.quantity) : null;
-      if (error) result[change.code] = error;
+      const quantityError = change.quantity ? validateQuantity(change.draft.quantity) : null;
+      if (quantityError) quantity[change.key] = quantityError;
+      for (const index of change.measurements) {
+        const error = validateMeasurement(change.draft.measurements[index] ?? "");
+        if (error) measurements[`${change.key}:${index}`] = error;
+      }
     }
-    return result;
+    return { quantity, measurements };
   }, [changes]);
 
-  const errorOf = useCallback((code: string) => errors[code] ?? null, [errors]);
+  const errorOf = useCallback((key: string) => errors.quantity[key] ?? null, [errors]);
+  const measurementErrorOf = useCallback(
+    (key: string, index: number) => errors.measurements[`${key}:${index}`] ?? null,
+    [errors]
+  );
+  const hasErrors =
+    Object.keys(errors.quantity).length > 0 || Object.keys(errors.measurements).length > 0;
 
   /** Costo que se va a imprimir: cantidad × costo unitario mientras se edita. */
   const costOf = useCallback(
     (finding: AuditFinding): number => {
-      const draft = drafts[finding.questionCode];
+      const draft = drafts[keyOf(finding)];
       if (!draft) return finding.calculatedCost ?? 0;
       const quantity = parseQuantity(draft.quantity);
       if (quantity === null || Number.isNaN(quantity)) return finding.calculatedCost ?? 0;
@@ -112,7 +196,7 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
         ? quantity * (finding.unitCost as number)
         : 0;
     },
-    [drafts]
+    [drafts, keyOf]
   );
 
   const discard = useCallback(() => {
@@ -121,19 +205,35 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
   }, []);
 
   const save = useCallback(async (): Promise<boolean> => {
-    if (changes.length === 0 || Object.keys(errors).length > 0) return false;
+    if (changes.length === 0 || hasErrors) return false;
     setIsSaving(true);
     setSaveError(null);
 
     const saved: string[] = [];
     let failure: unknown = null;
     for (const change of changes) {
-      const input: UpdateAuditFindingInput = { auditId, questionCode: change.code };
+      const input: UpdateAuditFindingInput = {
+        auditId,
+        questionCode: change.finding.questionCode,
+      };
+      if (sharedCodes.has(change.finding.questionCode) && change.finding.mitigationId) {
+        input.mitigationId = change.finding.mitigationId;
+      }
       if (change.quantity) input.quantity = parseQuantity(change.draft.quantity) as number;
       if (change.notes) input.notes = change.draft.notes;
+      if (change.measurements.length > 0) {
+        // El backend pide todas las mediciones, en orden; sólo cambian las editadas.
+        input.measurements = change.finding.measurements.map((measurement, index) => ({
+          name: measurement.name,
+          value:
+            change.measurements.includes(index)
+              ? (parseQuantity(change.draft.measurements[index] ?? "") as number)
+              : measurement.value,
+        }));
+      }
       try {
         await updateAuditFinding(input);
-        saved.push(change.code);
+        saved.push(change.key);
       } catch (error) {
         failure = failure ?? error;
       }
@@ -146,7 +246,7 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
     }
     setDrafts((current) => {
       const next = { ...current };
-      for (const code of saved) delete next[code];
+      for (const key of saved) delete next[key];
       return next;
     });
     setIsSaving(false);
@@ -164,15 +264,17 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
       return false;
     }
     return true;
-  }, [auditId, changes, errors, queryClient]);
+  }, [auditId, changes, hasErrors, sharedCodes, queryClient]);
 
   return {
+    keyOf,
     draftOf,
     setDraft,
     errorOf,
+    measurementErrorOf,
     costOf,
     isDirty: changes.length > 0,
-    hasErrors: Object.keys(errors).length > 0,
+    hasErrors,
     isSaving,
     saveError,
     save,

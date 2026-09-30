@@ -1,4 +1,5 @@
 import type {
+  AuditFindingMeasurementInput,
   AuditFindingPhotoInput,
   AuditFindingUpdateResult,
   UpdateAuditFindingInput,
@@ -16,6 +17,7 @@ export type UpdateAuditFindingDTO = {
     url: string;
     include_in_report?: boolean;
   }>;
+  measurements?: Array<{ name: string; value: number }>;
 };
 
 export type AuditFindingUpdateResponseDTO = {
@@ -47,6 +49,15 @@ const mapPhotoInputToDTO = (
   return dto;
 };
 
+// El backend compara el nombre de cada posición con el guardado; una
+// medición sin nombre se manda con "" (equivale a "sin nombre" allá).
+const mapMeasurementInputToDTO = (
+  measurement: AuditFindingMeasurementInput
+): { name: string; value: number } => ({
+  name: measurement.name ?? "",
+  value: measurement.value,
+});
+
 export const mapUpdateAuditFindingInputToDTO = (
   input: UpdateAuditFindingInput
 ): UpdateAuditFindingDTO => {
@@ -70,6 +81,10 @@ export const mapUpdateAuditFindingInputToDTO = (
           p
         ): p is NonNullable<ReturnType<typeof mapPhotoInputToDTO>> => Boolean(p)
       );
+  }
+
+  if (Array.isArray(input.measurements) && input.measurements.length > 0) {
+    payload.measurements = input.measurements.map(mapMeasurementInputToDTO);
   }
 
   return payload;

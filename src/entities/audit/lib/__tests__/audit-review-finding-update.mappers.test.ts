@@ -62,6 +62,35 @@ describe("mapUpdateAuditFindingInputToDTO", () => {
     });
   });
 
+  it("sends every measurement in order, with an empty string for a missing name", () => {
+    expect(
+      mapUpdateAuditFindingInputToDTO(
+        makeInput({
+          measurements: [
+            { name: "width", value: 30 },
+            { name: null, value: 0 },
+          ],
+        })
+      )
+    ).toEqual({
+      measurements: [
+        { name: "width", value: 30 },
+        { name: "", value: 0 },
+      ],
+    });
+  });
+
+  it("omits the measurements key when there are none", () => {
+    expect(mapUpdateAuditFindingInputToDTO(makeInput({ measurements: [] }))).toEqual({});
+    expect(mapUpdateAuditFindingInputToDTO(makeInput())).not.toHaveProperty("measurements");
+  });
+
+  it("never sends the mitigation in the body: it travels as a query param", () => {
+    expect(
+      mapUpdateAuditFindingInputToDTO(makeInput({ mitigationId: "MIT-2", quantity: 1 }))
+    ).toEqual({ quantity: 1 });
+  });
+
   it("sends quantity 0 instead of treating it as absent", () => {
     expect(mapUpdateAuditFindingInputToDTO(makeInput({ quantity: 0 }))).toEqual({
       quantity: 0,

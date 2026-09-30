@@ -1,6 +1,7 @@
 /**
  * Borradores de la vista previa del reporte: qué cuenta como cambio, la
- * validación de la cantidad, el costo en vivo y el guardado de a un hallazgo.
+ * validación de la cantidad y de las mediciones, el costo en vivo, las claves
+ * cuando un código de pregunta se repite y el guardado de a un hallazgo.
  */
 import { act, renderHook } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -57,9 +58,17 @@ describe("useReportDrafts — changes", () => {
   it("starts from the saved values without changes", () => {
     const { result } = setup();
 
-    expect(result.current.draftOf("Q-1")).toEqual({ quantity: "3", notes: "Slippery" });
-    expect(result.current.draftOf("Q-2")).toEqual({ quantity: "", notes: "" });
-    expect(result.current.draftOf("unknown")).toEqual({ quantity: "", notes: "" });
+    expect(result.current.draftOf("Q-1")).toEqual({
+      quantity: "3",
+      notes: "Slippery",
+      measurements: [],
+    });
+    expect(result.current.draftOf("Q-2")).toEqual({ quantity: "", notes: "", measurements: [] });
+    expect(result.current.draftOf("unknown")).toEqual({
+      quantity: "",
+      notes: "",
+      measurements: [],
+    });
     expect(result.current.isDirty).toBe(false);
   });
 
@@ -273,5 +282,171 @@ describe("useReportDrafts — save", () => {
 
     expect(saved).toBe(false);
     expect(updateAuditFinding).not.toHaveBeenCalled();
+  });
+});
+
+describe("useReportDrafts — measurements", () => {
+  const measured = makeFinding({
+    measurements: [
+      { name: "width", value: 30, unit: "in" },
+      { name: "slope", value: 2.5, unit: "%" },
+    ],
+  });
+
+  it("starts from the saved measurements, one text per measurement", () => {
+    const { result } = setup([measured]);
+
+    expect(result.current.draftOf("Q-1").measurements).toEqual(["30", "2.5"]);
+    expect(result.current.isDirty).toBe(false);
+  });
+
+  it("counts a measurement edit as a change until it goes back", () => {
+    const { result } = setup([measured]);
+
+    act(() => result.current.setDraft("Q-1", { measurements: ["31", "2.5"] }));
+    expect(result.current.isDirty).toBe(true);
+
+    act(() => result.current.setDraft("Q-1", { measurements: ["30.0", "2.50"] }));
+    expect(result.current.isDirty).toBe(false);
+  });
+
+  it.each([
+    ["an empty measurement", "", "Enter a measurement"],
+    ["text", "abc", "Enter a number"],
+    ["a negative measurement", "-1", "Measurement can't be negative"],
+  ])("rejects %s and blocks saving", async (_label, value, message) => {
+    const { result } = setup([measured]);
+
+    act(() => result.current.setDraft("Q-1", { measurements: ["30", value] }));
+
+    expect(result.current.measurementErrorOf("Q-1", 1)).toBe(message);
+    expect(result.current.measurementErrorOf("Q-1", 0)).toBeNull();
+    expect(result.current.hasErrors).toBe(true);
+    await act(async () => {
+      await result.current.save();
+    });
+    expect(updateAuditFinding).not.toHaveBeenCalled();
+  });
+
+  it("accepts a measurement of 0", () => {
+    const { result } = setup([measured]);
+
+    act(() => result.current.setDraft("Q-1", { measurements: ["0", "2.5"] }));
+
+    expect(result.current.measurementErrorOf("Q-1", 0)).toBeNull();
+    expect(result.current.hasErrors).toBe(false);
+  });
+
+  it("saves every measurement in order, changing only the edited one", async () => {
+    updateAuditFinding.mockResolvedValue({});
+    const { result } = setup([measured]);
+
+    act(() => result.current.setDraft("Q-1", { measurements: ["30", "3"] }));
+    await act(async () => {
+      await result.current.save();
+    });
+
+    expect(updateAuditFinding).toHaveBeenCalledWith({
+      auditId: "audit-1",
+      questionCode: "Q-1",
+      measurements: [
+        { name: "width", value: 30 },
+        { name: "slope", value: 3 },
+      ],
+    });
+  });
+
+  it("saves quantity, notes and measurements of a finding in one request", async () => {
+    updateAuditFinding.mockResolvedValue({});
+    const { result } = setup([measured]);
+
+    act(() =>
+      result.current.setDraft("Q-1", {
+        quantity: "4",
+        notes: "New",
+        measurements: ["31", "2.5"],
+      })
+    );
+    await act(async () => {
+      await result.current.save();
+    });
+
+    expect(updateAuditFinding).toHaveBeenCalledTimes(1);
+    expect(updateAuditFinding).toHaveBeenCalledWith({
+      auditId: "audit-1",
+      questionCode: "Q-1",
+      quantity: 4,
+      notes: "New",
+      measurements: [
+        { name: "width", value: 31 },
+        { name: "slope", value: 2.5 },
+      ],
+    });
+  });
+});
+
+describe("useReportDrafts — a question code shared by two findings", () => {
+  const first = makeFinding({ mitigationId: "MIT-1", quantity: 1 });
+  const second = makeFinding({ mitigationId: "MIT-2", quantity: 2 });
+  const other = makeFinding({ questionCode: "Q-9", mitigationId: "MIT-9" });
+
+  it("keys a repeated code by its mitigation and leaves the rest by code", () => {
+    const { result } = setup([first, second, other]);
+
+    expect(result.current.keyOf(first)).toBe("Q-1#MIT-1");
+    expect(result.current.keyOf(second)).toBe("Q-1#MIT-2");
+    expect(result.current.keyOf(other)).toBe("Q-9");
+  });
+
+  it("keeps a draft for each of the two findings", () => {
+    const { result } = setup([first, second]);
+
+    act(() => result.current.setDraft("Q-1#MIT-2", { quantity: "7" }));
+
+    expect(result.current.draftOf("Q-1#MIT-1").quantity).toBe("1");
+    expect(result.current.draftOf("Q-1#MIT-2").quantity).toBe("7");
+    expect(result.current.isDirty).toBe(true);
+  });
+
+  it("computes the live cost of the edited finding only", () => {
+    const { result } = setup([first, second]);
+
+    act(() => result.current.setDraft("Q-1#MIT-2", { quantity: "5" }));
+
+    expect(result.current.costOf(first)).toBe(300);
+    expect(result.current.costOf(second)).toBe(500);
+  });
+
+  it("sends the mitigation so the backend knows which one to edit", async () => {
+    updateAuditFinding.mockResolvedValue({});
+    const { result } = setup([first, second]);
+
+    act(() => result.current.setDraft("Q-1#MIT-2", { quantity: "7" }));
+    await act(async () => {
+      await result.current.save();
+    });
+
+    expect(updateAuditFinding).toHaveBeenCalledWith({
+      auditId: "audit-1",
+      questionCode: "Q-1",
+      mitigationId: "MIT-2",
+      quantity: 7,
+    });
+  });
+
+  it("does not send the mitigation when the code is not shared", async () => {
+    updateAuditFinding.mockResolvedValue({});
+    const { result } = setup([first, other]);
+
+    act(() => result.current.setDraft("Q-9", { quantity: "7" }));
+    await act(async () => {
+      await result.current.save();
+    });
+
+    expect(updateAuditFinding).toHaveBeenCalledWith({
+      auditId: "audit-1",
+      questionCode: "Q-9",
+      quantity: 7,
+    });
   });
 });
