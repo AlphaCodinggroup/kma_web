@@ -29,8 +29,8 @@ jobs:
         run: npm run test:run
 
       - name: Cobertura
-        # El umbral sube a medida que se cubren los módulos pendientes;
-        # ver docs/auditoria-2026-09/ESTADO.md en el repo del backend.
+        # El objetivo del 90% ya está alcanzado: vitest.config.ts lo fija como
+        # piso, así que este gate exige no bajar de ahí.
         run: npm run test:coverage
         env:
           # Sin valor rigen los pisos de vitest.config.ts, que sólo pueden

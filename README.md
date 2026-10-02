@@ -2,6 +2,8 @@
 
 Este documento describe la funcionalidad y el objetivo de negocio de los distintos módulos de la aplicación. La plataforma está diseñada para facilitar la planificación, ejecución y reporte de auditorías en diferentes instalaciones, permitiendo flujos dinámicos y revisiones exhaustivas.
 
+Autenticación y sesión: [docs/architecture/auth.md](docs/architecture/auth.md). Instrucciones para agentes: [AGENTS.md](AGENTS.md).
+
 ---
 
 ## 🏗️ Módulos Principales (Perspectiva de Negocio)
