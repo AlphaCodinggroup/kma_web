@@ -32,6 +32,7 @@ function makeRepo(update = vi.fn()): ProjectsRepo {
     update,
     deleteProject: vi.fn(),
     archive: vi.fn(),
+    restore: vi.fn(),
   };
 }
 

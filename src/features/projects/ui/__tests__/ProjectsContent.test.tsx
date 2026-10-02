@@ -116,6 +116,15 @@ vi.mock("@features/projects/ui/hooks/useArchiveProjectMutation", () => ({
   }),
 }));
 
+vi.mock("@features/projects/ui/hooks/useRestoreProjectMutation", () => ({
+  useRestoreProjectMutation: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+    error: null,
+    reset: vi.fn(),
+  }),
+}));
+
 vi.mock("@processes/auth/hooks", () => ({
   useSession: () => ({ isAdmin: state.isAdmin }),
 }));

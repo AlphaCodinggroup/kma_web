@@ -26,6 +26,7 @@ function makeRepo(getById?: ProjectsRepo["getById"]): ProjectsRepo {
     update: vi.fn(),
     deleteProject: vi.fn(),
     archive: vi.fn(),
+    restore: vi.fn(),
     ...(getById ? { getById } : {}),
   };
 }

@@ -29,4 +29,9 @@ export interface ProjectsRepo {
    * Archiva un proyecto (por ejemplo, status → ARCHIVED).
    */
   archive(id: ProjectId): Promise<Project>;
+
+  /**
+   * Restaura un proyecto archivado (status → ACTIVE).
+   */
+  restore(id: ProjectId): Promise<Project>;
 }

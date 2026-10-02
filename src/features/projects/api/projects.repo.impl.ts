@@ -233,6 +233,27 @@ export class ProjectsRepoHttp implements ProjectsRepo {
       throw toApiError(err);
     }
   }
+
+  /** Restaura un proyecto archivado (status → ACTIVE) */
+  async restore(id: ProjectId): Promise<Project> {
+    try {
+      const res = await httpClient.post<
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO }
+      >(`${this.basePath}/${encodeURIComponent(id)}/restore`);
+
+      const raw = res.data as
+        ProjectDTO | { project: ProjectDTO } | { data: ProjectDTO };
+
+      const dto: ProjectDTO =
+        (raw as { project?: ProjectDTO }).project ??
+        (raw as { data?: ProjectDTO }).data ??
+        (raw as ProjectDTO);
+
+      return mapProjectFromDTO(dto);
+    } catch (err) {
+      throw toApiError(err);
+    }
+  }
 }
 
 /** Singleton listo para inyectar donde lo necesites */
