@@ -15,6 +15,9 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
+  /** Sólo viene en proyectos archivados. */
+  archivedAt?: string | null;
+  archivedBy?: string | null;
 }
 
 /**

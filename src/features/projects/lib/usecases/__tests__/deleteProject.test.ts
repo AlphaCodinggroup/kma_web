@@ -14,6 +14,7 @@ vi.mock("@features/projects/api/projects.repo.impl", () => ({
     update: vi.fn(),
     deleteProject: (...args: unknown[]) => defaultDeleteProject(...args),
     archive: vi.fn(),
+    restore: vi.fn(),
   },
 }));
 
@@ -30,6 +31,7 @@ function makeRepo(remove = vi.fn()): ProjectsRepo {
     update: vi.fn(),
     deleteProject: remove,
     archive: vi.fn(),
+    restore: vi.fn(),
   };
 }
 
