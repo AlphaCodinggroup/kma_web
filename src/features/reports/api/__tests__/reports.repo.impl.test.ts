@@ -55,6 +55,7 @@ describe("ReportsRepoHttp.list", () => {
     http.get.mockResolvedValueOnce({ data: listDTO });
 
     await new ReportsRepoHttp().list({
+      projectId: "project-1",
       userId: "user-1",
       status: "completed",
       limit: 25,
@@ -63,6 +64,7 @@ describe("ReportsRepoHttp.list", () => {
 
     expect(http.get).toHaveBeenCalledWith("/api/reports", {
       params: {
+        project_id: "project-1",
         user_id: "user-1",
         status: "completed",
         limit: 25,
@@ -86,6 +88,7 @@ describe("ReportsRepoHttp.list", () => {
     ];
     const expectedLimit = (filter as { limit?: number } | undefined)?.limit;
     expect(config.params).toEqual({
+      project_id: undefined,
       user_id: undefined,
       status: undefined,
       limit: expectedLimit,

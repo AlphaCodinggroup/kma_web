@@ -69,7 +69,25 @@ describe("updateAuditFinding", () => {
     [
       "no updatable field is provided",
       { auditId: "audit-1", questionCode: "Q-1" },
-      "updateAuditFinding: at least one field (quantity, notes or photos) must be provided",
+      "updateAuditFinding: at least one field (quantity, notes, photos or measurements) must be provided",
+    ],
+    [
+      "a measurement is negative",
+      {
+        auditId: "audit-1",
+        questionCode: "Q-1",
+        measurements: [{ name: "width", value: -1 }],
+      },
+      "updateAuditFinding: every measurement must be a finite number of 0 or more",
+    ],
+    [
+      "a measurement is not finite",
+      {
+        auditId: "audit-1",
+        questionCode: "Q-1",
+        measurements: [{ name: "width", value: Number.NaN }],
+      },
+      "updateAuditFinding: every measurement must be a finite number of 0 or more",
     ],
     [
       "quantity is NaN",
@@ -92,6 +110,33 @@ describe("updateAuditFinding", () => {
       updateAuditFinding(input, { auditReviewRepo: repo })
     ).rejects.toThrow(message);
     expect(repo.updateFinding).not.toHaveBeenCalled();
+  });
+
+  it("accepts measurements alone and passes them through with the mitigation", async () => {
+    const repo = makeRepo(vi.fn().mockResolvedValue(makeResult()));
+
+    await updateAuditFinding(
+      {
+        auditId: "audit-1",
+        questionCode: "Q-1",
+        mitigationId: "MIT-2",
+        measurements: [
+          { name: "width", value: 30 },
+          { name: null, value: 0 },
+        ],
+      },
+      { auditReviewRepo: repo }
+    );
+
+    expect(repo.updateFinding).toHaveBeenCalledWith({
+      auditId: "audit-1",
+      questionCode: "Q-1",
+      mitigationId: "MIT-2",
+      measurements: [
+        { name: "width", value: 30 },
+        { name: null, value: 0 },
+      ],
+    });
   });
 
   it("accepts a null quantity as an explicit reset", async () => {

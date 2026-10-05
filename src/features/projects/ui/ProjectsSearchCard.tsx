@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Archive } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import SearchInput from "@shared/ui/search-input";
 import TableHeader from "@shared/ui/table-header";
@@ -13,6 +14,8 @@ export interface ProjectsSearchCardProps {
   children?: React.ReactNode;
   className?: string;
   onCreateClick?: () => void;
+  showArchived?: boolean;
+  onToggleArchived?: () => void;
 }
 
 const ProjectsSearchCard: React.FC<ProjectsSearchCardProps> = ({
@@ -22,6 +25,8 @@ const ProjectsSearchCard: React.FC<ProjectsSearchCardProps> = ({
   placeholder = "Search projects...",
   children,
   className,
+  showArchived = false,
+  onToggleArchived,
 }) => {
   return (
     <section
@@ -31,7 +36,26 @@ const ProjectsSearchCard: React.FC<ProjectsSearchCardProps> = ({
       )}
     >
       {/* Encabezado */}
-      <TableHeader title="Projects" subtitle="Total projects" total={total} />
+      <TableHeader
+        title="Projects"
+        subtitle={showArchived ? "Archived projects" : "Total projects"}
+        total={total}
+        action={
+          onToggleArchived ? (
+            <button
+              type="button"
+              onClick={onToggleArchived}
+              className="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              aria-label={
+                showArchived ? "Show active projects" : "Show archived projects"
+              }
+            >
+              <Archive className="h-4 w-4" />
+              {showArchived ? "Show Active" : "Show Archived"}
+            </button>
+          ) : null
+        }
+      />
 
       {/* Buscador */}
       <div className="mb-4">

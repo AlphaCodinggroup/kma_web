@@ -62,18 +62,44 @@ describe("mapUpdateAuditFindingInputToDTO", () => {
     });
   });
 
+  it("sends every measurement in order, with an empty string for a missing name", () => {
+    expect(
+      mapUpdateAuditFindingInputToDTO(
+        makeInput({
+          measurements: [
+            { name: "width", value: 30 },
+            { name: null, value: 0 },
+          ],
+        })
+      )
+    ).toEqual({
+      measurements: [
+        { name: "width", value: 30 },
+        { name: "", value: 0 },
+      ],
+    });
+  });
+
+  it("omits the measurements key when there are none", () => {
+    expect(mapUpdateAuditFindingInputToDTO(makeInput({ measurements: [] }))).toEqual({});
+    expect(mapUpdateAuditFindingInputToDTO(makeInput())).not.toHaveProperty("measurements");
+  });
+
+  it("never sends the mitigation in the body: it travels as a query param", () => {
+    expect(
+      mapUpdateAuditFindingInputToDTO(makeInput({ mitigationId: "MIT-2", quantity: 1 }))
+    ).toEqual({ quantity: 1 });
+  });
+
   it("sends quantity 0 instead of treating it as absent", () => {
     expect(mapUpdateAuditFindingInputToDTO(makeInput({ quantity: 0 }))).toEqual({
       quantity: 0,
     });
   });
 
-  // null vacía la cantidad: descartarlo hacía imposible borrarla, porque el
-  // backend interpreta la ausencia como "no cambies este campo".
-  it("sends a null quantity so it can be cleared", () => {
-    expect(mapUpdateAuditFindingInputToDTO(makeInput({ quantity: null }))).toEqual(
-      { quantity: null }
-    );
+  // El backend toma null como "no cambies este campo": mandarlo no la vaciaba.
+  it("does not send a null quantity", () => {
+    expect(mapUpdateAuditFindingInputToDTO(makeInput({ quantity: null }))).toEqual({});
   });
 
   it.each([
@@ -86,11 +112,12 @@ describe("mapUpdateAuditFindingInputToDTO", () => {
     ).toEqual({});
   });
 
+  // "" es lo que borra las notas en el backend; null no las cambia.
   it.each([
-    ["a blank string", "   ", null],
-    ["an empty string", "", null],
-    ["an explicit null", null, null],
-  ])("normalizes notes %s to null", (_label, value, expected) => {
+    ["a blank string", "   ", ""],
+    ["an empty string", "", ""],
+    ["an explicit null", null, ""],
+  ])("sends notes %s as an empty string to clear them", (_label, value, expected) => {
     expect(mapUpdateAuditFindingInputToDTO(makeInput({ notes: value }))).toEqual({
       notes: expected,
     });

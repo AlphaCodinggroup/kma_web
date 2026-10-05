@@ -16,6 +16,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   return proxyToBackend(req, {
     method: "PATCH",
     path: `/audits-review/${id.value}/findings/${code.value}`,
+    forwardQuery: ["mitigation_id"],
     expectJson: true,
   });
 }

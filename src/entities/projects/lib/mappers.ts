@@ -1,4 +1,9 @@
-import { asArray, toFiniteNumber, toIsoDate } from "@shared/lib/coerce";
+import {
+  asArray,
+  toFiniteNumber,
+  toIsoDate,
+  toIsoDateOrNull,
+} from "@shared/lib/coerce";
 import type { Options, Project, ProjectListPage } from "../model";
 
 export interface ProjectDTO {
@@ -12,6 +17,8 @@ export interface ProjectDTO {
   created_at: string;
   updated_at: string;
   created_by: string;
+  archived_at?: string | null;
+  archived_by?: string | null;
 }
 
 export interface ProjectsResponseDTO {
@@ -38,6 +45,12 @@ export function mapProjectFromDTO(dto: ProjectDTO): Project {
     createdAt: toIsoDate(dto.created_at),
     updatedAt: toIsoDate(dto.updated_at),
     createdBy: dto.created_by,
+    ...(dto.archived_at !== undefined
+      ? { archivedAt: toIsoDateOrNull(dto.archived_at) }
+      : {}),
+    ...(dto.archived_by !== undefined
+      ? { archivedBy: dto.archived_by ?? null }
+      : {}),
   };
 }
 

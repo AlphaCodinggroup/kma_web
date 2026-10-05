@@ -22,6 +22,10 @@ type Props = {
   onStop: () => void;
   onRetry: () => void;
   onClose: () => void;
+  /** Título mientras trabaja (por defecto, la exportación). */
+  activeTitle?: string | undefined;
+  /** Muestra el archivo descargado al terminar. */
+  showFilename?: boolean | undefined;
 };
 
 const isActive = (progress: ExportProgress) =>
@@ -36,6 +40,8 @@ export default function ExportReportModal({
   onStop,
   onRetry,
   onClose,
+  activeTitle = "Exporting report",
+  showFilename = true,
 }: Props) {
   const active = isActive(progress);
 
@@ -59,7 +65,7 @@ export default function ExportReportModal({
                   ? "Still working"
                   : progress.phase === "canceled"
                     ? "Waiting stopped"
-                    : "Exporting report"}
+                    : activeTitle}
           </ModalTitle>
           <ModalDescription>
             The PDF can take a moment when it includes many photos.
@@ -89,7 +95,7 @@ export default function ExportReportModal({
             {progress.message}
           </p>
 
-          {progress.phase === "done" ? (
+          {progress.phase === "done" && showFilename ? (
             <div className="text-sm text-gray-600">
               <p className="font-medium text-black">{filename}</p>
               {progress.bytes !== null ? <p>{formatBytes(progress.bytes)}</p> : null}

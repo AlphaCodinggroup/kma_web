@@ -12,21 +12,20 @@ import {
   type SortOrder,
 } from "@features/projects/ui/ProjectsTable";
 import ProjectsSearchCard from "@features/projects/ui/ProjectsSearchCard";
+import ArchivedProjectsTable from "@features/projects/ui/ArchivedProjectsTable";
 import CreateProjectDialog from "@features/projects/ui/CreateProjectDialog";
 import EditProjectDialog from "@features/projects/ui/EditProjectDialog";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import ConfirmTitle from "@shared/ui/confirm-title";
 import { useProjectsQuery } from "@features/projects/ui/hooks/useProjectsQuery";
 import type { Project, ProjectListFilter } from "@entities/projects/model";
-import { useUsersQuery } from "@features/users/ui/hooks/useUsersQuery";
-import type { UserSummary } from "@entities/user/list.model";
 import { useDeleteProjectMutation } from "@features/projects/ui/hooks/useDeleteProjectMutation";
 import { useArchiveProjectMutation } from "@features/projects/ui/hooks/useArchiveProjectMutation";
+import { useRestoreProjectMutation } from "@features/projects/ui/hooks/useRestoreProjectMutation";
 import { useCreateProjectMutation } from "@features/projects/ui/hooks/useCreateProjectMutation";
 import { useUpdateProjectMutation } from "@features/projects/ui/hooks/useUpdateProjectMutation";
 import { useDebouncedSearch } from "@shared/lib/useDebouncedSearch";
-import { useFacilitiesQuery } from "@features/facilities/ui/hooks/useFacilitiesQuery";
-import type { FacilityListFilter } from "@entities/facility/model";
+import { useProjectFormLookups } from "@features/projects/ui/hooks/useProjectFormLookups";
 import type { ProjectUpsertValues } from "@features/projects/ui/ProjectsUpsertDialog";
 import { buildProjectOptionalFields } from "@features/projects/lib/buildProjectOptionalFields";
 
@@ -53,16 +52,23 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     null,
   );
 
+  // Vista de proyectos archivados y restauración
+  const [showArchived, setShowArchived] = useState<boolean>(false);
+  const [openRestore, setOpenRestore] = useState<boolean>(false);
+  const [projectToRestore, setProjectToRestore] = useState<Project | null>(
+    null,
+  );
+
   // Sorting state
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>(null);
 
   const debouncedQuery = useDebouncedSearch(query);
 
-  // Solo proyectos activos desde backend
+  // Activos o archivados, según el toggle
   const projectFilters = useMemo<ProjectListFilter | undefined>(() => {
-    return { status: "ACTIVE" };
-  }, []);
+    return { status: showArchived ? "ARCHIVED" : "ACTIVE" };
+  }, [showArchived]);
 
   const { data, isLoading, isError, refetch } =
     useProjectsQuery(projectFilters);
@@ -72,63 +78,8 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
   // Flag común para cargar lookups cuando está abierto create o edit
   const lookupEnabled = openCreate || openEdit;
 
-  // Auditors para los modales
-  const { data: auditorsData } = useUsersQuery(
-    { role: "auditor" },
-    lookupEnabled,
-  );
-
-  const auditors = useMemo<UserSummary[]>(
-    () => auditorsData?.items ?? [],
-    [auditorsData],
-  );
-
-  // Facilities activas para los modales
-  const facilitiesFilters = useMemo<FacilityListFilter>(() => {
-    return { status: "ACTIVE" };
-  }, []);
-
-  const { data: facilitiesData } = useFacilitiesQuery(
-    facilitiesFilters,
-    lookupEnabled,
-  );
-
-  const facilityOptions = useMemo(() => {
-    const fromQuery =
-      facilitiesData?.items?.map((f) => ({
-        id: f.id,
-        name: f.name,
-      })) ?? [];
-
-    const fromProjects = projects.flatMap((p) =>
-      (p.facilities ?? []).map((f) => ({
-        id: f.id,
-        name: f.name,
-      })),
-    );
-
-    const map = new Map<string, string>();
-    for (const f of [...fromQuery, ...fromProjects]) {
-      if (!map.has(f.id)) {
-        map.set(f.id, f.name);
-      }
-    }
-
-    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
-  }, [facilitiesData, projects]);
-
-  // Índices para mapear IDs → objetos { id, name }
-  const auditorById = useMemo(() => {
-    const map = new Map<string, UserSummary>();
-    for (const a of auditors) {
-      map.set(a.id, a);
-    }
-    return map;
-  }, [auditors]);
-
-  const facilityById = useMemo(() => {
-    return new Map(facilityOptions.map((facility) => [facility.id, facility]));
-  }, [facilityOptions]);
+  const { auditors, facilityOptions, toProjectUsers, toProjectFacilities } =
+    useProjectFormLookups({ enabled: lookupEnabled, projects });
 
   // Mutations
   const {
@@ -155,6 +106,13 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
 
   const { mutateAsync: archiveProject, isPending: isArchiving } =
     useArchiveProjectMutation();
+
+  const {
+    mutateAsync: restoreProject,
+    isPending: isRestoring,
+    error: restoreError,
+    reset: resetRestore,
+  } = useRestoreProjectMutation();
 
   // Filtro local por texto (name, status, createdAt, users, facilities)
   const filtered = useMemo<Project[]>(() => {
@@ -241,23 +199,11 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
   const handleCreateSubmit = useCallback(
     async (values: ProjectUpsertValues) => {
       try {
-        const users =
-          values.auditorIds
-            ?.map((id) => auditorById.get(id))
-            .filter((u): u is UserSummary => Boolean(u))
-            .map((u) => ({
-              id: u.id,
-              name: u.name?.trim() || u.email || u.id,
-            })) ?? [];
+        const users = toProjectUsers(values.auditorIds);
 
         const optionalFields = buildProjectOptionalFields(values);
 
-        const facilities =
-          values.facilityIds
-            ?.map((id) => facilityById.get(id))
-            .filter((facility): facility is { id: string; name: string } =>
-              Boolean(facility),
-            ) ?? [];
+        const facilities = toProjectFacilities(values.facilityIds);
 
         await createProject({
           name: values.name,
@@ -273,7 +219,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
         console.error("Failed to create project", err);
       }
     },
-    [createProject, refetch, auditorById, facilityById],
+    [createProject, refetch, toProjectUsers, toProjectFacilities],
   );
 
   // ---- Edit ----
@@ -290,23 +236,11 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
   const handleEditSubmit = useCallback(
     async (values: ProjectUpsertValues & { id: string }) => {
       try {
-        const users =
-          values.auditorIds
-            ?.map((id) => auditorById.get(id))
-            .filter((u): u is UserSummary => Boolean(u))
-            .map((u) => ({
-              id: u.id,
-              name: u.name?.trim() || u.email || u.id,
-            })) ?? [];
+        const users = toProjectUsers(values.auditorIds);
 
         const optionalFields = buildProjectOptionalFields(values);
 
-        const facilities =
-          values.facilityIds
-            ?.map((id) => facilityById.get(id))
-            .filter((facility): facility is { id: string; name: string } =>
-              Boolean(facility),
-            ) ?? [];
+        const facilities = toProjectFacilities(values.facilityIds);
 
         await updateProject({
           id: values.id,
@@ -323,7 +257,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
         console.error("Failed to update project", err);
       }
     },
-    [updateProject, refetch, auditorById, facilityById],
+    [updateProject, refetch, toProjectUsers, toProjectFacilities],
   );
 
   // ---- Delete ----
@@ -366,6 +300,31 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     }
   }, [archiveProject, projectToArchive, refetch]);
 
+  // ---- Restore ----
+  const handleRestore = useCallback(
+    (id: string) => {
+      const row = projects.find((r) => r.id === id);
+      if (!row) return;
+      resetRestore();
+      setProjectToRestore(row);
+      setOpenRestore(true);
+    },
+    [projects, resetRestore],
+  );
+
+  const confirmRestore = useCallback(async () => {
+    if (!projectToRestore) return;
+
+    try {
+      await restoreProject({ id: projectToRestore.id });
+      setOpenRestore(false);
+      setProjectToRestore(null);
+    } catch (err) {
+      // El diálogo queda abierto y muestra el error del backend.
+      console.error("Failed to restore project", err);
+    }
+  }, [restoreProject, projectToRestore]);
+
   // Expose create trigger to parent via ref
   useImperativeHandle(
     createTriggerRef,
@@ -387,19 +346,31 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
         onQueryChange={setQuery}
         placeholder="Search projects by Project name, Auditor, facility or Status..."
         onCreateClick={handleOpenCreate}
+        showArchived={showArchived}
+        onToggleArchived={() => setShowArchived((current) => !current)}
       >
-        <ProjectsTable
-          items={sorted}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onArchive={handleArchive}
-          isError={isError}
-          isLoading={isLoading}
-          onError={refetch}
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onSort={handleSort}
-        />
+        {showArchived ? (
+          <ArchivedProjectsTable
+            items={sorted}
+            onRestore={handleRestore}
+            isError={isError}
+            isLoading={isLoading}
+            onError={refetch}
+          />
+        ) : (
+          <ProjectsTable
+            items={sorted}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onArchive={handleArchive}
+            isError={isError}
+            isLoading={isLoading}
+            onError={refetch}
+            sortField={sortField}
+            sortOrder={sortOrder}
+            onSort={handleSort}
+          />
+        )}
       </ProjectsSearchCard>
 
       {/* Crear */}
@@ -446,6 +417,31 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
           cancelLabel="Cancel"
           loading={isDeleting}
           onConfirm={confirmDelete}
+        />
+      )}
+
+      {/* Restaurar */}
+      {projectToRestore && (
+        <ConfirmDialog
+          open={openRestore}
+          onOpenChange={(o) => {
+            setOpenRestore(o);
+            if (!o) setProjectToRestore(null);
+          }}
+          title={
+            <ConfirmTitle
+              action="restore"
+              subject={projectToRestore.name ?? "this project"}
+            />
+          }
+          description={
+            restoreError?.message ??
+            "This project will go back to the active list."
+          }
+          confirmLabel="Restore"
+          cancelLabel="Cancel"
+          loading={isRestoring}
+          onConfirm={confirmRestore}
         />
       )}
 

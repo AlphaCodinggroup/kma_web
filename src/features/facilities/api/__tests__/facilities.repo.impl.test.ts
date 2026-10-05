@@ -451,3 +451,48 @@ describe("facilitiesRepoImpl singleton", () => {
     expect(http.get).toHaveBeenCalledWith("/api/v2/facilities/f-1");
   });
 });
+
+describe("FacilitiesRepoHttp.getByProject", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("asks for the project's facilities and maps them", async () => {
+    http.get.mockResolvedValueOnce({
+      data: {
+        status: "success",
+        data: {
+          facilities: [
+            { facility_id: "f-1", project_id: "p-1", name: "HQ", city: "Boston" },
+          ],
+          total: 1,
+        },
+      },
+    });
+
+    const result = await new FacilitiesRepoHttp().getByProject("p-1");
+
+    expect(http.get).toHaveBeenCalledWith("/api/projects/p-1/facilities");
+    expect(result).toEqual([
+      { id: "f-1", projectId: "p-1", name: "HQ", city: "Boston" },
+    ]);
+  });
+
+  it("encodes the project id in the path", async () => {
+    http.get.mockResolvedValueOnce({ data: { data: { facilities: [] } } });
+
+    await new FacilitiesRepoHttp().getByProject("a/b");
+
+    expect(http.get).toHaveBeenCalledWith("/api/projects/a%2Fb/facilities");
+  });
+
+  it("wraps a failure as an ApiError", async () => {
+    http.get.mockRejectedValueOnce({ code: "NOT_FOUND", message: "not found" });
+
+    await expect(new FacilitiesRepoHttp().getByProject("p-1")).rejects.toEqual({
+      code: "NOT_FOUND",
+      message: "not found",
+      details: undefined,
+    });
+  });
+});

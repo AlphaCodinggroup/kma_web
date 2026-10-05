@@ -101,6 +101,7 @@ describe("useListAudits", () => {
         useListAudits({
           status: "completed",
           auditor: "auditor-1",
+          projectId: "project-1",
           limit: 25,
           last_eval_id: "cursor-1",
         }),
@@ -113,23 +114,31 @@ describe("useListAudits", () => {
         limit: 25,
         status: "completed",
         auditor: "auditor-1",
+        project_id: "project-1",
         last_eval_id: "cursor-1",
       },
     });
   });
 
-  it("keys the cache by status, auditor and cursor", async () => {
+  it("keys the cache by status, auditor, cursor and project", async () => {
     listAuditsMock.mockResolvedValue(makePage());
     const { client, wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useListAudits({ status: "completed" }),
+      () => useListAudits({ status: "completed", projectId: "project-1" }),
       { wrapper }
     );
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(
-      client.getQueryData(["audits", "list", "completed", undefined, undefined])
+      client.getQueryData([
+        "audits",
+        "list",
+        "completed",
+        undefined,
+        undefined,
+        "project-1",
+      ])
     ).toBeDefined();
   });
 
@@ -171,7 +180,14 @@ describe("prefetchListAudits", () => {
 
     expect(listAuditsMock).toHaveBeenCalledWith();
     expect(
-      client.getQueryData(["audits", "list", undefined, undefined, undefined])
+      client.getQueryData([
+        "audits",
+        "list",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      ])
     ).toEqual(page);
   });
 });

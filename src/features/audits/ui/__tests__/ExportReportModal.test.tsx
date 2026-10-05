@@ -61,6 +61,24 @@ describe("ExportReportModal", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it("names the approval and hides the filename when nothing is downloaded", () => {
+    const { rerender } = render(
+      <ExportReportModal {...props} progress={base} activeTitle="Approving report" showFilename={false} />
+    );
+    expect(screen.getByRole("heading", { name: "Approving report" })).toBeInTheDocument();
+
+    rerender(
+      <ExportReportModal
+        {...props}
+        progress={{ ...base, phase: "done", percent: 100, message: "Report approved and generated." }}
+        activeTitle="Approving report"
+        showFilename={false}
+      />
+    );
+    expect(screen.getByRole("heading", { name: "Report ready" })).toBeInTheDocument();
+    expect(screen.queryByText("Project.pdf")).toBeNull();
+  });
+
   it("offers Retry for an error", async () => {
     const onRetry = vi.fn();
     render(

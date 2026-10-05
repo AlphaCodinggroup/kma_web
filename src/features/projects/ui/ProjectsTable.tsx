@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { cn } from "@shared/lib/cn";
+import { projectDetailHref } from "@features/projects/lib/project-href";
 import {
   Table,
   TableBody,
@@ -141,7 +143,12 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
             items.map((row) => (
               <TableRow key={row.id}>
                 <TableCell className="px-4 py-4 text-black">
-                  {row.name}
+                  <Link
+                    href={projectDetailHref(row.id)}
+                    className="font-semibold text-black no-underline hover:underline"
+                  >
+                    {row.name}
+                  </Link>
                 </TableCell>
                 <TableCell className="px-4 py-4 text-black">
                   {row.users?.length ? (

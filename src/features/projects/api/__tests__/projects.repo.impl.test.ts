@@ -324,6 +324,37 @@ describe("ProjectsRepoHttp.deleteProject / archive", () => {
 });
 
 // ---------------------------------------------------------------------------
+// restore
+// ---------------------------------------------------------------------------
+
+describe("ProjectsRepoHttp.restore", () => {
+  it("POSTs to the restore sub-resource", async () => {
+    http.post.mockResolvedValueOnce({ data: projectDTO });
+
+    const result = await new ProjectsRepoHttp().restore("p-1");
+
+    expect(http.post).toHaveBeenCalledWith("/api/projects/p-1/restore");
+    expect(result).toEqual(mapProjectFromDTO(projectDTO));
+  });
+
+  it("escapes the id in the url", async () => {
+    http.post.mockResolvedValueOnce({ data: projectDTO });
+
+    await new ProjectsRepoHttp().restore("p/1");
+
+    expect(http.post).toHaveBeenCalledWith("/api/projects/p%2F1/restore");
+  });
+
+  it.each(wrappings)("restore unwraps %s", async (_label, payload) => {
+    http.post.mockResolvedValueOnce({ data: payload });
+
+    const result = await new ProjectsRepoHttp().restore("p-1");
+
+    expect(result).toEqual(mapProjectFromDTO(projectDTO));
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Normalización de errores
 // ---------------------------------------------------------------------------
 
@@ -340,6 +371,7 @@ describe("ProjectsRepoHttp error normalisation", () => {
     ["update", "patch", () => repo().update({ id: "p-1" })],
     ["deleteProject", "delete", () => repo().deleteProject("p-1")],
     ["archive", "post", () => repo().archive("p-1")],
+    ["restore", "post", () => repo().restore("p-1")],
   ];
 
   it.each(cases)(

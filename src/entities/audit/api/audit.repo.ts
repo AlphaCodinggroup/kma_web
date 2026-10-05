@@ -7,6 +7,7 @@ import type { AuditDetail } from "@entities/audit/model/audit-detail";
 export interface AuditListParams {
   status?: string;
   auditor?: string;
+  project_id?: string;
   limit?: number;
   last_eval_id?: string;
 }

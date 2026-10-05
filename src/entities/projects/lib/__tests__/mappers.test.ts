@@ -130,6 +130,46 @@ describe("mapProjectFromDTO", () => {
 // mapProjectsListFromDTO
 // ---------------------------------------------------------------------------
 
+describe("mapProjectFromDTO — archived projects", () => {
+  it("maps the archive date and author", () => {
+    const project = mapProjectFromDTO(
+      makeProjectDTO({
+        status: "ARCHIVED",
+        archived_at: "2026-08-15T12:00:00Z",
+        archived_by: "system:auto-archive",
+      })
+    );
+
+    expect(project.status).toBe("ARCHIVED");
+    expect(project.archivedAt).toBe("2026-08-15T12:00:00Z");
+    expect(project.archivedBy).toBe("system:auto-archive");
+  });
+
+  it("leaves the archive fields out when the backend does not send them", () => {
+    const project = mapProjectFromDTO(makeProjectDTO());
+
+    expect(project).not.toHaveProperty("archivedAt");
+    expect(project).not.toHaveProperty("archivedBy");
+  });
+
+  it("maps explicit nulls (a restored project) to null", () => {
+    const project = mapProjectFromDTO(
+      makeProjectDTO({ archived_at: null, archived_by: null })
+    );
+
+    expect(project.archivedAt).toBeNull();
+    expect(project.archivedBy).toBeNull();
+  });
+
+  it("drops an invalid archive date instead of showing Invalid Date", () => {
+    const project = mapProjectFromDTO(
+      makeProjectDTO({ status: "ARCHIVED", archived_at: "not-a-date" })
+    );
+
+    expect(project.archivedAt).toBeNull();
+  });
+});
+
 describe("mapProjectsListFromDTO", () => {
   it("maps every project of the page", () => {
     const page = mapProjectsListFromDTO(

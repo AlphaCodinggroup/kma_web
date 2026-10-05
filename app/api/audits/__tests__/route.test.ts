@@ -113,7 +113,7 @@ describe("GET /api/audits", () => {
     const { GET } = await import("../route");
     await GET(
       request(
-        "http://localhost/api/audits?status=completed&auditor=u-1&limit=50&last_eval_id=k1&secret=x&sortBy=name"
+        "http://localhost/api/audits?status=completed&auditor=u-1&project_id=p-1&limit=50&last_eval_id=k1&secret=x&sortBy=name"
       )
     );
 
@@ -121,6 +121,7 @@ describe("GET /api/audits", () => {
     const params = new URL(String(url)).searchParams;
     expect(params.get("status")).toBe("completed");
     expect(params.get("auditor")).toBe("u-1");
+    expect(params.get("project_id")).toBe("p-1");
     expect(params.get("limit")).toBe("50");
     expect(params.get("last_eval_id")).toBe("k1");
     // Los parámetros no declarados no deben viajar al backend.

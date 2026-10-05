@@ -9,6 +9,11 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const useAuditDetail = vi.fn();
+const push = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push }),
+}));
 
 vi.mock("@features/audits/lib/hooks/useAuditDetail", () => ({
   useAuditDetail: (...args: unknown[]) => useAuditDetail(...args),
@@ -22,7 +27,12 @@ vi.mock("@shared/ui/Retry", () => ({
 
 vi.mock("@features/audits/ui/AuditEditHeader", () => ({
   default: (props: Record<string, unknown>) => (
-    <header data-testid="header">{JSON.stringify(props)}</header>
+    <>
+      <header data-testid="header">{JSON.stringify(props)}</header>
+      {typeof props.onBack === "function" && (
+        <button onClick={props.onBack as () => void}>header back</button>
+      )}
+    </>
   ),
 }));
 
@@ -33,9 +43,16 @@ vi.mock("@features/audits/ui/AuditInfoPanel", () => ({
 }));
 
 vi.mock("@features/audits/ui/AuditEditContent", () => ({
-  default: (props: Record<string, unknown>) => (
-    <div data-testid="content">{JSON.stringify(props)}</div>
-  ),
+  default: (props: Record<string, unknown>) => {
+    const onDirtyChange = props.onDirtyChange as (dirty: boolean) => void;
+    return (
+      <>
+        <div data-testid="content">{JSON.stringify(props)}</div>
+        <button onClick={() => onDirtyChange(true)}>edit report</button>
+        <button onClick={() => onDirtyChange(false)}>save report</button>
+      </>
+    );
+  },
 }));
 
 /** Detalle completo, como lo devuelve el backend. */
@@ -72,12 +89,13 @@ function propsOf(testId: string) {
 
 /** params y searchParams, resueltos o como promesa, igual que los pasa Next. */
 type Params = { id: string } | Promise<{ id: string }>;
-type Search = { auditor?: string } | Promise<{ auditor?: string }>;
+type SearchValues = { auditor?: string; returnTo?: string };
+type Search = SearchValues | Promise<SearchValues>;
 
 // La página se tipa como pide Next 15 (promesas) pero en runtime acepta las dos
 // formas; el cast deja que los tests ejerciten ambas.
 const asParams = (params: Params) => params as Promise<{ id: string }>;
-const asSearch = (search: Search) => search as Promise<{ auditor?: string }>;
+const asSearch = (search: Search) => search as Promise<SearchValues>;
 
 // searchParams se omite cuando no hay: con exactOptionalPropertyTypes la
 // página lo declara opcional pero no admite un undefined explícito.
@@ -164,6 +182,18 @@ describe("AuditEditPage", () => {
     });
   });
 
+  it("goes back to the source project when returnTo names one", async () => {
+    await renderPage({ id: "audit-1" }, { returnTo: "/projects/project-1" });
+
+    expect(propsOf("header").backHref).toBe("/projects/project-1");
+  });
+
+  it("ignores a returnTo that is not a project page", async () => {
+    await renderPage({ id: "audit-1" }, { returnTo: "https://evil.example.com" });
+
+    expect(propsOf("header").backHref).toBe("/audits");
+  });
+
   it("passes the project, facility and location to the panel", async () => {
     await renderPage({ id: "audit-1" });
 
@@ -198,5 +228,48 @@ describe("AuditEditPage", () => {
       screen.getByRole("button", { name: "The audit could not be loaded." })
     );
     expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("leaves through the back link while there are no unsaved changes", async () => {
+    await renderPage({ id: "audit-1" });
+
+    expect(screen.queryByRole("button", { name: "header back" })).toBeNull();
+  });
+
+  it("asks before leaving with unsaved changes and goes back on confirm", async () => {
+    await renderPage({ id: "audit-1" }, { returnTo: "/projects/p-1?status=completed" });
+
+    await userEvent.click(screen.getByRole("button", { name: "edit report" }));
+    await userEvent.click(screen.getByRole("button", { name: "header back" }));
+    expect(screen.getByText("Discard unsaved changes?")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Discard and leave" }));
+    expect(push).toHaveBeenCalledWith("/projects/p-1?status=completed");
+  });
+
+  it("stays on the page when the leave is cancelled", async () => {
+    await renderPage({ id: "audit-1" });
+
+    await userEvent.click(screen.getByRole("button", { name: "edit report" }));
+    await userEvent.click(screen.getByRole("button", { name: "header back" }));
+    await userEvent.click(screen.getByRole("button", { name: "Stay" }));
+
+    expect(push).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByText("Discard unsaved changes?")).toBeNull());
+  });
+
+  it("warns the browser before unloading only while there are unsaved changes", async () => {
+    await renderPage({ id: "audit-1" });
+    const unload = () => {
+      const event = new Event("beforeunload", { cancelable: true });
+      window.dispatchEvent(event);
+      return event.defaultPrevented;
+    };
+
+    expect(unload()).toBe(false);
+    await userEvent.click(screen.getByRole("button", { name: "edit report" }));
+    expect(unload()).toBe(true);
+    await userEvent.click(screen.getByRole("button", { name: "save report" }));
+    expect(unload()).toBe(false);
   });
 });
