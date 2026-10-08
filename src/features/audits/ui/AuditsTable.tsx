@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo, useState, useMemo } from "react";
-import { Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Loader2 } from "lucide-react";
+import { ClipboardCheck, Eye, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 import type { Audit } from "@entities/audit/model";
 import {
   Table,
@@ -18,6 +18,10 @@ import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
 import Pagination from "@shared/ui/Pagination";
 import { useSession } from "@processes/auth/hooks";
+import { MobileEntityRow } from "@shared/ui/mobile-entity-row";
+import { Button } from "@shared/ui/controls";
+import { useMediaQuery } from "@shared/lib/useMediaQuery";
+import { isAuditReviewAvailable } from "../lib/audit-review-availability";
 import { useAuditDetail } from "@features/audits/lib/hooks/useAuditDetail";
 
 /** Columnas que se pueden ocultar cuando el contexto ya las fija. */
@@ -76,7 +80,8 @@ const SmartEditButton = memo(({
   editingId?: string | null | undefined;
   isAdmin: boolean;
 }) => {
-  const checkAnswers = row.findingsCount === 0;
+  const available = isAuditReviewAvailable(row.status);
+  const checkAnswers = available && row.findingsCount === 0;
 
   const { data: detail } = useAuditDetail(checkAnswers ? row.id : undefined, {
     enabled: checkAnswers,
@@ -90,40 +95,48 @@ const SmartEditButton = memo(({
   //
   // Comparar contra "YES" nunca podía acertar: los pasos Form y Select no
   // llevan respuesta y el mapper normaliza "YES" a booleano `true`.
-  let isRed = false;
+  let isCompliant = false;
   if (checkAnswers && detail) {
     const yesNoAnswers = (detail.questions ?? [])
       .filter((q) => q.type === "yes_no")
       .map((q) => normalizeYesNo(q.answer));
 
-    isRed =
+    isCompliant =
       yesNoAnswers.length > 0 &&
       yesNoAnswers.every((answer) => answer === "YES" || answer === "NO");
   }
 
+  const readOnly = isCompliant || row.status === "completed" || row.status === "final_report_sent_to_client";
+  const label = readOnly ? "View audit" : "Review audit";
+
   return (
-    <button
-      onClick={() => onEdit?.(row, isRed)}
-      disabled={editingId === row.id || !isAdmin}
-      className={cn(
-        "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50",
-        isRed ? "text-red-600 hover:bg-red-50" : "text-gray-700 hover:bg-gray-100"
-      )}
-      aria-label="Edit audit"
-      title={
-        !isAdmin
-          ? "Only administrators can edit audits"
-          : isRed
-            ? "No findings, unsures, or blanks - fully compliant"
-            : "Edit audit"
-      }
-    >
-      {editingId === row.id ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <Pencil className="h-4 w-4" />
-      )}
-    </button>
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      {isCompliant && <span className="text-xs font-medium text-[var(--kma-success)]">Compliant</span>}
+      <Button
+        variant="secondary"
+        fullWidth={false}
+        onClick={() => onEdit?.(row, isCompliant)}
+        disabled={editingId === row.id || !isAdmin || !available}
+        className={cn(
+          "min-h-[var(--kma-control-height)] gap-1.5 px-3 text-sm"
+        )}
+        aria-label={label}
+        title={
+          !isAdmin
+            ? "Only administrators can review audits"
+            : !available ? "This audit is not available for review"
+            : isCompliant ? "No findings, unsures, or blanks - fully compliant"
+            : label
+        }
+      >
+        {editingId === row.id ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          readOnly ? <Eye className="h-4 w-4" aria-hidden="true" /> : <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
+        )}
+        {readOnly ? "View" : "Review"}
+      </Button>
+    </div>
   );
 });
 
@@ -153,6 +166,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const { isAdmin } = useSession();
+  const compact = useMediaQuery("(max-width: 1023px)");
   const showProject = !hiddenColumns?.includes("project");
   const showFacility = !hiddenColumns?.includes("facility");
   // 7 columnas visibles por defecto, menos las ocultas.
@@ -219,15 +233,15 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
 
   const SortIcon = ({ column }: { column: SortColumn }) => {
     if (sortColumn !== column) {
-      return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+      return <ArrowUpDown className="h-4 w-4 text-[var(--kma-muted)]" />;
     }
     if (sortDirection === "asc") {
-      return <ArrowUp className="h-4 w-4 text-black" />;
+      return <ArrowUp className="h-4 w-4 text-[var(--kma-fg)]" />;
     }
     if (sortDirection === "desc") {
-      return <ArrowDown className="h-4 w-4 text-black" />;
+      return <ArrowDown className="h-4 w-4 text-[var(--kma-fg)]" />;
     }
-    return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    return <ArrowUpDown className="h-4 w-4 text-[var(--kma-muted)]" />;
   };
 
   if (loading) return <Loading text="Loading audits…" />;
@@ -244,28 +258,81 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
   const showPagination = onPageChange && onPageSizeChange && totalItems > 0;
 
   return (
-    <div className={cn("w-full bg-white relative")}>
+    <div className={cn("w-full bg-[var(--kma-surface)] relative")}>
       {/* Loading overlay for filter changes */}
       {fetching && !loading && (
-        <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
-          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-lg border border-gray-200">
-            <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-600" />
-            <span className="text-sm text-gray-700 font-medium">Updating...</span>
+        <div className="absolute inset-0 bg-[var(--kma-surface)]/80 z-10 flex items-center justify-center">
+          <div className="flex items-center gap-2 bg-[var(--kma-surface)] px-4 py-2 rounded-lg border border-[var(--kma-border)]">
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-[var(--kma-border)] border-t-[var(--kma-primary)]" />
+            <span className="text-sm text-[var(--kma-fg)] font-medium">Updating...</span>
           </div>
         </div>
       )}
 
-      <div
-        className={cn(bodyMaxHeightClassName ?? "max-h-dvh", "overflow-y-auto")}
+      {compact ? (
+        <>
+        <div className="flex flex-wrap items-end gap-3 border-b border-[var(--kma-border)] bg-[var(--kma-subtle)] px-4 py-3">
+          <label className="min-w-0 flex-1 text-sm text-[var(--kma-muted)]">
+            Sort audits by
+            <select
+              value={sortColumn ?? ""}
+              onChange={event => {
+                if (!event.target.value) {
+                  setSortColumn(null);
+                  setSortDirection(null);
+                } else {
+                  handleSort(event.target.value as SortColumn);
+                }
+              }}
+              className="mt-1 min-h-11 w-full min-w-0 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] px-3 text-sm text-[var(--kma-fg)]"
+            >
+              <option value="">Default order</option>
+              {showProject && <option value="project">Project</option>}
+              {showFacility && <option value="facility">Facility</option>}
+              <option value="flow">Flow</option>
+              <option value="auditor">Auditor</option>
+              <option value="status">Status</option>
+              <option value="date">Audit Date</option>
+            </select>
+          </label>
+          <Button
+            fullWidth={false}
+            variant="secondary"
+            disabled={!sortColumn}
+            aria-label={sortDirection === "asc" ? "Sort descending" : "Sort ascending"}
+            onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")}
+            className="min-h-11"
+          >
+            {sortDirection === "desc" ? <ArrowDown className="h-4 w-4" aria-hidden="true" /> : <ArrowUp className="h-4 w-4" aria-hidden="true" />}
+            {sortDirection === "desc" ? "Descending" : "Ascending"}
+          </Button>
+        </div>
+        <ul aria-label="Audit results" className="divide-y divide-[var(--kma-border)]">
+          {!hasItems && <li className="px-4 py-8 text-sm text-[var(--kma-muted)]">{emptyMessage}</li>}
+          {sortedItems.map(row => (
+            <MobileEntityRow
+              key={row.id}
+              title={showProject ? row.projectName ?? "Untitled project" : row.flowName ?? "Audit"}
+              subtitle={[showFacility ? row.facilityName : null, row.flowName].filter(Boolean).join(" · ")}
+              status={<StatusBadge status={row.status} />}
+              actions={<><SmartEditButton row={row} onEdit={onEdit} editingId={editingId} isAdmin={isAdmin} />{onDelete && <Button variant="ghost" fullWidth={false} aria-label="Delete audit" onClick={() => onDelete(row)} disabled={!isAdmin || deletingId === row.id}><Trash2 className="h-4 w-4" aria-hidden="true" />Delete</Button>}</>}
+            >
+              <dl className="grid grid-cols-2 gap-4"><div><dt>Auditor</dt><dd className="mt-1 text-[var(--kma-fg)]">{row.auditorName ?? "Not assigned"}</dd></div><div><dt>Audit date</dt><dd className="mt-1 tabular-nums text-[var(--kma-fg)]">{formatIsoToYmdHm(row.createdAt)}</dd></div></dl>
+            </MobileEntityRow>
+          ))}
+        </ul>
+        </>
+      ) : <div
+        className={cn(bodyMaxHeightClassName ?? "max-h-dvh", "overflow-auto")}
       >
-        <Table>
+        <Table className="min-w-[850px] text-sm [&_td]:py-4 [&_th]:py-3 [&_th]:text-[var(--kma-muted)]">
           <TableHeader>
-            <TableRow className="bg-gray-50">
+            <TableRow className="bg-[var(--kma-subtle)]">
               {showProject && (
                 <TableHead>
                   <button
                     onClick={() => handleSort("project")}
-                    className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                    className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                   >
                     Project
                     <SortIcon column="project" />
@@ -276,7 +343,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                 <TableHead>
                   <button
                     onClick={() => handleSort("facility")}
-                    className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                    className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                   >
                     Facility
                     <SortIcon column="facility" />
@@ -286,7 +353,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               <TableHead>
                 <button
                   onClick={() => handleSort("flow")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Flow
                   <SortIcon column="flow" />
@@ -295,7 +362,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               <TableHead>
                 <button
                   onClick={() => handleSort("auditor")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Auditor
                   <SortIcon column="auditor" />
@@ -304,7 +371,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               <TableHead className="w-[18%]">
                 <button
                   onClick={() => handleSort("status")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Status
                   <SortIcon column="status" />
@@ -313,13 +380,13 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               <TableHead className="w-[15%]">
                 <button
                   onClick={() => handleSort("date")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Audit Date
                   <SortIcon column="date" />
                 </button>
               </TableHead>
-              <TableHead className="w-[5%] text-right pr-6 font-semibold">Actions</TableHead>
+              <TableHead className="sticky right-0 w-[172px] bg-[var(--kma-subtle)] text-right pr-6 font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -328,7 +395,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               <TableRow>
                 <TableCell
                   colSpan={columnCount}
-                  className="py-10 text-center text-sm text-gray-500"
+                  className="py-10 text-center text-sm text-[var(--kma-muted)]"
                 >
                   {emptyMessage}
                 </TableCell>
@@ -342,17 +409,17 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                 key={`${row.id}-${row.version}`}
                 data-testid={`audit-row-${row.id}`}
               >
-                {showProject && <TableCell>{row.projectName ?? "—"}</TableCell>}
-                {showFacility && <TableCell>{row.facilityName ?? "—"}</TableCell>}
-                <TableCell>{row.flowName ?? "—"}</TableCell>
-                <TableCell>{row.auditorName ?? "—"}</TableCell>
+                {showProject && <TableCell className="max-w-[240px]"><span className="block break-words font-semibold text-[var(--kma-fg)]">{row.projectName ?? "—"}</span></TableCell>}
+                {showFacility && <TableCell className="max-w-[200px] break-words text-[var(--kma-muted)]">{row.facilityName ?? "—"}</TableCell>}
+                <TableCell className="max-w-[220px] break-words">{row.flowName ?? "—"}</TableCell>
+                <TableCell className="text-[var(--kma-muted)]">{row.auditorName ?? "—"}</TableCell>
                 <TableCell>
                   <StatusBadge status={row.status} />
                 </TableCell>
                 <TableCell className="tabular-nums">
                   {formatIsoToYmdHm(row.createdAt) ?? "—"}
                 </TableCell>
-                <TableCell className="text-right pr-6">
+                <TableCell className="sticky right-0 border-l border-[var(--kma-border)] bg-[var(--kma-surface)] text-right pr-6">
                   <div className="flex items-center justify-end gap-2">
                     <SmartEditButton
                       row={row}
@@ -364,12 +431,12 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                       <button
                         onClick={() => onDelete(row)}
                         disabled={deletingId === row.id || !isAdmin}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-md text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex min-h-[var(--kma-control-height)] min-w-[var(--kma-control-height)] items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-input)] hover:text-[var(--kma-danger)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Delete audit"
                         title={!isAdmin ? "Only administrators can delete audits" : "Delete audit"}
                       >
                         {deletingId === row.id ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-red-600" />
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-[var(--kma-border)] border-t-[var(--kma-danger)]" />
                         ) : (
                           <Trash2 className="h-4 w-4" />
                         )}
@@ -381,7 +448,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
             ))}
           </TableBody>
         </Table>
-      </div>
+      </div>}
 
       {showPagination && (
         <Pagination

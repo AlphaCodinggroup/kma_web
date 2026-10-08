@@ -2,7 +2,8 @@
 
 import React from "react";
 import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField } from "@entities/flow/model";
-import { Button } from "@shared/ui/controls";
+import ConfirmDialog from "@shared/ui/confirm-dialog";
+import { Button, Input, Label } from "@shared/ui/controls";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
 import {
     Save,
@@ -12,19 +13,12 @@ import {
     Info,
     CheckCircle2,
     AlertCircle,
-    ArrowRight,
-    HelpCircle,
-    FileText,
     List,
-    AlertTriangle,
-    History,
     X
 } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
-import { cn } from "@shared/lib/cn";
 import { sanitizeFileName } from "@shared/lib/file";
 import { useRouter } from "next/navigation";
-import { Loading } from "@shared/ui/Loading";
 import { useQueryClient } from "@tanstack/react-query";
 import { flowsKeys } from "@features/flows/lib/useFlowsQuery";
 import { useSession } from "@processes/auth/hooks";
@@ -43,8 +37,12 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const [pendingUploads, setPendingUploads] = React.useState<Record<string, Map<string, File>>>({});
     const [isSaving, setIsSaving] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState("");
+    const [stepsOpen, setStepsOpen] = React.useState(false);
+    const [confirmation, setConfirmation] = React.useState<{ action: "discard" | "delete"; stepId?: string } | null>(null);
     const { isAdmin } = useSession();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const titleInputRef = React.useRef<HTMLInputElement>(null);
+    const metadataId = React.useId();
     const [draggedStepId, setDraggedStepId] = React.useState<string | null>(null);
     const [dragOverStepId, setDragOverStepId] = React.useState<string | null>(null);
 
@@ -148,6 +146,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const handleRecoverDraft = () => {
         if (recoveredDraft) {
             setFlow(recoveredDraft);
+            setSelectedStepId(recoveredDraft.steps.some((step) => step.id === selectedStepId) ? selectedStepId : recoveredDraft.steps[0]?.id ?? null);
             setShowDraftRecoveryModal(false);
             setRecoveredDraft(null);
         }
@@ -159,12 +158,20 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         setRecoveredDraft(null);
     };
 
-    const handleClearFlow = () => {
-        if (confirm("¿Está seguro que desea descartar todos los cambios y volver al estado inicial? Esta acción no se puede deshacer.")) {
+    const handleClearFlow = () => setConfirmation({ action: "discard" });
+
+    const confirmAction = () => {
+        if (!confirmation || !isAdmin || isSaving) return;
+        if (confirmation.action === "discard") {
             setFlow(initialFlow);
             clearDraft();
             setSelectedStepId(initialFlow.steps[0]?.id || null);
+        } else {
+            const newSteps = flow.steps.filter((step) => step.id !== confirmation.stepId);
+            setFlow({ ...flow, steps: newSteps });
+            if (selectedStepId === confirmation.stepId) setSelectedStepId(newSteps[0]?.id || null);
         }
+        setConfirmation(null);
     };
 
     // Exportar el flujo como JSON
@@ -248,10 +255,6 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         }
         return false;
     };
-
-    if (isSaving) {
-        return <Loading text="Saving..." />;
-    }
 
     // -- Drag and Drop --
     const handleDragStart = (e: React.DragEvent<HTMLTableRowElement>, stepId: string) => {
@@ -409,15 +412,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         }
     };
 
-    const handleDeleteStep = (stepId: string) => {
-        if (confirm("Are you sure you want to delete this step? References to it will strictly safely be kept but broken.")) {
-            const newSteps = flow.steps.filter((s) => s.id !== stepId);
-            setFlow({ ...flow, steps: newSteps });
-            if (selectedStepId === stepId) {
-                setSelectedStepId(newSteps[0]?.id || null);
-            }
-        }
-    };
+    const handleDeleteStep = (stepId: string) => setConfirmation({ action: "delete", stepId });
 
     const handleUpdateStep = (stepId: string, updates: Partial<FlowStep>) => {
         const newSteps = flow.steps.map((s) => (s.id === stepId ? ({ ...s, ...updates } as FlowStep) : s));
@@ -441,7 +436,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         };
 
         if (fieldType !== "measurements" && step.fields.some((f) => f.id === fieldType)) {
-            alert(`${fieldType} is already added`);
+            setFeedback({ open: true, type: "error", title: "Field already added", messages: [`This step already contains a ${fieldType} field.`] });
             return;
         }
 
@@ -558,6 +553,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
     // -- Save --
     const handleSave = async () => {
+        if (isSaving || !isAdmin) return;
         const errors = validateFlow(flow);
         if (errors.length > 0) {
             setFeedback({
@@ -689,6 +685,8 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         setFeedback((prev) => ({ ...prev, open: false }));
         if (feedback.type === "success") {
             router.push("/flows");
+        } else if (!flow.title.trim()) {
+            requestAnimationFrame(() => titleInputRef.current?.focus());
         }
     };
 
@@ -726,101 +724,16 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         setAutoLinkModal(null);
     };
 
-    return (
-        <div className="h-[calc(100vh-100px)] flex flex-col gap-3">
-            {/* Top Bar / Header conforme al mockup */}
-            <div className="flex items-center justify-between gap-4 px-1 py-1">
-                {/* Título & contador de nodos & descripción */}
-                <div className="flex flex-col min-w-0">
-                    <div className="flex items-center gap-3 min-w-0">
-                        <div className="flex items-center gap-2 min-w-0">
-                            <input
-                                value={flow.title}
-                                onChange={(e) => setFlow({ ...flow, title: e.target.value })}
-                                className="text-xl sm:text-2xl font-bold bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-400 focus:bg-white rounded px-1.5 py-0.5 text-gray-900 transition-all focus:outline-none truncate"
-                                placeholder="Untitled Flow"
-                            />
-                            <span className="text-sm font-medium text-gray-400 whitespace-nowrap">
-                                · {flow.steps.length} {flow.steps.length === 1 ? "node" : "nodes"}
-                            </span>
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={() => setShowHelpModal(true)}
-                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors shrink-0"
-                            title="How to create a flow"
-                        >
-                            <Info className="h-4 w-4" />
-                        </button>
-                    </div>
-                    <input
-                        value={flow.description ?? ""}
-                        onChange={(e) => setFlow({ ...flow, description: e.target.value })}
-                        className="text-xs text-gray-500 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-400 focus:bg-white rounded px-1.5 py-0.5 max-w-md placeholder:text-gray-400 transition-all focus:outline-none"
-                        placeholder="Add a description (optional)..."
-                    />
-                </div>
-
-                {/* Acciones principales: Discard, Export, Save Flow */}
-                <div className="flex items-center gap-2 shrink-0">
-                    {hasUnsavedChanges && (
-                        <>
-                            <span className="hidden md:inline-flex text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-200">
-                                Unsaved changes
-                            </span>
-                            <button
-                                type="button"
-                                onClick={handleClearFlow}
-                                className="inline-flex items-center h-9 px-3 gap-1.5 text-xs font-semibold bg-white text-red-600 hover:bg-red-50 border border-red-200 rounded-lg shadow-xs transition-colors whitespace-nowrap disabled:opacity-50"
-                                disabled={isSaving || !isAdmin}
-                                title={!isAdmin ? "Only administrators can discard changes" : "Descartar cambios y volver al estado inicial"}
-                            >
-                                <RotateCcw className="h-3.5 w-3.5" />
-                                <span>Discard</span>
-                            </button>
-                        </>
-                    )}
-
-                    <button
-                        type="button"
-                        onClick={handleExport}
-                        className="inline-flex items-center h-9 px-3.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 border border-gray-300 rounded-lg shadow-xs transition-colors gap-1.5 whitespace-nowrap"
-                        title="Export flow as JSON"
-                    >
-                        <Download className="h-3.5 w-3.5 text-gray-500" />
-                        <span>Export</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        className={cn(
-                            "inline-flex items-center h-9 px-4 text-xs font-semibold bg-black text-white hover:bg-gray-800 rounded-lg shadow-sm transition-all disabled:opacity-50 gap-1.5 whitespace-nowrap",
-                            isSaving ? "opacity-80" : ""
-                        )}
-                        onClick={handleSave}
-                        disabled={isSaving || !isAdmin}
-                        title={!isAdmin ? "Only administrators can save flows" : "Save Flow"}
-                    >
-                        {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-                        <span>{isSaving ? "Saving..." : "Save Flow"}</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Layout Principal: Master (Tabla de Pasos 60-65%) y Detail (Inspector de Paso 35-40%) */}
-            <div className="flex-1 flex gap-4 min-h-0 overflow-hidden">
-                {/* Panel Izquierdo: Tabla Panorámica de Flujo */}
-                <div className="flex-[3] min-w-0 flex flex-col h-full">
+    const stepsPanel = (
                     <FlowStepsTable
                         flow={flow}
                         selectedStepId={selectedStepId}
-                        onSelectStep={setSelectedStepId}
+                        onSelectStep={(id) => { setSelectedStepId(id); setStepsOpen(false); }}
                         onDeleteStep={handleDeleteStep}
                         onAddStep={handleAddStep}
                         searchTerm={searchTerm}
                         onSearchChange={setSearchTerm}
-                        isAdmin={isAdmin}
+                        isAdmin={isAdmin && !isSaving}
                         draggedStepId={draggedStepId}
                         dragOverStepId={dragOverStepId}
                         onDragStart={handleDragStart}
@@ -831,10 +744,80 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         onDrop={handleDrop}
                         isStepIncomplete={isStepIncomplete}
                     />
-                </div>
+    );
 
-                {/* Panel Derecho: Inspector de Paso Seleccionado */}
-                <div className="flex-[2] min-w-[340px] max-w-[480px] flex flex-col h-full">
+    return (
+        <div className="flex min-h-[650px] flex-col overflow-hidden rounded-lg border border-[var(--kma-brand-border)] bg-[var(--kma-canvas)] xl:h-[calc(100dvh-205px)]" aria-busy={isSaving}>
+            <div className="grid shrink-0 gap-4 border-b border-[var(--kma-border)] bg-[var(--kma-surface)] p-4 sm:p-6 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
+                <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+                    <div className="min-w-0">
+                        <Label htmlFor={`${metadataId}-title`}>Flow title</Label>
+                        <Input
+                            id={`${metadataId}-title`}
+                            ref={titleInputRef}
+                            value={flow.title}
+                            aria-invalid={!flow.title.trim() && feedback.messages.includes("Flow Title is required.")}
+                            aria-describedby={!flow.title.trim() && feedback.messages.includes("Flow Title is required.") ? `${metadataId}-error` : undefined}
+                            onChange={(e) => setFlow({ ...flow, title: e.target.value })}
+                            disabled={isSaving || !isAdmin}
+                            placeholder="Untitled Flow"
+                            aria-label="Flow title"
+                        />
+                        {!flow.title.trim() && feedback.messages.includes("Flow Title is required.") ? <p id={`${metadataId}-error`} className="mt-1 text-sm text-[var(--kma-danger)]">Enter a title for this flow.</p> : null}
+                    </div>
+                    <div className="min-w-0">
+                        <Label htmlFor={`${metadataId}-description`}>Description <span className="font-normal text-[var(--kma-muted)]">(optional)</span></Label>
+                        <Input
+                            id={`${metadataId}-description`}
+                            value={flow.description ?? ""}
+                            onChange={(e) => setFlow({ ...flow, description: e.target.value })}
+                            disabled={isSaving || !isAdmin}
+                            placeholder="Add a description (optional)..."
+                            aria-label="Flow description"
+                        />
+                    </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+                    {hasUnsavedChanges ? (
+                        <Button type="button" variant="ghost" fullWidth={false} onClick={handleClearFlow} disabled={isSaving || !isAdmin} title={!isAdmin ? "Only administrators can discard changes" : "Discard changes and restore the saved flow"}>
+                            <RotateCcw className="h-4 w-4" aria-hidden="true" />Discard
+                        </Button>
+                    ) : null}
+                    <Button type="button" variant="secondary" fullWidth={false} onClick={handleExport} disabled={isSaving} title="Export flow as JSON">
+                        <Download className="h-4 w-4" aria-hidden="true" />Export
+                    </Button>
+                    <Button type="button" fullWidth={false} onClick={handleSave} disabled={isSaving || !isAdmin} title={!isAdmin ? "Only administrators can save flows" : "Save Flow"}>
+                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Save className="h-4 w-4" aria-hidden="true" />}
+                        <span>{isSaving ? "Saving..." : "Save Flow"}</span>
+                    </Button>
+                </div>
+            </div>
+            <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-2 sm:px-6">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--kma-muted)]">
+                    <span>{flow.steps.length} {flow.steps.length === 1 ? "step" : "steps"}</span>
+                    {flow.code ? <span>{flow.code}</span> : null}
+                    {hasUnsavedChanges ? <span role="status" className="text-[var(--kma-warning)]">Unsaved changes</span> : null}
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button type="button" variant="ghost" fullWidth={false} onClick={() => setShowHelpModal(true)} title="How to create a flow"><Info className="h-4 w-4" aria-hidden="true" />Flow guide</Button>
+                    <Button type="button" variant="secondary" fullWidth={false} className="xl:hidden" onClick={() => setStepsOpen(true)} aria-expanded={stepsOpen} disabled={isSaving}><List className="h-4 w-4" aria-hidden="true" />Browse steps</Button>
+                </div>
+            </div>
+            <Modal open={stepsOpen} onOpenChange={setStepsOpen} className="justify-start p-0 sm:p-0">
+                <ModalContent className="flex h-dvh max-h-dvh max-w-sm flex-col overflow-hidden rounded-none p-0 sm:p-0">
+                    <ModalHeader className="mb-0 flex shrink-0 items-center justify-between border-b border-[var(--kma-border)] px-4 py-3">
+                        <ModalTitle>Flow steps</ModalTitle>
+                        <button type="button" onClick={() => setStepsOpen(false)} aria-label="Close steps" className="inline-flex h-11 w-11 items-center justify-center rounded hover:bg-[var(--kma-subtle)]"><X className="h-5 w-5" aria-hidden="true" /></button>
+                    </ModalHeader>
+                    {stepsPanel}
+                </ModalContent>
+            </Modal>
+
+            <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)]">
+                <div className="hidden h-full min-w-0 flex-col xl:flex">
+                    {stepsPanel}
+                </div>
+                <div className="flex h-full min-w-0 flex-col xl:border-l xl:border-[var(--kma-border)]">
                     <StepDetailInspector
                         selectedStep={selectedStep}
                         flow={flow}
@@ -850,46 +833,36 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         onImageClick={handleImageClick}
                         onRemoveImage={handleRemoveImage}
                         onZoomImage={setZoomedImage}
-                        isAdmin={isAdmin}
+                        isAdmin={isAdmin && !isSaving}
                     />
                 </div>
             </div>
 
+            <ConfirmDialog
+                open={confirmation !== null}
+                onOpenChange={(open) => { if (!open) setConfirmation(null); }}
+                title={confirmation?.action === "discard" ? "Discard changes?" : "Delete step?"}
+                description={confirmation?.action === "discard" ? "Restore the saved flow and remove the local draft." : "References to this step will remain. Update any broken links before saving."}
+                confirmLabel={confirmation?.action === "discard" ? "Discard changes" : "Delete step"}
+                onConfirm={confirmAction}
+                loading={isSaving}
+            />
+
             {/* Feedback Modal */}
             <Modal open={feedback.open} onOpenChange={(open: boolean) => !open && handleCloseFeedback()}>
                 <ModalContent className="max-w-md p-6">
-                    <ModalHeader className="flex flex-col items-center gap-4 text-center">
-                        <div className={cn("p-3 rounded-full", feedback.type === "success" ? "bg-green-100" : "bg-red-100")}>
-                            {feedback.type === "success" ? (
-                                <CheckCircle2 className="w-8 h-8 text-green-600" />
-                            ) : (
-                                <AlertCircle className="w-8 h-8 text-red-600" />
-                            )}
-                        </div>
-                        <ModalTitle className={cn("text-xl", feedback.type === "success" ? "text-green-700" : "text-red-700")}>
-                            {feedback.title}
-                        </ModalTitle>
+                    <ModalHeader className="flex items-start gap-3">
+                        {feedback.type === "success" ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--kma-success)]" aria-hidden="true" /> : <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--kma-danger)]" aria-hidden="true" />}
+                        <ModalTitle>{feedback.title}</ModalTitle>
                     </ModalHeader>
+                    <ul className="space-y-3 text-sm leading-6 text-[var(--kma-muted)]">
+                        {feedback.messages.map((message, index) => <li key={index} className={feedback.type === "error" ? "text-[var(--kma-danger)]" : undefined}>{message}</li>)}
+                    </ul>
 
-                    <div className="space-y-3">
-                        {feedback.messages.map((msg, i) => (
-                            <div
-                                key={i}
-                                className={cn(
-                                    "text-sm p-2 rounded-md flex items-start gap-2",
-                                    feedback.type === "error" ? "bg-red-50 text-red-800" : "text-gray-600 text-center justify-center"
-                                )}
-                            >
-                                {feedback.type === "error" && <span className="opacity-70">•</span>}
-                                {msg}
-                            </div>
-                        ))}
-                    </div>
-
-                    <ModalFooter className="justify-center mt-6">
+                    <ModalFooter className="mt-6">
                         <Button
                             onClick={handleCloseFeedback}
-                            className={cn("w-full", feedback.type === "error" ? "bg-red-600 hover:bg-red-700" : "bg-black hover:bg-gray-800")}
+                            variant="primary"
                         >
                             {feedback.type === "success" ? "Continue" : "Fix Errors"}
                         </Button>
@@ -900,17 +873,14 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
             {/* Auto-Link Modal */}
             <Modal open={autoLinkModal?.open ?? false} onOpenChange={(open: boolean) => !open && handleCancelAutoLink()}>
                 <ModalContent className="max-w-md p-6">
-                    <ModalHeader className="flex flex-col items-center gap-4 text-center">
-                        <div className="p-3 rounded-full bg-blue-100">
-                            <ArrowRight className="w-8 h-8 text-blue-600" />
-                        </div>
-                        <ModalTitle className="text-xl text-blue-700">Link New Step?</ModalTitle>
-                        <ModalDescription className="text-sm text-gray-600">
+                    <ModalHeader className="space-y-2">
+                        <ModalTitle className="text-xl">Link New Step?</ModalTitle>
+                        <ModalDescription className="text-sm text-[var(--kma-muted)]">
                             {autoLinkModal && selectedStep && (
                                 <>
-                                    Connect <span className="font-semibold text-gray-900">{autoLinkModal.newStepId}</span> (
+                                    Connect <span className="font-semibold text-[var(--kma-fg)]">{autoLinkModal.newStepId}</span> (
                                     {autoLinkModal.newStepType}) to{" "}
-                                    <span className="font-semibold text-gray-900">{selectedStep.id}</span>
+                                    <span className="font-semibold text-[var(--kma-fg)]">{selectedStep.id}</span>
                                 </>
                             )}
                         </ModalDescription>
@@ -923,10 +893,10 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                             autoLinkModal.availableFields.some((f) => f.field === "noNext") && (
                                 <Button
                                     onClick={() => handleConfirmAutoLink("both")}
-                                    className="w-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-between"
+                                    className="justify-between"
                                 >
                                     <span>Link to:</span>
-                                    <span className="font-mono text-sm bg-green-700/50 px-2 py-0.5 rounded">
+                                    <span className="text-sm">
                                         Both (Yes & No)
                                     </span>
                                 </Button>
@@ -936,15 +906,15 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                             <Button
                                 key={fieldOption.field}
                                 onClick={() => handleConfirmAutoLink(fieldOption.field)}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-between"
+                                className="justify-between"
                             >
                                 <span>Link to:</span>
-                                <span className="font-mono text-sm bg-blue-700/50 px-2 py-0.5 rounded">
+                                <span className="text-sm">
                                     {fieldOption.label}
                                 </span>
                             </Button>
                         ))}
-                        <Button onClick={handleCancelAutoLink} className="w-full bg-gray-700 text-white hover:bg-gray-800 mt-2">
+                        <Button onClick={handleCancelAutoLink} variant="secondary" className="mt-2">
                             Skip
                         </Button>
                     </ModalFooter>
@@ -953,166 +923,38 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
             {/* Help Modal */}
             <Modal open={showHelpModal} onOpenChange={setShowHelpModal}>
-                <ModalContent className="max-w-2xl p-6 max-h-[80vh] overflow-y-auto">
-                    <ModalHeader className="flex flex-col items-center gap-4 text-center pb-4 border-b">
-                        <div className="p-3 rounded-full bg-blue-100">
-                            <Info className="w-8 h-8 text-blue-600" />
-                        </div>
-                        <ModalTitle className="text-2xl text-blue-700">How to Create a Flow</ModalTitle>
-                        <ModalDescription className="text-sm text-gray-600">
-                            Step-by-step guide to building audit flows
-                        </ModalDescription>
+                <ModalContent className="max-w-2xl">
+                    <ModalHeader>
+                        <ModalTitle>How to Create a Flow</ModalTitle>
+                        <ModalDescription>Build the questions, evidence fields and destinations for an audit.</ModalDescription>
                     </ModalHeader>
-
-                    <div className="space-y-6 mt-6">
-                        <div>
-                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">
-                                    1
-                                </span>
-                                Set Flow Details
-                            </h3>
-                            <p className="text-sm text-gray-600 ml-8">
-                                Enter a title and description for your flow. This helps identify the purpose of the audit.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">
-                                    2
-                                </span>
-                                Create Steps (The Workflow)
-                            </h3>
-                            <div className="ml-8 space-y-3">
-                                <p className="text-sm text-gray-700">
-                                    A Flow is a sequence of steps. You typically start with a <strong>Select</strong> or a{" "}
-                                    <strong>Question</strong>.
-                                </p>
-                                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                                    <p className="font-medium text-sm text-green-800 mb-1 flex items-center gap-1">
-                                        <span className="text-lg">⚡</span> Efficient Way: Inline Create
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                        Instead of creating steps one-by-one, just click the green{" "}
-                                        <span className="font-mono bg-emerald-600 text-white px-1 rounded text-xs">+ Create</span>{" "}
-                                        button inside any &quot;Next Step&quot; selector. This creates and links the new step in one go.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">
-                                    3
-                                </span>
-                                Step Types
-                            </h3>
-                            <div className="ml-8 space-y-2 text-sm">
-                                <div className="flex items-start gap-2">
-                                    <HelpCircle className="h-4 w-4 text-blue-500 mt-0.5" />
-                                    <div>
-                                        <span className="font-medium">Question:</span> Yes/No branching to verify conditions.
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-2">
-                                    <FileText className="h-4 w-4 text-green-500 mt-0.5" />
-                                    <div>
-                                        <span className="font-medium">Form:</span> The destination for data collection (measurements, photos, notes).
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-2">
-                                    <List className="h-4 w-4 text-purple-500 mt-0.5" />
-                                    <div>
-                                        <span className="font-medium">Select:</span> A menu of categorical options with distinct branches.
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-2">
-                                    <CheckCircle2 className="h-4 w-4 text-gray-500 mt-0.5" />
-                                    <div>
-                                        <span className="font-medium">End:</span> Terminates the flow immediately.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">
-                                    4
-                                </span>
-                                Visual Checks
-                            </h3>
-                            <div className="ml-8 space-y-2 text-sm">
-                                <div className="flex items-start gap-2">
-                                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
-                                    <div>
-                                        <span className="font-medium text-amber-700">Incomplete Step:</span> Means a &quot;Next Step&quot; is missing. You must fill all links before saving.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                <span className="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">
-                                    5
-                                </span>
-                                Advanced: Double Dipping &amp; Shared Forms
-                            </h3>
-                            <div className="ml-8 space-y-3 text-sm">
-                                <p className="text-gray-700">
-                                    <strong>&quot;Double Dipping&quot;</strong> allows you to reuse a single Form step for multiple different barriers or scenarios. This is powerful for grouping findings.
-                                </p>
-
-                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 space-y-2">
-                                    <p className="font-semibold text-purple-900 text-xs uppercase">How to setup Double Dipping:</p>
-                                    <ol className="list-decimal list-inside space-y-1 text-gray-700 ml-1">
-                                        <li>Create a single <strong>Form</strong> step (e.g. &quot;Record Barrier Quantity&quot;).</li>
-                                        <li>Create your <strong>Questions</strong> (e.g. &quot;Is the door too heavy?&quot;, &quot;Is the knob accessible?&quot;).</li>
-                                        <li>Set the <strong>Barrier ID</strong> on each Question to their respective barrier code.</li>
-                                        <li>Point the failing branch of both Questions to the <strong>same Form step</strong>.</li>
-                                    </ol>
-                                </div>
-
-                                <div className="flex items-start gap-2 pt-1">
-                                    <Info className="h-4 w-4 text-purple-500 mt-0.5 shrink-0" />
-                                    <div className="text-gray-600 text-xs">
-                                        <strong>Auto-Calculation:</strong> When you save, the system automatically detects all the &quot;Double Dippings&quot; and calculates the &quot;Shared Quantity&quot; logic for you. You do not need to manually assign Barrier IDs to the Form.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <ModalFooter className="justify-center mt-6 pt-4 border-t">
-                        <Button onClick={() => setShowHelpModal(false)} className="bg-blue-600 hover:bg-blue-700 text-white">
-                            Got it!
-                        </Button>
-                    </ModalFooter>
+                    <ol className="max-w-prose space-y-6 text-sm leading-6 text-[var(--kma-muted)]">
+                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Set Flow Details</h3><p>Enter a title and description that identify what the auditor will inspect.</p></li>
+                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Create Steps (The Workflow)</h3><p>Add steps from the index. Use <strong className="text-[var(--kma-fg)]">Create</strong> beside a destination to add and link a new step in one action.</p></li>
+                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Step Types</h3><dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2"><dt className="font-medium text-[var(--kma-fg)]">Question</dt><dd>A Yes/No answer with a destination for each branch.</dd><dt className="font-medium text-[var(--kma-fg)]">Form</dt><dd>Quantity, measurements, photos or notes to record evidence.</dd><dt className="font-medium text-[var(--kma-fg)]">Select</dt><dd>A set of choices, each with its own destination.</dd><dt className="font-medium text-[var(--kma-fg)]">End</dt><dd>The final step that completes the flow.</dd></dl></li>
+                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Connect and Validate</h3><p>Connect each branch and option to its next step. The index marks incomplete links; saving identifies the details that still need attention.</p></li>
+                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Advanced: Double Dipping &amp; Shared Forms</h3><p>Conditional navigation can connect multiple barriers to a shared Form step. When you save, Shared Quantity records the barrier IDs detected from those conditional links.</p></li>
+                    </ol>
+                    <ModalFooter><Button fullWidth={false} onClick={() => setShowHelpModal(false)}>Got it!</Button></ModalFooter>
                 </ModalContent>
             </Modal>
 
             {/* Draft Recovery Modal */}
             <Modal open={showDraftRecoveryModal} onOpenChange={setShowDraftRecoveryModal}>
                 <ModalContent className="max-w-md p-6">
-                    <ModalHeader className="flex flex-col items-center gap-4 text-center">
-                        <div className="p-3 rounded-full bg-amber-100">
-                            <History className="w-8 h-8 text-amber-600" />
-                        </div>
-                        <ModalTitle className="text-xl text-amber-700">Borrador encontrado</ModalTitle>
-                        <ModalDescription className="text-sm text-gray-600">
-                            Se encontró un borrador guardado automáticamente de una sesión anterior. ¿Desea recuperarlo o descartarlo?
+                    <ModalHeader className="space-y-2">
+                        <ModalTitle className="text-xl">Draft found</ModalTitle>
+                        <ModalDescription className="text-sm text-[var(--kma-muted)]">
+                            A locally saved draft is available. Recover your changes or discard the draft.
                         </ModalDescription>
                     </ModalHeader>
 
                     <ModalFooter className="flex flex-col gap-2 mt-6">
-                        <Button onClick={handleRecoverDraft} className="w-full bg-amber-600 hover:bg-amber-700 text-white">
-                            Recuperar borrador
+                        <Button onClick={handleRecoverDraft} variant="primary">
+                            Recover draft
                         </Button>
-                        <Button onClick={handleDiscardDraft} className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300">
-                            Descartar y empezar limpio
+                        <Button onClick={handleDiscardDraft} variant="secondary">
+                            Discard draft
                         </Button>
                     </ModalFooter>
                 </ModalContent>
@@ -1120,7 +962,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
             {/* Zoomed Image Modal */}
             <Modal open={!!zoomedImage} onOpenChange={(open: boolean) => !open && setZoomedImage(null)}>
-                <ModalContent className="max-w-4xl p-2 bg-black/5 border-none shadow-none">
+                <ModalContent className="max-w-4xl p-2">
                     <ModalHeader className="sr-only">
                         <ModalTitle>View Image</ModalTitle>
                     </ModalHeader>
@@ -1130,11 +972,13 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                             <img
                                 src={zoomedImage}
                                 alt="Zoomed View"
-                                className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                                className="max-w-full max-h-[85vh] object-contain rounded shadow-2xl"
                             />
                             <button
+                                type="button"
                                 onClick={() => setZoomedImage(null)}
-                                className="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-50"
+                                aria-label="Close image"
+                                className="absolute right-2 top-2 z-50 inline-flex h-11 w-11 items-center justify-center rounded bg-[var(--kma-surface)] text-[var(--kma-fg)] shadow-lg transition-colors hover:bg-[var(--kma-subtle)]"
                             >
                                 <X className="h-5 w-5" />
                             </button>

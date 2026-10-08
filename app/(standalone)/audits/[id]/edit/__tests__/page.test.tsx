@@ -12,6 +12,7 @@ const useAuditDetail = vi.fn();
 const push = vi.fn();
 
 vi.mock("next/navigation", () => ({
+  useSearchParams: () => null,
   useRouter: () => ({ push }),
 }));
 
@@ -166,7 +167,7 @@ describe("AuditEditPage", () => {
   it("falls back to the auditor of the detail when the query has none", async () => {
     await renderPage({ id: "audit-1" });
 
-    expect(propsOf("header").auditor).toBe("");
+    expect(propsOf("header").auditor).toBe("detail-auditor");
     expect(propsOf("panel").auditorName).toBe("detail-auditor");
   });
 
@@ -204,14 +205,14 @@ describe("AuditEditPage", () => {
     });
   });
 
-  it("uses the review status as the default while there is no detail", async () => {
+  it("does not claim the audit is in review before the detail loads", async () => {
     stubDetail({ data: undefined, isLoading: true });
 
     await renderPage({ id: "audit-1" });
 
     expect(propsOf("header")).toMatchObject({
       title: "",
-      status: "draft_report_in_review",
+      status: "unknown",
       createdAt: "",
       updatedAt: "",
     });

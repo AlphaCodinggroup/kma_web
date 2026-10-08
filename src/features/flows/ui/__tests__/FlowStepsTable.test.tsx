@@ -41,7 +41,7 @@ const mockFlow: Flow = {
 };
 
 describe("FlowStepsTable", () => {
-    it("renders the Flow Steps table headers and step rows", () => {
+    it("renders selectable step rows with routing and barrier context", () => {
         const onSelectStep = vi.fn();
 
         render(
@@ -66,13 +66,9 @@ describe("FlowStepsTable", () => {
             />
         );
 
-        // Verifica encabezados de columnas
-        expect(screen.getByText("Flow Steps")).toBeInTheDocument();
-        expect(screen.getByText("ID")).toBeInTheDocument();
-        expect(screen.getByText("Type")).toBeInTheDocument();
-        expect(screen.getByText("Question / Title")).toBeInTheDocument();
-        expect(screen.getByText("Routing")).toBeInTheDocument();
-        expect(screen.getByText("Barriers")).toBeInTheDocument();
+        expect(screen.getByRole("table", { name: "Flow step sequence" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Select step AR-F01" })).toHaveAttribute("aria-current", "step");
+        expect(screen.getByRole("button", { name: "Select step AR-Q01" })).not.toHaveAttribute("aria-current");
 
         // Verifica que los IDs de los pasos se renderizan
         expect(screen.getByText("AR-Q01")).toBeInTheDocument();

@@ -1,124 +1,266 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-background: var(--kma-bg);
+  --color-foreground: var(--kma-fg);
+  --color-muted: var(--kma-subtle);
+  --color-muted-foreground: var(--kma-muted);
+  --color-primary: var(--kma-primary);
+  --color-primary-foreground: var(--kma-primary-contrast);
+  --color-border: var(--kma-border);
+  --color-ring: var(--kma-primary);
+}
+
 @layer base {
   :root {
-    --kma-bg: #ffffff; /* Fondo general */
-    --kma-fg: #111111; /* Texto principal */
-    --kma-border: #e5e5e5; /* Bordes sutiles */
-
-    --kma-input: #f5f5f5; /* Fondo de inputs */
-    --kma-input-fg: #111111; /* Texto en inputs */
-    --kma-input-border: #e5e5e5; /* Borde inputs */
-    --kma-input-focus: #ebebeb; /* Fondo en foco */
-    --kma-ring: 0 0% 0% / 0.2; /* Ring negro 20% (H S L / alpha) */
-
-    --kma-primary: #000000; /* Botones, acentos */
-    --kma-primary-contrast: #ffffff;
-    --kma-link: #111111; /* Links subrayados sutiles */
-    --kma-link-hover: #000000;
+    color-scheme: light;
+    --ks-kinpaku: oklch(84% .19 80.46);
+    --ks-kinpaku-pale: oklch(86% .07 84);
+    --ks-on-gold: oklch(14% .018 95);
+    --ks-paper: oklch(97.8% 0 0);
+    --ks-paper-raised: oklch(99.5% 0 0);
+    --ks-paper-deep: oklch(95% 0 0);
+    --ks-gray: oklch(92% 0 0);
+    --ks-gray-2: oklch(88% 0 0);
+    --ks-ink: oklch(13% 0 0);
+    --ks-text: oklch(22% 0 0);
+    --ks-text-muted: oklch(46% 0 0);
+    --ks-edge: oklch(13% 0 0 / .45);
+    --ks-instrument: oklch(24% 0 0);
+    --ks-instrument-deep: oklch(17% 0 0);
+    --ks-instrument-raised: oklch(31% 0 0);
+    --ks-instrument-text: oklch(93% 0 0);
+    --ks-instrument-muted: oklch(68% 0 0);
+    --ks-instrument-rule: oklch(100% 0 0 / .12);
+    --ks-focus-ring: oklch(45% .1 190);
+    --ks-ease: cubic-bezier(.2, .8, .2, 1);
+    --ks-quick: .12s;
+    --ks-settle: .2s;
+    --kma-brand: var(--ks-paper-raised);
+    --kma-brand-fg: var(--ks-ink);
+    --kma-brand-muted: var(--ks-text-muted);
+    --kma-brand-border: var(--ks-gray-2);
+    --kma-bg: var(--ks-paper);
+    --kma-surface: var(--ks-paper-raised);
+    --kma-subtle: var(--ks-paper-deep);
+    --kma-fg: var(--ks-text);
+    --kma-muted: var(--ks-text-muted);
+    --kma-border: var(--ks-gray-2);
+    --kma-primary: var(--ks-ink);
+    --kma-primary-contrast: var(--ks-paper-raised);
+    --kma-accent: var(--ks-kinpaku);
+    --kma-accent-fg: var(--ks-on-gold);
+    --kma-danger: #b4233e;
+    --kma-danger-bg: #fff1f3;
+    --kma-danger-border: #f1c3cd;
+    --kma-warning: #865b08;
+    --kma-warning-bg: #fff7e7;
+    --kma-warning-border: #eed9a9;
+    --kma-success: #217453;
+    --kma-success-bg: #edf8f2;
+    --kma-success-border: #bddfcd;
+    --kma-info: #186590;
+    --kma-info-bg: #eaf5fb;
+    --kma-info-border: #bbdced;
+    --kma-nav: var(--kma-brand);
+    --kma-canvas: var(--kma-bg);
+    --kma-selected: var(--ks-gray);
+    --kma-shadow: 0 1px 2px rgb(28 31 34 / 5%);
+    --kma-overlay: rgb(19 23 24 / 60%);
+    --kma-elevation-overlay: 0 16px 48px rgb(19 23 24 / 18%);
+    --kma-control-height: 40px;
+    --kma-motion-fast: 120ms;
+    --kma-motion-base: 180ms;
   }
-
-  html,
-  body,
-  :root {
-    height: 100%;
+  .dark {
+    color-scheme: dark;
+    --kma-brand: var(--ks-instrument-deep);
+    --kma-brand-fg: var(--ks-instrument-text);
+    --kma-brand-muted: var(--ks-instrument-muted);
+    --kma-brand-border: var(--ks-instrument-rule);
+    --kma-bg: var(--ks-instrument-deep);
+    --kma-surface: var(--ks-instrument);
+    --kma-subtle: var(--ks-instrument-raised);
+    --kma-fg: var(--ks-instrument-text);
+    --kma-muted: var(--ks-instrument-muted);
+    --kma-border: var(--ks-instrument-rule);
+    --kma-primary: var(--ks-kinpaku-pale);
+    --kma-primary-contrast: var(--ks-instrument-deep);
+    --kma-accent: var(--ks-kinpaku);
+    --ks-focus-ring: var(--ks-kinpaku-pale);
+    --kma-danger: #ff9aab;
+    --kma-danger-bg: #361f2c;
+    --kma-danger-border: #653144;
+    --kma-warning: #edc578;
+    --kma-warning-bg: #312b1f;
+    --kma-warning-border: #5d4d31;
+    --kma-success: #83d6b0;
+    --kma-success-bg: #17382e;
+    --kma-success-border: #2e5948;
+    --kma-info: #8bc8ed;
+    --kma-info-bg: #183344;
+    --kma-info-border: #2c536b;
+    --kma-selected: var(--ks-instrument-raised);
+    --kma-shadow: 0 1px 2px rgb(0 0 0 / 10%);
   }
-
+  :root, .dark {
+    --kma-primary-fg: var(--kma-primary-contrast);
+    --kma-input: var(--kma-surface);
+    --kma-input-fg: var(--kma-fg);
+    --kma-input-border: var(--ks-edge);
+    --kma-input-focus: var(--kma-surface);
+    --kma-ring: 40 65% 29% / 0.22;
+    --kma-link: var(--kma-primary);
+    --kma-link-hover: var(--kma-fg);
+  }
+  html, body { min-height: 100%; }
   body {
+    margin: 0;
     background: var(--kma-bg);
     color: var(--kma-fg);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-      "Noto Sans", Ubuntu, Cantarell, "Helvetica Neue", Arial;
+    font-family: var(--font-reading), ui-sans-serif, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.4667;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
+  h1, h2, h3, h4, .font-heading { font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif; }
+  h1, h2, h3 { overflow-wrap: anywhere; }
+  a { color: inherit; text-decoration: none; }
+  button, a, input, select, textarea { transition: background-color var(--ks-quick) var(--ks-ease), border-color var(--ks-quick) var(--ks-ease), color var(--ks-quick) var(--ks-ease), box-shadow var(--ks-settle) var(--ks-ease); }
+  button:not(:disabled), select, summary { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--ks-focus-ring); outline-offset: 3px; }
+  svg.lucide { stroke-width: 1.5; }
+  .report-paper svg.lucide { stroke-width: 2; }
+  * { scrollbar-color: var(--kma-border) var(--kma-bg); scrollbar-width: thin; }
+  ::selection { background: color-mix(in srgb, var(--kma-primary) 24%, transparent); }
+  input[type], textarea, select { background: var(--kma-input); color: var(--kma-fg); border-color: var(--kma-border); }
+  input, textarea { caret-color: var(--kma-primary); }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--kma-primary); }
+  input::placeholder, textarea::placeholder { color: var(--kma-muted); opacity: 1; }
+}
 
-  a {
-    color: var(--kma-link);
-    text-decoration: underline;
-    text-decoration-color: color-mix(
-      in oklab,
-      var(--kma-link) 35%,
-      transparent
-    );
-    text-underline-offset: 2px;
+@layer components {
+  .kma-button { background-color: var(--kma-accent); color: var(--kma-accent-fg); }
+  .kma-page-title {
+    font-family: var(--font-display), var(--font-heading), ui-sans-serif, sans-serif;
+    font-size: clamp(38px, 3.6vw, 52px);
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.04;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
-  a:hover {
-    color: var(--kma-link-hover);
-    text-decoration-color: currentColor;
+  .kma-wordmark {
+    font-family: var(--font-display), var(--font-heading), ui-sans-serif, sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    font-style: normal;
+    letter-spacing: .18em;
+    line-height: 1;
+  }
+  .kma-theme-panel {
+    color-scheme: light;
+    --kma-fg: var(--kma-brand-fg);
+    --kma-muted: var(--kma-brand-muted);
+    --kma-border: var(--kma-brand-border);
+    --kma-bg: var(--kma-brand);
+    --kma-canvas: var(--kma-brand);
+    --kma-input: var(--kma-surface);
+    color: var(--kma-fg);
+  }
+  .dark .kma-theme-panel { color-scheme: dark; }
+}
+
+@layer components {
+  .card {
+    background: var(--kma-surface);
+    color: var(--kma-fg);
+    border: 1px solid var(--kma-border);
+    border-radius: 8px;
+
+  }
+  .input {
+    min-height: 40px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid var(--kma-border);
+    background: var(--kma-input);
+    color: var(--kma-fg);
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  .input:focus { border-color: var(--kma-primary); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--kma-primary) 18%, transparent); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 40px; padding: 8px 16px; border-radius: 4px;
+    background: var(--kma-accent); color: var(--kma-accent-fg);
+    font-size: 14px; font-weight: 600;
+  }
+  .btn:hover { background: color-mix(in srgb, var(--kma-accent) 88%, var(--kma-surface)); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .kma-control-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: var(--kma-control-height); padding: 8px 16px; border-radius: 4px;
+    border: 1px solid transparent; font-size: 14px; font-weight: 600;
+    line-height: 20px; cursor: pointer; white-space: nowrap;
+    transition: background-color var(--ks-quick) var(--ks-ease), border-color var(--ks-quick) var(--ks-ease), color var(--ks-quick) var(--ks-ease), box-shadow var(--ks-settle) var(--ks-ease), transform var(--ks-quick) var(--ks-ease);
+  }
+  .kma-control-button:active:not(:disabled) { transform: translateY(1px) scale(.98); }
+  .kma-control-button:disabled { cursor: not-allowed; opacity: .6; }
+  .kma-button-primary { background: var(--kma-accent); color: var(--kma-accent-fg); }
+  .kma-button-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--kma-accent) 88%, var(--kma-surface)); }
+  .kma-button-secondary { background: var(--kma-surface); color: var(--kma-fg); border-color: var(--kma-border); }
+  .kma-button-secondary:hover:not(:disabled), .kma-button-ghost:hover:not(:disabled) { background: var(--kma-subtle); }
+  .kma-button-ghost { background: transparent; color: var(--kma-fg); }
+  .kma-button-destructive { background: var(--kma-danger-bg); color: var(--kma-danger); border-color: var(--kma-danger-border); }
+  .kma-button-destructive:hover:not(:disabled) { background: color-mix(in srgb, var(--kma-danger-bg) 85%, var(--kma-danger)); }
+  .kma-data-panel { overflow: hidden; border: 1px solid var(--kma-border); border-radius: 8px; background: var(--kma-surface); }
+  .kma-nav-link .lucide, .kma-review-stage .lucide { transition: transform var(--ks-settle) var(--ks-ease); }
+  .kma-nav-link:focus-visible .lucide { transform: translateX(2px); }
+  .kma-review-stage:focus-visible .lucide { transform: translate(2px, -2px); }
+  @media (hover: hover) and (pointer: fine) {
+    .kma-control-button:hover:not(:disabled) { transform: translateY(-1px); }
+    .kma-control-button:hover:active:not(:disabled) { transform: translateY(1px) scale(.98); }
+    .kma-button-primary:hover:not(:disabled) { box-shadow: 0 3px 8px color-mix(in srgb, var(--kma-accent) 20%, transparent); }
+    .kma-nav-link:hover .lucide { transform: translateX(2px); }
+    .kma-review-stage:hover .lucide { transform: translate(2px, -2px); }
+  }
+  .kma-field { min-height: var(--kma-control-height); }
+  .kma-modal-position { display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .kma-modal-panel { max-width: 42rem; max-height: calc(100dvh - 2rem); padding: 20px; box-shadow: var(--kma-elevation-overlay); animation: kma-panel-arrive 180ms var(--ks-ease); }
+  @media (min-width: 640px) {
+    .kma-modal-position { padding: 24px; }
+    .kma-modal-panel { padding: 28px; }
+  }
+  .report-paper {
+    font-family: var(--font-reporting), ui-sans-serif, system-ui, sans-serif;
+    color-scheme: light;
+    background: white; color: #172f3b;
+    --kma-bg: white; --kma-surface: white; --kma-subtle: #f4f7f9;
+    --kma-fg: #172f3b; --kma-muted: #5b6d79; --kma-border: #d9e3e9;
+    --kma-primary: #0b7078; --kma-primary-contrast: white; --kma-primary-fg: white;
+    --kma-input: white; --kma-input-focus: white; --kma-input-fg: #172f3b; --kma-input-border: #d9e3e9;
+    --kma-success: #217453; --kma-warning: #865b08; --kma-danger: #b4233e;
   }
 }
 
-/* Utilidades globales alineadas al dashboard */
+@keyframes kma-panel-arrive {
+  from { opacity: .9; filter: blur(.8px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  .kma-control-button, .kma-nav-link .lucide, .kma-review-stage .lucide { transform: none !important; }
+  .kma-modal-panel { animation: none !important; filter: none !important; }
+}
+
 @layer utilities {
-  .container-app {
-    @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8;
-  }
+  .container-app { @apply mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8; }
+}
 
-  .card {
-    background: #fff;
-    border: 1px solid var(--kma-border);
-    border-radius: 1rem; /* 2xl */
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.04);
-  }
-
-  /* ---- INPUTS (claro por defecto) ---- */
-  .input {
-    height: 2.5rem; /* h-10 */
-    width: 100%;
-    border-radius: 0.5rem; /* md */
-    border: 1px solid var(--kma-input-border);
-    background: var(--kma-input);
-    color: var(--kma-input-fg);
-    padding: 0.5rem 0.75rem; /* py-2 px-3 */
-    font-size: 0.875rem; /* text-sm */
-    outline: none;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease,
-      border-color 0.15s ease;
-  }
-  .input::placeholder {
-    color: color-mix(in oklab, var(--kma-input-fg) 55%, transparent);
-  }
-  .input:focus {
-    background: var(--kma-input-focus);
-    border-color: var(--kma-input-border);
-    /* ring negro 20% */
-    box-shadow: 0 0 0 3px hsl(var(--kma-ring));
-  }
-
-  /* Normaliza inputs nativos por si se usa <input> sin clase */
-  input[type],
-  textarea,
-  select {
-    background: var(--kma-input);
-    color: var(--kma-input-fg);
-    border: 1px solid var(--kma-input-border);
-  }
-  input[type]:focus,
-  textarea:focus,
-  select:focus {
-    background: var(--kma-input-focus);
-    box-shadow: 0 0 0 3px hsl(var(--kma-ring));
-  }
-
-  /* ---- Botones ---- */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 2.5rem;
-    padding: 0 1rem;
-    border-radius: 0.5rem;
-    background: var(--kma-primary);
-    color: var(--kma-primary-contrast);
-    transition: opacity 0.15s ease;
-    user-select: none;
-  }
-  .btn:hover {
-    opacity: 0.92;
-  }
-  .btn:disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
+@media (max-width: 1023px), (pointer: coarse) {
+  :root { --kma-control-height: 44px; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea { font-size: 16px; }
+  .input, .kma-field, .kma-appearance, .btn, .kma-control-button, button:not(.report-paper button) { min-height: 44px; }
 }

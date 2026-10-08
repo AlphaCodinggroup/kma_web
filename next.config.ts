@@ -17,6 +17,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   ...(process.env.DOCKER_BUILD === "1" && { output: "standalone" as const }),
   reactStrictMode: true,
+  turbopack: { root: process.cwd() },
+  devIndicators: false,
   poweredByHeader: false,
   eslint: { ignoreDuringBuilds: false },
   typescript: { ignoreBuildErrors: false },

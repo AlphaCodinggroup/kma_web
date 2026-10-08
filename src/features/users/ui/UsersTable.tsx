@@ -3,6 +3,9 @@
 import React, { useState, useMemo } from "react";
 import { Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@shared/lib/cn";
+import { useMediaQuery } from "@shared/lib/useMediaQuery";
+import { MobileEntityRow } from "@shared/ui/mobile-entity-row";
+import { Button } from "@shared/ui/controls";
 import {
   Table,
   TableBody,
@@ -48,6 +51,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const { isAdmin } = useSession();
+  const isCompact = useMediaQuery("(max-width: 1023px)");
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -95,10 +99,10 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   }, [items, sortColumn, sortDirection]);
 
   const SortIcon = ({ column }: { column: SortColumn }) => {
-    if (sortColumn !== column) return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
-    if (sortDirection === "asc") return <ArrowUp className="h-4 w-4 text-black" />;
-    if (sortDirection === "desc") return <ArrowDown className="h-4 w-4 text-black" />;
-    return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    if (sortColumn !== column) return <ArrowUpDown className="h-4 w-4 text-[var(--kma-muted)]" />;
+    if (sortDirection === "asc") return <ArrowUp className="h-4 w-4 text-[var(--kma-fg)]" />;
+    if (sortDirection === "desc") return <ArrowDown className="h-4 w-4 text-[var(--kma-fg)]" />;
+    return <ArrowUpDown className="h-4 w-4 text-[var(--kma-muted)]" />;
   };
 
   const hasItems = sortedItems.length > 0;
@@ -110,30 +114,36 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       <Retry text="Failed to load users. Please try again." onClick={onError} />
     );
 
+  if (isCompact) return (
+    <div className={className}>
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--kma-border)] px-4 py-3">
+        <select aria-label="Sort users" value={sortColumn ?? ""} onChange={event => { if (event.target.value) handleSort(event.target.value as SortColumn); else { setSortColumn(null); setSortDirection(null); } }} className="min-h-11 min-w-0 flex-1 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] px-3 text-sm"><option value="">Original order</option><option value="name">Name</option><option value="email">Email address</option><option value="role">Role</option><option value="username">Username</option></select>
+        <Button fullWidth={false} variant="ghost" aria-label="Change user sort direction" onClick={() => handleSort(sortColumn ?? "name")}>{sortDirection === "asc" ? "Ascending" : sortDirection === "desc" ? "Descending" : "Sort"}</Button>
+      </div>
+      {hasItems ? <ul aria-label="Users" className="divide-y divide-[var(--kma-border)]">
+        {sortedItems.map(user => <MobileEntityRow key={user.id} title={user.name} subtitle={user.email} status={<RolePill>{user.role}</RolePill>} actions={<>
+          <Button fullWidth={false} variant="secondary" disabled={!isAdmin} aria-label="Edit user" onClick={() => onEdit?.(user.id)}>Edit</Button>
+          <RowActionButton className="min-h-11 min-w-11" icon={Trash2} ariaLabel="Delete user" variant="danger" disabled={!isAdmin} onClick={() => onDelete?.(user.id)} />
+        </>}><dl><dt className="font-medium text-[var(--kma-fg)]">Username</dt><dd className="break-words [overflow-wrap:anywhere]">{user.id}</dd></dl></MobileEntityRow>)}
+      </ul> : <p className="px-4 py-10 text-center text-sm text-[var(--kma-muted)]">{emptyMessage}</p>}
+    </div>
+  );
+
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-gray-200 bg-white",
+        "overflow-x-auto bg-[var(--kma-surface)]",
         className
       )}
     >
       <div className={cn("overflow-y-auto", bodyMaxHeightClassName)}>
-        <Table className="min-w-full table-fixed">
-          <TableHeader className="sticky top-0 z-10 bg-muted/40">
+        <Table className="min-w-[760px] ">
+          <TableHeader className="sticky top-0 z-10 bg-[var(--kma-subtle)]">
             <TableRow>
               <TableHead>
                 <button
-                  onClick={() => handleSort("username")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
-                >
-                  Username
-                  <SortIcon column="username" />
-                </button>
-              </TableHead>
-              <TableHead>
-                <button
                   onClick={() => handleSort("name")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Name
                   <SortIcon column="name" />
@@ -142,7 +152,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               <TableHead>
                 <button
                   onClick={() => handleSort("email")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Email Address
                   <SortIcon column="email" />
@@ -151,10 +161,19 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               <TableHead>
                 <button
                   onClick={() => handleSort("role")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Role
                   <SortIcon column="role" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("username")}
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
+                >
+                  Username
+                  <SortIcon column="username" />
                 </button>
               </TableHead>
               <TableHead className=" text-right font-semibold pr-4">Actions</TableHead>
@@ -165,7 +184,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
             {!hasItems ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={5}
                   className="h-28 text-center text-muted-foreground"
                 >
                   {emptyMessage}
@@ -173,25 +192,25 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               </TableRow>
             ) : (
               sortedItems.map((u) => (
-                <TableRow key={u.id} className="hover:bg-muted/30">
+                <TableRow key={u.id} className="hover:bg-[var(--kma-selected)]">
                   {/* Username */}
-                  <TableCell className="align-middle truncate">
-                    {u.id ?? "-"}
-                  </TableCell>
-
-                  {/* Name */}
-                  <TableCell className="align-middle truncate">
+                  <TableCell className="align-middle max-w-[230px] truncate font-semibold">
                     {u.name ?? "-"}
                   </TableCell>
 
-                  {/* Email */}
-                  <TableCell className="align-middle truncate">
+                  {/* Name */}
+                  <TableCell className="align-middle max-w-[230px] truncate">
                     {u.email ?? "-"}
                   </TableCell>
 
-                  {/* Role */}
+                  {/* Email */}
                   <TableCell className="align-middle">
                     {u.role && <RolePill>{u.role}</RolePill>}
+                  </TableCell>
+
+                  {/* Role */}
+                  <TableCell title={u.id} className="align-middle max-w-[200px] truncate text-xs text-[var(--kma-muted)]">
+                    {u.id ?? "-"}
                   </TableCell>
 
                   {/* Actions */}
@@ -229,12 +248,12 @@ export const UsersTable: React.FC<UsersTableProps> = ({
 const RolePill: React.FC<React.PropsWithChildren> = ({ children }) => (
   <span
     className={cn(
-      "inline-flex items-center rounded-full border",
+      "inline-flex items-center rounded border",
       "px-2.5 py-1 text-xs",
-      "bg-white border-muted-foreground/20 text-foreground/80"
+      "bg-[var(--kma-subtle)] border-[var(--kma-border)] text-[var(--kma-fg)]"
     )}
   >
-    {children}
+    {{ auditor: "Auditor", qc: "QC Manager", admin: "Administrator" }[String(children)] ?? children}
   </span>
 );
 

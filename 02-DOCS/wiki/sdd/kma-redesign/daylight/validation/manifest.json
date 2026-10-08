@@ -1,0 +1,101 @@
+{
+  "variant": "KMA Daylight Section",
+  "preview": "http://localhost:3001",
+  "worktree": "/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness",
+  "branch": "chore/install-rsc-harness",
+  "screens": 11,
+  "viewports": [
+    390,
+    768,
+    1440
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "captures": 66,
+  "native": {
+    "command": "npm run verify",
+    "result": "passed",
+    "tests": 3377,
+    "files": 235,
+    "coverage": {
+      "statements": 95.87,
+      "branches": 92.89,
+      "functions": 94.09,
+      "lines": 95.87
+    },
+    "log": "verify.log"
+  },
+  "browser": {
+    "command": "E2E_BASE_URL=http://localhost:3001 npm run test:e2e",
+    "expectedTests": 46,
+    "log": "browser.log",
+    "result": "passed",
+    "tests": 46,
+    "duration": "3.8m"
+  },
+  "review": {
+    "method": "independent equivalent reviewer with fresh context",
+    "initialDisposition": "fix",
+    "verdictDisposition": "ship",
+    "scope": "current artifact after font, full appearance, microinteraction and header feedback",
+    "report": "user-feedback-review.md",
+    "capturesInspected": 66,
+    "expandedOriginals": 8,
+    "motionEvidence": "source and browser tests; direct Chrome observation by coordinator"
+  },
+  "art": {
+    "asset": "public/images/daylight-section.webp",
+    "role": "login brand illustration",
+    "provenance": "asset prompt metadata and sidecar"
+  },
+  "limits": [
+    "local test backend",
+    "Chromium browser, no physical devices",
+    "720 px checks CSS viewport equivalent to 200 percent zoom",
+    "Axe results do not certify WCAG conformance"
+  ],
+  "fonts": {
+    "display": "Alumni Sans",
+    "reading": "Albert Sans",
+    "report": "Source Sans 3"
+  },
+  "colorSource": "https://impeccable.style/_astro/kinpaku-tokens.Czfxn__5.css",
+  "motionReference": "https://impeccable.style/neo-mirai/#installations",
+  "themesCover": "navigation, mobile drawer, project and report lists, review pipeline, flow editor, login",
+  "additionalChecks": {
+    "headerTests": 63,
+    "headerLog": "headers.log",
+    "finalBuild": "build.log",
+    "browserTypecheck": "typecheck-browser.log",
+    "browserLint": "lint-browser.log",
+    "reviewActionContrast": "review-action-contrast.log"
+  },
+  "accessibility": {
+    "scenarios": 66,
+    "violations": 0,
+    "files": [
+      "accessibility-light.json",
+      "accessibility-dark.json"
+    ]
+  },
+  "evidence": {
+    "finalCaptures": "after/",
+    "previousDaylight": "before-impeccable-feedback/",
+    "gallery": "gallery.html",
+    "interactionVideo": "interaction.webm",
+    "videoMetadata": {
+      "width": 1440,
+      "height": 960,
+      "seconds": 2.64,
+      "verifiedWith": "Chrome video loadedmetadata; no console errors"
+    },
+    "galleryVerified": {
+      "default": "dashboard light 1440",
+      "changed": "reports dark 390",
+      "bothBaselinesLoaded": true
+    }
+  },
+  "capturedAt": "2026-10-08T01:23:48.441981+00:00"
+}

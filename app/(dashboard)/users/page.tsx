@@ -1,5 +1,6 @@
 "use client";
 
+import { useUrlParameter } from "@shared/lib/useUrlParameter";
 import React, { useCallback, useMemo, useState } from "react";
 import UsersMetrics from "@features/users/ui/UsersMetrics";
 import UsersSearchCard from "@features/users/ui/UsersSearchCard";
@@ -31,7 +32,7 @@ type CreateState = {
 };
 
 const UsersPage: React.FC = () => {
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useUrlParameter("q");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserSummary | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserSummary | null>(null);
@@ -155,7 +156,7 @@ const UsersPage: React.FC = () => {
   };
 
   return (
-    <div className={cn("space-y-4")}>
+    <div className={cn("space-y-6")}>
       <PageHeader
         title="User Management"
         subtitle="Manage users, roles and system permissions"
@@ -170,6 +171,7 @@ const UsersPage: React.FC = () => {
       />
 
       {/* Métricas */}
+      <h2 className="sr-only">User overview</h2>
       <UsersMetrics metrics={metrics} />
 
       <UsersSearchCard
@@ -209,8 +211,8 @@ const UsersPage: React.FC = () => {
       <Modal open={createState.success} onOpenChange={(open) => !open && handleCloseSuccess()}>
         <ModalContent className="max-w-sm text-center p-8">
           <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="p-3 bg-green-100 rounded-full">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+            <div className="p-3 bg-[color-mix(in_srgb,var(--kma-success)_10%,transparent)] rounded-full">
+              <CheckCircle2 className="w-10 h-10 text-[var(--kma-success)]" />
             </div>
 
             <ModalHeader className="mb-2">

@@ -31,7 +31,7 @@ export function FilterSelect({
       onChange={(e) => onChange(e.target.value)}
       aria-label={ariaLabel}
       className={cn(
-        "h-9 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200",
+        "min-w-0 max-w-full min-h-11 sm:min-h-10 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] px-3 py-1.5 text-sm text-[var(--kma-muted)] hover:border-[var(--kma-border)] focus:border-[var(--kma-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--kma-primary)]/25 transition-colors duration-150",
         className
       )}
     >
@@ -54,10 +54,10 @@ export function ClearFiltersButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-300 bg-red-50 transition-all duration-200 hover:border-red-500 hover:bg-red-100"
+      className="inline-flex h-[var(--kma-control-height)] w-[var(--kma-control-height)] shrink-0 items-center justify-center rounded border border-[var(--kma-border)] bg-[var(--kma-subtle)] transition-colors duration-150 hover:border-[var(--kma-primary)] hover:bg-[var(--kma-surface)]"
       aria-label="Clear filters"
     >
-      <X className="h-5 w-5 stroke-[2.5] text-red-600" />
+      <X aria-hidden="true" className="h-5 w-5 stroke-[2.5] text-[var(--kma-muted)]" />
     </button>
   );
 }

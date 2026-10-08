@@ -74,8 +74,7 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
       ...(q.index ?? q.order
         ? { index: (q.index ?? q.order) as number }
         : {}),
-      // No mostramos adjuntos/fotos en esta vista
-      attachments: [],
+      attachments: q.attachments ?? [],
     };
   };
 
@@ -93,7 +92,8 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
       const hasValue = hasAnswerValue(q);
       const hasYesNo = typeof q.answeredYes === "boolean";
 
-      return hasYesNo || hasValue || hasNotes;
+      const hasEvidence = Boolean(q.attachments?.length);
+      return hasYesNo || hasValue || hasNotes || hasEvidence;
     });
   }, [normalizedItems]);
 
@@ -145,7 +145,7 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
       data-testid="audit-questions-list"
     >
       {hasItems ? (
-        <div className="grid grid-cols-1 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 divide-y divide-[var(--kma-border)] overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]">
           {filtered.map((q, i) => (
             <AuditQuestionCard
               key={q.id}
@@ -170,12 +170,12 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
         </div>
       ) : (
         <div
-          className="rounded-2xl border bg-card/40 p-8 text-center"
+          className="rounded-lg border bg-[var(--kma-surface)] p-8 text-center"
           role="status"
           aria-live="polite"
           data-testid="audit-questions-empty"
         >
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-[var(--kma-muted)]">
             {getEmptyMessage()}
           </p>
         </div>

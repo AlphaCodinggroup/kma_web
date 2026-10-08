@@ -1,6 +1,7 @@
 "use client";
 
 import React, { memo, type ReactNode } from "react";
+import Image from "next/image";
 import {
   Paperclip,
   FileText,
@@ -10,7 +11,7 @@ import {
 } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { Button } from "@shared/ui/controls";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useUpdateAuditAnswerMutation } from "../lib/hooks/useUpdateAuditAnswerMutation";
 import type { AnswerItemUpdate } from "@entities/audit/model/audit-review-answer-update";
@@ -23,6 +24,7 @@ export interface AttachmentVM {
   id: string;
   name: string;
   mime?: string | null;
+  url?: string;
 }
 
 export interface AuditQuestionCardProps {
@@ -53,16 +55,16 @@ const iconForMime = (mime?: string | null) => {
 
 function HeroSection({ text, pill }: { text: string; pill: ReactNode }) {
   return (
-    <>
+    <div className="flex flex-wrap items-start justify-between gap-3">
       <div
         role="heading"
-        aria-level={4}
-        className="text-xl font-extrabold leading-snug"
+        aria-level={3}
+        className="font-heading min-w-0 max-w-[65ch] break-words text-base font-semibold leading-relaxed"
       >
         {text}
       </div>
-      <div className="mt-4">{pill}</div>
-    </>
+      <div className="shrink-0">{pill}</div>
+    </div>
   );
 }
 
@@ -70,8 +72,8 @@ function YesNoPill({ value }: { value: boolean }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-lg px-3 py-1 text-sm font-semibold",
-        value ? "bg-black text-white" : "bg-red-500 text-white"
+        "inline-flex items-center rounded px-2.5 py-1 text-xs font-semibold",
+        "bg-[var(--kma-subtle)] text-[var(--kma-fg)]"
       )}
     >
       {value ? "Yes" : "No"}
@@ -83,8 +85,8 @@ function SelectionPill({ label }: { label: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-lg px-3 py-1 text-sm font-semibold",
-        "bg-black text-white"
+        "inline-flex items-center rounded px-2.5 py-1 text-xs font-semibold",
+        label.startsWith("UNSURE") ? "bg-[var(--kma-warning-bg)] text-[var(--kma-warning)]" : "bg-[var(--kma-input)] text-[var(--kma-fg)]"
       )}
     >
       {label}
@@ -97,9 +99,9 @@ function NotesSection({ notes }: { notes?: string | null }) {
   if (!hasNotes) return null;
 
   return (
-    <div className="mt-6">
+    <div className="mt-5 border-t border-[var(--kma-border)] pt-4">
       <div className="text-sm font-semibold">Auditor Notes</div>
-      <p className="mt-2 text-base text-muted-foreground">{notes}</p>
+      <p className="mt-2 max-w-[65ch] whitespace-pre-wrap break-words text-sm leading-relaxed text-[var(--kma-muted)]">{notes}</p>
     </div>
   );
 }
@@ -113,45 +115,75 @@ function AttachmentsList({
   onViewAttachment?: (att: AttachmentVM) => void;
   dense?: boolean;
 }) {
+  const [failedImages, setFailedImages] = useState<Set<string>>(() => new Set());
   if (!attachments || attachments.length === 0) return null;
 
   return (
-    <div className={cn("mt-6", dense && "mt-4")}>
-      <div className="mb-2 flex items-center gap-2 text-xs font-medium">
+    <div className={cn("min-w-0", dense && "mt-4")}>
+      <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
         <Paperclip className="h-4 w-4" aria-hidden="true" />
         Attachments
       </div>
-      <ul className={cn(dense ? "space-y-2" : "space-y-3")}>
-        {attachments.map((att) => (
+      <ul className={cn("grid gap-4", dense && "gap-2")}>
+        {attachments.map((att) => {
+          const candidate = att.url?.trim() ?? "";
+          const safeUrl = /^https?:\/\//i.test(candidate) || (candidate.startsWith("/") && !candidate.startsWith("//")) ? candidate : null;
+          const photograph = Boolean(safeUrl && (att.mime?.startsWith("image/") || /\.(png|jpe?g|webp|gif)(?:[?#]|$)/i.test(att.name)));
+          return (
           <li
             key={att.id}
             className={cn(
-              "grid grid-cols-[1fr_auto] items-center gap-3 rounded-xl border border-gray-300",
-              dense ? "p-2.5" : "p-3"
+              "grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2",
+              dense && "py-2"
             )}
             data-testid={`attachment-${att.id}`}
           >
-            <div className="min-w-0 flex items-center gap-2">
+            {photograph && !failedImages.has(att.id) && <a href={safeUrl!} target="_blank" rel="noopener noreferrer" aria-label={`Open photograph ${att.name}`} className="col-span-2 block overflow-hidden rounded border border-[var(--kma-border)] bg-[var(--kma-subtle)]">
+              <Image unoptimized src={safeUrl!} alt={att.name} width={480} height={320} className="aspect-[3/2] max-h-72 w-full object-contain" onError={() => setFailedImages(current => new Set([...current, att.id]))} />
+            </a>}
+            {photograph && failedImages.has(att.id) && <p className="col-span-2 border border-[var(--kma-border)] bg-[var(--kma-subtle)] p-4 text-sm text-[var(--kma-muted)]" role="status">Photograph unavailable. Open the original file to try again.</p>}
+            <div className="min-w-0 flex flex-1 items-center gap-2">
               {iconForMime(att.mime)}
-              <span className="truncate text-sm">{att.name}</span>
+              <span className="break-words text-sm">{att.name}</span>
             </div>
-            <Button
+            {!safeUrl && !onViewAttachment && <p className="col-span-2 text-sm text-[var(--kma-muted)]">The original file is unavailable.</p>}
+            {safeUrl && !onViewAttachment ? <a href={safeUrl} target="_blank" rel="noopener noreferrer" aria-label={`View ${att.name}`} className="inline-flex min-h-11 items-center rounded border border-[var(--kma-border)] px-3 text-sm font-semibold hover:bg-[var(--kma-input)]">View</a> : <Button
               type="button"
+              variant="secondary"
+              fullWidth={false}
+              disabled={!onViewAttachment}
               onClick={
                 onViewAttachment ? () => onViewAttachment(att) : undefined
               }
               aria-label={`View ${att.name}`}
               className={cn(
-                "h-8 rounded-lg border px-3 text-xs",
-                "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"
+                "min-h-11 rounded px-3 text-sm"
               )}
             >
               View
-            </Button>
+            </Button>}
           </li>
-        ))}
+        );})}
       </ul>
     </div>
+  );
+}
+
+function EvidenceComposition({ children, attachments, onViewAttachment, className }: {
+  children: ReactNode;
+  attachments: AttachmentVM[];
+  onViewAttachment?: (att: AttachmentVM) => void;
+  className?: string | undefined;
+}) {
+  return (
+    <article className={cn("bg-[var(--kma-surface)] p-4 sm:p-6", className)}>
+      <div className={cn("grid min-w-0 gap-6", attachments.length > 0 && "md:grid-cols-[minmax(0,1fr)_minmax(240px,38%)]")}>
+        <div className="min-w-0">{children}</div>
+        {attachments.length > 0 && <div className="min-w-0 border-t border-[var(--kma-border)] pt-4 md:border-l md:border-t-0 md:pl-6 md:pt-0">
+          <AttachmentsList attachments={attachments} {...(onViewAttachment ? { onViewAttachment } : {})} />
+        </div>}
+      </div>
+    </article>
   );
 }
 
@@ -174,32 +206,35 @@ function DynamicFormFields({
   values: Record<string, any>;
   onChange: (key: string, value: any) => void;
 }) {
+  const fieldPrefix = React.useId();
   // Fallback: no fields defined in the flow → show generic form
   if (!fields || fields.length === 0) {
     return (
       <div className="grid gap-4">
         <div>
-          <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+          <label htmlFor={`${fieldPrefix}-quantity`} className="mb-1 block text-xs font-semibold text-[var(--kma-muted)]">
             Quantity
           </label>
           <input
+            id={`${fieldPrefix}-quantity`}
             type="number"
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+            className="w-full rounded border bg-[var(--kma-surface)] px-3 py-2 text-sm"
             value={values.quantity ?? ""}
             onChange={(e) => onChange("quantity", Number(e.target.value))}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+          <label htmlFor={`${fieldPrefix}-notes`} className="mb-1 block text-xs font-semibold text-[var(--kma-muted)]">
             Notes / Measurements
           </label>
           <textarea
-            className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
+            id={`${fieldPrefix}-notes`}
+            className="h-20 w-full rounded border bg-[var(--kma-surface)] px-3 py-2 text-sm"
             value={values.notes ?? ""}
             onChange={(e) => onChange("notes", e.target.value)}
           />
         </div>
-        <div className="text-xs italic text-muted-foreground">
+        <div className="text-xs italic text-[var(--kma-muted)]">
           Use the &quot;Edit Finding&quot; dialog later to upload images.
         </div>
       </div>
@@ -212,17 +247,18 @@ function DynamicFormFields({
         if (field.type === "number") {
           return (
             <div key={field.id}>
-              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+              <label htmlFor={`${fieldPrefix}-${field.id}`} className="mb-1 block text-xs font-semibold text-[var(--kma-muted)]">
                 {field.label}
                 {field.unit && (
-                  <span className="ml-1 font-normal text-gray-400">
+                  <span className="ml-1 font-normal text-[var(--kma-muted)]">
                     ({field.unit})
                   </span>
                 )}
               </label>
               <input
+                id={`${fieldPrefix}-${field.id}`}
                 type="number"
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className="w-full rounded border bg-[var(--kma-surface)] px-3 py-2 text-sm"
                 placeholder={field.placeholder ?? ""}
                 value={values[field.id] ?? ""}
                 onChange={(e) =>
@@ -239,11 +275,12 @@ function DynamicFormFields({
         if (field.type === "text") {
           return (
             <div key={field.id}>
-              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+              <label htmlFor={`${fieldPrefix}-${field.id}`} className="mb-1 block text-xs font-semibold text-[var(--kma-muted)]">
                 {field.label}
               </label>
               <textarea
-                className="h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                id={`${fieldPrefix}-${field.id}`}
+                className="h-20 w-full rounded border bg-[var(--kma-surface)] px-3 py-2 text-sm"
                 placeholder={field.placeholder ?? ""}
                 value={values[field.id] ?? ""}
                 onChange={(e) => onChange(field.id, e.target.value)}
@@ -256,14 +293,15 @@ function DynamicFormFields({
           const previews: string[] = values[field.id] ?? [];
           return (
             <div key={field.id}>
-              <label className="mb-1 block text-xs font-semibold text-muted-foreground">
+              <label htmlFor={`${fieldPrefix}-${field.id}`} className="mb-1 block text-xs font-semibold text-[var(--kma-muted)]">
                 {field.label}
               </label>
               <input
+                id={`${fieldPrefix}-${field.id}`}
                 type="file"
                 accept="image/*"
                 multiple
-                className="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-black file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-gray-800"
+                className="w-full text-sm file:mr-4 file:rounded file:border-0 file:bg-[var(--kma-accent)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[var(--kma-accent-fg)] hover:file:opacity-90"
                 onChange={(e) => {
                   const files = Array.from(e.target.files ?? []);
                   const urls = files.map((f) => URL.createObjectURL(f));
@@ -285,7 +323,7 @@ function DynamicFormFields({
                       key={i}
                       src={src}
                       alt={`preview ${i}`}
-                      className="h-16 w-16 rounded-md border object-cover shadow-sm"
+                      className="h-24 w-32 rounded border border-[var(--kma-border)] object-contain"
                     />
                   ))}
                 </div>
@@ -323,9 +361,7 @@ function YesNoChip({ value }: { value: boolean }) {
     <span
       className={cn(
         "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-        value
-          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
-          : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
+        "bg-[var(--kma-subtle)] text-[var(--kma-fg)]"
       )}
     >
       {value ? "YES" : "NO"}
@@ -348,6 +384,10 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
   className,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [savePending, setSavePending] = useState(false);
+  const saving = useRef(false);
   const [draftAnswer, setDraftAnswer] = useState<"YES" | "NO" | null>(null);
   const [draftForm, setDraftForm] = useState<Record<string, any>>({});
   const { mutateAsync: updateAnswer, isPending } =
@@ -385,7 +425,12 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
   };
 
   const handleSave = async () => {
-    if (!draftAnswer || !auditId || !questionId) return;
+    if (!draftAnswer || !auditId || !questionId || saving.current) return;
+    saving.current = true;
+    setSavePending(true);
+    setActionError(null);
+    setSuccessMessage(null);
+    try {
 
     const updates: AnswerItemUpdate[] = [
       { step_id: questionId, answer: draftAnswer },
@@ -396,7 +441,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
       const noNextId = questionStep?.no_next ?? questionStep?.noNext;
       
       if (noNextId) {
-        setIsEditing(false); // Can be replaced by a general loading state if preferred, but isPending handles it locally
+        // El editor permanece abierto hasta que termine el guardado completo.
         
         const cleanValues: Record<string, unknown> = {};
         
@@ -437,7 +482,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
                      cleanValues[targetKey] = [...existingUrls, ...finalS3Urls];
                  } catch (err) {
                      console.error("Failed to upload files:", err);
-                     alert("Failed to upload files");
+                     setActionError("Failed to upload files. Your changes are preserved; please try again.");
                      return;
                  }
              }
@@ -495,15 +540,24 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     try {
       await updateAnswer({ auditId, answers: updates });
       setIsEditing(false);
-      alert("Answer updated successfully");
+      setSuccessMessage("Answer updated successfully");
     } catch (err) {
       console.error(err);
-      alert("Failed to update answer");
+      setActionError("Failed to update answer. Your changes are preserved; please try again.");
+    }
+    } finally {
+      saving.current = false;
+      setSavePending(false);
     }
   };
 
-  const stylesContainerCard =
-    "rounded-2xl border border-gray-100 bg-card p-6 shadow-sm sm:p-7";
+  const feedback = (
+    <>
+      {actionError && <p className="mt-4 rounded bg-[var(--kma-danger-bg)] p-3 text-sm text-[var(--kma-danger)]" role="alert">{actionError}</p>}
+      {successMessage && <p className="mt-4 text-sm text-[var(--kma-success)]" role="status">{successMessage}</p>}
+    </>
+  );
+
   const hasChoice =
     type === "multiple_choice" &&
     answerValue !== undefined &&
@@ -519,7 +573,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
       return (
         <article
           className={cn(
-            "rounded-2xl border border-blue-200 bg-blue-50/30 p-6 sm:p-7",
+            "bg-[var(--kma-surface)] p-4 sm:p-6",
             className
           )}
         >
@@ -528,42 +582,30 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
             pill={<SelectionPill label="UNSURE (Editing)" />}
           />
           <NotesSection {...(notes === undefined ? {} : { notes })} />
+        {feedback}
 
-          <div className="mt-6 border-t pt-4">
-            <h5 className="mb-3 text-sm font-semibold">Change Answer</h5>
+          <fieldset disabled={isPending || savePending} aria-label="Answer correction" className="mt-6 border-t pt-4">
+            <h4 className="mb-3 text-sm font-semibold">Change Answer</h4>
             <div className="mb-4 flex gap-2">
-              <button
+              <Button
                 type="button"
-                onClick={() => {
-                  setDraftAnswer("YES");
-                  setDraftForm({});
-                }}
-                className={cn(
-                  "inline-flex rounded-xl px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60",
-                  draftAnswer === "YES"
-                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                )}
-              >
-                YES
-              </button>
-              <button
+                fullWidth={false}
+                variant={draftAnswer === "YES" ? "primary" : "secondary"}
+                aria-pressed={draftAnswer === "YES"}
+                onClick={() => { setDraftAnswer("YES"); setDraftForm({}); }}
+              >YES</Button>
+              <Button
                 type="button"
+                fullWidth={false}
+                variant={draftAnswer === "NO" ? "primary" : "secondary"}
+                aria-pressed={draftAnswer === "NO"}
                 onClick={() => setDraftAnswer("NO")}
-                className={cn(
-                  "inline-flex rounded-xl px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60",
-                  draftAnswer === "NO"
-                    ? "bg-rose-600 text-white hover:bg-rose-700"
-                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                )}
-              >
-                NO
-              </button>
+              >NO</Button>
             </div>
 
             {draftAnswer === "NO" && (
-              <div className="mb-4 space-y-4 rounded-xl border bg-card p-4">
-                <h6 className="text-sm font-medium">Finding details</h6>
+              <div className="mb-4 space-y-4 bg-[var(--kma-canvas)] p-4">
+                <h5 className="text-sm font-medium">Finding details</h5>
                 <DynamicFormFields
                   fields={noNextFormFields}
                   values={draftForm}
@@ -573,123 +615,113 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
             )}
 
             <div className="mt-4 flex gap-2">
-              <button
+              <Button
                 type="button"
+                fullWidth={false}
                 onClick={handleSave}
-                disabled={!draftAnswer || isPending}
-                className="inline-flex items-center justify-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-black/80 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={!draftAnswer || isPending || savePending}
               >
-                {isPending && (
+                {(isPending || savePending) && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Save Changes
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="inline-flex items-center justify-center rounded-xl bg-transparent px-4 py-2 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-100 disabled:opacity-50"
+                variant="secondary"
+                fullWidth={false}
                 onClick={() => setIsEditing(false)}
-                disabled={isPending}
+                disabled={isPending || savePending}
               >
                 Cancel
-              </button>
+              </Button>
             </div>
-          </div>
+          </fieldset>
         </article>
       );
     }
 
     return (
-      <article
-        className={cn(
-          stylesContainerCard,
-          "border-orange-200 bg-orange-50/30",
-          className
-        )}
-      >
+      <EvidenceComposition attachments={attachments} {...(onViewAttachment ? { onViewAttachment } : {})} className={className}>
         <HeroSection text={text} pill={<SelectionPill label="UNSURE" />} />
         <NotesSection {...(notes === undefined ? {} : { notes })} />
+        {feedback}
         <div className="mt-4 flex justify-start border-t pt-4">
-          <button
+          <Button
             type="button"
-            className="inline-flex rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
-            onClick={() => setIsEditing(true)}
+            fullWidth={false}
+            variant="secondary"
+            onClick={() => { setActionError(null); setSuccessMessage(null); setIsEditing(true); }}
           >
             Resolve Answer...
-          </button>
+          </Button>
         </div>
-      </article>
+      </EvidenceComposition>
     );
   }
 
   /* ===== YES ===== */
   if (answeredYes === true) {
     return (
-      <article className={cn(stylesContainerCard, className)}>
+      <EvidenceComposition attachments={attachments} {...(onViewAttachment ? { onViewAttachment } : {})} className={className}>
         <HeroSection text={text} pill={<YesNoPill value={true} />} />
         <NotesSection {...(notes === undefined ? {} : { notes })} />
-      </article>
+        {feedback}
+      </EvidenceComposition>
     );
   }
 
   /* ===== NO ===== */
   if (answeredYes === false) {
     return (
-      <article className={cn(stylesContainerCard, className)}>
+      <EvidenceComposition attachments={attachments} {...(onViewAttachment ? { onViewAttachment } : {})} className={className}>
         <HeroSection text={text} pill={<YesNoPill value={false} />} />
         <NotesSection {...(notes === undefined ? {} : { notes })} />
-        <AttachmentsList
-          attachments={attachments}
-          {...(onViewAttachment ? { onViewAttachment } : {})}
-        />
-      </article>
+        {feedback}
+      </EvidenceComposition>
     );
   }
 
   /* ===== MULTIPLE CHOICE ===== */
   if (hasChoice) {
     return (
-      <article className={cn(stylesContainerCard, className)}>
+      <EvidenceComposition attachments={attachments} {...(onViewAttachment ? { onViewAttachment } : {})} className={className}>
         <HeroSection
           text={text}
           pill={<SelectionPill label={String(answerValue)} />}
         />
         <NotesSection {...(notes === undefined ? {} : { notes })} />
-      </article>
+        {feedback}
+      </EvidenceComposition>
     );
   }
 
   /* ===== GENERAL ===== */
   const hasNotes = typeof notes === "string" && notes.trim().length > 0;
-  const hasAttachments = attachments.length > 0;
   const hasAnswer =
     answerValue !== undefined &&
     answerValue !== null &&
     (typeof answerValue === "number" || String(answerValue).length > 0);
 
   return (
-    <article
-      className={cn(
-        "rounded-2xl border bg-card/50 p-4 sm:p-5 transition-colors",
-        className
-      )}
-    >
+    <EvidenceComposition attachments={attachments} {...(onViewAttachment ? { onViewAttachment } : {})} className={className}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             {typeof index === "number" ? (
-              <span className="text-xs text-muted-foreground">#{index}</span>
+              <span className="text-xs text-[var(--kma-muted)]">#{index}</span>
             ) : null}
             <div
               role="heading"
-              aria-level={5}
-              className="truncate text-sm font-medium"
+              aria-level={3}
+              className="font-heading break-words text-base font-semibold leading-relaxed"
             >
               {text}
             </div>
           </div>
 
-          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="rounded-md border px-1.5 py-0.5">
+          <div className="mt-1 flex items-center gap-2 text-xs text-[var(--kma-muted)]">
+            <span className="rounded border px-1.5 py-0.5">
               {typeLabel(type)}
             </span>
             {typeof answeredYes === "boolean" ? (
@@ -701,8 +733,8 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
           </div>
 
           {hasAnswer ? (
-            <div className="mt-2 text-xs text-foreground/90">
-              <span className="text-muted-foreground">Answer:</span>{" "}
+            <div className="mt-2 text-xs text-[var(--kma-fg)]/90">
+              <span className="text-[var(--kma-muted)]">Answer:</span>{" "}
               <span className="font-medium">{String(answerValue)}</span>
             </div>
           ) : null}
@@ -710,22 +742,16 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
       </div>
 
       {hasNotes ? (
-        <div className="mt-4 rounded-xl border bg-background/60 p-3">
+        <div className="mt-5 border-t border-[var(--kma-border)] pt-4">
           <div className="mb-1 flex items-center gap-2 text-xs font-medium">
             <MessageSquare className="h-4 w-4" aria-hidden="true" />
             Notes
           </div>
-          <p className="text-sm leading-relaxed text-foreground/90">{notes}</p>
+          <p className="max-w-[65ch] whitespace-pre-wrap break-words text-sm leading-relaxed text-[var(--kma-muted)]">{notes}</p>
         </div>
       ) : null}
 
-      {hasAttachments ? (
-        <AttachmentsList
-          attachments={attachments}
-          {...(onViewAttachment ? { onViewAttachment } : {})}
-        />
-      ) : null}
-    </article>
+    </EvidenceComposition>
   );
 };
 export default memo(AuditQuestionCard);

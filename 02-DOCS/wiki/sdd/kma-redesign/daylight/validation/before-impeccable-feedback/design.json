@@ -1,0 +1,940 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-08T00:44:26.710435+00:00",
+  "title": "Design System: KMA Daylight Section",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Ocre de lectura",
+        "tonalRamp": [
+          "oklch(15% 0.08815 77.04)",
+          "oklch(26.43% 0.08815 77.04)",
+          "oklch(37.86% 0.08815 77.04)",
+          "oklch(49.29% 0.08815 77.04)",
+          "oklch(60.71% 0.08815 77.04)",
+          "oklch(72.14% 0.08815 77.04)",
+          "oklch(83.57% 0.08815 77.04)",
+          "oklch(95% 0.08815 77.04)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Oro de acción",
+        "tonalRamp": [
+          "oklch(15% 0.13263 82.46)",
+          "oklch(26.43% 0.13263 82.46)",
+          "oklch(37.86% 0.13263 82.46)",
+          "oklch(49.29% 0.13263 82.46)",
+          "oklch(60.71% 0.13263 82.46)",
+          "oklch(72.14% 0.13263 82.46)",
+          "oklch(83.57% 0.13263 82.46)",
+          "oklch(95% 0.13263 82.46)"
+        ]
+      },
+      "accent-fg": {
+        "role": "neutral",
+        "displayName": "Tinta sobre oro",
+        "tonalRamp": [
+          "oklch(15% 0.00730 248.14)",
+          "oklch(26.43% 0.00730 248.14)",
+          "oklch(37.86% 0.00730 248.14)",
+          "oklch(49.29% 0.00730 248.14)",
+          "oklch(60.71% 0.00730 248.14)",
+          "oklch(72.14% 0.00730 248.14)",
+          "oklch(83.57% 0.00730 248.14)",
+          "oklch(95% 0.00730 248.14)"
+        ]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Papel marfil",
+        "tonalRamp": [
+          "oklch(15% 0.00741 80.72)",
+          "oklch(26.43% 0.00741 80.72)",
+          "oklch(37.86% 0.00741 80.72)",
+          "oklch(49.29% 0.00741 80.72)",
+          "oklch(60.71% 0.00741 80.72)",
+          "oklch(72.14% 0.00741 80.72)",
+          "oklch(83.57% 0.00741 80.72)",
+          "oklch(95% 0.00741 80.72)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Papel iluminado",
+        "tonalRamp": [
+          "oklch(15% 0.00285 84.56)",
+          "oklch(26.43% 0.00285 84.56)",
+          "oklch(37.86% 0.00285 84.56)",
+          "oklch(49.29% 0.00285 84.56)",
+          "oklch(60.71% 0.00285 84.56)",
+          "oklch(72.14% 0.00285 84.56)",
+          "oklch(83.57% 0.00285 84.56)",
+          "oklch(95% 0.00285 84.56)"
+        ]
+      },
+      "subtle": {
+        "role": "neutral",
+        "displayName": "Papel secundario",
+        "tonalRamp": [
+          "oklch(15% 0.00868 84.57)",
+          "oklch(26.43% 0.00868 84.57)",
+          "oklch(37.86% 0.00868 84.57)",
+          "oklch(49.29% 0.00868 84.57)",
+          "oklch(60.71% 0.00868 84.57)",
+          "oklch(72.14% 0.00868 84.57)",
+          "oklch(83.57% 0.00868 84.57)",
+          "oklch(95% 0.00868 84.57)"
+        ]
+      },
+      "fg": {
+        "role": "neutral",
+        "displayName": "Tinta grafito",
+        "tonalRamp": [
+          "oklch(15% 0.00730 248.14)",
+          "oklch(26.43% 0.00730 248.14)",
+          "oklch(37.86% 0.00730 248.14)",
+          "oklch(49.29% 0.00730 248.14)",
+          "oklch(60.71% 0.00730 248.14)",
+          "oklch(72.14% 0.00730 248.14)",
+          "oklch(83.57% 0.00730 248.14)",
+          "oklch(95% 0.00730 248.14)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Tinta secundaria",
+        "tonalRamp": [
+          "oklch(15% 0.01004 128.69)",
+          "oklch(26.43% 0.01004 128.69)",
+          "oklch(37.86% 0.01004 128.69)",
+          "oklch(49.29% 0.01004 128.69)",
+          "oklch(60.71% 0.01004 128.69)",
+          "oklch(72.14% 0.01004 128.69)",
+          "oklch(83.57% 0.01004 128.69)",
+          "oklch(95% 0.01004 128.69)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Regla mineral",
+        "tonalRamp": [
+          "oklch(15% 0.01178 84.58)",
+          "oklch(26.43% 0.01178 84.58)",
+          "oklch(37.86% 0.01178 84.58)",
+          "oklch(49.29% 0.01178 84.58)",
+          "oklch(60.71% 0.01178 84.58)",
+          "oklch(72.14% 0.01178 84.58)",
+          "oklch(83.57% 0.01178 84.58)",
+          "oklch(95% 0.01178 84.58)"
+        ]
+      },
+      "selected": {
+        "role": "neutral",
+        "displayName": "Papel seleccionado",
+        "tonalRamp": [
+          "oklch(15% 0.04032 88.20)",
+          "oklch(26.43% 0.04032 88.20)",
+          "oklch(37.86% 0.04032 88.20)",
+          "oklch(49.29% 0.04032 88.20)",
+          "oklch(60.71% 0.04032 88.20)",
+          "oklch(72.14% 0.04032 88.20)",
+          "oklch(83.57% 0.04032 88.20)",
+          "oklch(95% 0.04032 88.20)"
+        ]
+      },
+      "primary-contrast": {
+        "role": "neutral",
+        "displayName": "Blanco de contraste",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26.43% 0.00000 0.00)",
+          "oklch(37.86% 0.00000 0.00)",
+          "oklch(49.29% 0.00000 0.00)",
+          "oklch(60.71% 0.00000 0.00)",
+          "oklch(72.14% 0.00000 0.00)",
+          "oklch(83.57% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ]
+      },
+      "dark-primary": {
+        "role": "primary",
+        "displayName": "Ocre de lectura nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.11103 86.81)",
+          "oklch(26.43% 0.11103 86.81)",
+          "oklch(37.86% 0.11103 86.81)",
+          "oklch(49.29% 0.11103 86.81)",
+          "oklch(60.71% 0.11103 86.81)",
+          "oklch(72.14% 0.11103 86.81)",
+          "oklch(83.57% 0.11103 86.81)",
+          "oklch(95% 0.11103 86.81)"
+        ]
+      },
+      "dark-accent": {
+        "role": "primary",
+        "displayName": "Oro de acción nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.12719 84.56)",
+          "oklch(26.43% 0.12719 84.56)",
+          "oklch(37.86% 0.12719 84.56)",
+          "oklch(49.29% 0.12719 84.56)",
+          "oklch(60.71% 0.12719 84.56)",
+          "oklch(72.14% 0.12719 84.56)",
+          "oklch(83.57% 0.12719 84.56)",
+          "oklch(95% 0.12719 84.56)"
+        ]
+      },
+      "dark-bg": {
+        "role": "neutral",
+        "displayName": "Papel marfil nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.00721 229.22)",
+          "oklch(26.43% 0.00721 229.22)",
+          "oklch(37.86% 0.00721 229.22)",
+          "oklch(49.29% 0.00721 229.22)",
+          "oklch(60.71% 0.00721 229.22)",
+          "oklch(72.14% 0.00721 229.22)",
+          "oklch(83.57% 0.00721 229.22)",
+          "oklch(95% 0.00721 229.22)"
+        ]
+      },
+      "dark-surface": {
+        "role": "neutral",
+        "displayName": "Papel iluminado nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.00810 223.74)",
+          "oklch(26.43% 0.00810 223.74)",
+          "oklch(37.86% 0.00810 223.74)",
+          "oklch(49.29% 0.00810 223.74)",
+          "oklch(60.71% 0.00810 223.74)",
+          "oklch(72.14% 0.00810 223.74)",
+          "oklch(83.57% 0.00810 223.74)",
+          "oklch(95% 0.00810 223.74)"
+        ]
+      },
+      "dark-subtle": {
+        "role": "neutral",
+        "displayName": "Papel secundario nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.00853 208.75)",
+          "oklch(26.43% 0.00853 208.75)",
+          "oklch(37.86% 0.00853 208.75)",
+          "oklch(49.29% 0.00853 208.75)",
+          "oklch(60.71% 0.00853 208.75)",
+          "oklch(72.14% 0.00853 208.75)",
+          "oklch(83.57% 0.00853 208.75)",
+          "oklch(95% 0.00853 208.75)"
+        ]
+      },
+      "dark-fg": {
+        "role": "neutral",
+        "displayName": "Tinta grafito nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.00741 80.72)",
+          "oklch(26.43% 0.00741 80.72)",
+          "oklch(37.86% 0.00741 80.72)",
+          "oklch(49.29% 0.00741 80.72)",
+          "oklch(60.71% 0.00741 80.72)",
+          "oklch(72.14% 0.00741 80.72)",
+          "oklch(83.57% 0.00741 80.72)",
+          "oklch(95% 0.00741 80.72)"
+        ]
+      },
+      "dark-muted": {
+        "role": "neutral",
+        "displayName": "Tinta secundaria nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.00897 128.59)",
+          "oklch(26.43% 0.00897 128.59)",
+          "oklch(37.86% 0.00897 128.59)",
+          "oklch(49.29% 0.00897 128.59)",
+          "oklch(60.71% 0.00897 128.59)",
+          "oklch(72.14% 0.00897 128.59)",
+          "oklch(83.57% 0.00897 128.59)",
+          "oklch(95% 0.00897 128.59)"
+        ]
+      },
+      "dark-border": {
+        "role": "neutral",
+        "displayName": "Regla mineral nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.00789 196.84)",
+          "oklch(26.43% 0.00789 196.84)",
+          "oklch(37.86% 0.00789 196.84)",
+          "oklch(49.29% 0.00789 196.84)",
+          "oklch(60.71% 0.00789 196.84)",
+          "oklch(72.14% 0.00789 196.84)",
+          "oklch(83.57% 0.00789 196.84)",
+          "oklch(95% 0.00789 196.84)"
+        ]
+      },
+      "dark-selected": {
+        "role": "neutral",
+        "displayName": "Papel seleccionado nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.02970 88.18)",
+          "oklch(26.43% 0.02970 88.18)",
+          "oklch(37.86% 0.02970 88.18)",
+          "oklch(49.29% 0.02970 88.18)",
+          "oklch(60.71% 0.02970 88.18)",
+          "oklch(72.14% 0.02970 88.18)",
+          "oklch(83.57% 0.02970 88.18)",
+          "oklch(95% 0.02970 88.18)"
+        ]
+      },
+      "dark-primary-contrast": {
+        "role": "neutral",
+        "displayName": "Blanco de contraste nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.00730 248.14)",
+          "oklch(26.43% 0.00730 248.14)",
+          "oklch(37.86% 0.00730 248.14)",
+          "oklch(49.29% 0.00730 248.14)",
+          "oklch(60.71% 0.00730 248.14)",
+          "oklch(72.14% 0.00730 248.14)",
+          "oklch(83.57% 0.00730 248.14)",
+          "oklch(95% 0.00730 248.14)"
+        ]
+      },
+      "brand": {
+        "role": "neutral",
+        "displayName": "Grafito de marca",
+        "tonalRamp": [
+          "oklch(15% 0.00730 248.14)",
+          "oklch(26.43% 0.00730 248.14)",
+          "oklch(37.86% 0.00730 248.14)",
+          "oklch(49.29% 0.00730 248.14)",
+          "oklch(60.71% 0.00730 248.14)",
+          "oklch(72.14% 0.00730 248.14)",
+          "oklch(83.57% 0.00730 248.14)",
+          "oklch(95% 0.00730 248.14)"
+        ]
+      },
+      "brand-fg": {
+        "role": "neutral",
+        "displayName": "Marfil de marca",
+        "tonalRamp": [
+          "oklch(15% 0.00741 80.72)",
+          "oklch(26.43% 0.00741 80.72)",
+          "oklch(37.86% 0.00741 80.72)",
+          "oklch(49.29% 0.00741 80.72)",
+          "oklch(60.71% 0.00741 80.72)",
+          "oklch(72.14% 0.00741 80.72)",
+          "oklch(83.57% 0.00741 80.72)",
+          "oklch(95% 0.00741 80.72)"
+        ]
+      },
+      "brand-muted": {
+        "role": "neutral",
+        "displayName": "Tinta secundaria de marca",
+        "tonalRamp": [
+          "oklch(15% 0.00897 128.59)",
+          "oklch(26.43% 0.00897 128.59)",
+          "oklch(37.86% 0.00897 128.59)",
+          "oklch(49.29% 0.00897 128.59)",
+          "oklch(60.71% 0.00897 128.59)",
+          "oklch(72.14% 0.00897 128.59)",
+          "oklch(83.57% 0.00897 128.59)",
+          "oklch(95% 0.00897 128.59)"
+        ]
+      },
+      "brand-border": {
+        "role": "neutral",
+        "displayName": "Regla de marca",
+        "tonalRamp": [
+          "oklch(15% 0.00789 196.84)",
+          "oklch(26.43% 0.00789 196.84)",
+          "oklch(37.86% 0.00789 196.84)",
+          "oklch(49.29% 0.00789 196.84)",
+          "oklch(60.71% 0.00789 196.84)",
+          "oklch(72.14% 0.00789 196.84)",
+          "oklch(83.57% 0.00789 196.84)",
+          "oklch(95% 0.00789 196.84)"
+        ]
+      },
+      "inverse-surface": {
+        "role": "neutral",
+        "displayName": "Superficie inversa",
+        "tonalRamp": [
+          "oklch(15% 0.00797 223.71)",
+          "oklch(26.43% 0.00797 223.71)",
+          "oklch(37.86% 0.00797 223.71)",
+          "oklch(49.29% 0.00797 223.71)",
+          "oklch(60.71% 0.00797 223.71)",
+          "oklch(72.14% 0.00797 223.71)",
+          "oklch(83.57% 0.00797 223.71)",
+          "oklch(95% 0.00797 223.71)"
+        ]
+      },
+      "inverse-subtle": {
+        "role": "neutral",
+        "displayName": "Interacción inversa",
+        "tonalRamp": [
+          "oklch(15% 0.00896 219.74)",
+          "oklch(26.43% 0.00896 219.74)",
+          "oklch(37.86% 0.00896 219.74)",
+          "oklch(49.29% 0.00896 219.74)",
+          "oklch(60.71% 0.00896 219.74)",
+          "oklch(72.14% 0.00896 219.74)",
+          "oklch(83.57% 0.00896 219.74)",
+          "oklch(95% 0.00896 219.74)"
+        ]
+      },
+      "inverse-selected": {
+        "role": "neutral",
+        "displayName": "Selección inversa",
+        "tonalRamp": [
+          "oklch(15% 0.02263 92.99)",
+          "oklch(26.43% 0.02263 92.99)",
+          "oklch(37.86% 0.02263 92.99)",
+          "oklch(49.29% 0.02263 92.99)",
+          "oklch(60.71% 0.02263 92.99)",
+          "oklch(72.14% 0.02263 92.99)",
+          "oklch(83.57% 0.02263 92.99)",
+          "oklch(95% 0.02263 92.99)"
+        ]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "Error",
+        "tonalRamp": [
+          "oklch(15% 0.17894 17.00)",
+          "oklch(26.43% 0.17894 17.00)",
+          "oklch(37.86% 0.17894 17.00)",
+          "oklch(49.29% 0.17894 17.00)",
+          "oklch(60.71% 0.17894 17.00)",
+          "oklch(72.14% 0.17894 17.00)",
+          "oklch(83.57% 0.17894 17.00)",
+          "oklch(95% 0.17894 17.00)"
+        ]
+      },
+      "danger-bg": {
+        "role": "secondary",
+        "displayName": "Error · fondo suave",
+        "tonalRamp": [
+          "oklch(15% 0.01531 7.48)",
+          "oklch(26.43% 0.01531 7.48)",
+          "oklch(37.86% 0.01531 7.48)",
+          "oklch(49.29% 0.01531 7.48)",
+          "oklch(60.71% 0.01531 7.48)",
+          "oklch(72.14% 0.01531 7.48)",
+          "oklch(83.57% 0.01531 7.48)",
+          "oklch(95% 0.01531 7.48)"
+        ]
+      },
+      "danger-border": {
+        "role": "secondary",
+        "displayName": "Error · borde",
+        "tonalRamp": [
+          "oklch(15% 0.05390 3.70)",
+          "oklch(26.43% 0.05390 3.70)",
+          "oklch(37.86% 0.05390 3.70)",
+          "oklch(49.29% 0.05390 3.70)",
+          "oklch(60.71% 0.05390 3.70)",
+          "oklch(72.14% 0.05390 3.70)",
+          "oklch(83.57% 0.05390 3.70)",
+          "oklch(95% 0.05390 3.70)"
+        ]
+      },
+      "warning": {
+        "role": "secondary",
+        "displayName": "Advertencia",
+        "tonalRamp": [
+          "oklch(15% 0.10329 75.90)",
+          "oklch(26.43% 0.10329 75.90)",
+          "oklch(37.86% 0.10329 75.90)",
+          "oklch(49.29% 0.10329 75.90)",
+          "oklch(60.71% 0.10329 75.90)",
+          "oklch(72.14% 0.10329 75.90)",
+          "oklch(83.57% 0.10329 75.90)",
+          "oklch(95% 0.10329 75.90)"
+        ]
+      },
+      "warning-bg": {
+        "role": "secondary",
+        "displayName": "Advertencia · fondo suave",
+        "tonalRamp": [
+          "oklch(15% 0.02272 84.59)",
+          "oklch(26.43% 0.02272 84.59)",
+          "oklch(37.86% 0.02272 84.59)",
+          "oklch(49.29% 0.02272 84.59)",
+          "oklch(60.71% 0.02272 84.59)",
+          "oklch(72.14% 0.02272 84.59)",
+          "oklch(83.57% 0.02272 84.59)",
+          "oklch(95% 0.02272 84.59)"
+        ]
+      },
+      "warning-border": {
+        "role": "secondary",
+        "displayName": "Advertencia · borde",
+        "tonalRamp": [
+          "oklch(15% 0.06662 87.13)",
+          "oklch(26.43% 0.06662 87.13)",
+          "oklch(37.86% 0.06662 87.13)",
+          "oklch(49.29% 0.06662 87.13)",
+          "oklch(60.71% 0.06662 87.13)",
+          "oklch(72.14% 0.06662 87.13)",
+          "oklch(83.57% 0.06662 87.13)",
+          "oklch(95% 0.06662 87.13)"
+        ]
+      },
+      "success": {
+        "role": "secondary",
+        "displayName": "Éxito",
+        "tonalRamp": [
+          "oklch(15% 0.09511 162.51)",
+          "oklch(26.43% 0.09511 162.51)",
+          "oklch(37.86% 0.09511 162.51)",
+          "oklch(49.29% 0.09511 162.51)",
+          "oklch(60.71% 0.09511 162.51)",
+          "oklch(72.14% 0.09511 162.51)",
+          "oklch(83.57% 0.09511 162.51)",
+          "oklch(95% 0.09511 162.51)"
+        ]
+      },
+      "success-bg": {
+        "role": "secondary",
+        "displayName": "Éxito · fondo suave",
+        "tonalRamp": [
+          "oklch(15% 0.01404 162.48)",
+          "oklch(26.43% 0.01404 162.48)",
+          "oklch(37.86% 0.01404 162.48)",
+          "oklch(49.29% 0.01404 162.48)",
+          "oklch(60.71% 0.01404 162.48)",
+          "oklch(72.14% 0.01404 162.48)",
+          "oklch(83.57% 0.01404 162.48)",
+          "oklch(95% 0.01404 162.48)"
+        ]
+      },
+      "success-border": {
+        "role": "secondary",
+        "displayName": "Éxito · borde",
+        "tonalRamp": [
+          "oklch(15% 0.04350 162.31)",
+          "oklch(26.43% 0.04350 162.31)",
+          "oklch(37.86% 0.04350 162.31)",
+          "oklch(49.29% 0.04350 162.31)",
+          "oklch(60.71% 0.04350 162.31)",
+          "oklch(72.14% 0.04350 162.31)",
+          "oklch(83.57% 0.04350 162.31)",
+          "oklch(95% 0.04350 162.31)"
+        ]
+      },
+      "info": {
+        "role": "secondary",
+        "displayName": "Información",
+        "tonalRamp": [
+          "oklch(15% 0.09897 239.13)",
+          "oklch(26.43% 0.09897 239.13)",
+          "oklch(37.86% 0.09897 239.13)",
+          "oklch(49.29% 0.09897 239.13)",
+          "oklch(60.71% 0.09897 239.13)",
+          "oklch(72.14% 0.09897 239.13)",
+          "oklch(83.57% 0.09897 239.13)",
+          "oklch(95% 0.09897 239.13)"
+        ]
+      },
+      "info-bg": {
+        "role": "secondary",
+        "displayName": "Información · fondo suave",
+        "tonalRamp": [
+          "oklch(15% 0.01421 231.20)",
+          "oklch(26.43% 0.01421 231.20)",
+          "oklch(37.86% 0.01421 231.20)",
+          "oklch(49.29% 0.01421 231.20)",
+          "oklch(60.71% 0.01421 231.20)",
+          "oklch(72.14% 0.01421 231.20)",
+          "oklch(83.57% 0.01421 231.20)",
+          "oklch(95% 0.01421 231.20)"
+        ]
+      },
+      "info-border": {
+        "role": "secondary",
+        "displayName": "Información · borde",
+        "tonalRamp": [
+          "oklch(15% 0.04208 230.26)",
+          "oklch(26.43% 0.04208 230.26)",
+          "oklch(37.86% 0.04208 230.26)",
+          "oklch(49.29% 0.04208 230.26)",
+          "oklch(60.71% 0.04208 230.26)",
+          "oklch(72.14% 0.04208 230.26)",
+          "oklch(83.57% 0.04208 230.26)",
+          "oklch(95% 0.04208 230.26)"
+        ]
+      },
+      "dark-danger": {
+        "role": "secondary",
+        "displayName": "Error nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.12186 9.35)",
+          "oklch(26.43% 0.12186 9.35)",
+          "oklch(37.86% 0.12186 9.35)",
+          "oklch(49.29% 0.12186 9.35)",
+          "oklch(60.71% 0.12186 9.35)",
+          "oklch(72.14% 0.12186 9.35)",
+          "oklch(83.57% 0.12186 9.35)",
+          "oklch(95% 0.12186 9.35)"
+        ]
+      },
+      "dark-danger-bg": {
+        "role": "secondary",
+        "displayName": "Error · fondo suave nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.04129 345.23)",
+          "oklch(26.43% 0.04129 345.23)",
+          "oklch(37.86% 0.04129 345.23)",
+          "oklch(49.29% 0.04129 345.23)",
+          "oklch(60.71% 0.04129 345.23)",
+          "oklch(72.14% 0.04129 345.23)",
+          "oklch(83.57% 0.04129 345.23)",
+          "oklch(95% 0.04129 345.23)"
+        ]
+      },
+      "dark-danger-border": {
+        "role": "secondary",
+        "displayName": "Error · borde nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.07817 358.20)",
+          "oklch(26.43% 0.07817 358.20)",
+          "oklch(37.86% 0.07817 358.20)",
+          "oklch(49.29% 0.07817 358.20)",
+          "oklch(60.71% 0.07817 358.20)",
+          "oklch(72.14% 0.07817 358.20)",
+          "oklch(83.57% 0.07817 358.20)",
+          "oklch(95% 0.07817 358.20)"
+        ]
+      },
+      "dark-warning": {
+        "role": "secondary",
+        "displayName": "Advertencia nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.10594 82.79)",
+          "oklch(26.43% 0.10594 82.79)",
+          "oklch(37.86% 0.10594 82.79)",
+          "oklch(49.29% 0.10594 82.79)",
+          "oklch(60.71% 0.10594 82.79)",
+          "oklch(72.14% 0.10594 82.79)",
+          "oklch(83.57% 0.10594 82.79)",
+          "oklch(95% 0.10594 82.79)"
+        ]
+      },
+      "dark-warning-bg": {
+        "role": "secondary",
+        "displayName": "Advertencia · fondo suave nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.02240 84.42)",
+          "oklch(26.43% 0.02240 84.42)",
+          "oklch(37.86% 0.02240 84.42)",
+          "oklch(49.29% 0.02240 84.42)",
+          "oklch(60.71% 0.02240 84.42)",
+          "oklch(72.14% 0.02240 84.42)",
+          "oklch(83.57% 0.02240 84.42)",
+          "oklch(95% 0.02240 84.42)"
+        ]
+      },
+      "dark-warning-border": {
+        "role": "secondary",
+        "displayName": "Advertencia · borde nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.04732 80.93)",
+          "oklch(26.43% 0.04732 80.93)",
+          "oklch(37.86% 0.04732 80.93)",
+          "oklch(49.29% 0.04732 80.93)",
+          "oklch(60.71% 0.04732 80.93)",
+          "oklch(72.14% 0.04732 80.93)",
+          "oklch(83.57% 0.04732 80.93)",
+          "oklch(95% 0.04732 80.93)"
+        ]
+      },
+      "dark-success": {
+        "role": "secondary",
+        "displayName": "Éxito nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.09830 163.42)",
+          "oklch(26.43% 0.09830 163.42)",
+          "oklch(37.86% 0.09830 163.42)",
+          "oklch(49.29% 0.09830 163.42)",
+          "oklch(60.71% 0.09830 163.42)",
+          "oklch(72.14% 0.09830 163.42)",
+          "oklch(83.57% 0.09830 163.42)",
+          "oklch(95% 0.09830 163.42)"
+        ]
+      },
+      "dark-success-bg": {
+        "role": "secondary",
+        "displayName": "Éxito · fondo suave nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.04317 171.23)",
+          "oklch(26.43% 0.04317 171.23)",
+          "oklch(37.86% 0.04317 171.23)",
+          "oklch(49.29% 0.04317 171.23)",
+          "oklch(60.71% 0.04317 171.23)",
+          "oklch(72.14% 0.04317 171.23)",
+          "oklch(83.57% 0.04317 171.23)",
+          "oklch(95% 0.04317 171.23)"
+        ]
+      },
+      "dark-success-border": {
+        "role": "secondary",
+        "displayName": "Éxito · borde nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.05638 166.18)",
+          "oklch(26.43% 0.05638 166.18)",
+          "oklch(37.86% 0.05638 166.18)",
+          "oklch(49.29% 0.05638 166.18)",
+          "oklch(60.71% 0.05638 166.18)",
+          "oklch(72.14% 0.05638 166.18)",
+          "oklch(83.57% 0.05638 166.18)",
+          "oklch(95% 0.05638 166.18)"
+        ]
+      },
+      "dark-info": {
+        "role": "secondary",
+        "displayName": "Información nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.08164 235.79)",
+          "oklch(26.43% 0.08164 235.79)",
+          "oklch(37.86% 0.08164 235.79)",
+          "oklch(49.29% 0.08164 235.79)",
+          "oklch(60.71% 0.08164 235.79)",
+          "oklch(72.14% 0.08164 235.79)",
+          "oklch(83.57% 0.08164 235.79)",
+          "oklch(95% 0.08164 235.79)"
+        ]
+      },
+      "dark-info-bg": {
+        "role": "secondary",
+        "displayName": "Información · fondo suave nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.04508 238.24)",
+          "oklch(26.43% 0.04508 238.24)",
+          "oklch(37.86% 0.04508 238.24)",
+          "oklch(49.29% 0.04508 238.24)",
+          "oklch(60.71% 0.04508 238.24)",
+          "oklch(72.14% 0.04508 238.24)",
+          "oklch(83.57% 0.04508 238.24)",
+          "oklch(95% 0.04508 238.24)"
+        ]
+      },
+      "dark-info-border": {
+        "role": "secondary",
+        "displayName": "Información · borde nocturno",
+        "tonalRamp": [
+          "oklch(15% 0.05970 237.45)",
+          "oklch(26.43% 0.05970 237.45)",
+          "oklch(37.86% 0.05970 237.45)",
+          "oklch(49.29% 0.05970 237.45)",
+          "oklch(60.71% 0.05970 237.45)",
+          "oklch(72.14% 0.05970 237.45)",
+          "oklch(83.57% 0.05970 237.45)",
+          "oklch(95% 0.05970 237.45)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "display",
+        "purpose": "Título de página inclinado y en mayúsculas."
+      },
+      "login-display": {
+        "displayName": "login-display",
+        "purpose": "Título inclinado de la ilustración de acceso."
+      },
+      "login-display-xl": {
+        "displayName": "login-display-xl",
+        "purpose": "Variante amplia del título de ilustración desde xl."
+      },
+      "wordmark": {
+        "displayName": "wordmark",
+        "purpose": "Marca KMA inclinada."
+      },
+      "title": {
+        "displayName": "title",
+        "purpose": "Secciones con lectura recta."
+      },
+      "body": {
+        "displayName": "body",
+        "purpose": "Lectura de respuestas y contexto."
+      },
+      "control": {
+        "displayName": "control",
+        "purpose": "Botones y acciones operativas."
+      },
+      "field": {
+        "displayName": "field",
+        "purpose": "Texto de campos de escritorio."
+      },
+      "field-touch": {
+        "displayName": "field-touch",
+        "purpose": "Texto de campos bajo 1024 px o puntero táctil."
+      },
+      "label": {
+        "displayName": "label",
+        "purpose": "Badges y contexto breve."
+      },
+      "auxiliary": {
+        "displayName": "auxiliary",
+        "purpose": "Metadatos de usuario y salida."
+      },
+      "navigation-group": {
+        "displayName": "navigation-group",
+        "purpose": "Agrupaciones funcionales de navegación."
+      },
+      "counter": {
+        "displayName": "counter",
+        "purpose": "Recuentos de revisión con cifras tabulares."
+      },
+      "counter-md": {
+        "displayName": "counter-md",
+        "purpose": "Recuentos ampliados desde md."
+      }
+    },
+    "shadows": [
+      {
+        "name": "dialog",
+        "value": "0 16px 48px rgb(19 23 24 / 18%)",
+        "purpose": "Sombra difusa de diálogo, separada de los paneles planos."
+      },
+      {
+        "name": "mobile-navigation",
+        "value": "0 25px 50px -12px rgb(0 0 0 / 25%)",
+        "purpose": "Sombra del panel de navegación superpuesto."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "150ms ease",
+        "purpose": "Color, borde y foco de controles; valor usado por la regla global."
+      },
+      {
+        "name": "button-press",
+        "value": "translateY(1px)",
+        "purpose": "Respuesta de pulsación del botón habilitado."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "Con prefers-reduced-motion: reduce, animaciones y transiciones mínimas, una vuelta y desplazamiento inmediato."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal con oro y tinta grafito.",
+      "html": "<button type=\"button\" class=\"ds-button-primary\">Save changes</button>",
+      "css": ".ds-button-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:var(--kma-control-height,40px);padding:8px 16px;border:1px solid transparent;border-radius:4px;font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap;cursor:pointer;background:var(--kma-accent,#d6a43a);color:var(--kma-accent-fg,#1c1f22);transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease,box-shadow 150ms ease;}.ds-button-primary:hover:not(:disabled){background:color-mix(in srgb,var(--kma-accent,#d6a43a) 88%,var(--kma-surface,#fffefc));}.ds-button-primary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--kma-primary,#795619);}.ds-button-primary:active:not(:disabled){transform:translateY(1px)}.ds-button-primary:disabled{cursor:not-allowed;opacity:.6}@media(max-width:1023px),(pointer:coarse){.ds-button-primary{min-height:44px}}@media(prefers-reduced-motion:reduce){.ds-button-primary{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Acción secundaria sobre papel con borde mineral.",
+      "html": "<button type=\"button\" class=\"ds-button-secondary\">Cancel</button>",
+      "css": ".ds-button-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:var(--kma-control-height,40px);padding:8px 16px;border:1px solid transparent;border-radius:4px;font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap;cursor:pointer;background:var(--kma-surface,#fffefc);color:var(--kma-fg,#1c1f22);border-color:var(--kma-border,#d4d0c8);transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease,box-shadow 150ms ease;}.ds-button-secondary:hover:not(:disabled){background:var(--kma-subtle,#eae7e1);}.ds-button-secondary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--kma-primary,#795619);}.ds-button-secondary:active:not(:disabled){transform:translateY(1px)}.ds-button-secondary:disabled{cursor:not-allowed;opacity:.6}@media(max-width:1023px),(pointer:coarse){.ds-button-secondary{min-height:44px}}@media(prefers-reduced-motion:reduce){.ds-button-secondary{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción discreta con fondo transparente.",
+      "html": "<button type=\"button\" class=\"ds-button-ghost\">View details</button>",
+      "css": ".ds-button-ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:var(--kma-control-height,40px);padding:8px 16px;border:1px solid transparent;border-radius:4px;font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap;cursor:pointer;background:transparent;color:var(--kma-fg,#1c1f22);transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease,box-shadow 150ms ease;}.ds-button-ghost:hover:not(:disabled){background:var(--kma-subtle,#eae7e1);}.ds-button-ghost:focus-visible{outline:none;box-shadow:0 0 0 2px var(--kma-primary,#795619);}.ds-button-ghost:active:not(:disabled){transform:translateY(1px)}.ds-button-ghost:disabled{cursor:not-allowed;opacity:.6}@media(max-width:1023px),(pointer:coarse){.ds-button-ghost{min-height:44px}}@media(prefers-reduced-motion:reduce){.ds-button-ghost{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Destructive Button",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "Acción destructiva con fondo, borde y texto de error.",
+      "html": "<button type=\"button\" class=\"ds-button-destructive\">Delete project</button>",
+      "css": ".ds-button-destructive{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:var(--kma-control-height,40px);padding:8px 16px;border:1px solid transparent;border-radius:4px;font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap;cursor:pointer;background:var(--kma-danger-bg,#fff1f3);color:var(--kma-danger,#b4233e);border-color:var(--kma-danger-border,#f1c3cd);transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease,box-shadow 150ms ease;}.ds-button-destructive:hover:not(:disabled){background:color-mix(in srgb,var(--kma-danger-bg,#fff1f3) 85%,var(--kma-danger,#b4233e));}.ds-button-destructive:focus-visible{outline:none;box-shadow:0 0 0 2px var(--kma-primary,#795619);}.ds-button-destructive:active:not(:disabled){transform:translateY(1px)}.ds-button-destructive:disabled{cursor:not-allowed;opacity:.6}@media(max-width:1023px),(pointer:coarse){.ds-button-destructive{min-height:44px}}@media(prefers-reduced-motion:reduce){.ds-button-destructive{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo compartido con etiqueta visible, foco ocre y texto de lectura recta.",
+      "html": "<label class=\"ds-field-label\" for=\"ds-project-name\">Project name</label><input class=\"ds-field\" id=\"ds-project-name\" placeholder=\"Enter a project name\" />",
+      "css": ".ds-field-label{display:block;margin-bottom:4px;color:var(--kma-fg,#1c1f22);font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:500;line-height:20px}.ds-field{width:100%;min-height:40px;padding:8px 12px;border:1px solid var(--kma-border,#d4d0c8);border-radius:4px;background:var(--kma-surface,#fffefc);color:var(--kma-fg,#1c1f22);caret-color:var(--kma-primary,#795619);font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;line-height:20px;transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease,box-shadow 150ms ease;}.ds-field::placeholder{color:var(--kma-muted,#62655f);opacity:1}.ds-field:focus-visible{outline:none;box-shadow:0 0 0 2px var(--kma-primary,#795619);}.ds-field[aria-invalid=\"true\"]{border-color:var(--kma-danger,#b4233e)}.ds-field[aria-invalid=\"true\"]:focus-visible{box-shadow:0 0 0 2px var(--kma-danger,#b4233e)}.ds-field:disabled{opacity:.6;cursor:not-allowed}@media(max-width:1023px),(pointer:coarse){.ds-field{min-height:44px;font-size:16px}}@media(prefers-reduced-motion:reduce){.ds-field{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Workspace Navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Navegación grafito con selección dorada tenue y objetivos de 44 px.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Workspace\"><a class=\"ds-nav-item\" href=\"#dashboard\" aria-current=\"page\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\" rx=\"1\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\" rx=\"1\"/></svg>Dashboard</a><a class=\"ds-nav-item\" href=\"#projects\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 20H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2Z\"/></svg>Projects</a></nav>",
+      "css": ".ds-nav{--kma-primary:#ebc773;--kma-selected:#373326;--kma-fg:var(--kma-brand-fg,#f2efea);--kma-muted:var(--kma-brand-muted,#b9bcb6);width:248px;padding:12px;background:var(--kma-brand,#1c1f22)}.ds-nav-item{display:flex;align-items:center;gap:12px;min-height:44px;padding:10px 12px;border-radius:4px;color:var(--kma-muted);font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:500;line-height:20px;text-decoration:none;transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease,box-shadow 150ms ease;}.ds-nav-item+.ds-nav-item{margin-top:4px}.ds-nav-item[aria-current=\"page\"]{background:var(--kma-selected);color:var(--kma-primary);font-weight:600}.ds-nav-item:hover{background:var(--kma-selected);color:var(--kma-fg)}.ds-nav-item:focus-visible{outline:2px solid var(--kma-primary);outline-offset:3px}@media(prefers-reduced-motion:reduce){.ds-nav-item{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge-warning",
+      "description": "Etiqueta semántica suave; el texto identifica el estado además del color.",
+      "html": "<span class=\"ds-badge-warning\">Pending review</span>",
+      "css": ".ds-badge-warning{display:inline-flex;align-items:center;padding:2px 10px;border-radius:calc(infinity * 1px);background:var(--kma-warning-bg,#fff7e7);color:var(--kma-warning,#865b08);box-shadow:inset 0 0 0 1px var(--kma-warning-border,#eed9a9);font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:12px;font-weight:500;line-height:20px;letter-spacing:-.025em}"
+    },
+    {
+      "name": "Data Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Superficie de papel plana, delimitada por una regla mineral.",
+      "html": "<section class=\"ds-panel\" aria-labelledby=\"ds-panel-heading\"><h2 class=\"ds-panel-heading\" id=\"ds-panel-heading\">Project details</h2><p class=\"ds-panel-text\">Review project information and audit evidence.</p></section>",
+      "css": ".ds-panel{overflow:hidden;padding:20px;border:1px solid var(--kma-border,#d4d0c8);border-radius:8px;background:var(--kma-surface,#fffefc);color:var(--kma-fg,#1c1f22)}.ds-panel-heading{margin:0 0 8px;font-family:var(--font-heading,Manrope),ui-sans-serif,system-ui,sans-serif;font-size:20px;font-weight:600;line-height:28px}.ds-panel-text{margin:0;color:var(--kma-muted,#62655f);font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:15px;line-height:22px}"
+    },
+    {
+      "name": "Review Pipeline",
+      "kind": "custom",
+      "description": "Tres tramos conectados; revisión pendiente se destaca con grafito y oro. La muestra presenta estados sin inventar recuentos.",
+      "html": "<section class=\"ds-pipeline\" aria-label=\"Review pipeline\"><a class=\"ds-stage ds-stage-first\" href=\"#pending\"><span class=\"ds-stage-label\"><span class=\"ds-stage-dot\" aria-hidden=\"true\"></span>Pending review</span><span class=\"ds-count\">—</span></a><a class=\"ds-stage\" href=\"#review\"><span class=\"ds-stage-label\"><span class=\"ds-stage-dot\" aria-hidden=\"true\"></span>In review</span><span class=\"ds-count\">—</span></a><a class=\"ds-stage\" href=\"#delivered\"><span class=\"ds-stage-label\"><span class=\"ds-stage-dot\" aria-hidden=\"true\"></span>Delivered</span><span class=\"ds-count\">—</span></a></section>",
+      "css": ".ds-pipeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:hidden;border:1px solid var(--kma-border,#d4d0c8);border-radius:8px}.ds-stage{display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:120px;padding:16px 12px;background:var(--kma-surface,#fffefc);color:var(--kma-fg,#1c1f22);text-decoration:none;transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease,box-shadow 150ms ease;}.ds-stage+.ds-stage{border-left:1px solid var(--kma-border,#d4d0c8)}.ds-stage:hover{background:var(--kma-subtle,#eae7e1)}.ds-stage:focus-visible{outline:2px solid var(--kma-primary,#795619);outline-offset:3px}.ds-stage-first{--kma-fg:#f2efea;--kma-muted:#b9bcb6;--kma-border:#414747;--kma-primary:#ebc773;--kma-subtle:#303638;background:var(--kma-brand,#1c1f22);color:var(--kma-fg)}.ds-stage-label{display:flex;align-items:center;gap:8px;min-height:40px;font-family:var(--font-reading,\"Source Sans 3\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px}.ds-stage-dot{width:6px;height:6px;flex-shrink:0;background:var(--kma-border,#d4d0c8)}.ds-stage-first .ds-stage-dot{background:var(--kma-accent,#d6a43a)}.ds-count{font-family:var(--font-heading,Manrope),ui-sans-serif,system-ui,sans-serif;font-size:32px;font-weight:500;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.ds-stage-first .ds-count{color:var(--kma-accent,#d6a43a)}@media(min-width:640px){.ds-stage{padding:20px 24px}}@media(min-width:768px){.ds-stage{min-height:140px}.ds-stage-label{min-height:0}.ds-count{font-size:40px}}@media(prefers-reduced-motion:reduce){.ds-stage{transition-duration:.01ms}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Daylight Section",
+    "overview": "Una mesa de revisión con precisión arquitectónica: papel marfil, tinta grafito y luz dorada. Los títulos angulares inclinados dan identidad; el cuerpo recto, las reglas finas y los controles familiares permiten leer y trabajar con calma.\n\nLa composición conecta tareas, datos y evidencias reales. La marca aparece en el contraste de navegación, los recuentos y el encuadre de fotografías, mientras los estados conservan su significado operativo. El tema oscuro cambia el papel por grafito sin perder esta relación entre fondo, superficie y texto.\n\nEste sistema documenta la sustitución aprobada de la identidad petróleo; el [diseño anterior](../premium/DESIGN.md) queda como historia. La [dirección elegida](implementation.md) explica su intención y [PRODUCT.md](../../../../../PRODUCT.md) conserva las restricciones del producto. Los valores se extraen del [estilo global](../../../../../app/globals.css), las [fuentes locales](../../../../../app/layout.tsx), los [controles](../../../../../src/shared/ui/controls.tsx) y los componentes citados abajo; este documento no certifica comprobaciones de navegador ni una compilación final.",
+    "keyCharacteristics": [
+      "Papel marfil y grafito, con dorado para acciones y señales de revisión.",
+      "Chakra Petch inclinada para identidad; Manrope para secciones y cifras; Source Sans 3 para lectura.",
+      "Superficies planas, reglas finas y esquinas contenidas.",
+      "Navegación grafito estable en los dos temas.",
+      "Evidencias reales junto a respuestas; informe blanco separado del tema de la aplicación."
+    ],
+    "rules": [],
+    "dos": [
+      "**Do** usar los roles compartidos de color y sus variantes de tema; mantener grafito en la navegación.",
+      "**Do** conservar Chakra Petch inclinada en página y marca, con lectura recta en formularios y datos.",
+      "**Do** mantener alturas mínimas de control, foco visible y estados expresados con texto.",
+      "**Do** separar filas con reglas, mostrar evidencias reales junto a respuestas y conservar el informe blanco.",
+      "**Do** mantener la procedencia del raster original de acceso junto a su archivo."
+    ],
+    "donts": [
+      "**Don't** usar el dorado claro como texto pequeño sobre papel; usar el ocre de lectura del tema.",
+      "**Don't** aplicar la inclinación de los títulos a campos ni datos de tabla.",
+      "**Don't** extender sombras de superposición a paneles y filas del espacio operativo.",
+      "**Don't** teñir el informe con los colores del tema ni convertir la ilustración de marca en evidencia de auditoría."
+    ]
+  }
+}

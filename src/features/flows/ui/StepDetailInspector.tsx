@@ -9,7 +9,7 @@ import type {
     QuestionStep,
     SelectStep
 } from "@entities/flow/model";
-import { Input, Label, Textarea } from "@shared/ui/controls";
+import { Button, Input, Label, Textarea } from "@shared/ui/controls";
 import {
     ArrowRight,
     CornerDownRight,
@@ -57,12 +57,16 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
     onZoomImage,
     isAdmin
 }) => {
+    const baseId = React.useId();
+    const [unavailableImages, setUnavailableImages] = React.useState<Set<string>>(() => new Set());
+    const controlId = (field: string) => `${baseId}-${field}`;
+
     if (!selectedStep) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-gray-400 bg-white border border-gray-200 rounded-xl shadow-sm text-center">
-                <CornerDownRight className="h-8 w-8 mb-2 opacity-30 text-gray-400" />
-                <p className="text-sm font-medium text-gray-600">No step selected</p>
-                <p className="text-xs text-gray-400 mt-1">Select a step from the sidebar to edit</p>
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-[var(--kma-muted)] bg-[var(--kma-surface)] text-center">
+                <CornerDownRight className="h-8 w-8 mb-2 opacity-30 text-[var(--kma-muted)]" />
+                <p className="text-sm font-medium text-[var(--kma-muted)]">No step selected</p>
+                <p className="text-xs text-[var(--kma-muted)] mt-1">Select a step from the sidebar to edit</p>
             </div>
         );
     }
@@ -70,100 +74,32 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
     const images = selectedStep.images || [];
 
     return (
-        <div className="flex-1 flex flex-col h-full min-h-0 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-            {/* Header del Inspector */}
-            <div className="p-4 border-b border-gray-200 bg-white shrink-0">
+        <div className="flex-1 flex flex-col h-full min-h-0 bg-[var(--kma-surface)] overflow-hidden">
+            <div className="shrink-0 border-b border-[var(--kma-border)] bg-[var(--kma-subtle)] px-4 py-4 sm:px-6">
                 <div className="flex items-start justify-between gap-3">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h2 className="text-xl font-bold font-mono text-gray-900 tracking-tight">
-                                {selectedStep.id}
-                            </h2>
-                            <span className="text-[10px] font-mono uppercase bg-gray-100 border border-gray-200 text-gray-700 px-2 py-0.5 rounded font-semibold">
-                                {selectedStep.type}
-                            </span>
+                    <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <h2 className="break-all text-xl font-semibold leading-7 text-[var(--kma-fg)]">{selectedStep.id}</h2>
+                            <span className="border border-[var(--kma-border)] px-2 py-1 text-xs font-medium text-[var(--kma-muted)]">{selectedStep.type}</span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                            <span>{selectedStep.type}</span> · <span>Editing step details</span>
-                        </p>
+                        <p className="mt-1 text-xs text-[var(--kma-muted)]">Editing step details</p>
                     </div>
-
-                    {/* Imágenes de referencia y acciones rápidas */}
-                    <div className="flex items-center gap-2">
-                        {images.length > 0 ? (
-                            <div className="flex items-center gap-1.5">
-                                {images.map((imgUrl, i) => (
-                                    <div key={i} className="relative group shrink-0">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                            src={imgUrl}
-                                            alt={`Ref ${i}`}
-                                            onClick={() => onZoomImage(imgUrl)}
-                                            className="h-8 w-8 object-cover rounded border border-gray-200 shadow-sm cursor-zoom-in hover:ring-2 hover:ring-blue-400 transition-all"
-                                        />
-                                        {isAdmin && (
-                                            <button
-                                                type="button"
-                                                onClick={() => onRemoveImage(selectedStep.id, i)}
-                                                className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 shadow opacity-0 group-hover:opacity-100 transition-opacity"
-                                                title="Remove photo"
-                                            >
-                                                <X className="h-2.5 w-2.5" />
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                                {isAdmin && (
-                                    <button
-                                        type="button"
-                                        onClick={onImageClick}
-                                        title="Add another photo"
-                                        className="h-8 w-8 rounded border border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 flex items-center justify-center text-gray-500 transition-colors"
-                                    >
-                                        <Plus className="h-3.5 w-3.5" />
-                                    </button>
-                                )}
-                            </div>
-                        ) : (
-                            isAdmin && (
-                                <button
-                                    type="button"
-                                    onClick={onImageClick}
-                                    className="inline-flex items-center h-7 px-2.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 border border-gray-200 rounded-lg shadow-xs gap-1.5 whitespace-nowrap transition-colors"
-                                    title="Add reference image"
-                                >
-                                    <ImagePlus className="h-3.5 w-3.5 text-gray-500" />
-                                    <span>Add Image</span>
-                                </button>
-                            )
-                        )}
-
-                        {isAdmin && (
-                            <button
-                                type="button"
-                                onClick={() => onDeleteStep(selectedStep.id)}
-                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                                title="Delete current step"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </button>
-                        )}
-                    </div>
+                    {isAdmin ? <button type="button" onClick={() => onDeleteStep(selectedStep.id)} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[color-mix(in_srgb,var(--kma-danger)_10%,transparent)] hover:text-[var(--kma-danger)]" title="Delete current step" aria-label="Delete current step"><Trash2 className="h-4 w-4" aria-hidden="true" /></button> : null}
                 </div>
             </div>
 
-            {/* Contenido scrolleable del formulario */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-5">
+            <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="max-w-3xl space-y-6">
                 {/* STEP ID EDITABLE */}
                 <div>
-                    <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
+                    <Label htmlFor={controlId("step-id")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
                         Step ID
                     </Label>
                     <Input
+                        id={controlId("step-id")}
                         value={selectedStep.id}
                         disabled={!isAdmin}
                         onChange={(e) => onUpdateStep(selectedStep.id, { id: e.target.value })}
-                        className="font-mono text-sm h-9 bg-gray-50/50"
                     />
                 </div>
 
@@ -172,24 +108,26 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* TITLE */}
                         <div>
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
+                            <Label htmlFor={controlId("title")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
                                 Title
                             </Label>
                             <Input
+                                id={controlId("title")}
                                 value={(selectedStep as FormStep).title}
                                 disabled={!isAdmin}
                                 onChange={(e) => onUpdateStep(selectedStep.id, { title: e.target.value })}
                                 placeholder="Form step title..."
-                                className="text-sm font-medium h-9"
+                                className="font-medium"
                             />
                         </div>
 
                         {/* NEXT STEP */}
                         <div>
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
+                            <Label htmlFor={controlId("next")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
                                 Next Step
                             </Label>
                             <StepSelector
+                                id={controlId("next")}
                                 value={(selectedStep as FormStep).next}
                                 onChange={(id) => onUpdateStep(selectedStep.id, { ...selectedStep, next: id } as FormStep)}
                                 stepId={selectedStep.id}
@@ -203,7 +141,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* EVIDENCE FIELDS */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block">
+                            <Label className="text-sm font-semibold text-[var(--kma-fg)] block">
                                 Fields
                             </Label>
 
@@ -215,14 +153,14 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                             type="button"
                                             onClick={() => onAddField(selectedStep.id, "quantity")}
                                             disabled={(selectedStep as FormStep).fields.some((f) => f.id === "quantity")}
-                                            className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            className="inline-flex min-h-11 items-center justify-center rounded border border-[var(--kma-border)] px-3 text-sm font-medium text-[var(--kma-fg)] transition-colors hover:bg-[var(--kma-subtle)] disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-10"
                                         >
                                             <Plus className="h-3 w-3 mr-1" /> Quantity
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => onAddField(selectedStep.id, "measurements")}
-                                            className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm transition-colors"
+                                            className="inline-flex min-h-11 items-center justify-center rounded border border-[var(--kma-border)] px-3 text-sm font-medium text-[var(--kma-fg)] transition-colors hover:bg-[var(--kma-subtle)] sm:min-h-10"
                                         >
                                             <Plus className="h-3 w-3 mr-1" /> Measurement
                                         </button>
@@ -230,7 +168,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                             type="button"
                                             onClick={() => onAddField(selectedStep.id, "photo")}
                                             disabled={(selectedStep as FormStep).fields.some((f) => f.id === "photo")}
-                                            className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            className="inline-flex min-h-11 items-center justify-center rounded border border-[var(--kma-border)] px-3 text-sm font-medium text-[var(--kma-fg)] transition-colors hover:bg-[var(--kma-subtle)] disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-10"
                                         >
                                             <Plus className="h-3 w-3 mr-1" /> Photo
                                         </button>
@@ -238,7 +176,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                             type="button"
                                             onClick={() => onAddField(selectedStep.id, "notes")}
                                             disabled={(selectedStep as FormStep).fields.some((f) => f.id === "notes")}
-                                            className="flex items-center justify-center px-3 h-8 text-xs font-medium bg-black text-white hover:bg-gray-800 rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            className="inline-flex min-h-11 items-center justify-center rounded border border-[var(--kma-border)] px-3 text-sm font-medium text-[var(--kma-fg)] transition-colors hover:bg-[var(--kma-subtle)] disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-10"
                                         >
                                             <Plus className="h-3 w-3 mr-1" /> Notes
                                         </button>
@@ -248,21 +186,23 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 {/* Form Fields List */}
                                 <div className="space-y-2">
                                     {(selectedStep as FormStep).fields.map((field, fIdx) => (
-                                        <div key={fIdx} className="flex flex-col gap-2 bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-20 text-xs font-mono text-gray-500 shrink-0">{field.type}</div>
+                                        <div key={fIdx} className="flex flex-col gap-3 border-t border-[var(--kma-border)] py-4">
+                                            <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
+                                                <div className="col-span-3 text-xs text-[var(--kma-muted)] shrink-0">{field.type}</div>
                                                 <Input
-                                                    className="h-8 text-sm flex-1 bg-white"
+                                                    aria-label={`Field ${fIdx + 1} label`}
+                                                    className="min-w-0 flex-1 bg-[var(--kma-surface)]"
                                                     value={field.label}
                                                     disabled={!isAdmin}
                                                     onChange={(e) => onUpdateField(selectedStep.id, fIdx, { label: e.target.value })}
                                                 />
                                                 {field.id.startsWith("measurements") && (
                                                     <select
+                                                        aria-label={`Field ${fIdx + 1} unit`}
                                                         value={field.unit ?? '"'}
                                                         disabled={!isAdmin}
                                                         onChange={(e) => onUpdateField(selectedStep.id, fIdx, { unit: e.target.value })}
-                                                        className="h-8 text-sm border border-gray-300 rounded-md px-2 bg-white shrink-0"
+                                                        className="min-h-11 sm:min-h-10 text-base sm:text-sm border border-[var(--kma-border)] rounded px-2 bg-[var(--kma-surface)] shrink-0"
                                                     >
                                                         <option value={'"'}>in (&quot;)</option>
                                                         <option value={"cm"}>cm</option>
@@ -273,7 +213,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                                     <button
                                                         type="button"
                                                         onClick={() => onDeleteField(selectedStep.id, fIdx)}
-                                                        className="text-gray-400 hover:text-red-500 p-1 shrink-0"
+                                                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-surface)] hover:text-[var(--kma-danger)]"
                                                         title="Delete field"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -281,11 +221,12 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                                 )}
                                             </div>
                                             {(field.type === "text" || field.type === "number") && (
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-20 text-xs text-gray-400 shrink-0 text-right pr-2">Placeholder</div>
+                                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                                                    <div className="sm:w-20 text-xs text-[var(--kma-muted)] shrink-0 sm:text-right sm:pr-2">Placeholder</div>
                                                     <Input
-                                                        className="h-8 text-xs flex-1 bg-white"
+                                                        className="min-w-0 flex-1 bg-[var(--kma-surface)]"
                                                         placeholder="Optional placeholder..."
+                                                        aria-label={`Field ${fIdx + 1} placeholder`}
                                                         value={field.placeholder ?? ""}
                                                         disabled={!isAdmin}
                                                         onChange={(e) => onUpdateField(selectedStep.id, fIdx, { placeholder: e.target.value })}
@@ -299,17 +240,17 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                         </div>
 
                         {/* SHARED QUANTITY INFO */}
-                        <div className="pt-2 border-t space-y-1.5">
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                        <div className="border-t border-[var(--kma-border)] pt-5 space-y-2">
+                            <Label className="text-sm font-semibold text-[var(--kma-fg)] block">
                                 Shared Quantity
                             </Label>
-                            <div className="p-3 bg-purple-50/60 border border-purple-200 rounded-lg text-xs text-purple-900 leading-relaxed">
-                                <Info className="h-3.5 w-3.5 inline mr-1 text-purple-600" />
+                            <div className="rounded bg-[var(--kma-subtle)] p-4 text-sm leading-6 text-[var(--kma-muted)]">
+                                <Info className="h-3.5 w-3.5 inline mr-1 text-[var(--kma-primary)]" />
                                 Barrier IDs will be calculated and saved automatically when you click &quot;Save Flow&quot;.
                                 <br />
                                 <span>
                                     Current detected barriers (saved):{" "}
-                                    <strong className="font-mono">
+                                    <strong className="font-semibold">
                                         {(selectedStep as FormStep).metadata?.sharedQuantity?.appliesToBarriers?.join(", ") || "(None)"}
                                     </strong>
                                 </span>
@@ -323,31 +264,33 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* QUESTION TEXT */}
                         <div>
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
+                            <Label htmlFor={controlId("question-text")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
                                 Question Text
                             </Label>
                             <Textarea
+                                id={controlId("question-text")}
                                 value={(selectedStep as QuestionStep).text}
                                 disabled={!isAdmin}
                                 onChange={(e) => onUpdateStep(selectedStep.id, { text: e.target.value })}
                                 placeholder="Enter question text"
                                 rows={3}
-                                className="text-sm leading-relaxed"
+                                className="leading-relaxed"
                             />
                         </div>
 
                         {/* ROUTING: YES & NO */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block">
-                                ROUTING
+                            <Label className="text-sm font-semibold text-[var(--kma-fg)] block">
+                                Routing
                             </Label>
 
                             {/* YES Next */}
                             <div className="space-y-1">
-                                <Label className="flex items-center gap-1 text-xs font-semibold text-emerald-800 cursor-pointer">
+                                <Label htmlFor={controlId("yes-next")} className="flex items-center gap-1 text-sm font-medium text-[var(--kma-fg)] cursor-pointer">
                                     Yes <ArrowRight className="h-3 w-3 inline" />
                                 </Label>
                                 <StepSelector
+                                    id={controlId("yes-next")}
                                     value={(selectedStep as QuestionStep).yesNext}
                                     onChange={(id) =>
                                         onUpdateStep(selectedStep.id, { ...selectedStep, yesNext: id } as QuestionStep)
@@ -363,10 +306,11 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                             {/* NO Next */}
                             <div className="space-y-1">
-                                <Label className="flex items-center gap-1 text-xs font-semibold text-red-800 cursor-pointer">
+                                <Label htmlFor={controlId("no-next")} className="flex items-center gap-1 text-sm font-medium text-[var(--kma-fg)] cursor-pointer">
                                     No <ArrowRight className="h-3 w-3 inline" />
                                 </Label>
                                 <StepSelector
+                                    id={controlId("no-next")}
                                     value={(selectedStep as QuestionStep).noNext}
                                     onChange={(id) =>
                                         onUpdateStep(selectedStep.id, { ...selectedStep, noNext: id } as QuestionStep)
@@ -383,18 +327,18 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* BARRIER ID */}
                         <div className="pt-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                            <Label htmlFor={controlId("barrier-id")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1">
                                 Barrier ID
                             </Label>
                             <Input
+                                id={controlId("barrier-id")}
                                 value={(selectedStep as QuestionStep).barrierId || ""}
                                 disabled={!isAdmin}
                                 onChange={(e) =>
                                     onUpdateStep(selectedStep.id, { ...selectedStep, barrierId: e.target.value } as QuestionStep)
                                 }
                                 placeholder="e.g. AR-B01"
-                                className="font-mono text-xs h-8"
-                            />
+                                                            />
                         </div>
 
                         {/* Conditional YES Navigation */}
@@ -430,10 +374,11 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* TITLE / TEXT */}
                         <div>
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
+                            <Label htmlFor={controlId("select-text")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
                                 Title / Text
                             </Label>
                             <Textarea
+                                id={controlId("select-text")}
                                 value={(selectedStep as SelectStep).title || (selectedStep as SelectStep).text || ""}
                                 disabled={!isAdmin}
                                 onChange={(e) =>
@@ -441,13 +386,13 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 }
                                 placeholder="Select prompt title..."
                                 rows={2}
-                                className="text-sm leading-relaxed"
+                                className="leading-relaxed"
                             />
                         </div>
 
                         {/* OPTIONS LIST */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block">
+                            <Label className="text-sm font-semibold text-[var(--kma-fg)] block">
                                 Options
                             </Label>
 
@@ -455,23 +400,29 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 {(selectedStep as SelectStep).options.map((option, idx) => (
                                     <div
                                         key={idx}
-                                        className="p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2 relative"
+                                        className="border-t border-[var(--kma-border)] py-4 space-y-3"
                                     >
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className="text-sm font-semibold text-[var(--kma-fg)]">Option {idx + 1}</p>
+                                            {isAdmin ? <button type="button" onClick={() => onDeleteOption(selectedStep.id, idx)} className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-subtle)] hover:text-[var(--kma-danger)]" title="Delete option" aria-label={`Delete option ${idx + 1}`}><Trash2 className="h-4 w-4" aria-hidden="true" /></button> : null}
+                                        </div>
                                         <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block mb-0.5">LABEL</span>
+                                            <span className="block mb-1 text-sm font-medium text-[var(--kma-fg)]">Label</span>
                                             <Input
+                                                aria-label={`Option ${idx + 1} label`}
                                                 value={option.label}
                                                 disabled={!isAdmin}
                                                 onChange={(e) =>
                                                     onUpdateOption(selectedStep.id, idx, "label", e.target.value)
                                                 }
-                                                className="h-8 text-xs bg-white"
+                                                className="bg-[var(--kma-surface)]"
                                             />
                                         </div>
 
                                         <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block mb-0.5">NEXT</span>
+                                            <span className="text-sm font-medium text-[var(--kma-fg)] block mb-1">Next step</span>
                                             <StepSelector
+                                                ariaLabel={`Option ${idx + 1} next step`}
                                                 value={option.next}
                                                 onChange={(val) => onUpdateOption(selectedStep.id, idx, "next", val)}
                                                 stepId={selectedStep.id}
@@ -484,28 +435,19 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                         </div>
 
                                         <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block mb-0.5">BARRIER</span>
+                                            <span className="text-sm font-medium text-[var(--kma-fg)] block mb-1">Barrier ID</span>
                                             <Input
+                                                aria-label={`Option ${idx + 1} barrier ID`}
                                                 value={option.barrierId || ""}
                                                 disabled={!isAdmin}
                                                 onChange={(e) =>
                                                     onUpdateOption(selectedStep.id, idx, "barrierId", e.target.value)
                                                 }
                                                 placeholder="Optional Barrier ID"
-                                                className="h-8 text-xs font-mono bg-white"
+                                                className="bg-[var(--kma-surface)]"
                                             />
                                         </div>
 
-                                        {isAdmin && (
-                                            <button
-                                                type="button"
-                                                onClick={() => onDeleteOption(selectedStep.id, idx)}
-                                                className="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1"
-                                                title="Delete option"
-                                            >
-                                                <Trash2 className="h-3.5 w-3.5" />
-                                            </button>
-                                        )}
                                     </div>
                                 ))}
 
@@ -513,7 +455,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                     <button
                                         type="button"
                                         onClick={() => onAddOption(selectedStep.id)}
-                                        className="w-full inline-flex items-center justify-center h-8 px-3 gap-1.5 bg-black text-white hover:bg-gray-800 rounded-lg shadow-sm text-xs font-semibold transition-colors"
+                                        className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded border border-[var(--kma-border)] px-3 text-sm font-medium text-[var(--kma-fg)] transition-colors hover:bg-[var(--kma-subtle)] sm:min-h-10"
                                     >
                                         <Plus className="h-3.5 w-3.5" />
                                         <span>Add Option</span>
@@ -526,11 +468,31 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                 {/* END STEP VIEW */}
                 {selectedStep.type === "End" && (
-                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600 space-y-2">
-                        <p className="font-semibold text-gray-800">End Step</p>
+                    <div className="p-4 bg-[var(--kma-subtle)] border border-[var(--kma-border)] rounded text-xs text-[var(--kma-muted)] space-y-2">
+                        <p className="font-semibold text-[var(--kma-fg)]">End Step</p>
                         <p>This step terminates and completes the flow process when reached by an auditor.</p>
                     </div>
                 )}
+                {images.length > 0 || isAdmin ? (
+                    <section className="space-y-4 border-t border-[var(--kma-brand-border)] pt-5" aria-label="Reference images">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <h3 className="text-sm font-semibold text-[var(--kma-fg)]">Reference images</h3>
+                            {isAdmin ? <Button type="button" variant="secondary" fullWidth={false} onClick={onImageClick} title={images.length ? "Add another photo" : "Add reference image"}><ImagePlus className="h-4 w-4" aria-hidden="true" />Add Image</Button> : null}
+                        </div>
+                        {images.length ? <div className="flex flex-wrap gap-4">{images.map((url, index) => (
+                            <div key={index} className="relative">
+                                <button type="button" onClick={() => onZoomImage(url)} className="block overflow-hidden rounded border border-[var(--kma-brand-border)] bg-[var(--kma-brand)]" aria-label={`View reference image ${index + 1}`} disabled={unavailableImages.has(url)}>
+                                    {unavailableImages.has(url) ? <span className="flex h-32 w-44 items-end justify-center bg-[var(--kma-subtle)] px-2 pb-3 text-xs text-[var(--kma-muted)]">Image unavailable</span> : (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={url} alt={`Ref ${index}`} className="h-32 w-44 object-cover" onError={() => setUnavailableImages((current) => new Set(current).add(url))} />
+                                    )}
+                                </button>
+                                {isAdmin ? <button type="button" onClick={() => onRemoveImage(selectedStep.id, index)} title="Remove photo" aria-label={`Remove reference image ${index + 1}`} className="absolute right-1 top-1 inline-flex h-11 w-11 items-center justify-center rounded bg-[var(--kma-surface)] text-[var(--kma-danger)]"><X className="h-4 w-4" aria-hidden="true" /></button> : null}
+                            </div>
+                        ))}</div> : <p className="text-sm text-[var(--kma-muted)]">Add photos that help auditors recognize what to inspect.</p>}
+                    </section>
+                ) : null}
+            </div>
             </div>
         </div>
     );

@@ -10,6 +10,8 @@ import type { Audit } from "@entities/audit/model";
 
 // ---- mocks ----
 
+const compactMock = vi.fn(() => false);
+vi.mock("@shared/lib/useMediaQuery", () => ({ useMediaQuery: () => compactMock() }));
 const useSessionMock = vi.fn();
 vi.mock("@processes/auth/hooks", () => ({
   useSession: () => useSessionMock(),
@@ -68,6 +70,7 @@ const withDetail = (detail: DetailStub | undefined) => {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  compactMock.mockReturnValue(false);
   useSessionMock.mockReturnValue({ isAdmin: true });
   withDetail(undefined);
 });
@@ -84,7 +87,7 @@ describe("AuditsTable — rows", () => {
     expect(within(row).getByText("Ramps")).toBeInTheDocument();
     expect(within(row).getByText("Ada Lovelace")).toBeInTheDocument();
     expect(
-      within(row).getByText("Draft Report Pending Review")
+      within(row).getByText("Pending review")
     ).toBeInTheDocument();
     expect(within(row).getByText("2026-01-15 10:30")).toBeInTheDocument();
   });
@@ -244,9 +247,9 @@ describe("AuditsTable — compliance check on the edit button", () => {
       enabled: false,
       staleTime: Infinity,
     });
-    expect(screen.getByRole("button", { name: "Edit audit" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^(Review|View) audit$/ })).toHaveAttribute(
       "title",
-      "Edit audit"
+      "Review audit"
     );
   });
 
@@ -283,7 +286,7 @@ describe("AuditsTable — compliance check on the edit button", () => {
     });
     render(<AuditsTable items={complianceRow} onError={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Edit audit" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^(Review|View) audit$/ })).toHaveAttribute(
       "title",
       "No findings, unsures, or blanks - fully compliant"
     );
@@ -300,7 +303,7 @@ describe("AuditsTable — compliance check on the edit button", () => {
     });
     render(<AuditsTable items={complianceRow} onError={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Edit audit" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^(Review|View) audit$/ })).toHaveAttribute(
       "title",
       "No findings, unsures, or blanks - fully compliant"
     );
@@ -316,7 +319,7 @@ describe("AuditsTable — compliance check on the edit button", () => {
     });
     render(<AuditsTable items={complianceRow} onError={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Edit audit" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^(Review|View) audit$/ })).toHaveAttribute(
       "title",
       "No findings, unsures, or blanks - fully compliant"
     );
@@ -336,9 +339,9 @@ describe("AuditsTable — compliance check on the edit button", () => {
     });
     render(<AuditsTable items={complianceRow} onError={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Edit audit" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^(Review|View) audit$/ })).toHaveAttribute(
       "title",
-      "Edit audit"
+      "Review audit"
     );
   });
 
@@ -346,9 +349,9 @@ describe("AuditsTable — compliance check on the edit button", () => {
     withDetail({ questions: [{ type: "form" }] });
     render(<AuditsTable items={complianceRow} onError={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Edit audit" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^(Review|View) audit$/ })).toHaveAttribute(
       "title",
-      "Edit audit"
+      "Review audit"
     );
   });
 
@@ -364,7 +367,7 @@ describe("AuditsTable — compliance check on the edit button", () => {
         ],
       });
       render(<AuditsTable items={complianceRow} onEdit={onEdit} onError={vi.fn()} />);
-      const button = screen.getByRole("button", { name: "Edit audit" });
+      const button = screen.getByRole("button", { name: /^(Review|View) audit$/ });
       expect(button).toHaveAttribute("title", "No findings, unsures, or blanks - fully compliant");
       await user.click(button);
       expect(onEdit).toHaveBeenCalledWith(complianceRow[0], true);
@@ -375,9 +378,9 @@ describe("AuditsTable — compliance check on the edit button", () => {
     withDetail({});
     render(<AuditsTable items={complianceRow} onError={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Edit audit" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^(Review|View) audit$/ })).toHaveAttribute(
       "title",
-      "Edit audit"
+      "Review audit"
     );
   });
 
@@ -385,9 +388,9 @@ describe("AuditsTable — compliance check on the edit button", () => {
     useAuditDetailMock.mockReturnValue({ data: undefined });
     render(<AuditsTable items={complianceRow} onError={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Edit audit" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /^(Review|View) audit$/ })).toHaveAttribute(
       "title",
-      "Edit audit"
+      "Review audit"
     );
   });
 
@@ -398,7 +401,7 @@ describe("AuditsTable — compliance check on the edit button", () => {
     const row = makeAudit({ findingsCount: 0 });
 
     render(<AuditsTable items={[row]} onEdit={onEdit} onError={vi.fn()} />);
-    await user.click(screen.getByRole("button", { name: "Edit audit" }));
+    await user.click(screen.getByRole("button", { name: /^(Review|View) audit$/ }));
 
     expect(onEdit).toHaveBeenCalledWith(row, true);
   });
@@ -409,7 +412,7 @@ describe("AuditsTable — compliance check on the edit button", () => {
     const row = makeAudit();
 
     render(<AuditsTable items={[row]} onEdit={onEdit} onError={vi.fn()} />);
-    await user.click(screen.getByRole("button", { name: "Edit audit" }));
+    await user.click(screen.getByRole("button", { name: /^(Review|View) audit$/ }));
 
     expect(onEdit).toHaveBeenCalledWith(row, false);
   });
@@ -420,7 +423,7 @@ describe("AuditsTable — row actions", () => {
     const user = userEvent.setup();
     render(<AuditsTable items={[makeAudit()]} onError={vi.fn()} />);
 
-    await user.click(screen.getByRole("button", { name: "Edit audit" }));
+    await user.click(screen.getByRole("button", { name: /^(Review|View) audit$/ }));
 
     expect(screen.getByTestId("audit-row-audit-1")).toBeInTheDocument();
   });
@@ -435,7 +438,7 @@ describe("AuditsTable — row actions", () => {
       />
     );
 
-    const button = screen.getByRole("button", { name: "Edit audit" });
+    const button = screen.getByRole("button", { name: /^(Review|View) audit$/ });
     expect(button).toBeDisabled();
     expect(iconClassOf(button)).toContain("lucide-loader-circle");
   });
@@ -450,9 +453,9 @@ describe("AuditsTable — row actions", () => {
       />
     );
 
-    const button = screen.getByRole("button", { name: "Edit audit" });
+    const button = screen.getByRole("button", { name: /^(Review|View) audit$/ });
     expect(button).not.toBeDisabled();
-    expect(iconClassOf(button)).toContain("lucide-pencil");
+    expect(iconClassOf(button)).toContain("lucide-clipboard-check");
   });
 
   it("disables both actions for non administrators", () => {
@@ -466,10 +469,10 @@ describe("AuditsTable — row actions", () => {
       />
     );
 
-    const edit = screen.getByRole("button", { name: "Edit audit" });
+    const edit = screen.getByRole("button", { name: /^(Review|View) audit$/ });
     const remove = screen.getByRole("button", { name: "Delete audit" });
     expect(edit).toBeDisabled();
-    expect(edit).toHaveAttribute("title", "Only administrators can edit audits");
+    expect(edit).toHaveAttribute("title", "Only administrators can review audits");
     expect(remove).toBeDisabled();
     expect(remove).toHaveAttribute(
       "title",
@@ -800,5 +803,90 @@ describe("AuditsTable — hidden columns", () => {
     );
 
     expect(screen.getByText("No audits found")).toHaveAttribute("colspan", "6");
+  });
+});
+
+
+describe("AuditsTable — mobile workflow and safe states", () => {
+  const mobileSortItems = [
+    makeAudit({ id: "b", projectName: "Beta", facilityName: "Bravo", flowName: "Bathrooms", auditorName: "Bob", status: "draft_report_in_review", createdAt: "2026-02-01T00:00:00Z" }),
+    makeAudit({ id: "a", projectName: "Alpha", facilityName: "Alfa", flowName: "Aisles", auditorName: "Ann", status: "completed", createdAt: "2026-01-01T00:00:00Z" }),
+  ];
+  const mobileProjects = () => within(screen.getByRole("list", { name: "Audit results" }))
+    .getAllByRole("listitem").map(row => within(row).getByText(/^(Alpha|Beta)$/).textContent);
+
+  it.each([
+    ["project", "Project"], ["facility", "Facility"], ["flow", "Flow"],
+    ["auditor", "Auditor"], ["status", "Status"], ["date", "Audit Date"],
+  ])("sorts compact results by %s in both directions", async (value, label) => {
+    compactMock.mockReturnValue(true);
+    const user = userEvent.setup();
+    render(<AuditsTable items={mobileSortItems} onError={vi.fn()} />);
+    const sort = screen.getByRole("combobox", { name: "Sort audits by" });
+    expect(within(sort).getByRole("option", { name: label })).toHaveValue(value);
+    expect(mobileProjects()).toEqual(["Beta", "Alpha"]);
+    await user.selectOptions(sort, value);
+    expect(mobileProjects()).toEqual(["Alpha", "Beta"]);
+    await user.click(screen.getByRole("button", { name: "Sort descending" }));
+    expect(mobileProjects()).toEqual(["Beta", "Alpha"]);
+    await user.click(screen.getByRole("button", { name: "Sort ascending" }));
+    expect(mobileProjects()).toEqual(["Alpha", "Beta"]);
+  });
+
+  it("offers only sortable columns visible in the project context", () => {
+    compactMock.mockReturnValue(true);
+    render(<AuditsTable items={mobileSortItems} hiddenColumns={["project", "facility"]} onError={vi.fn()} />);
+    const sort = screen.getByRole("combobox", { name: "Sort audits by" });
+    expect(within(sort).queryByRole("option", { name: "Project" })).toBeNull();
+    expect(within(sort).queryByRole("option", { name: "Facility" })).toBeNull();
+    for (const label of ["Flow", "Auditor", "Status", "Audit Date"]) {
+      expect(within(sort).getByRole("option", { name: label })).toBeInTheDocument();
+    }
+  });
+
+  it("restores the original order and retains row actions after sorting", async () => {
+    compactMock.mockReturnValue(true);
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(<AuditsTable items={mobileSortItems} onEdit={onEdit} onError={vi.fn()} />);
+    const sort = screen.getByRole("combobox", { name: "Sort audits by" });
+    await user.selectOptions(sort, "project");
+    await user.selectOptions(sort, "");
+    expect(mobileProjects()).toEqual(["Beta", "Alpha"]);
+    const row = within(screen.getByRole("list", { name: "Audit results" })).getAllByRole("listitem")[0];
+    await user.click(within(row).getByRole("button", { name: "Review audit" }));
+    expect(onEdit).toHaveBeenCalledWith(mobileSortItems[0], false);
+    expect(within(row).getByText("Details")).toBeInTheDocument();
+  });
+
+  it("keeps identity, status and review action visible without a wide table", async () => {
+    compactMock.mockReturnValue(true);
+    const onEdit = vi.fn();
+    const row = makeAudit();
+    render(<AuditsTable items={[row]} onEdit={onEdit} onError={vi.fn()} />);
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    const list = screen.getByRole("list", { name: "Audit results" });
+    expect(within(list).getByText("Downtown Retrofit")).toBeVisible();
+    expect(within(list).getByText("Pending review")).toBeVisible();
+    await userEvent.click(within(list).getByRole("button", { name: "Review audit" }));
+    expect(onEdit).toHaveBeenCalledWith(row, false);
+  });
+
+  it.each(["unknown", "deleted", "audit_in_progress"] as const)("keeps %s audits out of the active review workflow", async status => {
+    const onEdit = vi.fn();
+    render(<AuditsTable items={[makeAudit({ status, findingsCount: 0 })]} onEdit={onEdit} onError={vi.fn()} />);
+    const action = screen.getByRole("button", { name: "Review audit" });
+    expect(action).toBeDisabled();
+    expect(action).toHaveAttribute("title", "This audit is not available for review");
+    expect(useAuditDetailMock).toHaveBeenCalledWith(undefined, { enabled: false, staleTime: Infinity });
+    await userEvent.click(action);
+    expect(onEdit).not.toHaveBeenCalled();
+  });
+
+  it("labels compliant audits separately and offers a neutral view action", () => {
+    withDetail({ questions: [{ type: "yes_no", answer: true }] });
+    render(<AuditsTable items={[makeAudit({ findingsCount: 0 })]} onError={vi.fn()} />);
+    expect(screen.getByText("Compliant")).toBeVisible();
+    expect(screen.getByRole("button", { name: "View audit" })).toHaveTextContent("View");
   });
 });

@@ -3,6 +3,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@shared/lib/cn";
+import { useMediaQuery } from "@shared/lib/useMediaQuery";
+import { Modal, ModalContent, ModalTitle } from "@shared/ui/modal";
+import { useUrlParameter } from "@shared/lib/useUrlParameter";
 import AuditEditTabsBar, { type AuditEditTab } from "./AuditEditTabsBar";
 import AuditQuestionsList, { type QuestionItemVM } from "./AuditQuestionsList";
 import AuditQuestionsHeader, {
@@ -15,6 +18,7 @@ import CommentsSidebar from "./CommentsSidebar";
 import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
 import { auditDetailKey } from "../lib/hooks/useAuditDetail";
 import { useReportDrafts } from "../lib/hooks/useReportDrafts";
+import { resolveAuditEvidence } from "../lib/resolve-audit-evidence";
 import type { AuditFinding } from "@entities/audit/model/audit-review";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
@@ -52,9 +56,11 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
 }) => {
   const queryClient = useQueryClient();
   const { isAdmin } = useSession();
-  const [internalTab, setInternalTab] = useState<AuditEditTab>("questions");
-  const [internalFilter, setInternalFilter] =
-    useState<QuestionsFilterMode>("all");
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [tabValue, setInternalTab] = useUrlParameter("view", "questions");
+  const internalTab: AuditEditTab = tabValue === "report" ? "report" : "questions";
+  const [filterValue, setInternalFilter] = useUrlParameter("answer", "all");
+  const internalFilter: QuestionsFilterMode = ["yes", "no", "unsure"].includes(filterValue) ? filterValue as QuestionsFilterMode : "all";
 
   // Estado del panel de comentarios (cuando es undefined NO se muestra)
   const [selectedCommentTarget, setSelectedCommentTarget] = useState<
@@ -107,26 +113,28 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
 
   const handleDownload = useCallback(() => {
     if (!report) return;
+    setDownloadError(null);
     void download(report).catch((error: unknown) => {
       console.error("[AuditEditContent] Error downloading report:", error);
-      alert("Error downloading the report. Please try again.");
+      setDownloadError("Error downloading the report. Please try again.");
     });
   }, [download, report]);
 
   const hasSidebar = Boolean(selectedCommentTarget);
+  const compact = useMediaQuery("(max-width: 1023px)");
   const questionsToRender = useMemo(
-    () => (auditDetail?.questions ?? []) as unknown as QuestionItemVM[],
-    [auditDetail?.questions]
+    () => resolveAuditEvidence(auditDetail?.questions ?? [], findings) as unknown as QuestionItemVM[],
+    [auditDetail?.questions, findings]
   );
   const showLoadingOverlay = isLoading || isAuditDetailLoading;
 
   const handleChangeTab = useCallback((tab: AuditEditTab) => {
     setInternalTab(tab);
-  }, []);
+  }, [setInternalTab]);
 
   const handleFilterChange = useCallback((mode: QuestionsFilterMode) => {
     setInternalFilter(mode);
-  }, []);
+  }, [setInternalFilter]);
 
   const handleCloseSidebar = useCallback(() => {
     setSelectedCommentTarget(undefined);
@@ -145,15 +153,15 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   if (showLoadingOverlay) return <Loading />;
 
   return (
-    <div className="space-y-4 sm:space-y-5" data-testid="audit-edit-content">
+    <div className="space-y-6" data-testid="audit-edit-content">
       <AuditEditTabsBar activeTab={internalTab} onChangeTab={handleChangeTab} />
 
-      {internalTab === "questions" ? (
-        <>
+      <div id="audit-questions-panel" role="tabpanel" aria-labelledby="audit-questions-tab" hidden={internalTab !== "questions"} tabIndex={0}>
+        {internalTab === "questions" && (<>
           <AuditQuestionsHeader
             filterMode={internalFilter}
             onFilterChange={handleFilterChange}
-            className="mt-2"
+            className="mb-4"
           />
           <AuditQuestionsList
             auditId={id}
@@ -161,10 +169,11 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             items={questionsToRender}
             filterMode={internalFilter}
           />
-        </>
-      ) : (
-        <section className="w-full px-4 sm:px-6 lg:px-8">
-          <FinalReportHeader className="mb-3" />
+        </>)}
+      </div>
+      <div id="audit-report-panel" role="tabpanel" aria-labelledby="audit-report-tab" hidden={internalTab !== "report"} tabIndex={0}>
+        {internalTab === "report" && (<section className="w-full px-4 sm:px-6 lg:px-8">
+          <FinalReportHeader className="mb-4" />
 
           {isError ? (
             <Retry
@@ -172,11 +181,11 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
               onClick={() => void refetchReviewDetail()}
             />
           ) : (
-            <div className={cn("flex gap-4", "flex-col md:flex-row")}>
+            <div className="flex flex-col items-start overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-bg)] lg:flex-row">
               <div
                 className={cn(
-                  "min-w-0 flex-1",
-                  hasSidebar && "md:max-h-[70vh] md:overflow-y-auto pr-1"
+                  "w-full min-w-0 flex-1 p-3 sm:p-6 lg:p-8",
+                  hasSidebar && !compact && "lg:max-h-[75vh] lg:overflow-y-auto"
                 )}
               >
                 <ReportPreview
@@ -190,17 +199,18 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
                 />
               </div>
 
-              {hasSidebar && (
+              {hasSidebar && !compact && (
                 <CommentsSidebar
                   auditId={id}
                   selected={selectedCommentTarget}
                   onClose={handleCloseSidebar}
-                  className="md:w-[380px]"
+                  className="lg:w-[320px] lg:self-stretch"
                 />
               )}
             </div>
           )}
 
+          {downloadError && <p role="alert" className="mt-3 rounded-lg bg-[var(--kma-danger-bg)] p-3 text-sm text-[var(--kma-danger)]">{downloadError}</p>}
           <ReportActionBar
             isDirty={drafts.isDirty}
             hasErrors={drafts.hasErrors}
@@ -215,8 +225,15 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             downloading={Boolean(report) && downloadingId === report?.id}
             onDownload={handleDownload}
           />
-        </section>
-      )}
+        </section>)}
+      </div>
+
+      {compact && hasSidebar && <Modal open={hasSidebar} onOpenChange={open => { if (!open) handleCloseSidebar(); }} className="!justify-end !p-0">
+        <ModalContent className="!h-dvh !max-h-dvh !max-w-md !rounded-none !p-0">
+          <ModalTitle className="sr-only">Finding comments</ModalTitle>
+          <CommentsSidebar auditId={id} selected={selectedCommentTarget} onClose={handleCloseSidebar} className="min-h-dvh border-0" />
+        </ModalContent>
+      </Modal>}
 
       <ExportReportModal
         open={approveFlow.isOpen}

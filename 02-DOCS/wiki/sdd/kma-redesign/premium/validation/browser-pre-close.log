@@ -1,0 +1,181 @@
+
+> kma_web@1.0.15 test:e2e
+> playwright test --reporter=list
+
+
+Running 39 tests using 1 worker
+
+(node:3074650) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › e2e/auth.spec.ts:5:7 › Autenticación › una ruta protegida redirige al login sin sesión (638ms)
+  ✓   2 [chromium] › e2e/auth.spec.ts:10:7 › Autenticación › la raíz lleva al login (478ms)
+  ✓   3 [chromium] › e2e/auth.spec.ts:15:7 › Autenticación › credenciales inválidas no inician sesión (483ms)
+  ✓   4 [chromium] › e2e/auth.spec.ts:26:7 › Autenticación › credenciales válidas entran al dashboard (459ms)
+  ✓   5 [chromium] › e2e/auth.spec.ts:32:7 › Autenticación › la sesión sobrevive una recarga (604ms)
+  ✓   6 [chromium] › e2e/crud.spec.ts:18:7 › Proyectos › alta, edición, archivo, restauración y borrado de un proyecto (3.0s)
+  ✓   7 [chromium] › e2e/crud.spec.ts:75:7 › Proyectos › el nombre en blanco no crea el proyecto (1.3s)
+  ✓   8 [chromium] › e2e/crud.spec.ts:94:7 › Facilities › alta, edición y borrado de una facility (3.8s)
+  ✘   9 [chromium] › e2e/crud.spec.ts:183:7 › Usuarios › alta, edición de rol y borrado de un usuario (21.6s)
+(node:3082621) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [chromium] › e2e/crud.spec.ts:236:7 › Flows › el listado filtra y abre el editor de un flow (1.1s)
+  ✓  11 [chromium] › e2e/crud.spec.ts:265:7 › Reportes › el listado de reportes carga y filtra (1.2s)
+  ✓  12 [chromium] › e2e/flow-editor.spec.ts:22:5 › mobile steps select the inspector and export a real JSON download (1.5s)
+  ✓  13 [chromium] › e2e/flow-editor.spec.ts:56:5 › unsaved flow edits block navigation and recover after reload without changing the seed (11.8s)
+  ✓  14 [chromium] › e2e/flow-editor.spec.ts:104:5 › uploads a reference image, saves and exports an isolated flow (1.8s)
+  ✘  15 [chromium] › e2e/premium.spec.ts:24:7 › list actions and form fields stay usable at 390px (17.8s)
+(node:3090679) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  16 [chromium] › e2e/premium.spec.ts:24:7 › list actions and form fields stay usable at 768px (19.2s)
+(node:3095957) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  17 [chromium] › e2e/premium.spec.ts:54:5 › fieldwork and unknown audit states never enter the review queue (1.5s)
+  ✓  18 [chromium] › e2e/premium.spec.ts:71:5 › flow title and step drawer keep their proportions across breakpoints (2.7s)
+  ✓  19 [chromium] › e2e/premium.spec.ts:97:5 › all screens reflow at 320px and the CSS viewport of 200 percent zoom (18.2s)
+  ✓  20 [chromium] › e2e/premium.spec.ts:111:7 › automated accessibility of all screens in light (1.6m)
+  ✓  21 [chromium] › e2e/premium.spec.ts:111:7 › automated accessibility of all screens in dark (1.3m)
+  ✓  22 [chromium] › e2e/redesign.spec.ts:17:5 › appearance persists on login and follows the system with reduced motion (849ms)
+  ✓  23 [chromium] › e2e/redesign.spec.ts:34:5 › mobile navigation traps focus, closes on Escape and opens Facilities (2.3s)
+  ✓  24 [chromium] › e2e/redesign.spec.ts:55:5 › audit filters and search survive refresh and a visit to another screen (2.8s)
+  ✓  25 [chromium] › e2e/redesign.spec.ts:68:5 › clicking the blank dialog backdrop closes the form and restores focus (2.0s)
+  ✓  26 [chromium] › e2e/redesign.spec.ts:81:5 › tabs and cached navigation keep page context and sidebar synchronized (1.8s)
+  ✓  27 [chromium] › e2e/redesign.spec.ts:97:5 › cursor loading retains filters and keeps partial results after an error (1.5s)
+  ✓  28 [chromium] › e2e/redesign.spec.ts:126:5 › deleting a report refreshes the rendered list immediately (2.1s)
+  ✓  29 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 390px in light appearance (12.5s)
+  ✓  30 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 390px in dark appearance (9.9s)
+  ✓  31 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 768px in light appearance (10.3s)
+  ✓  32 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 768px in dark appearance (10.2s)
+  ✓  33 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 1440px in light appearance (10.6s)
+  ✓  34 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 1440px in dark appearance (10.9s)
+  ✓  35 [chromium] › e2e/redesign.spec.ts:178:5 › secondary review actions keep readable colors in both appearances (2.2s)
+  ✓  36 [chromium] › e2e/report-flow.spec.ts:163:7 › Flujo de reporte por la interfaz › de la auditoría enriquecida al PDF (8.2s)
+  ✓  37 [chromium] › e2e/report-flow.spec.ts:278:7 › Flujo de reporte por la interfaz › una auditoría sin hallazgos no ofrece reporte (3.7s)
+  ✓  38 [chromium] › e2e/routes.spec.ts:5:7 › Navegación › todas las rutas cargan sin errores de servidor (5.9s)
+  ✓  39 [chromium] › e2e/routes.spec.ts:26:7 › Navegación › el menú lateral navega entre secciones (1.9s)
+
+
+  1) [chromium] › e2e/crud.spec.ts:183:7 › Usuarios › alta, edición de rol y borrado de un usuario ─
+
+    TimeoutError: locator.click: Timeout 20000ms exceeded.
+    Call log:
+      - waiting for getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true })
+
+
+      222 |     await row.getByRole("button", { name: "Edit user", exact: true }).click();
+      223 |     await expect(page.locator("#user-role")).toHaveValue("auditor");
+    > 224 |     await page.getByRole("dialog").getByRole("button", { name: "Cancel", exact: true }).click();
+          |                                                                                         ^
+      225 |
+      226 |     await row.getByRole("button", { name: /delete/i }).click();
+      227 |     const confirm = page.getByRole("dialog").filter({ hasText: "Delete User" });
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/crud.spec.ts:224:89
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/crud-Usuarios-alta-edición-de-rol-y-borrado-de-un-usuario-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/crud-Usuarios-alta-edición-de-rol-y-borrado-de-un-usuario-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/crud-Usuarios-alta-edición-de-rol-y-borrado-de-un-usuario-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/crud-Usuarios-alta-edición-de-rol-y-borrado-de-un-usuario-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/crud-Usuarios-alta-edición-de-rol-y-borrado-de-un-usuario-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/premium.spec.ts:24:7 › list actions and form fields stay usable at 390px ─────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('Main Office', { exact: true }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('Main Office', { exact: true }).first() with timeout 15000ms
+      - waiting for getByText('Main Office', { exact: true }).first()
+        32 × locator resolved to <option value="fac-local-001">Main Office</option>
+           - unexpected value "hidden"
+
+
+      47 |     await page.goto("/projects/proj-local-001");
+      48 |     const name = page.getByText("Main Office", { exact: true }).first();
+    > 49 |     await expect(name).toBeVisible();
+         |                        ^
+      50 |     expect((await name.boundingBox())!.height).toBeLessThanOrEqual(28);
+      51 |   });
+      52 | }
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/premium.spec.ts:49:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/premium-list-actions-and-form-fields-stay-usable-at-390px-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-list-actions-and-form-fields-stay-usable-at-390px-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/premium-list-actions-and-form-fields-stay-usable-at-390px-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/premium-list-actions-and-form-fields-stay-usable-at-390px-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/premium-list-actions-and-form-fields-stay-usable-at-390px-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/premium.spec.ts:24:7 › list actions and form fields stay usable at 768px ─────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('Main Office', { exact: true }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('Main Office', { exact: true }).first() with timeout 15000ms
+      - waiting for getByText('Main Office', { exact: true }).first()
+        32 × locator resolved to <option value="fac-local-001">Main Office</option>
+           - unexpected value "hidden"
+
+
+      47 |     await page.goto("/projects/proj-local-001");
+      48 |     const name = page.getByText("Main Office", { exact: true }).first();
+    > 49 |     await expect(name).toBeVisible();
+         |                        ^
+      50 |     expect((await name.boundingBox())!.height).toBeLessThanOrEqual(28);
+      51 |   });
+      52 | }
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/premium.spec.ts:49:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/premium-list-actions-and-form-fields-stay-usable-at-768px-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-list-actions-and-form-fields-stay-usable-at-768px-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/premium-list-actions-and-form-fields-stay-usable-at-768px-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/premium-list-actions-and-form-fields-stay-usable-at-768px-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/premium-list-actions-and-form-fields-stay-usable-at-768px-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › e2e/crud.spec.ts:183:7 › Usuarios › alta, edición de rol y borrado de un usuario ──
+    [chromium] › e2e/premium.spec.ts:24:7 › list actions and form fields stay usable at 390px ──────
+    [chromium] › e2e/premium.spec.ts:24:7 › list actions and form fields stay usable at 768px ──────
+  36 passed (6.5m)

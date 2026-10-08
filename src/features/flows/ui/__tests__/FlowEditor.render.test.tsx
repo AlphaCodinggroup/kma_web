@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // ---- mocks ----
@@ -76,6 +76,16 @@ describe("FlowEditor - initial render", () => {
     vi.unstubAllGlobals();
   });
 
+  it("opens a mobile step dialog and selects a step without losing the editor", async () => {
+    const user = userEvent.setup();
+    renderEditor(makeValidFlow(), "edit");
+    await user.click(screen.getByRole("button", { name: "Browse steps" }));
+    const dialog = screen.getByRole("dialog", { name: "Flow steps" });
+    await user.click(within(dialog).getByText("Is the ramp compliant?"));
+    expect(screen.queryByRole("dialog", { name: "Flow steps" })).not.toBeInTheDocument();
+    expect(textboxIn("Step ID")).toHaveValue("AR-Q01");
+  });
+
   it("renders an empty create flow with no selected step", () => {
     renderEditor(makeNewFlow(), "create");
 
@@ -96,6 +106,34 @@ describe("FlowEditor - initial render", () => {
     for (const type of ["Question", "Form", "Select", "End"]) {
       expect(screen.getByTitle(`Add ${type} step`)).toBeEnabled();
     }
+  });
+
+  it("names form inputs and routing controls for keyboard and screen reader users", () => {
+    const flow = makeValidFlow();
+    flow.steps = [makeFormStep(), makeEndStep()];
+    renderEditor(flow, "edit");
+    expect(screen.getByRole("textbox", { name: "Step ID" })).toHaveValue("AR-F01");
+    expect(screen.getByRole("textbox", { name: "Title" })).toHaveValue("Record quantity");
+    expect(screen.getByRole("combobox", { name: "Next Step" })).toHaveValue("AR-E01");
+    expect(screen.getByRole("textbox", { name: "Field 1 label" })).toHaveValue("Quantity");
+  });
+
+  it("associates question text and both destinations with their labels", () => {
+    const flow = makeValidFlow();
+    flow.steps = [makeQuestionStep(), makeFormStep(), makeEndStep()];
+    renderEditor(flow, "edit");
+    expect(screen.getByRole("textbox", { name: "Question Text" })).toHaveValue("Is the ramp compliant?");
+    expect(screen.getByRole("combobox", { name: "Yes" })).toHaveValue("AR-F01");
+    expect(screen.getByRole("combobox", { name: "No" })).toHaveValue("AR-E01");
+    expect(screen.getByRole("textbox", { name: "Barrier ID" })).toHaveValue("");
+  });
+
+  it("gives each Select option an identifiable label, barrier and destination", () => {
+    renderEditor(makeValidFlow(), "edit");
+    expect(screen.getByRole("textbox", { name: "Title / Text" })).toHaveValue("Choose the barrier");
+    expect(screen.getByRole("textbox", { name: "Option 1 label" })).toHaveValue("Door");
+    expect(screen.getByRole("textbox", { name: "Option 1 barrier ID" })).toHaveValue("AR-B02");
+    expect(screen.getByRole("combobox", { name: "Option 1 next step" })).toHaveValue("AR-Q01");
   });
 
   it("renders an existing flow with its steps and selects the first one", () => {
@@ -166,6 +204,17 @@ describe("FlowEditor - initial render", () => {
     expect(textboxIn("Step ID")).toHaveValue("AR-Q01");
   });
 
+  it("selects a step with the keyboard and identifies the active step", async () => {
+    const user = userEvent.setup();
+    renderEditor(makeValidFlow(), "edit");
+    const question = screen.getByRole("button", { name: "Select step AR-Q01" });
+    question.focus();
+    await user.keyboard("{Enter}");
+    expect(question).toHaveAttribute("aria-current", "step");
+    expect(screen.getByRole("button", { name: "Select step AR-S01" })).not.toHaveAttribute("aria-current");
+    expect(textboxIn("Step ID")).toHaveValue("AR-Q01");
+  });
+
   it("filters steps by id, question text and form title", async () => {
     const user = userEvent.setup();
     renderEditor(makeValidFlow(), "edit");
@@ -228,7 +277,8 @@ describe("FlowEditor - initial render", () => {
 
     await user.click(screen.getByRole("button", { name: /discard/i }));
 
-    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("dialog", { name: "Discard changes?" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Discard changes" }));
     expect(screen.getByPlaceholderText("Untitled Flow")).toHaveValue("Ramps");
     expect(screen.queryByText("Unsaved changes")).not.toBeInTheDocument();
   });
@@ -243,6 +293,7 @@ describe("FlowEditor - initial render", () => {
       "!"
     );
     await user.click(screen.getByRole("button", { name: /discard/i }));
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(
       screen.getByPlaceholderText("Add a description (optional)...")
@@ -276,16 +327,17 @@ describe("FlowEditor - initial render", () => {
     expect(screen.queryByTitle("Drag to reorder")).not.toBeInTheDocument();
   });
 
-  it("disables the discard button for non administrators", async () => {
+  it("keeps flow title and description read-only for non administrators", async () => {
     sessionMock.mockReturnValue({ isAdmin: false });
     const user = userEvent.setup();
     renderEditor(makeValidFlow(), "edit");
 
     await user.type(screen.getByPlaceholderText("Untitled Flow"), "x");
 
-    expect(
-      screen.getByTitle("Only administrators can discard changes")
-    ).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "Flow title" })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "Flow description" })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "Flow title" })).toHaveValue("Ramps");
+    expect(screen.queryByText("Unsaved changes")).not.toBeInTheDocument();
   });
 
   it("renders the End step detail with only the shared id field", async () => {
@@ -299,6 +351,18 @@ describe("FlowEditor - initial render", () => {
     expect(screen.queryByText("Question Text")).not.toBeInTheDocument();
     expect(screen.queryByText("Options")).not.toBeInTheDocument();
     expect(screen.queryByText("Fields")).not.toBeInTheDocument();
+  });
+
+  it("handles an unavailable reference photo while retaining its removal action", async () => {
+    const flow = makeValidFlow();
+    flow.steps = [makeQuestionStep({ images: ["https://example.test/reference.jpg"] }), makeEndStep()];
+    renderEditor(flow, "edit");
+    fireEvent.error(screen.getByAltText("Ref 0"));
+    expect(screen.getByText("Image unavailable")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "View reference image 1" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: "Remove reference image 1" }));
+    expect(screen.queryByText("Image unavailable")).not.toBeInTheDocument();
+    expect(screen.getByText("Unsaved changes")).toBeInTheDocument();
   });
 
   it("renders the Question detail fields", async () => {

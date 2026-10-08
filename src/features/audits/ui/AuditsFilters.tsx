@@ -14,10 +14,11 @@ export interface AuditsFiltersProps {
 }
 
 const STATUS_OPTIONS = [
-    { value: "", label: "All Audits in progress" },
-    { value: "draft_report_pending_review", label: "Draft Report Pending Review" },
-    { value: "draft_report_in_review", label: "Draft Report In Review" },
-    { value: "final_report_sent_to_client", label: "Final Report Sent to Client" },
+    { value: "", label: "All statuses" },
+    { value: "audit_in_progress", label: "Fieldwork" },
+    { value: "draft_report_pending_review", label: "Pending review" },
+    { value: "draft_report_in_review", label: "In review" },
+    { value: "final_report_sent_to_client", label: "Delivered" },
     { value: "completed", label: "Completed" },
 ];
 
@@ -36,8 +37,9 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
     const hasActiveFilters = auditorFilter !== "" || statusFilter !== "";
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
             <FilterSelect
+                ariaLabel="Filter by auditor"
                 value={auditorFilter}
                 onChange={onAuditorChange}
                 allLabel="All Auditors"
@@ -47,6 +49,7 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
                 }))}
             />
             <FilterSelect
+                ariaLabel="Filter by audit status"
                 value={statusFilter}
                 onChange={onStatusChange}
                 options={STATUS_OPTIONS}

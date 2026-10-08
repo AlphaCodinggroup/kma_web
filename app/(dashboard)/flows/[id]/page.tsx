@@ -27,12 +27,13 @@ export default function FlowEditorPage() {
     }
 
     return (
-        <main className="flex w-full flex-col gap-6">
+        <section className="flex w-full flex-col gap-5">
             <PageHeader
-                title={`Edit Flow: ${flow.title}`}
+                className="mb-0"
+                title="Flow editor"
                 subtitle="Modify flow details and steps"
             />
             <FlowEditor initialFlow={flow} />
-        </main>
+        </section>
     );
 }

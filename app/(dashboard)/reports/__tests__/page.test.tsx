@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -53,6 +53,7 @@ vi.mock("@features/reports/ui/ReportsListCard", () => ({
     onDelete,
     deletingId,
     downloadingId,
+    rightSlot,
   }: {
     items: Array<{ id: string; reportName?: string | null }>;
     totalCount: number;
@@ -63,8 +64,10 @@ vi.mock("@features/reports/ui/ReportsListCard", () => ({
     onDelete: (id: string) => void;
     deletingId: string | null;
     downloadingId: string | null;
+    rightSlot?: import("react").ReactNode;
   }) => (
     <div>
+      {rightSlot}
       <span data-testid="total">{totalCount}</span>
       <span data-testid="loading">{String(isLoading)}</span>
       <span data-testid="error">{String(isError)}</span>
@@ -113,6 +116,7 @@ async function renderPage() {
 describe("ReportsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.history.replaceState({}, "", "/reports");
     vi.restoreAllMocks();
     downloadState.activeId = null;
     download.mockResolvedValue({
@@ -169,8 +173,9 @@ describe("ReportsPage", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "download audit-1" }));
 
-    await waitFor(() => expect(alertMock).toHaveBeenCalled());
-    expect(console.error).toHaveBeenCalled();
+    await screen.findByRole("alert");
+    expect(screen.getByRole("alert")).toHaveTextContent("could not be downloaded");
+    expect(alertMock).not.toHaveBeenCalled();
   });
 
   it("refetches the list from its retry action", async () => {
@@ -192,7 +197,9 @@ describe("ReportsPage", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "delete audit-1" }));
 
-    await waitFor(() => expect(alertMock).toHaveBeenCalled());
+    await userEvent.click(screen.getByRole("button", { name: "Delete report" }));
+    await screen.findByText("The report could not be deleted. Please try again.");
+    expect(alertMock).not.toHaveBeenCalled();
     expect(mutateAsync).toHaveBeenCalledWith("audit-1");
     expect(screen.getByTestId("deleting")).toHaveTextContent("none");
   });
@@ -202,6 +209,8 @@ describe("ReportsPage", () => {
     await renderPage();
 
     await userEvent.click(screen.getByRole("button", { name: "delete audit-1" }));
+    await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
     expect(mutateAsync).not.toHaveBeenCalled();
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 });

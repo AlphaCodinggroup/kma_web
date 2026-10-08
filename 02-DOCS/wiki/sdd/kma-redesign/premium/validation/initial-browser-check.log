@@ -1,0 +1,371 @@
+
+> kma_web@1.0.15 test:e2e
+> playwright test --reporter=list
+
+
+Running 39 tests using 1 worker
+
+(node:2781525) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › e2e/auth.spec.ts:5:7 › Autenticación › una ruta protegida redirige al login sin sesión (790ms)
+  ✓   2 [chromium] › e2e/auth.spec.ts:10:7 › Autenticación › la raíz lleva al login (397ms)
+  ✓   3 [chromium] › e2e/auth.spec.ts:15:7 › Autenticación › credenciales inválidas no inician sesión (617ms)
+  ✓   4 [chromium] › e2e/auth.spec.ts:26:7 › Autenticación › credenciales válidas entran al dashboard (1.0s)
+  ✓   5 [chromium] › e2e/auth.spec.ts:32:7 › Autenticación › la sesión sobrevive una recarga (813ms)
+  ✓   6 [chromium] › e2e/crud.spec.ts:18:7 › Proyectos › alta, edición y borrado de un proyecto (2.4s)
+  ✘   7 [chromium] › e2e/crud.spec.ts:61:7 › Proyectos › el nombre en blanco no crea el proyecto (16.6s)
+(node:2787525) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [chromium] › e2e/crud.spec.ts:76:7 › Facilities › alta, edición y borrado de una facility (3.0s)
+  ✓   9 [chromium] › e2e/crud.spec.ts:165:7 › Usuarios › alta de un usuario con rol QC y borrado (1.4s)
+  ✘  10 [chromium] › e2e/crud.spec.ts:208:7 › Flows › el listado filtra y abre el editor de un flow (22.4s)
+(node:2793385) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [chromium] › e2e/crud.spec.ts:237:7 › Reportes › el listado de reportes carga y filtra (1.5s)
+  ✓  12 [chromium] › e2e/flow-editor.spec.ts:22:5 › mobile steps select the inspector and export a real JSON download (1.7s)
+  ✓  13 [chromium] › e2e/flow-editor.spec.ts:56:5 › unsaved flow edits block navigation and recover after reload without changing the seed (11.7s)
+  ✓  14 [chromium] › e2e/flow-editor.spec.ts:104:5 › uploads a reference image, saves and exports an isolated flow (1.6s)
+  ✓  15 [chromium] › e2e/premium.spec.ts:23:7 › list actions and form fields stay usable at 390px (2.3s)
+  ✓  16 [chromium] › e2e/premium.spec.ts:23:7 › list actions and form fields stay usable at 768px (1.8s)
+  ✓  17 [chromium] › e2e/premium.spec.ts:49:5 › fieldwork and unknown audit states never enter the review queue (945ms)
+  ✓  18 [chromium] › e2e/premium.spec.ts:66:5 › flow title and step drawer keep their proportions across breakpoints (2.4s)
+  ✘  19 [chromium] › e2e/premium.spec.ts:92:5 › all screens reflow at 320px and simulated 200 percent zoom (5.1s)
+(node:2800450) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  20 [chromium] › e2e/premium.spec.ts:107:7 › automated accessibility of all screens in light (18.9s)
+(node:2805225) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  21 [chromium] › e2e/premium.spec.ts:107:7 › automated accessibility of all screens in dark (16.0s)
+  ✓  22 [chromium] › e2e/redesign.spec.ts:17:5 › appearance persists on login and follows the system with reduced motion (573ms)
+  ✓  23 [chromium] › e2e/redesign.spec.ts:34:5 › mobile navigation traps focus, closes on Escape and opens Facilities (1.2s)
+  ✓  24 [chromium] › e2e/redesign.spec.ts:55:5 › audit filters and search survive refresh and a visit to another screen (1.3s)
+  ✓  25 [chromium] › e2e/redesign.spec.ts:68:5 › clicking the blank dialog backdrop closes the form and restores focus (984ms)
+  ✓  26 [chromium] › e2e/redesign.spec.ts:81:5 › tabs and cached navigation keep page context and sidebar synchronized (1.1s)
+  ✓  27 [chromium] › e2e/redesign.spec.ts:97:5 › cursor loading retains filters and keeps partial results after an error (980ms)
+  ✓  28 [chromium] › e2e/redesign.spec.ts:126:5 › deleting a report refreshes the rendered list immediately (1.2s)
+  ✓  29 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 390px in light appearance (8.4s)
+  ✓  30 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 390px in dark appearance (8.4s)
+  ✓  31 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 768px in light appearance (8.4s)
+  ✓  32 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 768px in dark appearance (8.5s)
+  ✓  33 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 1440px in light appearance (9.0s)
+  ✓  34 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 1440px in dark appearance (9.5s)
+  ✓  35 [chromium] › e2e/redesign.spec.ts:178:5 › secondary review actions keep readable colors in both appearances (2.1s)
+  ✓  36 [chromium] › e2e/report-flow.spec.ts:151:7 › Flujo de reporte por la interfaz › de la auditoría enriquecida al PDF (6.6s)
+  ✘  37 [chromium] › e2e/report-flow.spec.ts:262:7 › Flujo de reporte por la interfaz › una auditoría sin hallazgos no ofrece reporte (33.2s)
+(node:2834695) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  38 [chromium] › e2e/routes.spec.ts:5:7 › Navegación › todas las rutas cargan sin errores de servidor (6.2s)
+  ✓  39 [chromium] › e2e/routes.spec.ts:26:7 › Navegación › el menú lateral navega entre secciones (1.5s)
+
+
+  1) [chromium] › e2e/crud.spec.ts:61:7 › Proyectos › el nombre en blanco no crea el proyecto ──────
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator:  getByRole('button', { name: 'Create Project' })
+    Expected: disabled
+    Received: enabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeDisabled" getByRole('button', { name: 'Create Project' }) with timeout 15000ms
+      - waiting for getByRole('button', { name: 'Create Project' })
+        34 × locator resolved to <button type="submit" class="kma-control-button kma-button-primary focus:outline-none focus:ring-2 focus:ring-[var(--kma-primary)]/25  disabled:opacity-60 disabled:cursor-not-allowed">Create Project</button>
+           - unexpected value "enabled"
+
+
+      69 |     // El formulario avisa y no deja enviar.
+      70 |     await expect(page.getByText(/project name is required/i)).toBeVisible();
+    > 71 |     await expect(submit).toBeDisabled();
+         |                          ^
+      72 |   });
+      73 | });
+      74 |
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/crud.spec.ts:71:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/crud-Proyectos-el-nombre-en-blanco-no-crea-el-proyecto-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/crud-Proyectos-el-nombre-en-blanco-no-crea-el-proyecto-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/crud-Proyectos-el-nombre-en-blanco-no-crea-el-proyecto-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/crud-Proyectos-el-nombre-en-blanco-no-crea-el-proyecto-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/crud-Proyectos-el-nombre-en-blanco-no-crea-el-proyecto-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/crud.spec.ts:208:7 › Flows › el listado filtra y abre el editor de un flow ───
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: /edit flow:/i })
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: /edit flow:/i }) with timeout 20000ms
+      - waiting for getByRole('heading', { name: /edit flow:/i })
+
+
+      228 |     await expect(
+      229 |       page.getByRole("heading", { name: /edit flow:/i }),
+    > 230 |     ).toBeVisible({ timeout: 20_000 });
+          |       ^
+      231 |
+      232 |     expect(serverErrors).toEqual([]);
+      233 |   });
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/crud.spec.ts:230:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/crud-Flows-el-listado-filtra-y-abre-el-editor-de-un-flow-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/crud-Flows-el-listado-filtra-y-abre-el-editor-de-un-flow-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/crud-Flows-el-listado-filtra-y-abre-el-editor-de-un-flow-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/crud-Flows-el-listado-filtra-y-abre-el-editor-de-un-flow-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/crud-Flows-el-listado-filtra-y-abre-el-editor-de-un-flow-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/premium.spec.ts:92:5 › all screens reflow at 320px and simulated 200 percent zoom 
+
+    Error: /audits/audit-demo-003/edit
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 320
+    Received:    330
+
+       99 |       if (width === 1440) await page.evaluate(() => { document.body.style.zoom = "2"; });
+      100 |       await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    > 101 |       expect(await page.evaluate(() => document.documentElement.scrollWidth), route).toBeLessThanOrEqual(width);
+          |                                                                                      ^
+      102 |     }
+      103 |   }
+      104 | });
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/premium.spec.ts:101:86
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/premium-all-screens-reflow-a6414--simulated-200-percent-zoom-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-all-screens-reflow-a6414--simulated-200-percent-zoom-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/premium-all-screens-reflow-a6414--simulated-200-percent-zoom-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/premium-all-screens-reflow-a6414--simulated-200-percent-zoom-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/premium-all-screens-reflow-a6414--simulated-200-percent-zoom-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/premium.spec.ts:107:7 › automated accessibility of all screens in light ──────
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 63
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "screen": "login",
+    +     "violations": Array [
+    +       Object {
+    +         "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    +         "help": "Elements must meet minimum color contrast ratio thresholds",
+    +         "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
+    +         "id": "color-contrast",
+    +         "impact": "serious",
+    +         "nodes": Array [
+    +           Object {
+    +             "all": Array [],
+    +             "any": Array [
+    +               Object {
+    +                 "data": Object {
+    +                   "bgColor": "#0f3b45",
+    +                   "contrastRatio": 1.14,
+    +                   "expectedContrastRatio": "3:1",
+    +                   "fgColor": "#172f3b",
+    +                   "fontSize": "16.5pt (22px)",
+    +                   "fontWeight": "bold",
+    +                   "messageKey": null,
+    +                 },
+    +                 "id": "color-contrast",
+    +                 "impact": "serious",
+    +                 "message": "Element has insufficient color contrast of 1.14 (foreground color: #172f3b, background color: #0f3b45, font size: 16.5pt (22px), font weight: bold). Expected contrast ratio of 3:1",
+    +                 "relatedNodes": Array [
+    +                   Object {
+    +                     "html": "<section class=\"hidden flex-col justify-between bg-[var(--kma-brand)] px-10 py-10 text-[var(--kma-brand-fg)] lg:flex xl:px-16\" aria-labelledby=\"workspace-introduction\">",
+    +                     "target": Array [
+    +                       "section",
+    +                     ],
+    +                   },
+    +                 ],
+    +               },
+    +             ],
+    +             "failureSummary": "Fix any of the following:
+    +   Element has insufficient color contrast of 1.14 (foreground color: #172f3b, background color: #0f3b45, font size: 16.5pt (22px), font weight: bold). Expected contrast ratio of 3:1",
+    +             "html": "<span class=\"font-heading text-[22px] font-extrabold leading-none tracking-[-0.035em] text-[var(--kma-fg)] text-[var(--kma-brand-fg)]\">KMA</span>",
+    +             "impact": "serious",
+    +             "none": Array [],
+    +             "target": Array [
+    +               "section > .font-heading.text-\\[22px\\].font-extrabold",
+    +             ],
+    +           },
+    +         ],
+    +         "tags": Array [
+    +           "cat.color",
+    +           "wcag2aa",
+    +           "wcag143",
+    +           "TTv5",
+    +           "TT13.c",
+    +           "EN-301-549",
+    +           "EN-9.1.4.3",
+    +           "ACT",
+    +           "RGAAv4",
+    +           "RGAA-3.2.1",
+    +         ],
+    +       },
+    +     ],
+    +   },
+    + ]
+
+      123 |     }
+      124 |     await testInfo.attach(`accessibility-${theme}`, { body: JSON.stringify(reports, null, 2), contentType: "application/json" });
+    > 125 |     expect(reports.filter(report => report.violations.length)).toEqual([]);
+          |                                                                ^
+      126 |   });
+      127 | }
+      128 |
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/premium.spec.ts:125:64
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-2.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-1.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-4.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #6: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-5.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #7: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-6.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #8: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-3.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #9: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-8.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #10: video (video/webm) ─────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-10.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #11: video (video/webm) ─────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-9.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #12: video (video/webm) ─────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-7.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #13: video (video/webm) ─────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video-11.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #14: video (video/webm) ─────────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/error-context.md
+
+    attachment #16: trace (application/zip) ────────────────────────────────────────────────────────
+    test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/premium-automated-accessibility-of-all-screens-in-light-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/report-flow.spec.ts:262:7 › Flujo de reporte por la interfaz › una auditoría sin hallazgos no ofrece reporte 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByTestId('audit-row-audit-e2e-ui-clean-1791416364137').getByRole('button', { name: /edit audit/i })
+    Expected pattern: /fully compliant/i
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByTestId('audit-row-audit-e2e-ui-clean-1791416364137').getByRole('button', { name: /edit audit/i }) with timeout 30000ms
+      - waiting for getByTestId('audit-row-audit-e2e-ui-clean-1791416364137').getByRole('button', { name: /edit audit/i })
+
+
+      311 |     // hacer clic.
+      312 |     const editButton = row.getByRole("button", { name: /edit audit/i });
+    > 313 |     await expect(editButton).toHaveAttribute("title", /fully compliant/i, {
+          |                              ^
+      314 |       timeout: 30_000,
+      315 |     });
+      316 |
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/report-flow.spec.ts:313:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/report-flow-Flujo-de-repor-a6f7f-hallazgos-no-ofrece-reporte-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/report-flow-Flujo-de-repor-a6f7f-hallazgos-no-ofrece-reporte-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/report-flow-Flujo-de-repor-a6f7f-hallazgos-no-ofrece-reporte-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/report-flow-Flujo-de-repor-a6f7f-hallazgos-no-ofrece-reporte-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/report-flow-Flujo-de-repor-a6f7f-hallazgos-no-ofrece-reporte-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [chromium] › e2e/crud.spec.ts:61:7 › Proyectos › el nombre en blanco no crea el proyecto ───────
+    [chromium] › e2e/crud.spec.ts:208:7 › Flows › el listado filtra y abre el editor de un flow ────
+    [chromium] › e2e/premium.spec.ts:92:5 › all screens reflow at 320px and simulated 200 percent zoom 
+    [chromium] › e2e/premium.spec.ts:107:7 › automated accessibility of all screens in light ───────
+    [chromium] › e2e/report-flow.spec.ts:262:7 › Flujo de reporte por la interfaz › una auditoría sin hallazgos no ofrece reporte 
+  34 passed (3.8m)

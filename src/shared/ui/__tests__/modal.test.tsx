@@ -41,7 +41,7 @@ describe("Modal", () => {
         <p>Body</p>
       </Modal>
     );
-    expect(document.body.style.overflow).toBe("hidden");
+    expect(document.body).toHaveAttribute("data-scroll-locked");
 
     unmount();
     expect(document.body.style.overflow).toBe("auto");
@@ -105,7 +105,7 @@ describe("Modal", () => {
       </Modal>
     );
 
-    const overlay = screen.getByRole("dialog").firstElementChild as HTMLElement;
+    const overlay = screen.getByTestId("modal-overlay");
     await user.click(overlay);
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
@@ -119,22 +119,19 @@ describe("Modal", () => {
       </Modal>
     );
 
-    const overlay = screen.getByRole("dialog").firstElementChild as HTMLElement;
+    const overlay = screen.getByTestId("modal-overlay");
     await user.click(overlay);
     expect(onOpenChange).not.toHaveBeenCalled();
   });
 
-  // FIXME: `ModalProps` declara `className?: string` pero el componente no lo
-  // desestructura ni lo aplica al contenedor, así que la prop se descarta en
-  // silencio. El test fija el comportamiento actual (la clase no llega al DOM).
-  it("silently ignores the className prop (declared but never applied)", () => {
+  it("applies the className prop to the dialog", () => {
     render(
       <Modal open onOpenChange={vi.fn()} className="ignored-class">
         <p>Body</p>
       </Modal>
     );
-    expect(screen.getByRole("dialog")).not.toHaveClass("ignored-class");
-    expect(document.querySelector(".ignored-class")).toBeNull();
+    expect(screen.getByRole("dialog")).toHaveClass("ignored-class");
+    expect(document.querySelector(".ignored-class")).not.toBeNull();
   });
 });
 
@@ -142,7 +139,7 @@ describe("ModalContent", () => {
   it("renders its children with the base classes", () => {
     render(<ModalContent>Inner</ModalContent>);
     const content = screen.getByText("Inner");
-    expect(content).toHaveClass("card", "relative", "w-full", "max-w-2xl", "bg-white");
+    expect(content).toHaveClass("card", "relative", "w-full", "kma-modal-panel");
   });
 
   it("merges a custom className", () => {
@@ -163,13 +160,13 @@ describe("Modal layout primitives", () => {
       name: "ModalTitle",
       Component: ModalTitle,
       tag: "H2",
-      baseClasses: ["text-2xl", "font-semibold", "tracking-tight"],
+      baseClasses: ["text-xl", "font-bold", "tracking-tight"],
     },
     {
       name: "ModalDescription",
       Component: ModalDescription,
       tag: "P",
-      baseClasses: ["mt-1", "text-gray-600"],
+      baseClasses: ["mt-1", "text-[var(--kma-muted)]"],
     },
     {
       name: "ModalFooter",
