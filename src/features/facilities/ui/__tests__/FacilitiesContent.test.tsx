@@ -28,6 +28,9 @@ const refetchMock = vi.fn();
 const createFacilityMock = vi.fn();
 const updateFacilityMock = vi.fn();
 const deleteFacilityMock = vi.fn();
+const resetDeleteMock = vi.fn();
+const resetArchiveMock = vi.fn();
+const resetRestoreMock = vi.fn();
 const archiveFacilityMock = vi.fn();
 const restoreFacilityMock = vi.fn();
 const facilitiesQuerySpy = vi.fn();
@@ -72,6 +75,8 @@ vi.mock("@features/facilities/ui/hooks/useDeleteFacilityMutation", () => ({
   useDeleteFacilityMutation: () => ({
     mutateAsync: deleteFacilityMock,
     isPending: state.isDeleting,
+    error: null,
+    reset: resetDeleteMock,
   }),
 }));
 
@@ -79,6 +84,8 @@ vi.mock("@features/facilities/ui/hooks/useArchiveFacilityMutation", () => ({
   useArchiveFacilityMutation: () => ({
     mutateAsync: archiveFacilityMock,
     isPending: state.isArchiving,
+    error: null,
+    reset: resetArchiveMock,
   }),
 }));
 
@@ -86,6 +93,8 @@ vi.mock("@features/facilities/ui/hooks/useRestoreFacilityMutation", () => ({
   useRestoreFacilityMutation: () => ({
     mutateAsync: restoreFacilityMock,
     isPending: state.isRestoring,
+    error: null,
+    reset: resetRestoreMock,
   }),
 }));
 
@@ -181,6 +190,7 @@ async function fillRequiredFields(name: string) {
 
 describe("FacilitiesContent", () => {
   beforeEach(() => {
+    window.history.replaceState(null, "", "/");
     vi.clearAllMocks();
     state.data = { items: [facilityNorth, facilityHarbor, facilityMinimal] };
     state.isLoading = false;
@@ -211,7 +221,7 @@ describe("FacilitiesContent", () => {
       expect(
         screen.getByRole("heading", { name: "Facilities" }),
       ).toBeInTheDocument();
-      expect(screen.getByText("Active facilities: 3")).toBeInTheDocument();
+      expect(screen.getByLabelText("Active facilities: 3")).toBeInTheDocument();
 
       const north = rowFor("North Plant");
       expect(
@@ -264,7 +274,7 @@ describe("FacilitiesContent", () => {
       renderContent();
 
       expect(screen.getByText("No facilities found")).toBeInTheDocument();
-      expect(screen.getByText("Active facilities: 0")).toBeInTheDocument();
+      expect(screen.getByLabelText("Active facilities: 0")).toBeInTheDocument();
     });
 
     it("renders the empty message when the payload has no items at all", () => {
@@ -293,7 +303,7 @@ describe("FacilitiesContent", () => {
       expect(facilitiesQuerySpy).toHaveBeenLastCalledWith({
         status: "ARCHIVED",
       });
-      expect(screen.getByText("Archived facilities: 3")).toBeInTheDocument();
+      expect(screen.getByLabelText("Archived facilities: 3")).toBeInTheDocument();
 
       const north = rowFor("North Plant");
       expect(
@@ -320,7 +330,7 @@ describe("FacilitiesContent", () => {
       expect(facilitiesQuerySpy).toHaveBeenLastCalledWith({
         status: "ACTIVE",
       });
-      expect(screen.getByText("Active facilities: 3")).toBeInTheDocument();
+      expect(screen.getByLabelText("Active facilities: 3")).toBeInTheDocument();
     });
   });
 
@@ -350,7 +360,7 @@ describe("FacilitiesContent", () => {
       await waitFor(() => {
         expect(screen.getByText("No facilities found")).toBeInTheDocument();
       });
-      expect(screen.getByText("Active facilities: 0")).toBeInTheDocument();
+      expect(screen.getByLabelText("Active facilities: 0")).toBeInTheDocument();
     });
 
     it("ignores a query shorter than the debounce minimum", async () => {
@@ -620,6 +630,27 @@ describe("FacilitiesContent", () => {
       });
     });
 
+    it.each([
+      ["Name", "Name is required."],
+      ["Address", "Address is required."],
+      ["City, State", "City, State is required."],
+    ])("does not let an edit empty the required %s field", async (label, message) => {
+      renderContent();
+
+      await userEvent.click(
+        within(rowFor("North Plant")).getByRole("button", {
+          name: "Edit facility",
+        }),
+      );
+      await userEvent.clear(screen.getByLabelText(label));
+      await userEvent.click(
+        screen.getByRole("button", { name: "Update Facility" }),
+      );
+
+      expect(screen.getByText(message)).toBeInTheDocument();
+      expect(updateFacilityMock).not.toHaveBeenCalled();
+    });
+
     it("drops the facility from the state when the edit dialog is dismissed", async () => {
       renderContent();
 
@@ -684,11 +715,23 @@ describe("FacilitiesContent", () => {
       expect(screen.getByLabelText("Address")).toBeDisabled();
       expect(screen.getByLabelText("City, State")).toBeDisabled();
       expect(screen.getByLabelText("Description")).toBeDisabled();
-      expect(screen.getByRole("button", { name: "Loading..." })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Update Facility" })).toBeDisabled();
     });
   });
 
   describe("delete", () => {
+    it("clears a previous delete error when the dialog opens for another facility", async () => {
+      renderContent();
+
+      await userEvent.click(
+        within(rowFor("North Plant")).getByRole("button", {
+          name: "Delete facility",
+        }),
+      );
+
+      expect(resetDeleteMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and deletes the selected facility", async () => {
       renderContent();
 
@@ -757,12 +800,24 @@ describe("FacilitiesContent", () => {
       );
 
       expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-      await userEvent.click(screen.getByRole("button", { name: "Loading..." }));
+      await userEvent.click(screen.getByRole("button", { name: "Delete" }));
       expect(deleteFacilityMock).not.toHaveBeenCalled();
     });
   });
 
   describe("archive", () => {
+    it("clears a previous archive error when the dialog opens for another facility", async () => {
+      renderContent();
+
+      await userEvent.click(
+        within(rowFor("North Plant")).getByRole("button", {
+          name: "Archive facility",
+        }),
+      );
+
+      expect(resetArchiveMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and archives the selected facility", async () => {
       renderContent();
 
@@ -824,6 +879,21 @@ describe("FacilitiesContent", () => {
   });
 
   describe("restore", () => {
+    it("clears a previous restore error when the dialog opens for another facility", async () => {
+      renderContent();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: "Show archived facilities" }),
+      );
+      await userEvent.click(
+        within(rowFor("North Plant")).getByRole("button", {
+          name: "Restore facility",
+        }),
+      );
+
+      expect(resetRestoreMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and restores the selected facility", async () => {
       renderContent();
 
@@ -906,7 +976,7 @@ describe("FacilitiesContent", () => {
       );
 
       expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-      await userEvent.click(screen.getByRole("button", { name: "Loading..." }));
+      await userEvent.click(screen.getByRole("button", { name: "Restore" }));
       expect(restoreFacilityMock).not.toHaveBeenCalled();
     });
   });
@@ -964,28 +1034,23 @@ describe("FacilitiesContent", () => {
   });
 
   describe("name validation", () => {
-    it("keeps the submit button disabled until name, address and city are filled", async () => {
+    it("shows the next required field and focuses it without losing entered values", async () => {
       const ref = makeTriggerRef();
       renderContent(ref);
       openCreateDialog(ref);
-
-      const submit = screen.getByRole("button", {
-        name: "Create Facility",
-      });
-      expect(submit).toBeDisabled();
-
-      await userEvent.type(screen.getByLabelText("Name"), "   ");
-      expect(submit).toBeDisabled();
-
-      await userEvent.clear(screen.getByLabelText("Name"));
+      const submit = screen.getByRole("button", { name: "Create Facility" });
+      await userEvent.click(submit);
+      expect(screen.getByLabelText("Name")).toHaveFocus();
+      expect(screen.getByText("Name is required.")).toBeInTheDocument();
       await userEvent.type(screen.getByLabelText("Name"), "Willow");
-      expect(submit).toBeDisabled();
-
+      await userEvent.click(submit);
+      expect(screen.getByLabelText("Address")).toHaveFocus();
+      expect(screen.getByText("Address is required.")).toBeInTheDocument();
       await userEvent.type(screen.getByLabelText("Address"), "5 Elm Street");
-      expect(submit).toBeDisabled();
-
-      await userEvent.type(screen.getByLabelText("City, State"), "Shelbyville");
-      expect(submit).toBeEnabled();
+      await userEvent.click(submit);
+      expect(screen.getByLabelText("City, State")).toHaveFocus();
+      expect(screen.getByLabelText("Name")).toHaveValue("Willow");
+      expect(screen.getByLabelText("Address")).toHaveValue("5 Elm Street");
       expect(createFacilityMock).not.toHaveBeenCalled();
     });
   });

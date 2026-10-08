@@ -1,0 +1,166 @@
+
+> kma_web@1.0.15 typecheck
+> tsc --noEmit
+
+
+> kma_web@1.0.15 build
+> next build
+
+   ▲ Next.js 15.5.9
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 15.6s
+   Linting and checking validity of types ...
+
+ ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+
+./app/(dashboard)/users/page.tsx
+139:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/entities/audit/lib/audit-detail.mappers.ts
+295:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+297:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+299:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+302:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+302:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+304:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/entities/audit/model/audit-detail.ts
+70:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/entities/flow/lib/mappers.ts
+37:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+45:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+170:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+172:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+231:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+239:65  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+247:57  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/features/audits/api/audit.repo.impl.ts
+31:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+40:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+72:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+73:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+153:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+154:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/features/audits/ui/AuditQuestionCard.tsx
+33:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+206:26  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+207:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+392:61  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+400:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+410:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+423:49  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+440:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+481:81  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+505:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/features/audits/ui/AuditQuestionsList.tsx
+26:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+47:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/features/facilities/lib/usecases/create-facility.usecase.ts
+16:5  Warning: Unused eslint-disable directive (no problems were reported from 'no-new').
+
+./src/features/facilities/lib/usecases/update-facility.usecase.ts
+17:5  Warning: Unused eslint-disable directive (no problems were reported from 'no-new').
+
+./src/features/facilities/ui/FacilityUpsertDialog.tsx
+325:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/features/projects/ui/ProjectsContent.tsx
+168:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+169:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/shared/api/http.server.ts
+129:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+137:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+138:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+139:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+146:32  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+150:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/shared/interceptors/error.ts
+184:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+185:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+224:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+224:63  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/shared/ui/card.tsx
+35:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/shared/ui/controls.tsx
+10:5  Warning: A form label must be associated with a control.  jsx-a11y/label-has-associated-control
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/20) ...
+   Generating static pages (5/20) 
+   Generating static pages (10/20) 
+   Generating static pages (15/20) 
+ ✓ Generating static pages (20/20)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                  Size  First Load JS
+┌ ○ /                                                       216 B         102 kB
+├ ○ /_not-found                                              1 kB         103 kB
+├ ƒ /api/audits                                             216 B         102 kB
+├ ƒ /api/audits-review/[auditId]/answers                    216 B         102 kB
+├ ƒ /api/audits-review/[auditId]/complete-review            216 B         102 kB
+├ ƒ /api/audits-review/[auditId]/findings/[questionCode]    216 B         102 kB
+├ ƒ /api/audits-review/[auditId]/status                     216 B         102 kB
+├ ƒ /api/audits/[auditId]                                   216 B         102 kB
+├ ƒ /api/audits/[auditId]/send-for-review                   216 B         102 kB
+├ ƒ /api/audits/audit-reviews/[auditReviewId]               216 B         102 kB
+├ ƒ /api/comments                                           216 B         102 kB
+├ ƒ /api/comments/[commentId]                               216 B         102 kB
+├ ƒ /api/dashboard                                          216 B         102 kB
+├ ƒ /api/facilities                                         216 B         102 kB
+├ ƒ /api/facilities/[id]                                    216 B         102 kB
+├ ƒ /api/facilities/[id]/archive                            216 B         102 kB
+├ ƒ /api/facilities/[id]/restore                            216 B         102 kB
+├ ƒ /api/facilities/upload-img                              216 B         102 kB
+├ ƒ /api/flows                                              216 B         102 kB
+├ ƒ /api/flows/[id]                                         216 B         102 kB
+├ ƒ /api/flows/summary                                      216 B         102 kB
+├ ƒ /api/projects                                           216 B         102 kB
+├ ƒ /api/projects/[id]                                      216 B         102 kB
+├ ƒ /api/projects/[id]/archive                              216 B         102 kB
+├ ƒ /api/projects/[id]/facilities                           216 B         102 kB
+├ ƒ /api/projects/[id]/restore                              216 B         102 kB
+├ ƒ /api/reports                                            216 B         102 kB
+├ ƒ /api/reports/[auditId]                                  216 B         102 kB
+├ ƒ /api/session                                            216 B         102 kB
+├ ƒ /api/session/refresh                                    216 B         102 kB
+├ ƒ /api/uploads                                            216 B         102 kB
+├ ƒ /api/uploads/presigned                                  216 B         102 kB
+├ ƒ /api/uploads/proxy                                      216 B         102 kB
+├ ƒ /api/users                                              216 B         102 kB
+├ ƒ /api/users/[id]                                         216 B         102 kB
+├ ƒ /audits                                               8.61 kB         184 kB
+├ ƒ /audits/[id]/edit                                       23 kB         232 kB
+├ ƒ /dashboard                                            6.76 kB         158 kB
+├ ƒ /flows                                                5.62 kB         178 kB
+├ ƒ /flows/[id]                                             989 B         208 kB
+├ ƒ /flows/new                                              537 B         208 kB
+├ ƒ /login                                                14.3 kB         159 kB
+├ ƒ /projects                                               12 kB         220 kB
+├ ƒ /projects/[id]                                        6.18 kB         196 kB
+├ ƒ /reports                                              6.31 kB         177 kB
+└ ƒ /users                                                  10 kB         193 kB
++ First Load JS shared by all                              102 kB
+  ├ chunks/1255-9494d7e861e97d68.js                       45.9 kB
+  ├ chunks/4bd1b696-f785427dddbba9fb.js                   54.2 kB
+  └ other shared chunks (total)                           1.93 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -19,7 +19,7 @@ export const ProjectAuditsProgress: React.FC<ProjectAuditsProgressProps> = ({
 
   if (isLoading) {
     return (
-      <span className="text-gray-400" aria-label="Loading audits">
+      <span className="text-[var(--kma-muted)]" aria-label="Loading audits">
         …
       </span>
     );
@@ -27,7 +27,7 @@ export const ProjectAuditsProgress: React.FC<ProjectAuditsProgressProps> = ({
 
   if (isError) {
     return (
-      <span className="text-gray-400" title="Could not load the audits">
+      <span className="text-[var(--kma-muted)]" title="Could not load the audits">
         —
       </span>
     );
@@ -44,7 +44,7 @@ export const ProjectAuditsProgress: React.FC<ProjectAuditsProgressProps> = ({
       </span>
       {allCompleted ? (
         <CheckCircle2
-          className="h-4 w-4 text-green-600"
+          className="h-4 w-4 text-[var(--kma-success)]"
           aria-label="All audits completed"
         />
       ) : null}

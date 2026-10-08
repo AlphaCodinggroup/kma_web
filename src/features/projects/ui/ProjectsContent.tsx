@@ -1,5 +1,6 @@
 "use client";
 
+import { useUrlParameter } from "@shared/lib/useUrlParameter";
 import React, {
   useMemo,
   useState,
@@ -36,7 +37,7 @@ type ProjectsContentProps = {
 export const ProjectsContent: React.FC<ProjectsContentProps> = ({
   createTriggerRef,
 }) => {
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useUrlParameter("projects_q");
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -53,15 +54,18 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
   );
 
   // Vista de proyectos archivados y restauración
-  const [showArchived, setShowArchived] = useState<boolean>(false);
+  const [archive, setArchive] = useUrlParameter("projects_status", "active");
+  const showArchived = archive === "archived";
   const [openRestore, setOpenRestore] = useState<boolean>(false);
   const [projectToRestore, setProjectToRestore] = useState<Project | null>(
     null,
   );
 
   // Sorting state
-  const [sortField, setSortField] = useState<SortField | null>(null);
-  const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+  const [sort, setSort] = useUrlParameter("projects_sort");
+  const [order, setOrder] = useUrlParameter("projects_order");
+  const sortField: SortField | null = ["name", "auditor", "facility", "status", "createdAt"].includes(sort) ? sort as SortField : null;
+  const sortOrder: SortOrder = order === "asc" || order === "desc" ? order : null;
 
   const debouncedQuery = useDebouncedSearch(query);
 
@@ -94,7 +98,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     error: updateError,
   } = useUpdateProjectMutation();
 
-  const { mutate: deleteProject, isPending: isDeleting } =
+  const { mutate: deleteProject, isPending: isDeleting, error: deleteError, reset: resetDelete } =
     useDeleteProjectMutation({
       onSuccess: () => {
         setOpenDelete(false);
@@ -104,7 +108,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
       onError: (err) => console.error("Failed to delete project", err),
     });
 
-  const { mutateAsync: archiveProject, isPending: isArchiving } =
+  const { mutateAsync: archiveProject, isPending: isArchiving, error: archiveError, reset: resetArchive } =
     useArchiveProjectMutation();
 
   const {
@@ -143,17 +147,17 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
       if (sortField === field) {
         // Cycle through: asc -> desc -> null
         if (sortOrder === "asc") {
-          setSortOrder("desc");
+          setOrder("desc");
         } else if (sortOrder === "desc") {
-          setSortOrder(null);
-          setSortField(null);
+          setOrder("");
+          setSort("");
         }
       } else {
-        setSortField(field);
-        setSortOrder("asc");
+        setSort(field);
+        setOrder("asc");
       }
     },
-    [sortField, sortOrder],
+    [sortField, sortOrder, setSort, setOrder],
   );
 
   // Apply sorting to filtered data
@@ -265,10 +269,12 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     (id: string) => {
       const row = projects.find((r) => r.id === id);
       if (!row) return;
+      // Un error de un intento anterior no debe aparecer en el diálogo de otro proyecto.
+      resetDelete();
       setProjectToDelete({ id: row.id, name: row.name });
       setOpenDelete(true);
     },
-    [projects],
+    [projects, resetDelete],
   );
 
   const confirmDelete = useCallback(async () => {
@@ -281,10 +287,11 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     (id: string) => {
       const row = projects.find((r) => r.id === id);
       if (!row) return;
+      resetArchive();
       setProjectToArchive(row);
       setOpenArchive(true);
     },
-    [projects],
+    [projects, resetArchive],
   );
 
   const confirmArchive = useCallback(async () => {
@@ -347,7 +354,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
         placeholder="Search projects by Project name, Auditor, facility or Status..."
         onCreateClick={handleOpenCreate}
         showArchived={showArchived}
-        onToggleArchived={() => setShowArchived((current) => !current)}
+        onToggleArchived={() => setArchive(showArchived ? "active" : "archived")}
       >
         {showArchived ? (
           <ArchivedProjectsTable
@@ -369,6 +376,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
             sortField={sortField}
             sortOrder={sortOrder}
             onSort={handleSort}
+            onResetSort={() => { setSort(""); setOrder(""); }}
           />
         )}
       </ProjectsSearchCard>
@@ -416,6 +424,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
           confirmLabel="Delete"
           cancelLabel="Cancel"
           loading={isDeleting}
+          error={deleteError?.message ?? null}
           onConfirm={confirmDelete}
         />
       )}
@@ -424,6 +433,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
       {projectToRestore && (
         <ConfirmDialog
           open={openRestore}
+          variant="primary"
           onOpenChange={(o) => {
             setOpenRestore(o);
             if (!o) setProjectToRestore(null);
@@ -463,6 +473,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
           confirmLabel="Archive"
           cancelLabel="Cancel"
           loading={isArchiving}
+          error={archiveError?.message ?? null}
           onConfirm={confirmArchive}
         />
       )}

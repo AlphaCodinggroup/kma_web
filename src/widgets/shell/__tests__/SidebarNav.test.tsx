@@ -10,9 +10,11 @@ const pushMock = vi.fn();
 const refreshMock = vi.fn();
 const prefetchMock = vi.fn();
 const logoutMock = vi.fn();
+let searchParams = new URLSearchParams();
 
 vi.mock("next/navigation", () => ({
   usePathname: () => pathnameMock(),
+  useSearchParams: () => searchParams,
   useRouter: () => ({
     push: pushMock,
     refresh: refreshMock,
@@ -49,13 +51,15 @@ const DEFAULT_LABELS = [
   "Audits",
   "Reports",
   "Flows",
-  "Projects & Facilities",
+  "Projects",
+  "Facilities",
 ];
 
 describe("SidebarNav", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     pathnameMock.mockReturnValue("/dashboard");
+    searchParams = new URLSearchParams();
     logoutMock.mockResolvedValue(undefined);
   });
 
@@ -67,6 +71,31 @@ describe("SidebarNav", () => {
     render(<SidebarNav />);
 
     expect(screen.getByRole("complementary", { name: "Primary" })).toBeInTheDocument();
+  });
+
+  it("links projects and facilities to their existing tabs and marks only the selected tab", () => {
+    pathnameMock.mockReturnValue("/projects");
+    searchParams = new URLSearchParams("tab=facilities");
+    render(<SidebarNav />);
+    expect(screen.getByRole("link", { name: "Facilities" })).toHaveAttribute("href", "/projects?tab=facilities");
+    expect(screen.getByRole("link", { name: "Facilities" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/projects?tab=projects");
+    expect(screen.getByRole("link", { name: "Projects" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("marks Projects for a project detail, regardless of a stale tab query", () => {
+    pathnameMock.mockReturnValue("/projects/project-123");
+    searchParams = new URLSearchParams("tab=facilities");
+    render(<SidebarNav />);
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Facilities" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("defaults to Projects when the project listing has no tab query", () => {
+    pathnameMock.mockReturnValue("/projects");
+    render(<SidebarNav />);
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Facilities" })).not.toHaveAttribute("aria-current");
   });
 
   it("renders every non admin navigation item by default", () => {
@@ -82,7 +111,8 @@ describe("SidebarNav", () => {
     { label: "Audits", href: "/audits" },
     { label: "Reports", href: "/reports" },
     { label: "Flows", href: "/flows" },
-    { label: "Projects & Facilities", href: "/projects" },
+    { label: "Projects", href: "/projects?tab=projects" },
+    { label: "Facilities", href: "/projects?tab=facilities" },
   ];
 
   it.each(defaultHrefs)("points $label to $href", ({ label, href }) => {
@@ -101,7 +131,7 @@ describe("SidebarNav", () => {
 
     const active = screen.getByRole("link", { name: "Reports" });
     expect(active).toHaveAttribute("aria-current", "page");
-    expect(active).toHaveClass("bg-black", "text-white");
+    expect(active).toHaveClass("bg-[var(--kma-selected)]");
   });
 
   it("marks the section item as active for a nested route", () => {
@@ -120,7 +150,7 @@ describe("SidebarNav", () => {
 
     const inactive = screen.getByRole("link", { name: "Dashboard" });
     expect(inactive).not.toHaveAttribute("aria-current");
-    expect(inactive).toHaveClass("text-gray-700");
+    expect(inactive).toHaveClass("text-[var(--kma-muted)]");
   });
 
   // Un prefijo parcial (/report) no debe activar /reports.
@@ -218,7 +248,7 @@ describe("SidebarNav", () => {
 
   it("uses the default width class and honours an override", () => {
     const { unmount } = render(<SidebarNav />);
-    expect(screen.getByRole("complementary")).toHaveClass("w-65");
+    expect(screen.getByRole("complementary")).toHaveClass("w-[248px]");
     unmount();
 
     render(<SidebarNav widthClassName="w-80" />);
@@ -246,14 +276,10 @@ describe("SidebarNav", () => {
     await user.click(target);
 
     await waitFor(() => {
-      expect(screen.getByRole("link", { name: "Reports" })).toHaveClass(
-        "pointer-events-none"
-      );
+      expect(screen.getByRole("link", { name: "Reports" })).toHaveAttribute("aria-busy", "true");
     });
-    // Mientras hay navegación en curso el resto también queda bloqueado.
-    expect(screen.getByRole("link", { name: "Dashboard" })).toHaveClass(
-      "pointer-events-none"
-    );
+    // Los demás destinos siguen disponibles.
+    expect(screen.getByRole("link", { name: "Dashboard" })).toHaveAttribute("aria-busy", "false");
   });
 
   it("does not flag a navigation when clicking the current item", async () => {
@@ -263,9 +289,7 @@ describe("SidebarNav", () => {
 
     await user.click(screen.getByRole("link", { name: "Dashboard" }));
 
-    expect(screen.getByRole("link", { name: "Dashboard" })).not.toHaveClass(
-      "pointer-events-none"
-    );
+    expect(screen.getByRole("link", { name: "Dashboard" })).not.toHaveAttribute("aria-busy", "true");
   });
 
   // ---------------------------------------------------------------------------
@@ -334,18 +358,14 @@ describe("SidebarNav", () => {
 
     await user.click(screen.getByRole("link", { name: "Reports" }));
     await waitFor(() =>
-      expect(screen.getByRole("link", { name: "Reports" })).toHaveClass(
-        "pointer-events-none"
-      )
+      expect(screen.getByRole("link", { name: "Reports" })).toHaveAttribute("aria-busy", "true")
     );
 
     pathnameMock.mockReturnValue("/reports");
     rerender(<SidebarNav />);
 
     await waitFor(() =>
-      expect(screen.getByRole("link", { name: "Reports" })).not.toHaveClass(
-        "pointer-events-none"
-      )
+      expect(screen.getByRole("link", { name: "Reports" })).not.toHaveAttribute("aria-busy", "true")
     );
   });
 });

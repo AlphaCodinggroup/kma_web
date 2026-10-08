@@ -10,7 +10,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     <AuthGuard>
       <AuthProvider session={session}>
         <QueryProvider>
-          <div className="min-h-screen bg-background">{children}</div>
+          <div className="min-h-screen bg-[var(--kma-bg)]">{children}</div>
         </QueryProvider>
       </AuthProvider>
     </AuthGuard>

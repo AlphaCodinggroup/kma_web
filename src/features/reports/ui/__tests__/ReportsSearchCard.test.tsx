@@ -4,11 +4,11 @@ import { describe, it, expect, vi } from "vitest";
 import ReportsSearchCard from "../ReportsSearchCard";
 
 describe("ReportsSearchCard", () => {
-  it("renders the section heading", () => {
+  it("names the search region", () => {
     render(<ReportsSearchCard query="" onQueryChange={vi.fn()} />);
 
     expect(
-      screen.getByRole("heading", { level: 3, name: "Search Reports" })
+      screen.getByRole("region", { name: "Search reports" })
     ).toBeInTheDocument();
   });
 
@@ -24,7 +24,7 @@ describe("ReportsSearchCard", () => {
 
     expect(screen.getByRole("searchbox")).toHaveAttribute(
       "placeholder",
-      "Search by project name, auditor, or report ID…"
+      "Search by project name, status, or date…"
     );
   });
 
@@ -56,7 +56,7 @@ describe("ReportsSearchCard", () => {
     expect(onQueryChange).toHaveBeenNthCalledWith(2, "b");
   });
 
-  it("applies the card base classes and merges a custom className", () => {
+  it("preserves a caller custom className", () => {
     const { container } = render(
       <ReportsSearchCard
         query=""
@@ -65,13 +65,7 @@ describe("ReportsSearchCard", () => {
       />
     );
 
-    expect(container.firstElementChild).toHaveClass(
-      "rounded-2xl",
-      "border",
-      "bg-white",
-      "p-6",
-      "card-extra"
-    );
+    expect(container.firstElementChild).toHaveClass("card-extra");
   });
 
   // El rightSlot está declarado en las props pero el componente no lo consume.

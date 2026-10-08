@@ -104,7 +104,9 @@ describe("FlowCard", () => {
     await user.click(link);
 
     expect(screen.getByText("Navigating to flow...")).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Ramps" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Ramps" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /view questions/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Delete flow" })).toBeDisabled();
   });
 
   it("replaces the edit link with a disabled hint for non administrators", () => {
@@ -135,9 +137,8 @@ describe("FlowCard", () => {
 
     await user.click(screen.getByTitle("Delete flow"));
 
-    expect(confirmSpy).toHaveBeenCalledWith(
-      "Are you sure you want to delete this flow? This action cannot be undone."
-    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
     expect(deleteMock).not.toHaveBeenCalled();
   });
 
@@ -147,10 +148,27 @@ describe("FlowCard", () => {
     render(<FlowCard flowId="AR" title="Ramps" onDeleted={onDeleted} />);
 
     await user.click(screen.getByTitle("Delete flow"));
+    await user.click(screen.getByRole("button", { name: "Delete" }));
 
     await waitFor(() => expect(deleteMock).toHaveBeenCalledWith("AR"));
     expect(onDeleted).toHaveBeenCalledTimes(1);
     expect(reloadMock).not.toHaveBeenCalled();
+  });
+
+  it("prevents another deletion and blocks editing while deletion is pending", async () => {
+    const user = userEvent.setup();
+    let complete: (() => void) | undefined;
+    deleteMock.mockImplementation(() => new Promise<void>((resolve) => { complete = resolve; }));
+    const onDeleted = vi.fn();
+    render(<FlowCard flowId="AR" title="Ramps" onDeleted={onDeleted} />);
+    await user.click(screen.getByRole("button", { name: "Delete flow" }));
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+    expect(screen.getByLabelText("Edit flow")).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("button", { name: "Delete" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Delete" })).toHaveAttribute("aria-busy", "true");
+    expect(deleteMock).toHaveBeenCalledTimes(1);
+    complete?.();
+    await waitFor(() => expect(onDeleted).toHaveBeenCalledTimes(1));
   });
 
   it("reloads the page when no onDeleted callback is provided", async () => {
@@ -158,6 +176,7 @@ describe("FlowCard", () => {
     render(<FlowCard flowId="AR" title="Ramps" />);
 
     await user.click(screen.getByTitle("Delete flow"));
+    await user.click(screen.getByRole("button", { name: "Delete" }));
 
     await waitFor(() => expect(reloadMock).toHaveBeenCalledTimes(1));
   });
@@ -168,9 +187,10 @@ describe("FlowCard", () => {
     render(<FlowCard flowId="AR" title="Ramps" />);
 
     await user.click(screen.getByTitle("Delete flow"));
+    await user.click(screen.getByRole("button", { name: "Delete" }));
 
     await waitFor(() =>
-      expect(alertSpy).toHaveBeenCalledWith("Failed to delete flow")
+      expect(screen.getByText("boom")).toBeInTheDocument()
     );
     expect(screen.getByTitle("Delete flow")).not.toBeDisabled();
   });

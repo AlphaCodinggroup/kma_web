@@ -1,0 +1,167 @@
+[
+  {
+    "screen": "login",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "login",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "login",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "dashboard",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "projects",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "facilities",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "project-detail",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "audits",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "review",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "reports",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "flows",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "flow-editor",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "users",
+    "width": 390,
+    "violations": []
+  },
+  {
+    "screen": "dashboard",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "projects",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "facilities",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "project-detail",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "audits",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "review",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "reports",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "flows",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "flow-editor",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "users",
+    "width": 768,
+    "violations": []
+  },
+  {
+    "screen": "dashboard",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "projects",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "facilities",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "project-detail",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "audits",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "review",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "reports",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "flows",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "flow-editor",
+    "width": 1440,
+    "violations": []
+  },
+  {
+    "screen": "users",
+    "width": 1440,
+    "violations": []
+  }
+]

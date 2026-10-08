@@ -7,7 +7,8 @@ import type {
   AuditQuestionType,
   ReportSeverity,
 } from "@entities/audit/model/audit-detail";
-import type { AuditStatus, IsoDateString } from "@entities/audit/model";
+import type { IsoDateString } from "@entities/audit/model";
+import { toAuditStatus } from "@entities/audit/lib/audit-status";
 
 export type AuditDetailDTO = {
   id: string;
@@ -128,24 +129,6 @@ const firstNonEmpty = <T,>(...candidates: (T[] | undefined)[]): T[] => {
     if (candidate && candidate.length > 0) return candidate;
   }
   return [];
-};
-
-const toAuditStatus = (raw?: string): AuditStatus => {
-  const allowed: AuditStatus[] = [
-    "draft_report_pending_review",
-    "draft_report_in_review",
-    "final_report_sent_to_client",
-    "completed",
-  ];
-
-  if (raw && allowed.includes(raw as AuditStatus)) {
-    return raw as AuditStatus;
-  }
-
-  // La lista blanca era decorativa: un estado desconocido se devolvía igual y
-  // rompía cualquier switch exhaustivo aguas abajo, y el `?? ` no cubría la
-  // cadena vacía. Lo que no está en la lista cae al estado inicial.
-  return "draft_report_pending_review";
 };
 
 const toYesNo = (

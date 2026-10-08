@@ -38,23 +38,23 @@ const ReportsListCard: React.FC<ReportsListCardProps> = ({
 }) => {
   return (
     <section
-      className={cn("rounded-2xl border border-gray-200 bg-white", className)}
+      className={cn("overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]", className)}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-6">
+      <div className="flex flex-col justify-between gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-[var(--kma-fg)]">
             All Reports ({totalCount})
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">{description}</p>
+          </h2>
+          <p className="mt-1 text-sm text-[var(--kma-muted)]">{description}</p>
         </div>
         {rightSlot ? (
-          <div className="flex items-center gap-2">{rightSlot}</div>
+          <div className="flex w-full items-center gap-2 lg:w-auto">{rightSlot}</div>
         ) : null}
       </div>
 
       {/* Divider */}
-      <div className="border-t border-gray-200" />
+      <div className="border-t border-[var(--kma-border)]" />
 
       {/* Tabla embebida: sin borde/radius propio para que use los del card */}
       <ReportsTable
@@ -69,6 +69,7 @@ const ReportsListCard: React.FC<ReportsListCardProps> = ({
         isError={isError}
         downloadingId={downloadingId}
       />
+      {!isLoading && !isError && <div className="border-t border-[var(--kma-border)] bg-[var(--kma-subtle)] px-4 py-3 text-xs text-[var(--kma-muted)] sm:px-6">{items.length} reports shown · PDF downloads keep the original project format</div>}
     </section>
   );
 };

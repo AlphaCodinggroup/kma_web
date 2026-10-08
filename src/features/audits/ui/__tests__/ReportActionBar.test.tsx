@@ -81,7 +81,7 @@ describe("ReportActionBar", () => {
     expect(screen.getByRole("button", { name: "Return" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Return" })).toHaveAttribute(
       "title",
-      "Requires backend: return to the auditor"
+      "Returning an audit is currently unavailable"
     );
   });
 

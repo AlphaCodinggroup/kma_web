@@ -45,9 +45,9 @@ const LoginForm: React.FC = () => {
       // navegamos y refrescamos para asegurar estado.
       router.push("/dashboard" as Route);
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const message: string =
-        (typeof err?.message === "string" && err.message) ||
+        (typeof err === "object" && err !== null && "message" in err && typeof err.message === "string" && err.message) ||
         "Failed to log in. Please try again.";
       // Mostramos error global y, opcionalmente, marcamos ambos campos
       setFormError(message);
@@ -59,21 +59,21 @@ const LoginForm: React.FC = () => {
   return (
     <div className="w-full">
       {/* Card */}
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="w-full">
         {/* Header */}
-        <div className="px-6 pt-6 pb-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-black">
-            KMA
+        <div className="pb-2">
+          <h1 className="kma-page-title text-[var(--kma-fg)]">
+            Welcome back
           </h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Log in to access the dashboard.
+          <p className="mt-2 text-[15px] text-[var(--kma-muted)]">
+            Enter your credentials to access the audit workspace.
           </p>
         </div>
 
         {/* Form */}
         <form
           onSubmit={onSubmit}
-          className="px-6 pb-6 pt-4 space-y-4"
+          className="space-y-5 pt-6"
           noValidate
         >
           <div>
@@ -83,12 +83,13 @@ const LoginForm: React.FC = () => {
               placeholder="Your username"
               autoComplete="username"
               aria-invalid={!!errors.username || !!formError}
+              aria-describedby={errors.username ? "username-error" : "username-help"}
               {...register("username")}
             />
             {errors.username ? (
-              <ErrorText>{errors.username.message}</ErrorText>
+              <ErrorText id="username-error">{errors.username.message}</ErrorText>
             ) : (
-              <HelpText>Use your assigned username.</HelpText>
+              <HelpText id="username-help">Use your assigned username.</HelpText>
             )}
           </div>
 
@@ -100,20 +101,22 @@ const LoginForm: React.FC = () => {
               placeholder="••••••••"
               autoComplete="current-password"
               aria-invalid={!!errors.password || !!formError}
+              aria-describedby={errors.password ? "password-error" : undefined}
               withPasswordToggle
               {...register("password")}
             />
             {errors.password ? (
-              <ErrorText>{errors.password.message}</ErrorText>
+              <ErrorText id="password-error">{errors.password.message}</ErrorText>
             ) : null}
           </div>
 
-          {formError ? <ErrorText>{formError}</ErrorText> : null}
+          {formError ? <div role="alert"><ErrorText>{formError}</ErrorText></div> : null}
 
           <Button
             type="submit"
             isLoading={isSubmitting}
             disabled={isSubmitting}
+            className="w-full"
           >
             Log in
           </Button>

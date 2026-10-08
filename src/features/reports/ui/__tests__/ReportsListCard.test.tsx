@@ -73,7 +73,7 @@ describe("ReportsListCard", () => {
     renderCard();
 
     expect(
-      screen.getByRole("heading", { level: 3, name: "All Reports (2)" })
+      screen.getByRole("heading", { level: 2, name: "All Reports (2)" })
     ).toBeInTheDocument();
   });
 
@@ -82,7 +82,7 @@ describe("ReportsListCard", () => {
     renderCard({ items: [], totalCount: 0 });
 
     expect(
-      screen.getByRole("heading", { level: 3, name: "All Reports (0)" })
+      screen.getByRole("heading", { level: 2, name: "All Reports (0)" })
     ).toBeInTheDocument();
   });
 
@@ -158,7 +158,7 @@ describe("ReportsListCard", () => {
     renderCard({ items: [readyReport], downloadingId: "ready" });
 
     expect(
-      screen.getByRole("progressbar", { name: "Downloading report" })
+      screen.getByRole("button", { name: "Downloading report" })
     ).toBeInTheDocument();
   });
 
@@ -167,7 +167,7 @@ describe("ReportsListCard", () => {
 
     expect(screen.getByText("Loading reports")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 3, name: "All Reports (2)" })
+      screen.getByRole("heading", { level: 2, name: "All Reports (2)" })
     ).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
@@ -195,9 +195,9 @@ describe("ReportsListCard", () => {
     const { container } = renderCard({ className: "card-extra" });
 
     expect(container.firstElementChild).toHaveClass(
-      "rounded-2xl",
+      "rounded-lg",
       "border",
-      "bg-white",
+      "bg-[var(--kma-surface)]",
       "card-extra"
     );
   });

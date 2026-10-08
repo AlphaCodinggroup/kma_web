@@ -46,6 +46,15 @@ async function fillValidForm(
 // ---------------------------------------------------------------------------
 
 describe("CreateUserDialog", () => {
+  it("keeps edited values when an error rerenders equivalent defaults", async () => {
+    const defaults = { name: "Jane", email: "jane@kma.test", role: "auditor" };
+    const { rerender, props } = renderDialog({ defaultValues: defaults });
+    await userEvent.type(screen.getByLabelText("Name"), " revised");
+    rerender(<CreateUserDialog {...props} defaultValues={{ ...defaults }} error="Save failed" />);
+    expect(screen.getByLabelText("Name")).toHaveValue("Jane revised");
+    expect(screen.getByText("Save failed")).toBeInTheDocument();
+  });
+
   it("renders nothing while closed", () => {
     renderDialog({ open: false });
 
@@ -385,7 +394,7 @@ describe("CreateUserDialog", () => {
     expect(screen.getByLabelText("Email")).toBeDisabled();
     expect(screen.getByLabelText("Role")).toBeDisabled();
     expect(screen.getByLabelText("Password")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Loading..." })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Create User" })).toBeDisabled();
   });
 
   const loadingCases: Array<{ loading: boolean | undefined; disabled: boolean }> =
@@ -413,7 +422,7 @@ describe("CreateUserDialog", () => {
     renderDialog({ error: "Invalid role" });
 
     const error = screen.getByText("Invalid role");
-    expect(error).toHaveClass("text-red-600");
+    expect(error).toHaveClass("text-[var(--kma-danger)]");
   });
 
   it("does not render an error message when error is null", () => {
@@ -454,7 +463,7 @@ describe("CreateUserDialog", () => {
     );
 
     await user.click(
-      screen.getByRole("button", { name: "Mostrar contraseña" })
+      screen.getByRole("button", { name: "Show password" })
     );
 
     expect(screen.getByLabelText("Password")).toHaveAttribute("type", "text");

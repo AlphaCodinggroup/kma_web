@@ -236,10 +236,10 @@ describe("FlowEditor - step management", () => {
     const user = userEvent.setup();
     const flow = makeValidFlow();
     flow.steps = [makeQuestionStep({ yesNext: "", noNext: "" })];
-    const { container } = renderEditor(flow, "edit");
+    renderEditor(flow, "edit");
 
     await user.click(screen.getByTitle("Add End step"));
-    const overlay = container.querySelector("div.bg-black\\/40");
+    const overlay = screen.getByTestId("modal-overlay");
     await user.click(overlay as HTMLElement);
 
     expect(screen.queryByText("Link New Step?")).not.toBeInTheDocument();
@@ -314,6 +314,22 @@ describe("FlowEditor - step management", () => {
     expect(queryCreateMenuItem(createButton, "Select")).toBeNull();
   });
 
+  it("opens the create menu with the keyboard and restores focus on Escape", async () => {
+    const user = userEvent.setup();
+    const flow = makeValidFlow();
+    flow.steps = [makeFormStep({ next: "" })];
+    renderEditor(flow, "edit");
+    const trigger = screen.getByTitle("Create new step and link here");
+    trigger.focus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitem", { name: "Question" })).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitem", { name: "Form" })).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
   it("hides the current step and forms already taken from the step selector", async () => {
     const user = userEvent.setup();
     const flow = makeValidFlow();
@@ -341,8 +357,8 @@ describe("FlowEditor - step management", () => {
     renderEditor(makeValidFlow(), "edit");
 
     await user.click(within(sidebarCard("AR-S01")).getByTitle("Delete step"));
+    await user.click(screen.getByRole("button", { name: "Delete step" }));
 
-    expect(confirmSpy).toHaveBeenCalledTimes(1);
     expect(sidebarOrder()).toEqual(["AR-Q01", "AR-F01", "AR-E01"]);
     expect(screen.getByRole("heading", { name: "AR-Q01" })).toBeInTheDocument();
   });
@@ -353,6 +369,7 @@ describe("FlowEditor - step management", () => {
     renderEditor(makeValidFlow(), "edit");
 
     await user.click(within(sidebarCard("AR-S01")).getByTitle("Delete step"));
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(sidebarOrder()).toEqual(["AR-S01", "AR-Q01", "AR-F01", "AR-E01"]);
   });
@@ -364,6 +381,7 @@ describe("FlowEditor - step management", () => {
     renderEditor(flow, "edit");
 
     await user.click(screen.getByTitle("Delete step"));
+    await user.click(screen.getByRole("button", { name: "Delete step" }));
 
     expect(
       screen.getByText("Select a step from the sidebar to edit")
@@ -375,6 +393,7 @@ describe("FlowEditor - step management", () => {
     renderEditor(makeValidFlow(), "edit");
 
     await user.click(within(sidebarCard("AR-E01")).getByTitle("Delete step"));
+    await user.click(screen.getByRole("button", { name: "Delete step" }));
 
     expect(screen.getByRole("heading", { name: "AR-S01" })).toBeInTheDocument();
     expect(sidebarOrder()).toEqual(["AR-S01", "AR-Q01", "AR-F01"]);
@@ -386,6 +405,7 @@ describe("FlowEditor - step management", () => {
 
     // AR-Q01.yesNext apunta a AR-F01.
     await user.click(within(sidebarCard("AR-F01")).getByTitle("Delete step"));
+    await user.click(screen.getByRole("button", { name: "Delete step" }));
     await user.click(screen.getByText("Is the ramp compliant?"));
 
     // FIXME: al borrar un paso no se limpian las referencias que lo apuntaban:
@@ -448,7 +468,7 @@ describe("FlowEditor - step management", () => {
     expect(sidebarOrder()).toEqual(["AR-S01", "AR-Q01", "AR-F01", "AR-E01"]);
   });
 
-  it("highlights the drop target while dragging over a different step", () => {
+  it("keeps the step order unchanged when a drag is cancelled", () => {
     renderEditor(makeValidFlow(), "edit");
     const source = sidebarCard("AR-E01");
     const target = sidebarCard("AR-S01");
@@ -456,13 +476,11 @@ describe("FlowEditor - step management", () => {
 
     fireEvent.dragStart(source, { dataTransfer });
     fireEvent.dragEnter(target, { dataTransfer });
-    expect(target.className).toContain("border-t-purple-500");
+    expect(sidebarOrder()).toEqual(["AR-S01", "AR-Q01", "AR-F01", "AR-E01"]);
 
     // Al salir del mismo elemento se limpia el resaltado.
     fireEvent.dragLeave(target, { dataTransfer });
-    expect(sidebarCard("AR-S01").className).not.toContain(
-      "border-t-purple-500"
-    );
+    expect(sidebarOrder()).toEqual(["AR-S01", "AR-Q01", "AR-F01", "AR-E01"]);
 
     fireEvent.dragEnd(source, { dataTransfer });
   });

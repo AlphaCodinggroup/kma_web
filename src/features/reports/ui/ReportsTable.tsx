@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Download, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Download, FileText, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { StatusBadge } from "@shared/ui/badge";
 import {
@@ -12,13 +12,14 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import RowActionButton from "@shared/ui/row-action-button";
 import type { ReportListItem } from "@entities/report/model/report-list";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
 import { formatIsoToYmdHm } from "@shared/lib/date";
 import { useSession } from "@processes/auth/hooks";
-import { ProgressRing } from "@shared/ui/progress";
+import { Button } from "@shared/ui/controls";
+import { MobileEntityRow } from "@shared/ui/mobile-entity-row";
+import { useMediaQuery } from "@shared/lib/useMediaQuery";
 
 export interface ReportsTableProps {
   items: ReportListItem[];
@@ -32,6 +33,21 @@ export interface ReportsTableProps {
   onDelete: (id: string) => void;
   onError: () => void;
   deletingId?: string | null | undefined;
+}
+
+function ReportRowActions({ report, downloadingId, deletingId, isAdmin, onDownload, onDelete }: Pick<ReportsTableProps, "downloadingId" | "deletingId" | "onDownload" | "onDelete"> & { report: ReportListItem; isAdmin: boolean }) {
+  const downloading = downloadingId === report.id;
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      <Button variant="secondary" fullWidth={false} isLoading={downloading} aria-label={downloading ? "Downloading report" : report.reportUrl ? "Download report" : "Report not available yet"} disabled={!report.reportUrl || downloading} onClick={() => onDownload(report.id)}>
+        {!downloading && <Download className="h-4 w-4" aria-hidden="true" />}
+        {downloading ? "Downloading…" : "Download"}
+      </Button>
+      <Button variant="ghost" fullWidth={false} aria-label="Delete report" disabled={deletingId === report.id || !isAdmin} onClick={() => onDelete(report.id)} title={!isAdmin ? "Only administrators can delete reports" : "Delete report"}>
+        <Trash2 className="h-4 w-4" aria-hidden="true" />Delete
+      </Button>
+    </div>
+  );
 }
 
 type SortColumn = "project" | "status" | "date";
@@ -54,6 +70,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   deletingId,
 }) => {
   const { isAdmin } = useSession();
+  const compact = useMediaQuery("(max-width: 1023px)");
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
@@ -106,15 +123,15 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
 
   const SortIcon = ({ column }: { column: SortColumn }) => {
     if (sortColumn !== column) {
-      return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+      return <ArrowUpDown className="h-4 w-4 text-[var(--kma-muted)]" />;
     }
     if (sortDirection === "asc") {
-      return <ArrowUp className="h-4 w-4 text-black" />;
+      return <ArrowUp className="h-4 w-4 text-[var(--kma-fg)]" />;
     }
     if (sortDirection === "desc") {
-      return <ArrowDown className="h-4 w-4 text-black" />;
+      return <ArrowDown className="h-4 w-4 text-[var(--kma-fg)]" />;
     }
-    return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    return <ArrowUpDown className="h-4 w-4 text-[var(--kma-muted)]" />;
   };
 
   if (isLoading) return <Loading text="Loading reports" />;
@@ -132,18 +149,57 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-gray-200",
+        "overflow-hidden rounded-lg border border-[var(--kma-border)]",
         className
       )}
     >
-      <div className={cn("overflow-auto", bodyMaxHeightClassName)}>
-        <Table className="min-w-[720px]">
+      {compact ? <>
+        <div className="flex flex-wrap items-end gap-3 border-b border-[var(--kma-border)] bg-[var(--kma-subtle)] px-4 py-3">
+          <label className="min-w-0 flex-1 text-sm text-[var(--kma-muted)]">
+            Sort reports by
+            <select
+              value={sortColumn ?? ""}
+              onChange={event => {
+                if (!event.target.value) {
+                  setSortColumn(null);
+                  setSortDirection(null);
+                } else {
+                  handleSort(event.target.value as SortColumn);
+                }
+              }}
+              className="mt-1 min-h-11 w-full min-w-0 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] px-3 text-sm text-[var(--kma-fg)]"
+            >
+              <option value="">Default order</option>
+              <option value="project">Project</option>
+              <option value="status">Status</option>
+              <option value="date">Created At</option>
+            </select>
+          </label>
+          <Button
+            fullWidth={false}
+            variant="secondary"
+            disabled={!sortColumn}
+            aria-label={sortDirection === "asc" ? "Sort descending" : "Sort ascending"}
+            onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")}
+            className="min-h-11"
+          >
+            {sortDirection === "desc" ? <ArrowDown className="h-4 w-4" aria-hidden="true" /> : <ArrowUp className="h-4 w-4" aria-hidden="true" />}
+            {sortDirection === "desc" ? "Descending" : "Ascending"}
+          </Button>
+        </div>
+        <ul aria-label="Report results" className="divide-y divide-[var(--kma-border)]">
+        {!hasItems && <li className="px-4 py-8 text-sm text-[var(--kma-muted)]">{emptyMessage}</li>}
+        {sortedItems.map(report => <MobileEntityRow key={report.id} title={report.reportName ?? "Untitled report"} subtitle="Consolidated project PDF" status={<StatusBadge status={report.status} />} actions={<ReportRowActions report={report} downloadingId={downloadingId} deletingId={deletingId} isAdmin={isAdmin} onDownload={onDownload} onDelete={onDelete} />}>
+          <dl><dt>Created</dt><dd className="mt-1 tabular-nums text-[var(--kma-fg)]">{formatIsoToYmdHm(report.createdAt)}</dd></dl>
+        </MobileEntityRow>)}
+      </ul></> : <div className={cn("overflow-auto", bodyMaxHeightClassName)}>
+        <Table className="min-w-[720px] text-sm [&_td]:py-4 [&_th]:py-3 [&_th]:text-[var(--kma-muted)]">
           <TableHeader>
-            <TableRow className="bg-white">
+            <TableRow className="bg-[var(--kma-subtle)]">
               <TableHead>
                 <button
                   onClick={() => handleSort("project")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Project
                   <SortIcon column="project" />
@@ -152,7 +208,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               <TableHead>
                 <button
                   onClick={() => handleSort("status")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Status
                   <SortIcon column="status" />
@@ -161,13 +217,13 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               <TableHead>
                 <button
                   onClick={() => handleSort("date")}
-                  className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                  className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
                 >
                   Created At
                   <SortIcon column="date" />
                 </button>
               </TableHead>
-              <TableHead>Export to PDF</TableHead>
+              <TableHead className="sticky right-0 bg-[var(--kma-subtle)] text-right">Export to PDF</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -176,7 +232,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               <TableRow>
                 <TableCell
                   colSpan={4}
-                  className="py-10 text-center text-sm text-gray-500"
+                  className="py-10 text-center text-sm text-[var(--kma-muted)]"
                 >
                   {emptyMessage}
                 </TableCell>
@@ -186,49 +242,21 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                 return (
                   <TableRow key={r.id}>
                     <TableCell className="font-medium">
-                      <div className="flex flex-col">
-                        <span className="truncate">{r.reportName ?? "—"}</span>
+                      <div className="flex items-center gap-3">
+                        <FileText className="h-5 w-5 shrink-0 text-[var(--kma-muted)]" aria-hidden="true" />
+                        <div className="min-w-0 max-w-[380px]">
+                          <p className="break-words font-semibold">{r.reportName ?? "—"}</p>
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={r.status} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="tabular-nums text-[var(--kma-muted)]">
                       {formatIsoToYmdHm(r.createdAt) ?? "—"}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {/* Download button - always shown but disabled if no reportUrl */}
-                        {downloadingId === r.id ? (
-                          <ProgressRing
-                            value={null}
-                            label="Downloading report"
-                            size={32}
-                            strokeWidth={4}
-                            showValue={false}
-                          />
-                        ) : (
-                          <RowActionButton
-                            icon={Download}
-                            ariaLabel={
-                              r.reportUrl
-                                ? "Download report"
-                                : "Report not available yet"
-                            }
-                            onClick={() => onDownload(r.id)}
-                            size="md"
-                            disabled={!r.reportUrl}
-                          />
-                        )}
-                        <RowActionButton
-                          icon={Trash2}
-                          ariaLabel="Delete report"
-                          onClick={() => onDelete(r.id)}
-                          size="md"
-                          disabled={deletingId === r.id || !isAdmin}
-                          title={!isAdmin ? "Only administrators can delete reports" : "Delete report"}
-                        />
-                      </div>
+                    <TableCell className="sticky right-0 border-l border-[var(--kma-border)] bg-[var(--kma-surface)]">
+                      <ReportRowActions report={r} downloadingId={downloadingId} deletingId={deletingId} isAdmin={isAdmin} onDownload={onDownload} onDelete={onDelete} />
                     </TableCell>
                   </TableRow>
                 );
@@ -236,7 +264,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
             )}
           </TableBody>
         </Table>
-      </div>
+      </div>}
     </div>
   );
 };

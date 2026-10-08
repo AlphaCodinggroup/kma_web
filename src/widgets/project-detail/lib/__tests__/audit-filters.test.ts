@@ -74,12 +74,15 @@ describe("buildAuditFilterOptions", () => {
     ]);
   });
 
-  it("offers the four audit statuses", () => {
+  it("offers every recognized audit status including unavailable records", () => {
     expect(options.statuses.map((option) => option.value)).toEqual([
+      "audit_in_progress",
       "draft_report_pending_review",
       "draft_report_in_review",
       "final_report_sent_to_client",
       "completed",
+      "deleted",
+      "unknown",
     ]);
   });
 

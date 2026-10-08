@@ -33,7 +33,7 @@ const AuditEditTabsBar: React.FC<AuditEditTabsBarProps> = ({
   );
   return (
     <div
-      className={cn("w-full", containerPaddingClassName, className)}
+      className={cn("sticky top-0 z-20 w-full border-b border-[var(--kma-border)] bg-[var(--kma-surface)] py-3", containerPaddingClassName, className)}
       data-testid="audit-edit-tabs"
     >
       <div className="flex items-center justify-between gap-3">
@@ -43,12 +43,14 @@ const AuditEditTabsBar: React.FC<AuditEditTabsBarProps> = ({
           aria-label={ariaLabel}
           aria-labelledby={ariaLabel ? undefined : ariaLabelledById}
         >
-          <TabsList>
+          <TabsList className="rounded bg-transparent">
             <TabsTrigger
               value="questions"
+              id="audit-questions-tab"
+              aria-controls="audit-questions-panel"
               disabled={disabledTabs?.questions}
               className={cn(
-                "data-[state=active]:bg-white data-[state=active]:text-foreground"
+                "min-h-[var(--kma-control-height)] rounded px-4 data-[state=active]:bg-[var(--kma-selected)] data-[state=active]:text-[var(--kma-fg)]"
               )}
               data-testid="tab-questions"
             >
@@ -57,9 +59,11 @@ const AuditEditTabsBar: React.FC<AuditEditTabsBarProps> = ({
 
             <TabsTrigger
               value="report"
+              id="audit-report-tab"
+              aria-controls="audit-report-panel"
               disabled={disabledTabs?.report}
               className={cn(
-                "data-[state=active]:bg-white data-[state=active]:text-foreground"
+                "min-h-[var(--kma-control-height)] rounded px-4 data-[state=active]:bg-[var(--kma-selected)] data-[state=active]:text-[var(--kma-fg)]"
               )}
               data-testid="tab-report"
             >

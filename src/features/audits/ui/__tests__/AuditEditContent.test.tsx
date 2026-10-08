@@ -181,6 +181,9 @@ vi.mock("@features/audits/ui/CommentsSidebar", () => ({
   ),
 }));
 
+const compactMock = vi.fn(() => false);
+vi.mock("@shared/lib/useMediaQuery", () => ({ useMediaQuery: () => compactMock() }));
+
 // ---- import after mocks ----
 import AuditEditContent, { type AuditEditContentProps } from "../AuditEditContent";
 
@@ -257,7 +260,9 @@ async function openReportTab(props: Partial<AuditEditContentProps> = {}) {
 }
 
 beforeEach(() => {
+  window.history.replaceState({}, "", "/audits/audit-1/edit");
   vi.clearAllMocks();
+    compactMock.mockReturnValue(false);
   queryClient = new QueryClient();
   vi.spyOn(queryClient, "invalidateQueries").mockResolvedValue(undefined);
   vi.stubGlobal("alert", vi.fn());
@@ -279,16 +284,16 @@ beforeEach(() => {
 describe("AuditEditContent — loading", () => {
   it("shows the loading overlay while the review detail loads", () => {
     reviewDetailState.isLoading = true;
-    const { container } = renderContent();
+    renderContent();
 
-    expect(container.querySelector(".animate-spin")).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "Loading" })).toBeVisible();
     expect(screen.queryByTestId("audit-edit-content")).not.toBeInTheDocument();
   });
 
   it("shows the loading overlay while the audit detail loads", () => {
-    const { container } = renderContent({ auditDetail: undefined, isAuditDetailLoading: true });
+    renderContent({ auditDetail: undefined, isAuditDetailLoading: true });
 
-    expect(container.querySelector(".animate-spin")).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "Loading" })).toBeVisible();
   });
 });
 
@@ -362,6 +367,19 @@ describe("AuditEditContent — report preview", () => {
 });
 
 describe("AuditEditContent — comments", () => {
+  it("opens mobile comments in a focused drawer and closes on Escape", async () => {
+    compactMock.mockReturnValue(true);
+    const { user } = await openReportTab();
+    const opener = screen.getByRole("button", { name: "comment 0" });
+    await user.click(opener);
+    const drawer = screen.getByRole("dialog", { name: "Finding comments" });
+    expect(drawer).toBeVisible();
+    expect(screen.getByTestId("sidebar-id")).toHaveTextContent("Q-1");
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog", { name: "Finding comments" })).not.toBeInTheDocument();
+    expect(opener).toHaveFocus();
+  });
+
   it("opens the comments sidebar with the question code and the barrier statement", async () => {
     const { user } = await openReportTab();
 
@@ -502,9 +520,7 @@ describe("AuditEditContent — save, approve and download", () => {
 
     await user.click(screen.getByRole("button", { name: "Download" }));
 
-    await vi.waitFor(() =>
-      expect(alert).toHaveBeenCalledWith("Error downloading the report. Please try again.")
-    );
+    expect(await screen.findByRole("alert")).toHaveTextContent("Error downloading the report. Please try again.");
   });
 
   it("does not download without a report url", async () => {
