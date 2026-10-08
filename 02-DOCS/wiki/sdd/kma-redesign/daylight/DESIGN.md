@@ -2,9 +2,9 @@
 name: KMA Daylight Section
 description: Papel Kinpaku, Alumni Sans y Albert Sans con respuesta operativa inspirada en Neo Mirai.
 colors:
-  kinpaku: oklch(84% .19 80.46)
-  kinpaku-pale: oklch(86% .07 84)
-  on-gold: oklch(14% .018 95)
+  brand-red: '#e2231a'
+  brand-red-pale: oklch(80% .1 25)
+  on-brand: '#ffffff'
   paper: oklch(97.8% 0 0)
   paper-raised: oklch(99.5% 0 0)
   paper-deep: oklch(95% 0 0)
@@ -133,8 +133,8 @@ spacing:
   desktop: 32px
 components:
   button-primary:
-    backgroundColor: '{colors.kinpaku}'
-    textColor: '{colors.on-gold}'
+    backgroundColor: '{colors.brand-red}'
+    textColor: '{colors.on-brand}'
     typography: '{typography.control}'
     rounded: '{rounded.control}'
     padding: 8px 16px
@@ -193,7 +193,7 @@ components:
     padding: 10px 12px
   navigation-selected-dark:
     backgroundColor: '{colors.instrument-raised}'
-    textColor: '{colors.kinpaku-pale}'
+    textColor: '{colors.brand-red-pale}'
     rounded: '{rounded.control}'
 ---
 
@@ -203,7 +203,7 @@ components:
 
 **Creative North Star: "Daylight Section"**
 
-Una mesa de revisión con precisión arquitectónica: papel neutro, tinta y luz dorada Kinpaku. Alumni Sans da identidad condensada a página y marca; Albert Sans mantiene la lectura de datos, formularios y secciones. Las reglas finas y los controles familiares permiten trabajar con calma.
+Una mesa de revisión con precisión arquitectónica: papel neutro, tinta y papel Kinpaku y rojo KMA. Alumni Sans da identidad condensada a página y marca; Albert Sans mantiene la lectura de datos, formularios y secciones. Las reglas finas y los controles familiares permiten trabajar con calma.
 
 La composición conecta tareas, datos y evidencias reales. La apariencia cubre todo el espacio operativo: la navegación, la marca, la franja de revisión y el índice de pasos son claros en Light y oscuros en Dark. La respuesta de botones e iconos adapta los detalles de Neo Mirai a acciones de trabajo; el contenido permanece estable durante la lectura.
 
@@ -223,9 +223,9 @@ La paleta mantiene los valores OKLCH de los primitivos Kinpaku y conserva los to
 
 ### Primary
 
-- **Oro Kinpaku** (`kinpaku`): fondo del botón principal y pequeño detalle de marca; lleva **tinta sobre oro** (`on-gold`). El dorado es el mismo en los dos temas.
-- **Tinta de acción** (`ink`): enlaces, selección y anillos de controles en Light. En Dark estas funciones usan **Kinpaku pálido** (`kinpaku-pale`).
-- **Foco general** (`focus-ring`): contorno visible de enlaces y superficies en Light; en Dark se resuelve a `kinpaku-pale`. Los controles compartidos conservan su anillo de color primario.
+- **Rojo KMA** (`brand-red`, `#E2231A`, medido del logo): fondo del botón principal y detalles de marca; lleva **blanco** (`on-brand`, 4,68:1). Es el mismo en los dos temas. Sustituye al dorado Kinpaku; el papel y la tinta siguen siendo Kinpaku.
+- **Tinta de acción** (`ink`): enlaces, selección y anillos de controles en Light. En Dark estas funciones usan el **rojo pálido** (`brand-red-pale`, 6,8–9,8:1 sobre las superficies oscuras).
+- **Foco general** (`focus-ring`): contorno visible de enlaces y superficies en Light; en Dark se resuelve a `brand-red-pale`. Los controles compartidos conservan su anillo de color primario.
 
 ### Secondary
 
@@ -248,12 +248,12 @@ Dark es una derivación operativa de la familia instrumental del mismo sitio, ap
 | Tono sutil | `paper-deep` | `instrument-raised` |
 | Texto / secundario | `text` / `text-muted` | `instrument-text` / `instrument-muted` |
 | Borde / selección | `gray-2` / `gray` | `instrument-rule` / `instrument-raised` |
-| Enlace y anillo de control | `ink` | `kinpaku-pale` |
+| Enlace y anillo de control | `ink` | `brand-red-pale` |
 | Fondo de marca y navegación | `paper-raised` | `instrument-deep` |
 | Texto de marca | `ink` | `instrument-text` |
-| Botón principal | `kinpaku` / `on-gold` | `kinpaku` / `on-gold` |
+| Botón principal | `brand-red` / `on-brand` | `brand-red` / `on-brand` |
 
-**The Gold and Ink Rule.** El dorado ilumina superficies y señales; el texto de acción usa tinta en Light y Kinpaku pálido en Dark, mientras el botón dorado conserva su tinta propia.
+**The Red and Ink Rule.** El rojo de marca ilumina superficies y señales; el texto de acción usa tinta en Light y rojo pálido en Dark, mientras el botón rojo conserva su blanco. El rojo de marca nunca comunica error: el destructivo usa fondo suave, borde y etiqueta propios.
 
 **The Whole Theme Rule.** La navegación y los paneles de marca responden a Light y Dark junto al contenido; la ilustración de acceso usa una variante diurna y otra nocturna transparente; el informe conserva sus colores de documento.
 
@@ -271,7 +271,7 @@ Dark es una derivación operativa de la familia instrumental del mismo sitio, ap
 
 - **Display:** título de página fluido (38–52 px, peso 400, interlínea 1.04, espaciado 0), en mayúsculas y sin inclinación; su definición normativa es `display`.
 - **Login display:** el título de la ilustración de acceso crece de (50 px) a (60 px) desde `xl`, con interlínea (1.05); es una variante localizada de `display`.
-- **Wordmark:** marca condensada (32 px, peso 500, interlínea 1, espaciado 0.18 em), con un pequeño cuadrado dorado.
+- **Logo:** círculo rojo `#E2231A` con «KMA» en blanco, reconstruido en SVG (`public/brand/kma-logo.svg`, `app/icon.svg`, `BrandMark`); 40 px en cabecera y acceso.
 - **Title:** secciones Albert Sans (20/28 px, peso 600). Los títulos de diálogo usan el mismo tamaño con peso firme (700).
 - **Body:** lectura (15 px, interlínea 1.4667, aproximadamente 22 px). Los subtítulos de página tienen ancho máximo (65 ch).
 - **Control:** botones y navegación (14/20 px); el botón usa peso (600) y la navegación combina pesos (500/600). Las etiquetas compartidas de formulario usan (14 px, peso 500).
@@ -313,7 +313,7 @@ Con movimiento reducido, se anulan desplazamientos, compresión y animación de 
 
 Controles de esquinas discretas (4 px), paneles y contenedores de datos de esquinas suaves (8 px), y reglas de (1 px). Los badges de estado son plenamente redondeados; esta forma compacta identifica una etiqueta y no altera la forma de las filas de navegación.
 
-La marca combina letras condensadas con un cuadrado dorado de (6 px), separado por (6 px). Los indicadores cuadrados de revisión y los encuadres de evidencia mantienen la relación con un plano arquitectónico.
+La marca es el logo circular rojo de KMA. Los indicadores cuadrados de revisión y los encuadres de evidencia mantienen la relación con un plano arquitectónico.
 
 Los iconos conservan la geometría SVG de Lucide y adoptan el trazo fino (1.5 px) observado en Impeccable, con tamaños operativos habituales de (16–20 px). Mantienen etiquetas de acción accesibles y quedan decorativos cuando acompañan texto. Los SVG del informe conservan el trazo original (2 px).
 
@@ -323,7 +323,7 @@ Los iconos conservan la geometría SVG de Lucide y adoptan el trazo fino (1.5 px
 
 Acciones firmes y reconocibles, sin sombra de base. El [botón compartido](../../../../../src/shared/ui/controls.tsx) ofrece principal, secundario, discreto y destructivo; comparten esquinas, separación entre icono y texto (8 px), relleno (8 × 16 px) y altura mínima operativa.
 
-El principal usa Kinpaku y tinta sobre oro; el secundario usa superficie con borde; el discreto tiene fondo transparente; el destructivo usa el fondo suave, borde y texto de error. Al pasar el puntero, el principal mezcla dorado (88 %) con superficie, los secundarios usan tono sutil y el destructivo mezcla su fondo (85 %) con el tono de error. El foco del control compartido usa un anillo de color primario (2 px). La elevación mínima al hover y la presión están descritas en Elevation & Depth; no se activan desplazamientos con movimiento reducido. Pendiente y deshabilitado conservan la etiqueta y reducen opacidad; el ancho completo es el valor por defecto, con acciones de cabecera ajustadas a su contenido.
+El principal usa rojo KMA y blanco; el secundario usa superficie con borde; el discreto tiene fondo transparente; el destructivo usa el fondo suave, borde y texto de error. Al pasar el puntero, el principal mezcla rojo (88 %) con superficie, los secundarios usan tono sutil y el destructivo mezcla su fondo (85 %) con el tono de error. El foco del control compartido usa un anillo de color primario (2 px). La elevación mínima al hover y la presión están descritas en Elevation & Depth; no se activan desplazamientos con movimiento reducido. Pendiente y deshabilitado conservan la etiqueta y reducen opacidad; el ancho completo es el valor por defecto, con acciones de cabecera ajustadas a su contenido.
 
 ### Chips
 

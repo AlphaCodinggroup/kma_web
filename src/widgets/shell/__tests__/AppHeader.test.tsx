@@ -7,7 +7,7 @@ import AppHeader from "../AppHeader";
 describe("AppHeader", () => {
   it("renders the application identity and current workspace", () => {
     render(<AppHeader />);
-    expect(screen.getByText("KMA")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "KMA" })).toBeInTheDocument();
     expect(screen.getByText("Workspace")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Appearance" })).toBeInTheDocument();
   });

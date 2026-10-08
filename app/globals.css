@@ -14,9 +14,9 @@
 @layer base {
   :root {
     color-scheme: light;
-    --ks-kinpaku: oklch(84% .19 80.46);
-    --ks-kinpaku-pale: oklch(86% .07 84);
-    --ks-on-gold: oklch(14% .018 95);
+    --ks-brand-red: #e2231a;
+    --ks-brand-red-pale: oklch(80% .1 25);
+    --ks-on-brand: #fff;
     --ks-paper: oklch(97.8% 0 0);
     --ks-paper-raised: oklch(99.5% 0 0);
     --ks-paper-deep: oklch(95% 0 0);
@@ -48,8 +48,8 @@
     --kma-border: var(--ks-gray-2);
     --kma-primary: var(--ks-ink);
     --kma-primary-contrast: var(--ks-paper-raised);
-    --kma-accent: var(--ks-kinpaku);
-    --kma-accent-fg: var(--ks-on-gold);
+    --kma-accent: var(--ks-brand-red);
+    --kma-accent-fg: var(--ks-on-brand);
     --kma-danger: #b4233e;
     --kma-danger-bg: #fff1f3;
     --kma-danger-border: #f1c3cd;
@@ -84,10 +84,10 @@
     --kma-fg: var(--ks-instrument-text);
     --kma-muted: var(--ks-instrument-muted);
     --kma-border: var(--ks-instrument-rule);
-    --kma-primary: var(--ks-kinpaku-pale);
+    --kma-primary: var(--ks-brand-red-pale);
     --kma-primary-contrast: var(--ks-instrument-deep);
-    --kma-accent: var(--ks-kinpaku);
-    --ks-focus-ring: var(--ks-kinpaku-pale);
+    --kma-accent: var(--ks-brand-red);
+    --ks-focus-ring: var(--ks-brand-red-pale);
     --kma-danger: #ff9aab;
     --kma-danger-bg: #361f2c;
     --kma-danger-border: #653144;
