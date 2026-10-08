@@ -29,7 +29,8 @@ const Page: React.FC = async () => {
           <p className="mt-5 max-w-sm text-base leading-relaxed text-[var(--kma-muted)]">One workspace to organize your projects, review findings, and deliver clear reports.</p>
         </div>
         <div className="relative -mx-8 min-h-[300px] flex-1 xl:-mx-12">
-          <Image src="/images/daylight-section.webp" alt="" fill priority sizes="(min-width: 1024px) 54vw, 0px" className="object-contain object-bottom" />
+          <Image src="/images/daylight-section.webp" alt="" fill priority sizes="(min-width: 1024px) 54vw, 0px" className="kma-login-art-light object-contain object-bottom" />
+          <Image src="/images/daylight-section-dark.webp" alt="" fill priority sizes="(min-width: 1024px) 54vw, 0px" className="kma-login-art-dark object-contain object-bottom" />
         </div>
         <div className="relative z-10 mt-5 flex items-center justify-between gap-4 border-t border-[var(--kma-border)] pt-5 text-xs text-[var(--kma-muted)]"><p>KMA · Project and audit management</p><span aria-hidden="true" className="h-0.5 w-12 bg-[var(--kma-accent)]" /></div>
       </section>

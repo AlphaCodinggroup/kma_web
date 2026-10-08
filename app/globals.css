@@ -140,6 +140,9 @@
 }
 
 @layer components {
+  .kma-login-art-dark { display: none; }
+  .dark .kma-login-art-light { display: none; }
+  .dark .kma-login-art-dark { display: block; }
   .kma-button { background-color: var(--kma-accent); color: var(--kma-accent-fg); }
   .kma-page-title {
     font-family: var(--font-display), var(--font-heading), ui-sans-serif, sans-serif;

@@ -255,7 +255,7 @@ Dark es una derivación operativa de la familia instrumental del mismo sitio, ap
 
 **The Gold and Ink Rule.** El dorado ilumina superficies y señales; el texto de acción usa tinta en Light y Kinpaku pálido en Dark, mientras el botón dorado conserva su tinta propia.
 
-**The Whole Theme Rule.** La navegación y los paneles de marca responden a Light y Dark junto al contenido; la ilustración y el informe conservan sus colores de documento.
+**The Whole Theme Rule.** La navegación y los paneles de marca responden a Light y Dark junto al contenido; la ilustración de acceso usa una variante diurna y otra nocturna transparente; el informe conserva sus colores de documento.
 
 ## Typography
 
@@ -349,7 +349,7 @@ Una [franja de tres tramos conectados](../../../../../src/widgets/dashboard/Revi
 
 ### Evidence and report
 
-Las fotografías proceden de adjuntos de auditoría, cerca de su respuesta y con estados de ausencia o error; la ilustración de acceso no representa evidencia. El archivo original [Daylight Section](../../../../../public/images/daylight-section.webp) pesa (157 410 bytes) y conserva su [prompt exacto y fecha](../../../../../public/images/daylight-section.webp.json).
+Las fotografías proceden de adjuntos de auditoría, cerca de su respuesta y con estados de ausencia o error; la ilustración de acceso no representa evidencia. El archivo original [Daylight Section](../../../../../public/images/daylight-section.webp) pesa (157 410 bytes) y conserva su [prompt exacto y fecha](../../../../../public/images/daylight-section.webp.json). Light conserva ese archivo intacto. Dark usa [su variante nocturna](../../../../../public/images/daylight-section-dark.webp), con la misma arquitectura, luz cálida y fondo alfa transparente para integrarse sobre la superficie instrumental; conserva [prompt, origen y método](../../../../../public/images/daylight-section-dark.webp.json). La elección sigue la clase de apariencia aplicada al documento, incluidas preferencias manuales opuestas al sistema, sin filtros de inversión ni cambios de composición.
 
 La [vista previa de informe](../../../../../src/features/audits/ui/ReportPreview.tsx) es una isla documental: papel blanco, Source Sans 3, formato y paleta originales, independientemente del tema. Sus estilos y su trazo de iconos original (2 px) pertenecen al informe y no sustituyen los tokens operativos de la aplicación.
 

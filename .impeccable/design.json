@@ -746,7 +746,15 @@
         "name": "xl",
         "value": "1280px"
       }
-    ]
+    ],
+    "loginArtVariants": {
+      "light": "public/images/daylight-section.webp",
+      "dark": "public/images/daylight-section-dark.webp",
+      "themeAuthority": "document class, not browser color preference",
+      "darkBackground": "transparent alpha",
+      "sourceUnchanged": true,
+      "provenance": "public/images/daylight-section-dark.webp.json"
+    }
   },
   "components": [
     {

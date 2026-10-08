@@ -32,4 +32,6 @@ En publicaciones futuras, para volver a una compilación previamente correcta de
 
 Esperar a que Amplify confirme éxito en compilación y publicación del commit de `new-ui`; comprobar HTTPS, página de login, recursos de fuentes e imagen, ambos temas y consola en Chrome. Los recorridos locales con datos sintéticos no se repetirán sobre datos del backend publicado.
 
-Estado inicial: rama preparada; PR y despliegue pendientes de sus identificadores reales.
+Publicación inicial confirmada: [PR #77](https://github.com/AlphaCodinggroup/kma_web/pull/77), commit `0c884c27e36a95817cce878c321d83adcd96a7c4`, trabajo Amplify `1` con BUILD, DEPLOY y VERIFY en `SUCCEED`; `/login` respondió HTTPS 200. Los checks del PR también terminaron correctamente.
+
+Pablo pidió después mejorar la imagen de Dark y autorizó pushear y desplegar esa corrección en la misma rama. La nueva variante conserva la imagen Light original; sus comprobaciones y capturas específicas quedan en `validation/dark-login/`. El trabajo siguiente debe validarse antes de dar esta actualización por publicada.

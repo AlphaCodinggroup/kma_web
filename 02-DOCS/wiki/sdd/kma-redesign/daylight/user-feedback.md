@@ -26,3 +26,7 @@ Pruebas específicas comprueban fondos claros/oscuros en los paneles de escritor
 ## Cabeceras coherentes
 
 Pablo señaló que Reports mostraba el subtítulo debajo de la línea, mientras Projects lo ubicaba correctamente arriba. Reports y Audits pasan el subtítulo al componente PageHeader compartido: título, descripción y acción forman un bloque único; la línea siempre cierra ese bloque. Se revisaron Dashboard, Projects/Facilities, Users, Flows y ambos editores, que ya consumían ese patrón.
+
+## Ilustración del acceso en Dark
+
+Pablo confirmó que la imagen diurna funciona en Light y pidió mejorar su integración en Dark. Se conserva intacto el activo original y se produce una edición nocturna de la misma arquitectura mediante la herramienta incorporada Imagegen: iluminación cálida y fondo transparente real. La selección usa la clase de apariencia del documento, sin invertir colores ni reemplazar la versión Light. Prompt, método y activo de origen acompañan al WebP nuevo. La imagen sigue siendo identidad de marca, nunca evidencia de auditoría.
