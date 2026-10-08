@@ -54,7 +54,7 @@ describe("FlowEditorPage", () => {
 
     expect(useFlowById).toHaveBeenCalledWith("flow-1", true);
     expect(
-      screen.getByRole("heading", { name: "Flow editor" })
+      screen.getByRole("heading", { name: "Edit Flow: Curb ramps" })
     ).toBeTruthy();
     expect(screen.getByTestId("editor").textContent).toBe("flow-1");
   });

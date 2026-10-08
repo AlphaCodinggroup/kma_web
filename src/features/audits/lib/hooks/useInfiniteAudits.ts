@@ -1,6 +1,6 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import listAudits from "../usecases/listAudits";
 import type { UseListAuditsOptions } from "./useListAudits";
 
@@ -22,6 +22,9 @@ export function useInfiniteAudits(opts: UseListAuditsOptions = {}) {
     enabled: opts.enabled ?? true,
     staleTime: opts.staleTime ?? 60_000,
     gcTime: opts.gcTime ?? 5 * 60_000,
+    // Al cambiar un filtro se conservan las filas anteriores. Sin reintentos automáticos: un error de cursor
+    // detiene la carga y se reanuda con el reintento explícito de la página.
+    placeholderData: keepPreviousData,
     retry: false,
   });
 }

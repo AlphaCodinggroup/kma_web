@@ -9,7 +9,7 @@ import AppHeader from "./AppHeader";
 import SidebarNav from "./SidebarNav";
 
 const SECTIONS: Record<string, string> = {
-  dashboard: "Dashboard", projects: "Projects", audits: "Audits", reports: "Reports", flows: "Flows", users: "User management",
+  dashboard: "Dashboard", projects: "Projects", audits: "Audits", reports: "Reports", flows: "Flows", users: "User Management",
 };
 
 type AppShellProps = {

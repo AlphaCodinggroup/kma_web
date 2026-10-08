@@ -91,13 +91,13 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     error: updateError,
   } = useUpdateFacilityMutation();
 
-  const { mutateAsync: deleteFacility, isPending: isDeleting, error: deleteError } =
+  const { mutateAsync: deleteFacility, isPending: isDeleting, error: deleteError, reset: resetDelete } =
     useDeleteFacilityMutation();
 
-  const { mutateAsync: archiveFacility, isPending: isArchiving, error: archiveError } =
+  const { mutateAsync: archiveFacility, isPending: isArchiving, error: archiveError, reset: resetArchive } =
     useArchiveFacilityMutation();
 
-  const { mutateAsync: restoreFacility, isPending: isRestoring, error: restoreError } =
+  const { mutateAsync: restoreFacility, isPending: isRestoring, error: restoreError, reset: resetRestore } =
     useRestoreFacilityMutation();
 
   // Expose create trigger to parent via ref
@@ -182,10 +182,12 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     (id: string) => {
       const found = facilities.find((f) => f.id === id);
       if (!found) return;
+      // Un error de un intento anterior no debe aparecer en el diálogo de otra instalación.
+      resetDelete();
       setFacilityToDelete(found);
       setOpenDelete(true);
     },
-    [facilities],
+    [facilities, resetDelete],
   );
 
   const confirmDelete = useCallback(async () => {
@@ -205,10 +207,12 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     (id: string) => {
       const found = facilities.find((f) => f.id === id);
       if (!found) return;
+      // Un error de un intento anterior no debe aparecer en el diálogo de otra instalación.
+      resetArchive();
       setFacilityToArchive(found);
       setOpenArchive(true);
     },
-    [facilities],
+    [facilities, resetArchive],
   );
 
   const confirmArchive = useCallback(async () => {
@@ -228,10 +232,12 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     (id: string) => {
       const found = facilities.find((f) => f.id === id);
       if (!found) return;
+      // Un error de un intento anterior no debe aparecer en el diálogo de otra instalación.
+      resetRestore();
       setFacilityToRestore(found);
       setOpenRestore(true);
     },
-    [facilities],
+    [facilities, resetRestore],
   );
 
   const confirmRestore = useCallback(async () => {

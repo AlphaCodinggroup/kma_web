@@ -20,4 +20,4 @@ Conservar rutas, permisos, contratos, React Query, filtros en URL, paginación i
 Nombre KMA. Pablo rechazó la primera estética y pidió una renovación empresarial profesional; delegó el criterio de diseño al agente.
 
 ## Evidence on Hand
-Datos de prueba reales del backend, fotografías de auditorías y capturas de la primera versión en ../screenshots/. Sin series históricas ni tendencias: no inventar gráficos o porcentajes.
+Datos de prueba reales del backend, fotografías de auditorías y la versión de `main` en producción como línea base visual y funcional (capturas en `02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-baseline/`). Sin series históricas ni tendencias: no inventar gráficos o porcentajes.

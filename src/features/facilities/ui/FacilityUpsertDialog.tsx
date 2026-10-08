@@ -153,8 +153,8 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
 
       const errors: Partial<Record<"name" | "address" | "city", string>> = {};
       if (!trimmedName) errors.name = "Name is required.";
-      if (mode === "create" && !trimmedAddress) errors.address = "Address is required.";
-      if (mode === "create" && !trimmedCity) errors.city = "City, State is required.";
+      if (!trimmedAddress) errors.address = "Address is required.";
+      if (!trimmedCity) errors.city = "City, State is required.";
       setFieldErrors(errors);
       const firstError = (Object.keys(errors) as (keyof typeof errors)[])[0];
       if (firstError) {

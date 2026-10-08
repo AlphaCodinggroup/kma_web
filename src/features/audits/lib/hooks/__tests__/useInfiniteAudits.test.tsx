@@ -43,6 +43,20 @@ describe("useInfiniteAudits", () => {
     expect(result.current.data?.pages).toHaveLength(1);
   });
 
+  it("keeps the previous rows visible while a changed filter is loading", async () => {
+    listAudits.mockResolvedValueOnce({ audits: [row], total: 1 });
+    const { result, rerender } = renderHook(({ status }) => useInfiniteAudits({ status }), { wrapper: Wrapper, initialProps: { status: "completed" } });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    let resolveNext: (value: unknown) => void = () => undefined;
+    listAudits.mockReturnValueOnce(new Promise(resolve => { resolveNext = resolve; }));
+    rerender({ status: "draft_report_pending_review" });
+    await waitFor(() => expect(result.current.isPlaceholderData).toBe(true));
+    expect(result.current.data?.pages[0]?.audits[0]?.id).toBe("audit-1");
+    await act(async () => { resolveNext({ audits: [{ id: "other" }], total: 1 }); });
+    await waitFor(() => expect(result.current.data?.pages[0]?.audits[0]?.id).toBe("other"));
+    expect(result.current.isPlaceholderData).toBe(false);
+  });
+
   it("keeps loaded data when loading the next page fails", async () => {
     listAudits.mockResolvedValueOnce({ audits: [row], total: 2, last_eval_id: "cursor" }).mockRejectedValue(new Error("offline"));
     const { result } = renderHook(() => {

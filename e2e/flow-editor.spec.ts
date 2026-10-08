@@ -116,6 +116,8 @@ test("uploads a reference image, saves and exports an isolated flow", async ({ p
     await page.goto(`/flows/${fixture.id}`);
     await expect(page.getByRole("textbox", { name: "Flow title", exact: true })).toHaveValue(fixtureTitle);
     const chooser = page.waitForEvent("filechooser");
+    // Un solo «Add Image», en la cabecera del paso, también cuando el paso ya tiene fotos.
+    await expect(page.getByRole("button", { name: "Add Image", exact: true })).toHaveCount(1);
     await page.getByRole("button", { name: "Add Image", exact: true }).click();
     const png = await page.evaluate(() => {
       const canvas = document.createElement("canvas");
@@ -158,4 +160,22 @@ test("uploads a reference image, saves and exports an isolated flow", async ({ p
     expect(deleted.ok()).toBe(true);
   }
   expect(await readSeed(page)).toEqual(seed);
+});
+
+test("shows the production editor structure on desktop", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 960 });
+  await login(page);
+  await page.goto(`/flows/${FLOW_ID}`);
+  await expect(page.getByRole("heading", { level: 1, name: /^Edit Flow: / })).toBeVisible();
+  const steps = (await readSeed(page)).steps.length;
+  await expect(page.getByText(new RegExp(`· ${steps} nodes?$`))).toBeVisible();
+  const table = page.getByRole("table", { name: "Flow step sequence" });
+  for (const name of ["ID", "Type", "Question / Title", "Routing", "Barriers"]) {
+    await expect(table.getByRole("columnheader", { name, exact: true })).toBeVisible();
+  }
+  await expect(page.getByRole("region", { name: "Step details" }).getByText("Editing step details")).toBeVisible();
+  await page.getByRole("button", { name: "How to create a flow", exact: true }).click();
+  await expect(page.getByText("How to setup Double Dipping:")).toBeVisible();
+  await page.getByRole("button", { name: "Got it!", exact: true }).click();
+  await expect(page.getByText("How to setup Double Dipping:")).toBeHidden();
 });

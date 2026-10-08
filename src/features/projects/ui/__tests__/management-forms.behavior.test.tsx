@@ -42,6 +42,14 @@ describe("management forms", () => {
     expect(screen.getByLabelText("Name")).toHaveValue("Jane");
   });
 
+  it.each(["ops@localhost", "jane@kma.test"])("accepts the address %s like the browser email field", (email) => {
+    const onSubmit = vi.fn();
+    render(<CreateUserDialog open onOpenChange={vi.fn()} onSubmit={onSubmit} defaultValues={{ name: "Jane", email, role: "qc" }} />);
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "s3cret-pass" } });
+    fireEvent.submit(screen.getByRole("dialog").querySelector("form")!);
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ email }));
+  });
+
   it("focuses the missing facility address and retains the valid name", () => {
     const onSubmit = vi.fn();
     render(<FacilityUpsertDialog open mode="create" onOpenChange={vi.fn()} onSubmit={onSubmit} defaultValues={{ name: "North", city: "Boston" }} />);

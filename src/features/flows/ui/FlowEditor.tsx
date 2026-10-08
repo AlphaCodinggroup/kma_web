@@ -4,6 +4,7 @@ import React from "react";
 import type { Flow, FormStep, QuestionStep, SelectStep, FlowStep, FormField } from "@entities/flow/model";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import { Button, Input, Label } from "@shared/ui/controls";
+import { Badge } from "@shared/ui/badge";
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from "@shared/ui/modal";
 import {
     Save,
@@ -14,7 +15,11 @@ import {
     CheckCircle2,
     AlertCircle,
     List,
-    X
+    X,
+    Zap,
+    HelpCircle,
+    FileText,
+    AlertTriangle
 } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { sanitizeFileName } from "@shared/lib/file";
@@ -24,6 +29,8 @@ import { flowsKeys } from "@features/flows/lib/useFlowsQuery";
 import { useSession } from "@processes/auth/hooks";
 import { FlowStepsTable } from "./FlowStepsTable";
 import { StepDetailInspector } from "./StepDetailInspector";
+
+const HELP_NUMBER = "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--kma-primary)] text-sm text-[var(--kma-primary-contrast)]";
 
 interface FlowEditorProps {
     initialFlow: Flow;
@@ -724,64 +731,86 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
         setAutoLinkModal(null);
     };
 
-    const stepsPanel = (
-                    <FlowStepsTable
-                        flow={flow}
-                        selectedStepId={selectedStepId}
-                        onSelectStep={(id) => { setSelectedStepId(id); setStepsOpen(false); }}
-                        onDeleteStep={handleDeleteStep}
-                        onAddStep={handleAddStep}
-                        searchTerm={searchTerm}
-                        onSearchChange={setSearchTerm}
-                        isAdmin={isAdmin && !isSaving}
-                        draggedStepId={draggedStepId}
-                        dragOverStepId={dragOverStepId}
-                        onDragStart={handleDragStart}
-                        onDragOver={handleDragOver}
-                        onDragEnter={handleDragEnter}
-                        onDragLeave={handleDragLeave}
-                        onDragEnd={handleDragEnd}
-                        onDrop={handleDrop}
-                        isStepIncomplete={isStepIncomplete}
-                    />
+    const renderStepsPanel = (layout: "table" | "list") => (
+        <FlowStepsTable
+            flow={flow}
+            layout={layout}
+            selectedStepId={selectedStepId}
+            onSelectStep={(id) => { setSelectedStepId(id); setStepsOpen(false); }}
+            onDeleteStep={handleDeleteStep}
+            onAddStep={handleAddStep}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            isAdmin={isAdmin && !isSaving}
+            draggedStepId={draggedStepId}
+            dragOverStepId={dragOverStepId}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragEnd={handleDragEnd}
+            onDrop={handleDrop}
+            isStepIncomplete={isStepIncomplete}
+        />
     );
 
+    const titleMissing = !flow.title.trim() && feedback.messages.includes("Flow Title is required.");
+    const inlineField = "min-w-0 rounded border border-transparent bg-transparent px-1.5 py-0.5 text-[var(--kma-fg)] transition-colors placeholder:text-[var(--kma-muted)] hover:border-[var(--kma-border)] focus:border-[var(--kma-primary)] focus:bg-[var(--kma-surface)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-80";
+
     return (
-        <div className="flex min-h-[650px] flex-col overflow-hidden rounded-lg border border-[var(--kma-brand-border)] bg-[var(--kma-canvas)] xl:h-[calc(100dvh-205px)]" aria-busy={isSaving}>
-            <div className="grid shrink-0 gap-4 border-b border-[var(--kma-border)] bg-[var(--kma-surface)] p-4 sm:p-6 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
-                <div className="grid min-w-0 gap-4 sm:grid-cols-2">
-                    <div className="min-w-0">
-                        <Label htmlFor={`${metadataId}-title`}>Flow title</Label>
+        <div className="flex min-h-[650px] min-w-0 flex-col gap-3 xl:h-[calc(100dvh-205px)]" aria-busy={isSaving}>
+            <div className="flex shrink-0 flex-wrap items-start justify-between gap-x-6 gap-y-3 px-1 py-1">
+                <div className="min-w-0 flex-[1_1_20rem]">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <Label htmlFor={`${metadataId}-title`} className="sr-only">Flow title</Label>
                         <Input
                             id={`${metadataId}-title`}
                             ref={titleInputRef}
                             value={flow.title}
-                            aria-invalid={!flow.title.trim() && feedback.messages.includes("Flow Title is required.")}
-                            aria-describedby={!flow.title.trim() && feedback.messages.includes("Flow Title is required.") ? `${metadataId}-error` : undefined}
+                            aria-invalid={titleMissing}
+                            aria-describedby={titleMissing ? `${metadataId}-error` : undefined}
                             onChange={(e) => setFlow({ ...flow, title: e.target.value })}
                             disabled={isSaving || !isAdmin}
                             placeholder="Untitled Flow"
                             aria-label="Flow title"
+                            style={{ width: `${Math.min(Math.max(flow.title.length + 2, 14), 40)}ch`, minWidth: "min(100%, 20rem)" }}
+                            className={`${inlineField} max-w-full !min-h-0 !w-auto !text-xl font-bold sm:!text-2xl`}
                         />
-                        {!flow.title.trim() && feedback.messages.includes("Flow Title is required.") ? <p id={`${metadataId}-error`} className="mt-1 text-sm text-[var(--kma-danger)]">Enter a title for this flow.</p> : null}
+                        <span className="inline-flex items-center gap-1">
+                            <span className="shrink-0 whitespace-nowrap text-sm font-medium text-[var(--kma-muted)]">
+                                · {flow.steps.length} {flow.steps.length === 1 ? "node" : "nodes"}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setShowHelpModal(true)}
+                                title="How to create a flow"
+                                aria-label="How to create a flow"
+                                className="inline-flex h-[var(--kma-control-height)] w-[var(--kma-control-height)] shrink-0 items-center justify-center rounded text-[var(--kma-muted)] transition-colors hover:bg-[var(--kma-subtle)] hover:text-[var(--kma-primary)]"
+                            >
+                                <Info className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                        </span>
                     </div>
-                    <div className="min-w-0">
-                        <Label htmlFor={`${metadataId}-description`}>Description <span className="font-normal text-[var(--kma-muted)]">(optional)</span></Label>
-                        <Input
-                            id={`${metadataId}-description`}
-                            value={flow.description ?? ""}
-                            onChange={(e) => setFlow({ ...flow, description: e.target.value })}
-                            disabled={isSaving || !isAdmin}
-                            placeholder="Add a description (optional)..."
-                            aria-label="Flow description"
-                        />
-                    </div>
+                    <Label htmlFor={`${metadataId}-description`} className="sr-only">Flow description</Label>
+                    <Input
+                        id={`${metadataId}-description`}
+                        value={flow.description ?? ""}
+                        onChange={(e) => setFlow({ ...flow, description: e.target.value })}
+                        disabled={isSaving || !isAdmin}
+                        placeholder="Add a description (optional)..."
+                        aria-label="Flow description"
+                        className={`${inlineField} !min-h-0 w-full max-w-md !text-sm`}
+                    />
+                    {titleMissing ? <p id={`${metadataId}-error`} className="mt-1 text-sm text-[var(--kma-danger)]">Enter a title for this flow.</p> : null}
                 </div>
-                <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+                <div className="flex flex-wrap items-center gap-2">
                     {hasUnsavedChanges ? (
-                        <Button type="button" variant="ghost" fullWidth={false} onClick={handleClearFlow} disabled={isSaving || !isAdmin} title={!isAdmin ? "Only administrators can discard changes" : "Discard changes and restore the saved flow"}>
-                            <RotateCcw className="h-4 w-4" aria-hidden="true" />Discard
-                        </Button>
+                        <>
+                            <Badge tone="warning" role="status">Unsaved changes</Badge>
+                            <Button type="button" variant="destructive" fullWidth={false} onClick={handleClearFlow} disabled={isSaving || !isAdmin} title={!isAdmin ? "Only administrators can discard changes" : "Discard changes and restore the saved flow"}>
+                                <RotateCcw className="h-4 w-4" aria-hidden="true" />Discard
+                            </Button>
+                        </>
                     ) : null}
                     <Button type="button" variant="secondary" fullWidth={false} onClick={handleExport} disabled={isSaving} title="Export flow as JSON">
                         <Download className="h-4 w-4" aria-hidden="true" />Export
@@ -792,16 +821,8 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                     </Button>
                 </div>
             </div>
-            <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-2 sm:px-6">
-                <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--kma-muted)]">
-                    <span>{flow.steps.length} {flow.steps.length === 1 ? "step" : "steps"}</span>
-                    {flow.code ? <span>{flow.code}</span> : null}
-                    {hasUnsavedChanges ? <span role="status" className="text-[var(--kma-warning)]">Unsaved changes</span> : null}
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <Button type="button" variant="ghost" fullWidth={false} onClick={() => setShowHelpModal(true)} title="How to create a flow"><Info className="h-4 w-4" aria-hidden="true" />Flow guide</Button>
-                    <Button type="button" variant="secondary" fullWidth={false} className="xl:hidden" onClick={() => setStepsOpen(true)} aria-expanded={stepsOpen} disabled={isSaving}><List className="h-4 w-4" aria-hidden="true" />Browse steps</Button>
-                </div>
+            <div className="flex shrink-0 xl:hidden">
+                <Button type="button" variant="secondary" fullWidth={false} onClick={() => setStepsOpen(true)} aria-expanded={stepsOpen} disabled={isSaving}><List className="h-4 w-4" aria-hidden="true" />Browse steps</Button>
             </div>
             <Modal open={stepsOpen} onOpenChange={setStepsOpen} className="justify-start p-0 sm:p-0">
                 <ModalContent className="flex h-dvh max-h-dvh max-w-sm flex-col overflow-hidden rounded-none p-0 sm:p-0">
@@ -809,15 +830,15 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                         <ModalTitle>Flow steps</ModalTitle>
                         <button type="button" onClick={() => setStepsOpen(false)} aria-label="Close steps" className="inline-flex h-11 w-11 items-center justify-center rounded hover:bg-[var(--kma-subtle)]"><X className="h-5 w-5" aria-hidden="true" /></button>
                     </ModalHeader>
-                    {stepsPanel}
+                    {renderStepsPanel("list")}
                 </ModalContent>
             </Modal>
 
-            <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)]">
-                <div className="hidden h-full min-w-0 flex-col xl:flex">
-                    {stepsPanel}
+            <div className="flex min-h-0 flex-1 gap-4">
+                <div className="hidden min-w-0 flex-[3] flex-col xl:flex">
+                    {renderStepsPanel("table")}
                 </div>
-                <div className="flex h-full min-w-0 flex-col xl:border-l xl:border-[var(--kma-border)]">
+                <div className="flex min-w-0 flex-1 flex-col xl:min-w-[340px] xl:max-w-[480px] xl:flex-[2]">
                     <StepDetailInspector
                         selectedStep={selectedStep}
                         flow={flow}
@@ -923,19 +944,59 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
             {/* Help Modal */}
             <Modal open={showHelpModal} onOpenChange={setShowHelpModal}>
-                <ModalContent className="max-w-2xl">
+                <ModalContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
                     <ModalHeader>
                         <ModalTitle>How to Create a Flow</ModalTitle>
-                        <ModalDescription>Build the questions, evidence fields and destinations for an audit.</ModalDescription>
+                        <ModalDescription>Step-by-step guide to building audit flows</ModalDescription>
                     </ModalHeader>
-                    <ol className="max-w-prose space-y-6 text-sm leading-6 text-[var(--kma-muted)]">
-                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Set Flow Details</h3><p>Enter a title and description that identify what the auditor will inspect.</p></li>
-                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Create Steps (The Workflow)</h3><p>Add steps from the index. Use <strong className="text-[var(--kma-fg)]">Create</strong> beside a destination to add and link a new step in one action.</p></li>
-                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Step Types</h3><dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2"><dt className="font-medium text-[var(--kma-fg)]">Question</dt><dd>A Yes/No answer with a destination for each branch.</dd><dt className="font-medium text-[var(--kma-fg)]">Form</dt><dd>Quantity, measurements, photos or notes to record evidence.</dd><dt className="font-medium text-[var(--kma-fg)]">Select</dt><dd>A set of choices, each with its own destination.</dd><dt className="font-medium text-[var(--kma-fg)]">End</dt><dd>The final step that completes the flow.</dd></dl></li>
-                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Connect and Validate</h3><p>Connect each branch and option to its next step. The index marks incomplete links; saving identifies the details that still need attention.</p></li>
-                        <li><h3 className="mb-2 text-base font-semibold text-[var(--kma-fg)]">Advanced: Double Dipping &amp; Shared Forms</h3><p>Conditional navigation can connect multiple barriers to a shared Form step. When you save, Shared Quantity records the barrier IDs detected from those conditional links.</p></li>
+                    <ol className="list-none space-y-6 text-sm leading-6 text-[var(--kma-fg)]">
+                        <li>
+                            <h3 className="mb-2 flex items-center gap-2 text-base font-semibold"><span aria-hidden="true" className={HELP_NUMBER}>1</span>Set Flow Details</h3>
+                            <p className="ml-8 text-[var(--kma-muted)]">Enter a title and description for your flow. This helps identify the purpose of the audit.</p>
+                        </li>
+                        <li>
+                            <h3 className="mb-2 flex items-center gap-2 text-base font-semibold"><span aria-hidden="true" className={HELP_NUMBER}>2</span>Create Steps (The Workflow)</h3>
+                            <div className="ml-8 space-y-3">
+                                <p>A Flow is a sequence of steps. You typically start with a <strong>Select</strong> or a <strong>Question</strong>.</p>
+                                <div className="rounded-lg border border-[var(--kma-success-border)] bg-[var(--kma-success-bg)] p-3">
+                                    <p className="mb-1 flex items-center gap-1 text-sm font-medium text-[var(--kma-success)]"><Zap className="h-4 w-4" aria-hidden="true" />Efficient Way: Inline Create</p>
+                                    <p>
+                                        Instead of creating steps one-by-one, just use the <span className="rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] px-1 text-xs font-medium">+ Create</span> button beside any &quot;Next Step&quot; selector and choose a step type. This creates and links the new step in one go.
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <h3 className="mb-2 flex items-center gap-2 text-base font-semibold"><span aria-hidden="true" className={HELP_NUMBER}>3</span>Step Types</h3>
+                            <ul className="ml-8 space-y-2">
+                                <li className="flex items-start gap-2"><HelpCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--kma-primary)]" aria-hidden="true" /><span><span className="font-medium">Question:</span> Yes/No branching to verify conditions.</span></li>
+                                <li className="flex items-start gap-2"><FileText className="mt-0.5 h-4 w-4 shrink-0 text-[var(--kma-success)]" aria-hidden="true" /><span><span className="font-medium">Form:</span> The destination for data collection (measurements, photos, notes).</span></li>
+                                <li className="flex items-start gap-2"><List className="mt-0.5 h-4 w-4 shrink-0 text-[var(--kma-info)]" aria-hidden="true" /><span><span className="font-medium">Select:</span> A menu of categorical options with distinct branches.</span></li>
+                                <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--kma-muted)]" aria-hidden="true" /><span><span className="font-medium">End:</span> Terminates the flow immediately.</span></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h3 className="mb-2 flex items-center gap-2 text-base font-semibold"><span aria-hidden="true" className={HELP_NUMBER}>4</span>Visual Checks</h3>
+                            <p className="ml-8 flex items-start gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--kma-warning)]" aria-hidden="true" /><span><span className="font-medium text-[var(--kma-warning)]">Incomplete Step:</span> Means a &quot;Next Step&quot; is missing. You must fill all links before saving.</span></p>
+                        </li>
+                        <li>
+                            <h3 className="mb-2 flex items-center gap-2 text-base font-semibold"><span aria-hidden="true" className={HELP_NUMBER}>5</span>Advanced: Double Dipping &amp; Shared Forms</h3>
+                            <div className="ml-8 space-y-3">
+                                <p><strong>&quot;Double Dipping&quot;</strong> allows you to reuse a single Form step for multiple different barriers or scenarios. This is powerful for grouping findings.</p>
+                                <div className="space-y-2 rounded-lg border border-[var(--kma-info-border)] bg-[var(--kma-info-bg)] p-3">
+                                    <p className="text-xs font-semibold uppercase text-[var(--kma-info)]">How to setup Double Dipping:</p>
+                                    <ol className="ml-1 list-inside list-decimal space-y-1">
+                                        <li>Create a single <strong>Form</strong> step (e.g. &quot;Record Barrier Quantity&quot;).</li>
+                                        <li>Create your <strong>Questions</strong> (e.g. &quot;Is the door too heavy?&quot;, &quot;Is the knob accessible?&quot;).</li>
+                                        <li>Set the <strong>Barrier ID</strong> on each Question to their respective barrier code.</li>
+                                        <li>Point the failing branch of both Questions to the <strong>same Form step</strong>.</li>
+                                    </ol>
+                                </div>
+                                <p className="flex items-start gap-2 pt-1 text-xs text-[var(--kma-muted)]"><Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--kma-info)]" aria-hidden="true" /><span><strong>Auto-Calculation:</strong> When you save, the system automatically detects all the &quot;Double Dippings&quot; and calculates the &quot;Shared Quantity&quot; logic for you. You do not need to manually assign Barrier IDs to the Form.</span></p>
+                            </div>
+                        </li>
                     </ol>
-                    <ModalFooter><Button fullWidth={false} onClick={() => setShowHelpModal(false)}>Got it!</Button></ModalFooter>
+                    <ModalFooter className="mt-6 justify-center border-t border-[var(--kma-border)] pt-4"><Button fullWidth={false} onClick={() => setShowHelpModal(false)}>Got it!</Button></ModalFooter>
                 </ModalContent>
             </Modal>
 

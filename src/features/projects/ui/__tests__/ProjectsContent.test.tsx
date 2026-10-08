@@ -44,6 +44,8 @@ const createProjectMock = vi.fn();
 const updateProjectMock = vi.fn();
 const deleteProjectMock = vi.fn();
 const archiveProjectMock = vi.fn();
+const resetDeleteMock = vi.fn();
+const resetArchiveMock = vi.fn();
 const projectsQuerySpy = vi.fn();
 const usersQuerySpy = vi.fn();
 const facilitiesQuerySpy = vi.fn();
@@ -104,7 +106,7 @@ vi.mock("@features/projects/ui/hooks/useDeleteProjectMutation", () => ({
     onError?: (error: unknown) => void;
   }) => {
     state.deleteOptions = options;
-    return { mutate: deleteProjectMock, isPending: state.isDeleting };
+    return { mutate: deleteProjectMock, isPending: state.isDeleting, error: null, reset: resetDeleteMock };
   },
 }));
 
@@ -112,6 +114,8 @@ vi.mock("@features/projects/ui/hooks/useArchiveProjectMutation", () => ({
   useArchiveProjectMutation: () => ({
     mutateAsync: archiveProjectMock,
     isPending: state.isArchiving,
+    error: null,
+    reset: resetArchiveMock,
   }),
 }));
 
@@ -924,6 +928,18 @@ describe("ProjectsContent", () => {
   });
 
   describe("delete", () => {
+    it("clears a previous delete error when the dialog opens for another project", async () => {
+      renderContent();
+
+      await userEvent.click(
+        within(rowFor("Alpha Tower")).getByRole("button", {
+          name: "Delete project",
+        }),
+      );
+
+      expect(resetDeleteMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and deletes the selected project", async () => {
       renderContent();
 
@@ -1008,6 +1024,16 @@ describe("ProjectsContent", () => {
   });
 
   describe("archive", () => {
+    it("clears a previous archive error when the dialog opens for another project", async () => {
+      renderContent();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: "archive p-alpha" }),
+      );
+
+      expect(resetArchiveMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and archives the selected project", async () => {
       renderContent();
 

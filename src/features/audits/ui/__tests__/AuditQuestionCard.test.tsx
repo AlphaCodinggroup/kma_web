@@ -1242,3 +1242,24 @@ it("keeps access to the original photograph if its preview cannot load", () => {
   expect(screen.getByRole("status")).toHaveTextContent("Photograph unavailable");
   expect(screen.getByRole("link", { name: "View Entrance photograph" })).toHaveAttribute("href", "https://files.test/entrance.jpg");
 });
+
+describe("AuditQuestionCard — answer colours", () => {
+  it("shows Yes in ink and No in the danger colour so findings stand out", () => {
+    const { rerender } = render(
+      <AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answeredYes={true} />
+    );
+    expect(screen.getByText("Yes")).toHaveClass("bg-[var(--kma-fg)]");
+    expect(screen.getByText("Yes")).not.toHaveClass("bg-[var(--kma-danger)]");
+
+    rerender(<AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answeredYes={false} />);
+    expect(screen.getByText("No")).toHaveClass("bg-[var(--kma-danger)]");
+  });
+
+  it("highlights the whole UNSURE card with the warning colour", () => {
+    render(
+      <AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answerValue="UNSURE" />
+    );
+    expect(screen.getByText("UNSURE")).toHaveClass("text-[var(--kma-warning)]");
+    expect(screen.getByRole("article")).toHaveClass("border-l-[var(--kma-warning)]");
+  });
+});

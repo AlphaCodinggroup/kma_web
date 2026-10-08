@@ -11,9 +11,11 @@ export interface AuditsFiltersProps {
     onStatusChange: (value: string) => void;
     onClearFilters: () => void;
     availableAuditors: AuditorOption[];
+    /** Hay texto de búsqueda: el botón de limpiar también lo borra, así que debe mostrarse. */
+    searchActive?: boolean;
 }
 
-const STATUS_OPTIONS = [
+export const AUDIT_STATUS_FILTER_OPTIONS = [
     { value: "", label: "All statuses" },
     { value: "audit_in_progress", label: "Fieldwork" },
     { value: "draft_report_pending_review", label: "Pending review" },
@@ -33,8 +35,9 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
     onStatusChange,
     onClearFilters,
     availableAuditors,
+    searchActive = false,
 }) => {
-    const hasActiveFilters = auditorFilter !== "" || statusFilter !== "";
+    const hasActiveFilters = auditorFilter !== "" || statusFilter !== "" || searchActive;
 
     return (
         <div className="flex flex-wrap items-center gap-2">
@@ -52,7 +55,7 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
                 ariaLabel="Filter by audit status"
                 value={statusFilter}
                 onChange={onStatusChange}
-                options={STATUS_OPTIONS}
+                options={AUDIT_STATUS_FILTER_OPTIONS}
             />
             {hasActiveFilters && <ClearFiltersButton onClick={onClearFilters} />}
         </div>
@@ -60,3 +63,7 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
 };
 
 export default AuditsFilters;
+
+/** Devuelve el estado de la URL solo si es uno de los que el filtro ofrece; cualquier otro valor equivale a «todos». */
+export const toAuditStatusFilter = (raw: string): string =>
+    AUDIT_STATUS_FILTER_OPTIONS.some((option) => option.value === raw) ? raw : "";

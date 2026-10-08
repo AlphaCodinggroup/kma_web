@@ -1,6 +1,8 @@
 # KMA Daylight Section — entrega
 
-El frontend completo adopta Daylight Section y los ajustes posteriores pedidos por Pablo: papel, tinta y dorado Kinpaku, con Alumni Sans para títulos y Albert Sans para lectura y una estructura de trabajo coherente. La implementación está en el worktree `install-rsc-harness`; conserva RSC, contratos, roles y funciones existentes. No se modificó Pymes ni se publicó o desplegó.
+> **Actualización 2026-10-08.** Esta entrega describe el estado del 7 de octubre. Desde entonces el acento dorado es el rojo del logo ([brand-red-logo.md](../brand-red-logo.md)) y el editor de flujos tiene la estructura de producción, no el índice de 300 px que se describe abajo ([main-parity.md](../main-parity.md)). Las capturas de esta carpeta no reflejan esos dos cambios.
+
+El frontend completo adopta Daylight Section y los ajustes posteriores pedidos por Pablo: papel y tinta Kinpaku con acento dorado (hoy rojo del logo), con Alumni Sans para títulos y Albert Sans para lectura y una estructura de trabajo coherente. La implementación está en el worktree `install-rsc-harness`; conserva RSC, contratos, roles y funciones existentes. No se modificó Pymes ni se publicó o desplegó.
 
 Vista local: http://localhost:3001. [Galería comparativa](gallery.html), [índice de las capturas](capturas.md), [sistema visual extraído](../DESIGN.md) y [dictámenes independientes](review.md).
 
@@ -13,7 +15,7 @@ Navegación clara u oscura según el tema, con contexto, menú móvil y aparienc
 
 Audits y Reports conservan búsqueda, filtros, ordenación y contexto de URL. La página guardada recupera el cursor necesario; un error conserva resultados parciales y requiere reintento explícito. Estados de trabajo de campo, eliminados y desconocidos no entran en la cola de revisión. Eliminar un informe actualiza el listado inmediatamente.
 
-Revisión reúne respuesta, observación y adjunto existente; comentarios laterales o desplegables y acciones persistentes. Mantiene permisos, protección de cambios y guardado secuencial de hallazgos. El informe conserva papel blanco y formato original en ambos temas. Flows usa índice e inspector adaptados al tema desde 1280 px, panel de pasos en tamaños inferiores y título de ancho cómodo; conserva borradores, imágenes, validación y exportación.
+Revisión reúne respuesta, observación y adjunto existente; comentarios laterales o desplegables y acciones persistentes. Mantiene permisos, protección de cambios y guardado secuencial de hallazgos. El informe conserva papel blanco y formato original en ambos temas. Flows usaba aquí un índice de pasos de 300 px y un inspector (hoy: tabla de pasos e inspector de 340–480 px, como producción), panel de pasos en tamaños inferiores y título de ancho cómodo; conserva borradores, imágenes, validación y exportación.
 
 ## Comprobaciones
 

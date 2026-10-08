@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Audit } from "@entities/audit/model";
 import AuditsTable from "@features/audits/ui/AuditsTable";
+import { toAuditStatusFilter } from "@features/audits/ui/AuditsFilters";
 import AuditsToolbar from "@features/audits/ui/AuditsToolBar";
 import { useInfiniteAudits } from "@features/audits/lib/hooks/useInfiniteAudits";
 import { useDeleteAudit } from "@features/audits/lib/hooks/useDeleteAudit";
@@ -17,7 +18,9 @@ import { useUrlParameter } from "@shared/lib/useUrlParameter";
 const AuditsPage: React.FC = () => {
   const [query, setQuery] = useUrlParameter("q");
   const [auditorFilter, setAuditorFilter] = useUrlParameter("auditor");
-  const [statusFilter, setStatusFilter] = useUrlParameter("status");
+  const [rawStatusFilter, setStatusFilter] = useUrlParameter("status");
+  // Un ?status= que el filtro no ofrece (marcador viejo, URL escrita a mano) equivale a «todos» y no llega al backend.
+  const statusFilter = toAuditStatusFilter(rawStatusFilter);
   const [pageValue, setPageValue] = useUrlParameter("page", "1");
   const [sizeValue, setSizeValue] = useUrlParameter("size", "25");
   const pageSize = Math.max(1, Math.min(100, Number(sizeValue) || 25));

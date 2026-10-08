@@ -16,6 +16,7 @@ import {
     Plus,
     Trash2,
     ImagePlus,
+    ImageOff,
     X,
     Info
 } from "lucide-react";
@@ -63,7 +64,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
     if (!selectedStep) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-[var(--kma-muted)] bg-[var(--kma-surface)] text-center">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)] p-8 text-center text-[var(--kma-muted)]">
                 <CornerDownRight className="h-8 w-8 mb-2 opacity-30 text-[var(--kma-muted)]" />
                 <p className="text-sm font-medium text-[var(--kma-muted)]">No step selected</p>
                 <p className="text-xs text-[var(--kma-muted)] mt-1">Select a step from the sidebar to edit</p>
@@ -74,17 +75,49 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
     const images = selectedStep.images || [];
 
     return (
-        <div className="flex-1 flex flex-col h-full min-h-0 bg-[var(--kma-surface)] overflow-hidden">
-            <div className="shrink-0 border-b border-[var(--kma-border)] bg-[var(--kma-subtle)] px-4 py-4 sm:px-6">
-                <div className="flex items-start justify-between gap-3">
+        <section aria-label="Step details" className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]">
+            <div className="shrink-0 border-b border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-4 sm:px-6">
+                <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                            <h2 className="break-all text-xl font-semibold leading-7 text-[var(--kma-fg)]">{selectedStep.id}</h2>
-                            <span className="border border-[var(--kma-border)] px-2 py-1 text-xs font-medium text-[var(--kma-muted)]">{selectedStep.type}</span>
+                            <h2 className="break-all text-xl font-bold leading-7 tabular-nums text-[var(--kma-fg)]">{selectedStep.id}</h2>
+                            <span className="rounded border border-[var(--kma-border)] bg-[var(--kma-subtle)] px-2 py-0.5 text-[11px] font-semibold uppercase text-[var(--kma-fg)]">{selectedStep.type}</span>
                         </div>
-                        <p className="mt-1 text-xs text-[var(--kma-muted)]">Editing step details</p>
+                        <p className="mt-1 text-xs text-[var(--kma-muted)]"><span>{selectedStep.type}</span> · <span>Editing step details</span></p>
                     </div>
-                    {isAdmin ? <button type="button" onClick={() => onDeleteStep(selectedStep.id)} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[color-mix(in_srgb,var(--kma-danger)_10%,transparent)] hover:text-[var(--kma-danger)]" title="Delete current step" aria-label="Delete current step"><Trash2 className="h-4 w-4" aria-hidden="true" /></button> : null}
+                    {images.length > 0 || isAdmin ? (
+                        <div role="group" aria-label="Step actions" className="flex flex-wrap items-center gap-2">
+                            {images.length > 0 ? (
+                                <ul aria-label="Reference images" className="flex flex-wrap items-center gap-1.5">
+                                    {images.map((url, index) => (
+                                        <li key={index} className="group relative flex shrink-0 items-center">
+                                            <button type="button" onClick={() => onZoomImage(url)} aria-label={`View reference image ${index + 1}`} disabled={unavailableImages.has(url)} className="flex h-[var(--kma-control-height)] w-[var(--kma-control-height)] items-center justify-center overflow-hidden rounded border border-[var(--kma-border)] bg-[var(--kma-subtle)] transition-shadow hover:ring-2 hover:ring-[var(--kma-primary)]">
+                                                {unavailableImages.has(url) ? (
+                                                    <>
+                                                        <ImageOff className="h-4 w-4 text-[var(--kma-muted)]" aria-hidden="true" />
+                                                        <span className="sr-only">Image unavailable</span>
+                                                    </>
+                                                ) : (
+                                                    // eslint-disable-next-line @next/next/no-img-element
+                                                    <img src={url} alt={`Ref ${index}`} className="h-full w-full object-cover" onError={() => setUnavailableImages((current) => new Set(current).add(url))} />
+                                                )}
+                                            </button>
+                                            {isAdmin ? (
+                                                <button type="button" onClick={() => onRemoveImage(selectedStep.id, index)} title="Remove photo" aria-label={`Remove reference image ${index + 1}`} className="inline-flex h-[var(--kma-control-height)] w-[var(--kma-control-height)] items-center justify-center rounded text-[var(--kma-danger)] hover:bg-[var(--kma-danger-bg)] fine-desktop:absolute fine-desktop:-right-2 fine-desktop:-top-2 fine-desktop:h-6 fine-desktop:min-h-0 fine-desktop:w-6 fine-desktop:rounded-full fine-desktop:bg-[var(--kma-danger)] fine-desktop:text-[var(--kma-surface)] fine-desktop:opacity-0 fine-desktop:group-hover:opacity-100 fine-desktop:group-focus-within:opacity-100 fine-desktop:focus-visible:opacity-100"><X className="h-4 w-4 fine-desktop:h-3 fine-desktop:w-3" aria-hidden="true" /></button>
+                                            ) : null}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : null}
+                            {isAdmin && images.length > 0 ? (
+                                <button type="button" onClick={onImageClick} title="Add another photo" aria-label="Add Image" className="flex h-[var(--kma-control-height)] w-[var(--kma-control-height)] items-center justify-center rounded border border-dashed border-[var(--kma-border)] text-[var(--kma-muted)] transition-colors hover:bg-[var(--kma-subtle)]"><Plus className="h-4 w-4" aria-hidden="true" /></button>
+                            ) : null}
+                            {isAdmin && images.length === 0 ? (
+                                <Button type="button" variant="secondary" fullWidth={false} onClick={onImageClick} title="Add reference image" className="text-xs"><ImagePlus className="h-4 w-4" aria-hidden="true" />Add Image</Button>
+                            ) : null}
+                            {isAdmin ? <button type="button" onClick={() => onDeleteStep(selectedStep.id)} className="inline-flex h-[var(--kma-control-height)] w-[var(--kma-control-height)] shrink-0 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-danger-bg)] hover:text-[var(--kma-danger)]" title="Delete current step" aria-label="Delete current step"><Trash2 className="h-4 w-4" aria-hidden="true" /></button> : null}
+                        </div>
+                    ) : null}
                 </div>
             </div>
 
@@ -92,7 +125,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
             <div className="max-w-3xl space-y-6">
                 {/* STEP ID EDITABLE */}
                 <div>
-                    <Label htmlFor={controlId("step-id")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
+                    <Label htmlFor={controlId("step-id")} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                         Step ID
                     </Label>
                     <Input
@@ -108,7 +141,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* TITLE */}
                         <div>
-                            <Label htmlFor={controlId("title")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
+                            <Label htmlFor={controlId("title")} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Title
                             </Label>
                             <Input
@@ -123,7 +156,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* NEXT STEP */}
                         <div>
-                            <Label htmlFor={controlId("next")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
+                            <Label htmlFor={controlId("next")} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Next Step
                             </Label>
                             <StepSelector
@@ -141,7 +174,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* EVIDENCE FIELDS */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-sm font-semibold text-[var(--kma-fg)] block">
+                            <Label className="block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Fields
                             </Label>
 
@@ -241,11 +274,11 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* SHARED QUANTITY INFO */}
                         <div className="border-t border-[var(--kma-border)] pt-5 space-y-2">
-                            <Label className="text-sm font-semibold text-[var(--kma-fg)] block">
+                            <Label className="block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Shared Quantity
                             </Label>
-                            <div className="rounded bg-[var(--kma-subtle)] p-4 text-sm leading-6 text-[var(--kma-muted)]">
-                                <Info className="h-3.5 w-3.5 inline mr-1 text-[var(--kma-primary)]" />
+                            <div className="rounded border border-[var(--kma-info-border)] bg-[var(--kma-info-bg)] p-4 text-sm leading-6 text-[var(--kma-fg)]">
+                                <Info className="mr-1 inline h-3.5 w-3.5 text-[var(--kma-info)]" aria-hidden="true" />
                                 Barrier IDs will be calculated and saved automatically when you click &quot;Save Flow&quot;.
                                 <br />
                                 <span>
@@ -264,7 +297,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* QUESTION TEXT */}
                         <div>
-                            <Label htmlFor={controlId("question-text")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
+                            <Label htmlFor={controlId("question-text")} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Question Text
                             </Label>
                             <Textarea
@@ -280,13 +313,13 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* ROUTING: YES & NO */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-sm font-semibold text-[var(--kma-fg)] block">
+                            <Label className="block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Routing
                             </Label>
 
                             {/* YES Next */}
                             <div className="space-y-1">
-                                <Label htmlFor={controlId("yes-next")} className="flex items-center gap-1 text-sm font-medium text-[var(--kma-fg)] cursor-pointer">
+                                <Label htmlFor={controlId("yes-next")} className="flex cursor-pointer items-center gap-1 text-sm font-semibold text-[var(--kma-success)]">
                                     Yes <ArrowRight className="h-3 w-3 inline" />
                                 </Label>
                                 <StepSelector
@@ -306,7 +339,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                             {/* NO Next */}
                             <div className="space-y-1">
-                                <Label htmlFor={controlId("no-next")} className="flex items-center gap-1 text-sm font-medium text-[var(--kma-fg)] cursor-pointer">
+                                <Label htmlFor={controlId("no-next")} className="flex cursor-pointer items-center gap-1 text-sm font-semibold text-[var(--kma-danger)]">
                                     No <ArrowRight className="h-3 w-3 inline" />
                                 </Label>
                                 <StepSelector
@@ -327,7 +360,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* BARRIER ID */}
                         <div className="pt-2">
-                            <Label htmlFor={controlId("barrier-id")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1">
+                            <Label htmlFor={controlId("barrier-id")} className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Barrier ID
                             </Label>
                             <Input
@@ -374,7 +407,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                     <>
                         {/* TITLE / TEXT */}
                         <div>
-                            <Label htmlFor={controlId("select-text")} className="text-sm font-medium text-[var(--kma-fg)] block mb-1.5">
+                            <Label htmlFor={controlId("select-text")} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Title / Text
                             </Label>
                             <Textarea
@@ -392,7 +425,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
 
                         {/* OPTIONS LIST */}
                         <div className="space-y-3 pt-2">
-                            <Label className="text-sm font-semibold text-[var(--kma-fg)] block">
+                            <Label className="block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                                 Options
                             </Label>
 
@@ -407,7 +440,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                             {isAdmin ? <button type="button" onClick={() => onDeleteOption(selectedStep.id, idx)} className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-subtle)] hover:text-[var(--kma-danger)]" title="Delete option" aria-label={`Delete option ${idx + 1}`}><Trash2 className="h-4 w-4" aria-hidden="true" /></button> : null}
                                         </div>
                                         <div>
-                                            <span className="block mb-1 text-sm font-medium text-[var(--kma-fg)]">Label</span>
+                                            <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">Label</span>
                                             <Input
                                                 aria-label={`Option ${idx + 1} label`}
                                                 value={option.label}
@@ -420,7 +453,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                         </div>
 
                                         <div>
-                                            <span className="text-sm font-medium text-[var(--kma-fg)] block mb-1">Next step</span>
+                                            <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">Next step</span>
                                             <StepSelector
                                                 ariaLabel={`Option ${idx + 1} next step`}
                                                 value={option.next}
@@ -435,7 +468,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                         </div>
 
                                         <div>
-                                            <span className="text-sm font-medium text-[var(--kma-fg)] block mb-1">Barrier ID</span>
+                                            <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">Barrier ID</span>
                                             <Input
                                                 aria-label={`Option ${idx + 1} barrier ID`}
                                                 value={option.barrierId || ""}
@@ -473,27 +506,8 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                         <p>This step terminates and completes the flow process when reached by an auditor.</p>
                     </div>
                 )}
-                {images.length > 0 || isAdmin ? (
-                    <section className="space-y-4 border-t border-[var(--kma-brand-border)] pt-5" aria-label="Reference images">
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                            <h3 className="text-sm font-semibold text-[var(--kma-fg)]">Reference images</h3>
-                            {isAdmin ? <Button type="button" variant="secondary" fullWidth={false} onClick={onImageClick} title={images.length ? "Add another photo" : "Add reference image"}><ImagePlus className="h-4 w-4" aria-hidden="true" />Add Image</Button> : null}
-                        </div>
-                        {images.length ? <div className="flex flex-wrap gap-4">{images.map((url, index) => (
-                            <div key={index} className="relative">
-                                <button type="button" onClick={() => onZoomImage(url)} className="block overflow-hidden rounded border border-[var(--kma-brand-border)] bg-[var(--kma-brand)]" aria-label={`View reference image ${index + 1}`} disabled={unavailableImages.has(url)}>
-                                    {unavailableImages.has(url) ? <span className="flex h-32 w-44 items-end justify-center bg-[var(--kma-subtle)] px-2 pb-3 text-xs text-[var(--kma-muted)]">Image unavailable</span> : (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img src={url} alt={`Ref ${index}`} className="h-32 w-44 object-cover" onError={() => setUnavailableImages((current) => new Set(current).add(url))} />
-                                    )}
-                                </button>
-                                {isAdmin ? <button type="button" onClick={() => onRemoveImage(selectedStep.id, index)} title="Remove photo" aria-label={`Remove reference image ${index + 1}`} className="absolute right-1 top-1 inline-flex h-11 w-11 items-center justify-center rounded bg-[var(--kma-surface)] text-[var(--kma-danger)]"><X className="h-4 w-4" aria-hidden="true" /></button> : null}
-                            </div>
-                        ))}</div> : <p className="text-sm text-[var(--kma-muted)]">Add photos that help auditors recognize what to inspect.</p>}
-                    </section>
-                ) : null}
             </div>
             </div>
-        </div>
+        </section>
     );
 };

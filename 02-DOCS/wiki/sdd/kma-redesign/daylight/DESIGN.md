@@ -1,6 +1,6 @@
 ---
 name: KMA Daylight Section
-description: Papel Kinpaku, Alumni Sans y Albert Sans con respuesta operativa inspirada en Neo Mirai.
+description: Papel y tinta Kinpaku con el rojo del logo de KMA como acento, Alumni Sans y Albert Sans, y respuesta operativa inspirada en Neo Mirai.
 colors:
   brand-red: '#e2231a'
   brand-red-pale: oklch(80% .1 25)
@@ -9,6 +9,7 @@ colors:
   paper-raised: oklch(99.5% 0 0)
   paper-deep: oklch(95% 0 0)
   gray: oklch(92% 0 0)
+  selected-edge: '#e2231a'
   gray-2: oklch(88% 0 0)
   ink: oklch(13% 0 0)
   text: oklch(22% 0 0)
@@ -203,7 +204,7 @@ components:
 
 **Creative North Star: "Daylight Section"**
 
-Una mesa de revisión con precisión arquitectónica: papel neutro, tinta y papel Kinpaku y rojo KMA. Alumni Sans da identidad condensada a página y marca; Albert Sans mantiene la lectura de datos, formularios y secciones. Las reglas finas y los controles familiares permiten trabajar con calma.
+Una mesa de revisión con precisión arquitectónica: papel neutro y tinta Kinpaku, con el rojo del logo de KMA como acento. Alumni Sans da identidad condensada a página y marca; Albert Sans mantiene la lectura de datos, formularios y secciones. Las reglas finas y los controles familiares permiten trabajar con calma.
 
 La composición conecta tareas, datos y evidencias reales. La apariencia cubre todo el espacio operativo: la navegación, la marca, la franja de revisión y el índice de pasos son claros en Light y oscuros en Dark. La respuesta de botones e iconos adapta los detalles de Neo Mirai a acciones de trabajo; el contenido permanece estable durante la lectura.
 
@@ -224,6 +225,7 @@ La paleta mantiene los valores OKLCH de los primitivos Kinpaku y conserva los to
 ### Primary
 
 - **Rojo KMA** (`brand-red`, `#E2231A`, medido del logo): fondo del botón principal y detalles de marca; lleva **blanco** (`on-brand`, 4,68:1). Es el mismo en los dos temas. Sustituye al dorado Kinpaku; el papel y la tinta siguen siendo Kinpaku.
+- **Borde de fila seleccionada** (`selected-edge`): rojo de marca en Light y `brand-red-pale` en Dark, porque el rojo pleno sobre la fila oscura queda en 2,8:1, por debajo del mínimo de 3:1 para elementos no textuales.
 - **Tinta de acción** (`ink`): enlaces, selección y anillos de controles en Light. En Dark estas funciones usan el **rojo pálido** (`brand-red-pale`, 6,8–9,8:1 sobre las superficies oscuras).
 - **Foco general** (`focus-ring`): contorno visible de enlaces y superficies en Light; en Dark se resuelve a `brand-red-pale`. Los controles compartidos conservan su anillo de color primario.
 
@@ -289,7 +291,7 @@ La cabecera de página permite que título y acción cambien de línea; una regl
 
 Por debajo de (1024 px), la navegación lateral se abre en diálogo desde la cabecera; su ancho es el menor entre (320 px) y el ancho de pantalla menos (40 px). Los controles tienen altura mínima de (40 px) en escritorio y de (44 px) por debajo de (1024 px) o con puntero táctil; la navegación y los botones de icono ya usan objetivos de (44 px).
 
-Los puntos de cambio observados son `sm` (640 px), `md` (768 px), `lg` (1024 px) y `xl` (1280 px). El dashboard coloca actividad y portfolio en columnas desde `xl`, con una columna de portfolio de (260 px). El editor de flujos muestra pasos en una columna de (300 px) desde `xl` y ofrece un diálogo de pasos por debajo. Las respuestas con fotografías usan dos columnas desde `md`; en poco espacio la evidencia queda debajo de la respuesta.
+Los puntos de cambio observados son `sm` (640 px), `md` (768 px), `lg` (1024 px) y `xl` (1280 px). El dashboard coloca actividad y portfolio en columnas desde `xl`, con una columna de portfolio de (260 px). El editor de flujos reproduce la estructura de producción desde `xl`: tabla de pasos a la izquierda (`flex-3`, desplazable dentro de su tarjeta, nunca la página) e inspector de (340–480 px) a la derecha (`flex-2`). Por debajo de `xl` los pasos pasan a una lista compacta dentro de un diálogo ("Browse steps"). Las respuestas con fotografías usan dos columnas desde `md`; en poco espacio la evidencia queda debajo de la respuesta.
 
 El acceso usa una composición de dos columnas desde `lg` (1.15:1), con ilustración original a la izquierda y formulario de ancho máximo (380 px) a la derecha. Por debajo, la ilustración se oculta y quedan marca, apariencia y formulario. Estas son composiciones de sus superficies, no requisitos para todas las páginas.
 
@@ -367,7 +369,8 @@ La [vista previa de informe](../../../../../src/features/audits/ui/ReportPreview
 ### Don't:
 
 - **Don't** forzar paneles oscuros en Light ni presentar la derivación instrumental Dark como un tema descargado.
-- **Don't** usar el dorado como texto pequeño sobre papel; los textos de acción usan el primario del tema.
+- **Don't** usar el rojo de marca como texto pequeño sobre las superficies oscuras (3,0–3,6:1); ahí el texto de acción usa `brand-red-pale`.
+- **Do** comparar toda pantalla con la versión de `main` en producción antes de darla por terminada; compararla solo con una iteración anterior del rediseño dejó pasar un editor de flujos que ya no coincidía con producción.
 - **Don't** convertir la tipografía condensada de los títulos en la fuente de campos y datos.
 - **Don't** extender la sombra de interacción del botón a las filas y paneles del espacio operativo.
 - **Don't** teñir el informe con el tema ni convertir la ilustración de marca en evidencia de auditoría.

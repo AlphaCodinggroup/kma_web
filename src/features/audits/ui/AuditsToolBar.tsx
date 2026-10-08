@@ -57,6 +57,7 @@ const AuditsToolbar: React.FC<AuditsToolbarProps> = ({
             onStatusChange={onStatusFilterChange}
             onClearFilters={onClearFilters}
             availableAuditors={availableAuditors}
+            searchActive={searchValue !== ""}
           />
         )}
       </div>

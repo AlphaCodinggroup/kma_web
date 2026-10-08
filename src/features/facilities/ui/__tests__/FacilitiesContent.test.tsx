@@ -28,6 +28,9 @@ const refetchMock = vi.fn();
 const createFacilityMock = vi.fn();
 const updateFacilityMock = vi.fn();
 const deleteFacilityMock = vi.fn();
+const resetDeleteMock = vi.fn();
+const resetArchiveMock = vi.fn();
+const resetRestoreMock = vi.fn();
 const archiveFacilityMock = vi.fn();
 const restoreFacilityMock = vi.fn();
 const facilitiesQuerySpy = vi.fn();
@@ -72,6 +75,8 @@ vi.mock("@features/facilities/ui/hooks/useDeleteFacilityMutation", () => ({
   useDeleteFacilityMutation: () => ({
     mutateAsync: deleteFacilityMock,
     isPending: state.isDeleting,
+    error: null,
+    reset: resetDeleteMock,
   }),
 }));
 
@@ -79,6 +84,8 @@ vi.mock("@features/facilities/ui/hooks/useArchiveFacilityMutation", () => ({
   useArchiveFacilityMutation: () => ({
     mutateAsync: archiveFacilityMock,
     isPending: state.isArchiving,
+    error: null,
+    reset: resetArchiveMock,
   }),
 }));
 
@@ -86,6 +93,8 @@ vi.mock("@features/facilities/ui/hooks/useRestoreFacilityMutation", () => ({
   useRestoreFacilityMutation: () => ({
     mutateAsync: restoreFacilityMock,
     isPending: state.isRestoring,
+    error: null,
+    reset: resetRestoreMock,
   }),
 }));
 
@@ -621,6 +630,27 @@ describe("FacilitiesContent", () => {
       });
     });
 
+    it.each([
+      ["Name", "Name is required."],
+      ["Address", "Address is required."],
+      ["City, State", "City, State is required."],
+    ])("does not let an edit empty the required %s field", async (label, message) => {
+      renderContent();
+
+      await userEvent.click(
+        within(rowFor("North Plant")).getByRole("button", {
+          name: "Edit facility",
+        }),
+      );
+      await userEvent.clear(screen.getByLabelText(label));
+      await userEvent.click(
+        screen.getByRole("button", { name: "Update Facility" }),
+      );
+
+      expect(screen.getByText(message)).toBeInTheDocument();
+      expect(updateFacilityMock).not.toHaveBeenCalled();
+    });
+
     it("drops the facility from the state when the edit dialog is dismissed", async () => {
       renderContent();
 
@@ -690,6 +720,18 @@ describe("FacilitiesContent", () => {
   });
 
   describe("delete", () => {
+    it("clears a previous delete error when the dialog opens for another facility", async () => {
+      renderContent();
+
+      await userEvent.click(
+        within(rowFor("North Plant")).getByRole("button", {
+          name: "Delete facility",
+        }),
+      );
+
+      expect(resetDeleteMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and deletes the selected facility", async () => {
       renderContent();
 
@@ -764,6 +806,18 @@ describe("FacilitiesContent", () => {
   });
 
   describe("archive", () => {
+    it("clears a previous archive error when the dialog opens for another facility", async () => {
+      renderContent();
+
+      await userEvent.click(
+        within(rowFor("North Plant")).getByRole("button", {
+          name: "Archive facility",
+        }),
+      );
+
+      expect(resetArchiveMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and archives the selected facility", async () => {
       renderContent();
 
@@ -825,6 +879,21 @@ describe("FacilitiesContent", () => {
   });
 
   describe("restore", () => {
+    it("clears a previous restore error when the dialog opens for another facility", async () => {
+      renderContent();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: "Show archived facilities" }),
+      );
+      await userEvent.click(
+        within(rowFor("North Plant")).getByRole("button", {
+          name: "Restore facility",
+        }),
+      );
+
+      expect(resetRestoreMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and restores the selected facility", async () => {
       renderContent();
 

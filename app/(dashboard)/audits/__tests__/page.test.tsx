@@ -518,6 +518,18 @@ describe("AuditsPage", () => {
     expect(useInfiniteAudits).toHaveBeenLastCalledWith({ status: "completed", auditor: "jane" });
   });
 
+  it("ignores an unknown status in the URL instead of sending it to the backend", async () => {
+    window.history.replaceState({}, "", "/audits?status=not_a_status&auditor=jane");
+    await renderPage();
+    expect(useInfiniteAudits).toHaveBeenLastCalledWith({ auditor: "jane" });
+  });
+
+  it("accepts every status the filter offers", async () => {
+    window.history.replaceState({}, "", "/audits?status=audit_in_progress");
+    await renderPage();
+    expect(useInfiniteAudits).toHaveBeenLastCalledWith({ status: "audit_in_progress" });
+  });
+
   it("recovers the cursor block needed by a restored page beyond the first 100 audits", async () => {
     window.history.replaceState({}, "", "/audits?page=5&size=25&status=completed&auditor=jane&q=planta");
     const first = Array.from({ length: 100 }, (_, index) => makeAudit({ id: `audit-${index + 1}` }));

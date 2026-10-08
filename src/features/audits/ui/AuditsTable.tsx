@@ -315,7 +315,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               title={showProject ? row.projectName ?? "Untitled project" : row.flowName ?? "Audit"}
               subtitle={[showFacility ? row.facilityName : null, row.flowName].filter(Boolean).join(" · ")}
               status={<StatusBadge status={row.status} />}
-              actions={<><SmartEditButton row={row} onEdit={onEdit} editingId={editingId} isAdmin={isAdmin} />{onDelete && <Button variant="ghost" fullWidth={false} aria-label="Delete audit" onClick={() => onDelete(row)} disabled={!isAdmin || deletingId === row.id}><Trash2 className="h-4 w-4" aria-hidden="true" />Delete</Button>}</>}
+              actions={<><SmartEditButton row={row} onEdit={onEdit} editingId={editingId} isAdmin={isAdmin} />{onDelete && <Button variant="ghost" fullWidth={false} aria-label="Delete audit" title={!isAdmin ? "Only administrators can delete audits" : "Delete audit"} onClick={() => onDelete(row)} disabled={!isAdmin || deletingId === row.id}>{deletingId === row.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="h-4 w-4" aria-hidden="true" />}Delete</Button>}</>}
             >
               <dl className="grid grid-cols-2 gap-4"><div><dt>Auditor</dt><dd className="mt-1 text-[var(--kma-fg)]">{row.auditorName ?? "Not assigned"}</dd></div><div><dt>Audit date</dt><dd className="mt-1 tabular-nums text-[var(--kma-fg)]">{formatIsoToYmdHm(row.createdAt)}</dd></div></dl>
             </MobileEntityRow>

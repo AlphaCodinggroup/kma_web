@@ -488,6 +488,9 @@ describe("FlowEditor - validation and save", () => {
     const pendingSave = screen.getByRole("button", { name: "Saving..." });
     expect(pendingSave).toBeDisabled();
     expect(screen.getByRole("button", { name: "Export" })).toBeDisabled();
+    // Mientras guarda no se puede tocar el flujo: sin acciones de imagen y sin abrir el cajón de pasos.
+    expect(screen.queryByRole("button", { name: "Add Image" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Browse steps" })).toBeDisabled();
     await user.click(pendingSave);
     expect(repoMock.update).toHaveBeenCalledTimes(1);
 

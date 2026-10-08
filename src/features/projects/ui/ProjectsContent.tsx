@@ -98,7 +98,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     error: updateError,
   } = useUpdateProjectMutation();
 
-  const { mutate: deleteProject, isPending: isDeleting, error: deleteError } =
+  const { mutate: deleteProject, isPending: isDeleting, error: deleteError, reset: resetDelete } =
     useDeleteProjectMutation({
       onSuccess: () => {
         setOpenDelete(false);
@@ -108,7 +108,7 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
       onError: (err) => console.error("Failed to delete project", err),
     });
 
-  const { mutateAsync: archiveProject, isPending: isArchiving, error: archiveError } =
+  const { mutateAsync: archiveProject, isPending: isArchiving, error: archiveError, reset: resetArchive } =
     useArchiveProjectMutation();
 
   const {
@@ -269,10 +269,12 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     (id: string) => {
       const row = projects.find((r) => r.id === id);
       if (!row) return;
+      // Un error de un intento anterior no debe aparecer en el diálogo de otro proyecto.
+      resetDelete();
       setProjectToDelete({ id: row.id, name: row.name });
       setOpenDelete(true);
     },
-    [projects],
+    [projects, resetDelete],
   );
 
   const confirmDelete = useCallback(async () => {
@@ -285,10 +287,11 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     (id: string) => {
       const row = projects.find((r) => r.id === id);
       if (!row) return;
+      resetArchive();
       setProjectToArchive(row);
       setOpenArchive(true);
     },
-    [projects],
+    [projects, resetArchive],
   );
 
   const confirmArchive = useCallback(async () => {

@@ -4,46 +4,46 @@
   "title": "Design System: KMA Daylight Section",
   "extensions": {
     "colorMeta": {
-      "kinpaku": {
+      "brand-red": {
         "role": "primary",
-        "displayName": "Oro Kinpaku",
+        "displayName": "Rojo KMA",
         "tonalRamp": [
-          "oklch(15% 0.19000 80.46)",
-          "oklch(26.43% 0.19000 80.46)",
-          "oklch(37.86% 0.19000 80.46)",
-          "oklch(49.29% 0.19000 80.46)",
-          "oklch(60.71% 0.19000 80.46)",
-          "oklch(72.14% 0.19000 80.46)",
-          "oklch(83.57% 0.19000 80.46)",
-          "oklch(95% 0.19000 80.46)"
+          "oklch(15% 0.22312 29.08)",
+          "oklch(26.43% 0.22312 29.08)",
+          "oklch(37.86% 0.22312 29.08)",
+          "oklch(49.29% 0.22312 29.08)",
+          "oklch(60.71% 0.22312 29.08)",
+          "oklch(72.14% 0.22312 29.08)",
+          "oklch(83.57% 0.22312 29.08)",
+          "oklch(95% 0.22312 29.08)"
         ]
       },
-      "kinpaku-pale": {
+      "brand-red-pale": {
         "role": "primary",
-        "displayName": "Kinpaku pálido",
+        "displayName": "Rojo KMA pálido",
         "tonalRamp": [
-          "oklch(15% 0.07000 84.00)",
-          "oklch(26.43% 0.07000 84.00)",
-          "oklch(37.86% 0.07000 84.00)",
-          "oklch(49.29% 0.07000 84.00)",
-          "oklch(60.71% 0.07000 84.00)",
-          "oklch(72.14% 0.07000 84.00)",
-          "oklch(83.57% 0.07000 84.00)",
-          "oklch(95% 0.07000 84.00)"
+          "oklch(15% 0.10000 25.00)",
+          "oklch(26.43% 0.10000 25.00)",
+          "oklch(37.86% 0.10000 25.00)",
+          "oklch(49.29% 0.10000 25.00)",
+          "oklch(60.71% 0.10000 25.00)",
+          "oklch(72.14% 0.10000 25.00)",
+          "oklch(83.57% 0.10000 25.00)",
+          "oklch(95% 0.10000 25.00)"
         ]
       },
-      "on-gold": {
+      "on-brand": {
         "role": "neutral",
-        "displayName": "Tinta sobre oro",
+        "displayName": "Blanco sobre rojo",
         "tonalRamp": [
-          "oklch(15% 0.01800 95.00)",
-          "oklch(26.43% 0.01800 95.00)",
-          "oklch(37.86% 0.01800 95.00)",
-          "oklch(49.29% 0.01800 95.00)",
-          "oklch(60.71% 0.01800 95.00)",
-          "oklch(72.14% 0.01800 95.00)",
-          "oklch(83.57% 0.01800 95.00)",
-          "oklch(95% 0.01800 95.00)"
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26.43% 0.00000 0.00)",
+          "oklch(37.86% 0.00000 0.00)",
+          "oklch(49.29% 0.00000 0.00)",
+          "oklch(60.71% 0.00000 0.00)",
+          "oklch(72.14% 0.00000 0.00)",
+          "oklch(83.57% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
         ]
       },
       "paper": {
@@ -761,9 +761,9 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Acción principal Kinpaku; eleva 1 px al hover y se comprime al presionar.",
+      "description": "Acción principal en rojo KMA con texto blanco; eleva 1 px al hover y se comprime al presionar.",
       "html": "<button type=\"button\" class=\"ds-button-primary\">Save changes</button>",
-      "css": ".ds-button-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:var(--kma-control-height,40px);padding:8px 16px;border:1px solid transparent;border-radius:4px;font-family:var(--font-reading,\"Albert Sans\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap;cursor:pointer;background:var(--kma-accent,oklch(84% .19 80.46));color:var(--kma-accent-fg,oklch(14% .018 95));transition:background-color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),border-color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),box-shadow var(--ks-settle,.2s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),transform var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1));}.ds-button-primary:hover:not(:disabled){background:color-mix(in srgb,var(--kma-accent,oklch(84% .19 80.46)) 88%,var(--kma-surface,oklch(99.5% 0 0)));}.ds-button-primary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--kma-primary,oklch(13% 0 0));}.ds-button-primary:active:not(:disabled){transform:translateY(1px) scale(.98)}.ds-button-primary:disabled{cursor:not-allowed;opacity:.6}@media(hover:hover) and (pointer:fine){.ds-button-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 3px 8px color-mix(in srgb,var(--kma-accent,oklch(84% .19 80.46)) 20%,transparent);}.ds-button-primary:hover:active:not(:disabled){transform:translateY(1px) scale(.98)}}@media(max-width:1023px),(pointer:coarse){.ds-button-primary{min-height:44px}}@media(prefers-reduced-motion:reduce){.ds-button-primary{transition-duration:.01ms;transform:none!important}}.ds-button-primary:focus-visible:hover:not(:disabled){outline:none;box-shadow:0 0 0 2px var(--kma-primary,oklch(13% 0 0))}"
+      "css": ".ds-button-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:var(--kma-control-height,40px);padding:8px 16px;border:1px solid transparent;border-radius:4px;font-family:var(--font-reading,\"Albert Sans\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap;cursor:pointer;background:var(--kma-accent,#e2231a);color:var(--kma-accent-fg,#fff);transition:background-color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),border-color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),box-shadow var(--ks-settle,.2s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),transform var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1));}.ds-button-primary:hover:not(:disabled){background:color-mix(in srgb,var(--kma-accent,#e2231a) 88%,var(--kma-surface,oklch(99.5% 0 0)));}.ds-button-primary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--kma-primary,oklch(13% 0 0));}.ds-button-primary:active:not(:disabled){transform:translateY(1px) scale(.98)}.ds-button-primary:disabled{cursor:not-allowed;opacity:.6}@media(hover:hover) and (pointer:fine){.ds-button-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 3px 8px color-mix(in srgb,var(--kma-accent,#e2231a) 20%,transparent);}.ds-button-primary:hover:active:not(:disabled){transform:translateY(1px) scale(.98)}}@media(max-width:1023px),(pointer:coarse){.ds-button-primary{min-height:44px}}@media(prefers-reduced-motion:reduce){.ds-button-primary{transition-duration:.01ms;transform:none!important}}.ds-button-primary:focus-visible:hover:not(:disabled){outline:none;box-shadow:0 0 0 2px var(--kma-primary,oklch(13% 0 0))}"
     },
     {
       "name": "Secondary Button",
@@ -826,14 +826,14 @@
       "kind": "custom",
       "description": "Tres tramos del tema con SVG que avanza al destino; la muestra evita inventar recuentos.",
       "html": "<section class=\"ds-pipeline\" aria-label=\"Review pipeline\"><a class=\"ds-stage ds-stage-first\" href=\"#pending\"><span class=\"ds-stage-top\"><span class=\"ds-stage-label\"><span class=\"ds-stage-dot\" aria-hidden=\"true\"></span>Pending review</span><svg class=\"ds-stage-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"/><path d=\"M7 17 17 7\"/></svg></span><span class=\"ds-count\">—</span></a><a class=\"ds-stage\" href=\"#review\"><span class=\"ds-stage-top\"><span class=\"ds-stage-label\"><span class=\"ds-stage-dot\" aria-hidden=\"true\"></span>In review</span><svg class=\"ds-stage-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><path d=\"M18.944 12.33a1 1 0 0 0 0-.66 7.5 7.5 0 0 0-13.888 0 1 1 0 0 0 0 .66 7.5 7.5 0 0 0 13.888 0\"/></svg></span><span class=\"ds-count\">—</span></a><a class=\"ds-stage\" href=\"#delivered\"><span class=\"ds-stage-top\"><span class=\"ds-stage-label\"><span class=\"ds-stage-dot\" aria-hidden=\"true\"></span>Delivered</span><svg class=\"ds-stage-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 7 17l-5-5\"/><path d=\"m22 10-7.5 7.5L13 16\"/></svg></span><span class=\"ds-count\">—</span></a></section>",
-      "css": ".ds-pipeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:hidden;border:1px solid var(--kma-border,oklch(88% 0 0));border-radius:8px}.ds-stage{display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:120px;padding:16px 12px;background:var(--kma-surface,oklch(99.5% 0 0));color:var(--kma-fg,oklch(22% 0 0));text-decoration:none;transition:background-color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),border-color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),box-shadow var(--ks-settle,.2s) var(--ks-ease,cubic-bezier(.2,.8,.2,1));}.ds-stage+.ds-stage{border-left:1px solid var(--kma-border,oklch(88% 0 0))}.ds-stage:hover{background:var(--kma-subtle,oklch(95% 0 0))}.ds-stage:focus-visible{outline:2px solid var(--ks-focus-ring,oklch(45% .1 190));outline-offset:3px}.ds-stage-first{--kma-fg:var(--kma-brand-fg,oklch(13% 0 0));background:var(--kma-brand,oklch(99.5% 0 0));color:var(--kma-fg)}.ds-stage-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-height:40px}.ds-stage-label{display:flex;align-items:center;gap:8px;font-family:var(--font-reading,\"Albert Sans\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px}.ds-stage-dot{width:6px;height:6px;flex-shrink:0;background:var(--kma-border,oklch(88% 0 0))}.ds-stage-first .ds-stage-dot{background:var(--kma-accent,oklch(84% .19 80.46))}.ds-stage-icon{display:none;flex-shrink:0;color:var(--kma-muted,oklch(46% 0 0));transition:transform var(--ks-settle,.2s) var(--ks-ease,cubic-bezier(.2,.8,.2,1));}.ds-stage:focus-visible .ds-stage-icon{transform:translate(2px,-2px)}.ds-count{font-family:var(--font-heading,\"Albert Sans\"),ui-sans-serif,system-ui,sans-serif;font-size:32px;font-weight:500;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.ds-stage-first .ds-count{color:var(--kma-primary,oklch(13% 0 0))}@media(min-width:640px){.ds-stage{padding:20px 24px}}@media(min-width:768px){.ds-stage{min-height:140px}.ds-stage-top{min-height:0;align-items:center}.ds-stage-icon{display:block}.ds-count{font-size:40px}}@media(hover:hover) and (pointer:fine){.ds-stage:hover .ds-stage-icon{transform:translate(2px,-2px)}}@media(prefers-reduced-motion:reduce){.ds-stage{transition-duration:.01ms}.ds-stage-icon{transition-duration:.01ms;transform:none!important}}"
+      "css": ".ds-pipeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:hidden;border:1px solid var(--kma-border,oklch(88% 0 0));border-radius:8px}.ds-stage{display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:120px;padding:16px 12px;background:var(--kma-surface,oklch(99.5% 0 0));color:var(--kma-fg,oklch(22% 0 0));text-decoration:none;transition:background-color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),border-color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),color var(--ks-quick,.12s) var(--ks-ease,cubic-bezier(.2,.8,.2,1)),box-shadow var(--ks-settle,.2s) var(--ks-ease,cubic-bezier(.2,.8,.2,1));}.ds-stage+.ds-stage{border-left:1px solid var(--kma-border,oklch(88% 0 0))}.ds-stage:hover{background:var(--kma-subtle,oklch(95% 0 0))}.ds-stage:focus-visible{outline:2px solid var(--ks-focus-ring,oklch(45% .1 190));outline-offset:3px}.ds-stage-first{--kma-fg:var(--kma-brand-fg,oklch(13% 0 0));background:var(--kma-brand,oklch(99.5% 0 0));color:var(--kma-fg)}.ds-stage-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-height:40px}.ds-stage-label{display:flex;align-items:center;gap:8px;font-family:var(--font-reading,\"Albert Sans\"),ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;line-height:20px}.ds-stage-dot{width:6px;height:6px;flex-shrink:0;background:var(--kma-border,oklch(88% 0 0))}.ds-stage-first .ds-stage-dot{background:var(--kma-accent,#e2231a)}.ds-stage-icon{display:none;flex-shrink:0;color:var(--kma-muted,oklch(46% 0 0));transition:transform var(--ks-settle,.2s) var(--ks-ease,cubic-bezier(.2,.8,.2,1));}.ds-stage:focus-visible .ds-stage-icon{transform:translate(2px,-2px)}.ds-count{font-family:var(--font-heading,\"Albert Sans\"),ui-sans-serif,system-ui,sans-serif;font-size:32px;font-weight:500;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.ds-stage-first .ds-count{color:var(--kma-primary,oklch(13% 0 0))}@media(min-width:640px){.ds-stage{padding:20px 24px}}@media(min-width:768px){.ds-stage{min-height:140px}.ds-stage-top{min-height:0;align-items:center}.ds-stage-icon{display:block}.ds-count{font-size:40px}}@media(hover:hover) and (pointer:fine){.ds-stage:hover .ds-stage-icon{transform:translate(2px,-2px)}}@media(prefers-reduced-motion:reduce){.ds-stage{transition-duration:.01ms}.ds-stage-icon{transition-duration:.01ms;transform:none!important}}"
     }
   ],
   "narrative": {
     "northStar": "Daylight Section",
-    "overview": "Una mesa de revisión con precisión arquitectónica: papel neutro, tinta y luz dorada Kinpaku. Alumni Sans da identidad condensada a página y marca; Albert Sans mantiene la lectura de datos, formularios y secciones. Las reglas finas y los controles familiares permiten trabajar con calma.\n\nLa composición conecta tareas, datos y evidencias reales. La apariencia cubre todo el espacio operativo: la navegación, la marca, la franja de revisión y el índice de pasos son claros en Light y oscuros en Dark. La respuesta de botones e iconos adapta los detalles de Neo Mirai a acciones de trabajo; el contenido permanece estable durante la lectura.\n\nLos [ajustes explícitos de Pablo](user-feedback.md) sustituyen fuentes, paleta y navegación oscura permanente de la primera adaptación. La [dirección elegida](implementation.md) conserva su composición y [PRODUCT.md](../../../../../PRODUCT.md) las restricciones del producto. El [diseño petróleo](../premium/DESIGN.md) y la [adaptación previa](validation/before-impeccable-feedback/DESIGN.md) quedan como historia. Los valores se extraen del [estilo global](../../../../../app/globals.css), las [fuentes locales](../../../../../app/layout.tsx), los [controles](../../../../../src/shared/ui/controls.tsx) y los componentes citados abajo; este documento no acredita los nuevos resultados de navegador o compilación, todavía en curso al escribirlo.",
+    "overview": "Una mesa de revisión con precisión arquitectónica: papel neutro y tinta Kinpaku, con el rojo del logo de KMA como acento. Alumni Sans da identidad condensada a página y marca; Albert Sans mantiene la lectura de datos, formularios y secciones. Las reglas finas y los controles familiares permiten trabajar con calma.\n\nLa composición conecta tareas, datos y evidencias reales. La apariencia cubre todo el espacio operativo: la navegación, la marca, la franja de revisión y el índice de pasos son claros en Light y oscuros en Dark. La respuesta de botones e iconos adapta los detalles de Neo Mirai a acciones de trabajo; el contenido permanece estable durante la lectura.\n\nLos [ajustes explícitos de Pablo](user-feedback.md) sustituyen fuentes, paleta y navegación oscura permanente de la primera adaptación. La [dirección elegida](implementation.md) conserva su composición y [PRODUCT.md](../../../../../PRODUCT.md) las restricciones del producto. El [diseño petróleo](../premium/DESIGN.md) y la [adaptación previa](validation/before-impeccable-feedback/DESIGN.md) quedan como historia. Los valores se extraen del [estilo global](../../../../../app/globals.css), las [fuentes locales](../../../../../app/layout.tsx), los [controles](../../../../../src/shared/ui/controls.tsx) y los componentes citados abajo; este documento no acredita los nuevos resultados de navegador o compilación, todavía en curso al escribirlo.",
     "keyCharacteristics": [
-      "Primitivos Kinpaku oficiales en OKLCH y alias semánticos de KMA.",
+      "Primitivos Kinpaku oficiales en OKLCH para papel y tinta, el rojo del logo como acento y alias semánticos de KMA.",
       "Alumni Sans para página y marca; Albert Sans para secciones, cifras y lectura.",
       "Light y Dark completos, incluida la navegación y los paneles de marca.",
       "SVG Lucide de trazo fino y movimiento breve ligado a acciones reales.",
@@ -841,8 +841,8 @@
     ],
     "rules": [
       {
-        "name": "The Gold and Ink Rule",
-        "body": "El dorado ilumina superficies y señales; el texto de acción usa tinta en Light y Kinpaku pálido en Dark, mientras el botón dorado conserva su tinta propia.",
+        "name": "The Red and Ink Rule",
+        "body": "El rojo de marca ilumina superficies y señales; el texto de acción usa tinta en Light y rojo pálido en Dark, mientras el botón rojo conserva su blanco.",
         "section": "colors"
       },
       {
@@ -862,7 +862,7 @@
       }
     ],
     "dos": [
-      "**Do** usar los primitivos Kinpaku mediante los alias semánticos y conservar navegación clara en Light y oscura en Dark.",
+      "**Do** usar los primitivos Kinpaku (papel y tinta) mediante los alias semánticos y conservar navegación clara en Light y oscura en Dark.",
       "**Do** usar Alumni Sans para página y marca, y Albert Sans para lectura, secciones, controles y cifras.",
       "**Do** mantener alturas mínimas de control, SVG de trazo fino, foco visible y estados expresados con texto.",
       "**Do** ligar el movimiento breve a botones, iconos y diálogos; respetar movimiento reducido sin perder mensajes ni foco.",
@@ -871,7 +871,7 @@
     ],
     "donts": [
       "**Don't** forzar paneles oscuros en Light ni presentar la derivación instrumental Dark como un tema descargado.",
-      "**Don't** usar el dorado como texto pequeño sobre papel; los textos de acción usan el primario del tema.",
+      "**Don't** usar el rojo de marca como texto pequeño sobre las superficies oscuras (3,0–3,6:1); ahí el texto de acción usa el rojo pálido.",
       "**Don't** convertir la tipografía condensada de los títulos en la fuente de campos y datos.",
       "**Don't** extender la sombra de interacción del botón a las filas y paneles del espacio operativo.",
       "**Don't** teñir el informe con el tema ni convertir la ilustración de marca en evidencia de auditoría."

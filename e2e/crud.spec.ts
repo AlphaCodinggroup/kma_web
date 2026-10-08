@@ -254,7 +254,7 @@ test.describe("Flows", () => {
     // administrador.
     await page.getByRole("link", { name: "Edit flow" }).first().click();
     await expect(
-      page.getByRole("heading", { name: "Flow editor", exact: true }),
+      page.getByRole("heading", { level: 1, name: /^Edit Flow: / }),
     ).toBeVisible({ timeout: 20_000 });
 
     expect(serverErrors).toEqual([]);

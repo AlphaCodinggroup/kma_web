@@ -430,3 +430,118 @@ describe("FlowEditor - initial render", () => {
     expect(screen.getByText("AR-B01, AR-B02")).toBeInTheDocument();
   });
 });
+
+describe("FlowEditor - production layout", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sessionMock.mockReturnValue({ isAdmin: true });
+    localStorage.clear();
+  });
+
+  it("counts the nodes beside the title and opens the guide from the info button", async () => {
+    renderEditor(makeValidFlow(), "edit");
+
+    expect(screen.getByText(/· 4 nodes/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "How to create a flow" }));
+    expect(screen.getByRole("heading", { name: "How to Create a Flow" })).toBeInTheDocument();
+  });
+
+  it("uses the singular for a flow with a single node", () => {
+    const flow = makeValidFlow();
+    flow.steps = [makeEndStep()];
+    renderEditor(flow, "edit");
+
+    expect(screen.getByText(/· 1 node$/)).toBeInTheDocument();
+  });
+
+  it("lays the steps out as a table with the production column headers", () => {
+    renderEditor(makeValidFlow(), "edit");
+
+    const panel = sidebar();
+    expect(within(panel).getByRole("heading", { name: "Flow Steps" })).toBeInTheDocument();
+    expect(within(panel).getAllByRole("columnheader").map((header) => header.textContent)).toEqual([
+      "ID", "Type", "Question / Title", "Routing", "Barriers", "Actions",
+    ]);
+  });
+
+  it("shows the type badge and the type line in the inspector header", () => {
+    renderEditor(makeValidFlow(), "edit");
+
+    const details = screen.getByRole("region", { name: "Step details" });
+    expect(within(details).getByRole("heading", { name: "AR-S01" })).toBeInTheDocument();
+    expect(within(details).getByText("Editing step details")).toBeInTheDocument();
+  });
+
+  it("offers a single Add Image button in the step header when the step has no photos", async () => {
+    const clickSpy = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => undefined);
+    renderEditor(makeValidFlow(), "edit");
+
+    const actions = screen.getByRole("group", { name: "Step actions" });
+    expect(screen.getAllByRole("button", { name: "Add Image" })).toHaveLength(1);
+    expect(screen.queryByRole("heading", { name: "Reference images" })).not.toBeInTheDocument();
+    expect(within(actions).getByRole("button", { name: "Delete current step" })).toBeInTheDocument();
+
+    await userEvent.click(within(actions).getByRole("button", { name: "Add Image" }));
+
+    expect(clickSpy).toHaveBeenCalledOnce();
+    clickSpy.mockRestore();
+  });
+
+  it("keeps the thumbnails and a compact add button in the header when the step has photos", () => {
+    const flow = makeValidFlow();
+    flow.steps = [makeQuestionStep({ images: ["https://example.test/a.jpg", "https://example.test/b.jpg"] }), makeEndStep()];
+    renderEditor(flow, "edit");
+
+    const actions = screen.getByRole("group", { name: "Step actions" });
+    expect(within(actions).getByRole("button", { name: "View reference image 1" })).toBeEnabled();
+    expect(within(actions).getByRole("button", { name: "View reference image 2" })).toBeEnabled();
+    expect(within(actions).getByRole("button", { name: "Remove reference image 2" })).toBeInTheDocument();
+    const add = within(actions).getByRole("button", { name: "Add Image" });
+    expect(add).toHaveAttribute("title", "Add another photo");
+    expect(screen.getAllByRole("button", { name: "Add Image" })).toHaveLength(1);
+  });
+
+  it("lets non administrators view photos but not change them or delete the step", () => {
+    sessionMock.mockReturnValue({ isAdmin: false });
+    const flow = makeValidFlow();
+    flow.steps = [makeQuestionStep({ images: ["https://example.test/a.jpg"] }), makeEndStep()];
+    renderEditor(flow, "edit");
+
+    const actions = screen.getByRole("group", { name: "Step actions" });
+    expect(within(actions).getByRole("button", { name: "View reference image 1" })).toBeEnabled();
+    expect(within(actions).queryByRole("button", { name: "Remove reference image 1" })).not.toBeInTheDocument();
+    expect(within(actions).queryByRole("button", { name: "Add Image" })).not.toBeInTheDocument();
+    expect(within(actions).queryByRole("button", { name: "Delete current step" })).not.toBeInTheDocument();
+  });
+
+  it("hides the step actions for a non administrator when the step has no photos", () => {
+    sessionMock.mockReturnValue({ isAdmin: false });
+    renderEditor(makeValidFlow(), "edit");
+
+    expect(screen.queryByRole("group", { name: "Step actions" })).not.toBeInTheDocument();
+  });
+
+  it("explains inline create, visual checks and double dipping in the guide", async () => {
+    renderEditor(makeValidFlow(), "edit");
+    await userEvent.click(screen.getByRole("button", { name: "How to create a flow" }));
+
+    expect(screen.getByText("Efficient Way: Inline Create")).toBeInTheDocument();
+    expect(screen.getByText("Visual Checks")).toBeInTheDocument();
+    expect(screen.getByText("Incomplete Step:")).toBeInTheDocument();
+    expect(screen.getByText("How to setup Double Dipping:")).toBeInTheDocument();
+    expect(screen.getByText("Auto-Calculation:")).toBeInTheDocument();
+    for (const type of ["Question:", "Form:", "Select:", "End:"]) {
+      expect(screen.getByText(type)).toBeInTheDocument();
+    }
+  });
+
+  it("shows the unsaved badge next to a destructive Discard only after a change", async () => {
+    renderEditor(makeValidFlow(), "edit");
+    expect(screen.queryByRole("button", { name: /Discard/ })).not.toBeInTheDocument();
+
+    await userEvent.type(screen.getByLabelText("Flow title"), " v2");
+
+    expect(screen.getByRole("status")).toHaveTextContent("Unsaved changes");
+    expect(screen.getByRole("button", { name: /Discard/ })).toBeEnabled();
+  });
+});

@@ -102,7 +102,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
 
             const errors: Partial<Record<keyof CreateUserValues, string>> = {};
             if (!trimmedName) errors.name = "Name is required.";
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) errors.email = "Enter a valid email address.";
+            if (!/^[^\s@]+@[^\s@]+$/.test(trimmedEmail)) errors.email = "Enter a valid email address.";
             const selectedRole = e.currentTarget.querySelector<HTMLSelectElement>("#user-role")?.value;
             if (!selectedRole || !ROLE_OPTIONS.some(option => option.value === payload.role)) errors.role = "Choose a role.";
             if (!isEditing && !trimmedPassword) errors.password = "Password is required.";

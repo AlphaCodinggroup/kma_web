@@ -95,7 +95,15 @@ test("flow title and step drawer keep their proportions across breakpoints", asy
       await expect(browse).toBeFocused();
     } else {
       await expect(browse).toBeHidden();
-      await expect(page.getByRole("table", { name: "Flow step sequence" })).toBeVisible();
+      const table = page.getByRole("table", { name: "Flow step sequence" });
+      await expect(table).toBeVisible();
+      // Reparto de producción: tabla a la izquierda y inspector de 340–480 px a su derecha.
+      const inspector = page.getByRole("region", { name: "Step details" });
+      const tableBox = (await page.getByTestId("flow-steps-panel").boundingBox())!;
+      const inspectorBox = (await inspector.boundingBox())!;
+      expect(inspectorBox.width).toBeGreaterThanOrEqual(340);
+      expect(inspectorBox.width).toBeLessThanOrEqual(480);
+      expect(tableBox.x + tableBox.width).toBeLessThanOrEqual(inspectorBox.x);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
   }

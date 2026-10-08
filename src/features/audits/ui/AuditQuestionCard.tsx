@@ -73,7 +73,8 @@ function YesNoPill({ value }: { value: boolean }) {
     <span
       className={cn(
         "inline-flex items-center rounded px-2.5 py-1 text-xs font-semibold",
-        "bg-[var(--kma-subtle)] text-[var(--kma-fg)]"
+        // Como en producción: «Yes» en tinta y «No» en rojo, para que un hallazgo se vea de un vistazo.
+        value ? "bg-[var(--kma-fg)] text-[var(--kma-surface)]" : "bg-[var(--kma-danger)] text-[var(--kma-surface)]"
       )}
     >
       {value ? "Yes" : "No"}
@@ -86,7 +87,7 @@ function SelectionPill({ label }: { label: string }) {
     <span
       className={cn(
         "inline-flex items-center rounded px-2.5 py-1 text-xs font-semibold",
-        label.startsWith("UNSURE") ? "bg-[var(--kma-warning-bg)] text-[var(--kma-warning)]" : "bg-[var(--kma-input)] text-[var(--kma-fg)]"
+        label.startsWith("UNSURE") ? "bg-[var(--kma-warning-bg)] text-[var(--kma-warning)] ring-1 ring-inset ring-[var(--kma-warning-border)]" : "bg-[var(--kma-fg)] text-[var(--kma-surface)]"
       )}
     >
       {label}
@@ -573,7 +574,8 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
       return (
         <article
           className={cn(
-            "bg-[var(--kma-surface)] p-4 sm:p-6",
+            "p-4 sm:p-6",
+            "border-l-4 border-l-[var(--kma-warning)] bg-[color-mix(in_srgb,var(--kma-warning-bg)_55%,var(--kma-surface))]",
             className
           )}
         >
@@ -642,7 +644,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     }
 
     return (
-      <EvidenceComposition attachments={attachments} {...(onViewAttachment ? { onViewAttachment } : {})} className={className}>
+      <EvidenceComposition attachments={attachments} {...(onViewAttachment ? { onViewAttachment } : {})} className={cn("border-l-4 border-l-[var(--kma-warning)] bg-[color-mix(in_srgb,var(--kma-warning-bg)_55%,var(--kma-surface))]", className)}>
         <HeroSection text={text} pill={<SelectionPill label="UNSURE" />} />
         <NotesSection {...(notes === undefined ? {} : { notes })} />
         {feedback}

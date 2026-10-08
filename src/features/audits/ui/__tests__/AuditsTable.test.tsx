@@ -872,6 +872,26 @@ describe("AuditsTable — mobile workflow and safe states", () => {
     expect(onEdit).toHaveBeenCalledWith(row, false);
   });
 
+  it("explains why a non administrator cannot remove an audit from a compact row", () => {
+    compactMock.mockReturnValue(true);
+    useSessionMock.mockReturnValue({ isAdmin: false });
+    render(<AuditsTable items={[makeAudit()]} onDelete={vi.fn()} onError={vi.fn()} />);
+    const remove = screen.getByRole("button", { name: "Delete audit" });
+    expect(remove).toBeDisabled();
+    expect(remove).toHaveAttribute("title", "Only administrators can delete audits");
+  });
+
+  it("shows a spinner and blocks the button while that compact row is being removed", () => {
+    compactMock.mockReturnValue(true);
+    const item = makeAudit({ id: "audit-1" });
+    const { container, rerender } = render(<AuditsTable items={[item]} deletingId="audit-1" onDelete={vi.fn()} onError={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Delete audit" })).toBeDisabled();
+    expect(container.querySelector("svg.animate-spin")).not.toBeNull();
+    rerender(<AuditsTable items={[item]} deletingId="other" onDelete={vi.fn()} onError={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Delete audit" })).toBeEnabled();
+    expect(container.querySelector("svg.animate-spin")).toBeNull();
+  });
+
   it.each(["unknown", "deleted", "audit_in_progress"] as const)("keeps %s audits out of the active review workflow", async status => {
     const onEdit = vi.fn();
     render(<AuditsTable items={[makeAudit({ status, findingsCount: 0 })]} onEdit={onEdit} onError={vi.fn()} />);
