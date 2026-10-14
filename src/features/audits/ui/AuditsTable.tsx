@@ -335,11 +335,11 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               </TableRow>
             )}
 
-            {sortedItems.map((row) => (
+            {sortedItems.map((row, index) => (
               // data-testid da un identificador estable a la fila: la tabla no
               // muestra el id de la auditoría en ninguna columna.
               <TableRow
-                key={`${row.id}-${row.version}`}
+                key={`${row.id}-${row.version}-${index}`}
                 data-testid={`audit-row-${row.id}`}
               >
                 {showProject && <TableCell>{row.projectName ?? "—"}</TableCell>}
