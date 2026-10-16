@@ -2,14 +2,14 @@
 
 import { cn } from "@shared/lib/cn";
 import * as React from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
   ({ className, ...props }, ref) => (
     <label
       ref={ref}
-      className={cn("block text-sm font-medium text-black mb-1", className)}
+      className={cn("block text-sm font-medium text-[var(--kma-fg)] mb-1", className)}
       {...props}
     />
   )
@@ -43,12 +43,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         id={id}
         type={inputType}
         className={cn(
-          "w-full rounded-xl bg-gray-100 text-black placeholder:text-gray-500",
-          "ring-1 ring-inset ring-gray-300",
-          "focus:outline-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400",
-          "px-3 py-2 text-sm",
+          "kma-field w-full rounded bg-[var(--kma-surface)] text-[var(--kma-fg)] placeholder:text-[var(--kma-muted)] ",
+          "border border-[var(--kma-border)] ",
+          "focus:outline-none focus:bg-[var(--kma-surface)] focus:ring-2 focus:ring-[var(--kma-primary)] ",
+          "min-h-11 px-3 py-2 text-base sm:min-h-10 sm:text-sm",
           "disabled:opacity-60 disabled:cursor-not-allowed",
-          error && "ring-red-400 focus:ring-red-500",
+          error && "border-[var(--kma-danger)] focus:ring-[var(--kma-danger)]",
           isPassword && "pr-10",
           className
         )}
@@ -67,11 +67,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ) : (
             <button
               type="button"
-              aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-label={visible ? "Hide password" : "Show password"}
               aria-controls={id}
               aria-pressed={visible}
               onClick={toggle}
-              className="focus:ring-gray-400"
+              className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--kma-muted)] hover:text-[var(--kma-fg)] focus:ring-[var(--kma-primary)]"
             >
               {visible ? (
                 <EyeOff size={18} aria-hidden />
@@ -96,17 +96,17 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       ref={ref}
       className={cn(
         // base visual: gris claro, texto negro
-        "w-full rounded-xl bg-gray-100 text-black placeholder:text-gray-500",
+        "kma-field w-full rounded bg-[var(--kma-surface)] text-[var(--kma-fg)] placeholder:text-[var(--kma-muted)] ",
         // bordes/ring sutil
-        "ring-1 ring-inset ring-gray-300",
+        "border border-[var(--kma-border)] ",
         // foco: un gris apenas más oscuro + ring más notorio
-        "focus:outline-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400",
+        "focus:outline-none focus:bg-[var(--kma-surface)] focus:ring-2 focus:ring-[var(--kma-primary)] ",
         // tamaño/espaciado
-        "px-3 py-2 text-sm",
+        "min-h-11 px-3 py-2 text-base sm:min-h-10 sm:text-sm",
         // disabled
         "disabled:opacity-60 disabled:cursor-not-allowed",
         // error
-        error && "ring-red-400 focus:ring-red-500",
+        error && "border-[var(--kma-danger)] focus:ring-[var(--kma-danger)]",
         className
       )}
       {...props}
@@ -119,15 +119,19 @@ Textarea.displayName = "Textarea";
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   isLoading?: boolean;
   loadingLabel?: React.ReactNode | undefined;
+  variant?: "primary" | "secondary" | "ghost" | "destructive";
+  fullWidth?: boolean;
 };
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
       isLoading,
-      loadingLabel = "Loading...",
+      loadingLabel,
       disabled,
       children,
+      variant = "primary",
+      fullWidth = true,
       ...props
     },
     ref
@@ -135,18 +139,19 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       disabled={disabled || isLoading}
+      aria-busy={isLoading || undefined}
       className={cn(
-        "inline-flex items-center justify-center w-full rounded-xl cursor-pointer",
-        "bg-black text-white",
-        "px-4 py-2 text-sm font-medium",
-        "hover:opacity-50",
-        "focus:outline-none focus:ring-2 focus:ring-gray-400",
+        "kma-control-button",
+        `kma-button-${variant}`,
+        fullWidth && "w-full",
+        "focus:outline-none focus:ring-2 focus:ring-[var(--kma-primary)] ",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         className
       )}
       {...props}
     >
-      {isLoading ? loadingLabel : children}
+      {isLoading && <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden="true" />}
+      {isLoading ? loadingLabel ?? children : children}
     </button>
   )
 );
@@ -155,10 +160,10 @@ Button.displayName = "Button";
 export const HelpText: React.FC<React.HTMLAttributes<HTMLParagraphElement>> = ({
   className,
   ...props
-}) => <p className={cn("mt-1 text-xs text-gray-600", className)} {...props} />;
+}) => <p className={cn("mt-1 text-xs text-[var(--kma-muted)] ", className)} {...props} />;
 
 export const ErrorText: React.FC<
   React.HTMLAttributes<HTMLParagraphElement>
 > = ({ className, ...props }) => (
-  <p className={cn("mt-2 text-sm text-red-600", className)} {...props} />
+  <p className={cn("mt-2 text-sm text-[var(--kma-danger)]", className)} {...props} />
 );

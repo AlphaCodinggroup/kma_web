@@ -161,7 +161,7 @@ a backend limitation is documentation, not proof; check the backend before repea
 
 ## Known defects
 
-- `CONFIRMED:` 10 `FIXME` comments live inside tests, each documenting a live bug (for example, the
+- `CONFIRMED:` 9 `FIXME` comments live inside tests, each documenting a live bug (for example, the
   Flow editor not cleaning up references after deleting a step, or renaming a step breaking existing
   references). `rg FIXME` under `src` finds the current list; do not assume it is exhaustive of real
   bugs, only of the ones a test already caught.

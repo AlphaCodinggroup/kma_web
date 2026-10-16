@@ -32,16 +32,17 @@ const ProjectAuditsToolbar: React.FC<ProjectAuditsToolbarProps> = ({
   shown,
   total,
 }) => (
-  <div className="space-y-2">
+  <div className="space-y-3 border-y border-[var(--kma-border)] py-4">
     <div className="flex flex-wrap items-center gap-2">
       <SearchInput
         placeholder="Search audits…"
         aria-label="Search audits"
         value={filters.query}
         onChange={(e) => onFilterChange("query", e.target.value)}
-        containerClassName="min-w-60 flex-1"
+        containerClassName="min-w-0 basis-full flex-1 lg:basis-60"
       />
       <FilterSelect
+        className="min-h-11 min-w-0 flex-1 sm:flex-none"
         ariaLabel="Filter by facility"
         allLabel="All facilities"
         value={filters.facility}
@@ -49,6 +50,7 @@ const ProjectAuditsToolbar: React.FC<ProjectAuditsToolbarProps> = ({
         onChange={(value) => onFilterChange("facility", value)}
       />
       <FilterSelect
+        className="min-h-11 min-w-0 flex-1 sm:flex-none"
         ariaLabel="Filter by flow"
         allLabel="All flows"
         value={filters.flow}
@@ -56,6 +58,7 @@ const ProjectAuditsToolbar: React.FC<ProjectAuditsToolbarProps> = ({
         onChange={(value) => onFilterChange("flow", value)}
       />
       <FilterSelect
+        className="min-h-11 min-w-0 flex-1 sm:flex-none"
         ariaLabel="Filter by status"
         allLabel="All statuses"
         value={filters.status}
@@ -65,7 +68,7 @@ const ProjectAuditsToolbar: React.FC<ProjectAuditsToolbarProps> = ({
       {hasValues && <ClearFiltersButton onClick={onClear} />}
     </div>
     {isFiltering && (
-      <p className="text-sm text-gray-600" aria-live="polite">
+      <p className="text-sm text-[var(--kma-muted)]" aria-live="polite">
         Showing {shown} of {total} audits
       </p>
     )}

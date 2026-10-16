@@ -213,6 +213,7 @@ async function renderPage() {
 
 describe("UsersPage", () => {
   beforeEach(() => {
+    window.history.replaceState(null, "", "/");
     vi.clearAllMocks();
     stubUsers();
   });

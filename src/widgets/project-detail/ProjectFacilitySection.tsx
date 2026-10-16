@@ -42,24 +42,27 @@ const ProjectFacilitySection: React.FC<ProjectFacilitySectionProps> = ({
   onRetry,
 }) => {
   const location = [section.address, section.city].filter(Boolean).join(" · ");
+  const delivered = section.audits.filter(audit => audit.status === "final_report_sent_to_client").length;
+  const unavailable = section.audits.filter(audit => audit.status === "unknown").length;
+  const meta = `${describeSummary(section.summary, filtered)}${delivered ? ` · ${delivered} delivered` : ""}${unavailable ? ` · ${unavailable} status unavailable` : ""}`;
 
   return (
     <Collapsible
       defaultOpen={defaultOpen}
       title={
         <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className="font-semibold text-black">{section.name}</span>
+          <span className="font-semibold text-[var(--kma-fg)]">{section.name}</span>
           {location ? (
-            <span className="text-sm text-gray-600">{location}</span>
+            <span className="text-sm text-[var(--kma-muted)]">{location}</span>
           ) : null}
           {!section.assigned ? (
-            <span className="text-xs text-amber-700">
+            <span className="text-xs text-[var(--kma-warning)]">
               Not assigned to this project
             </span>
           ) : null}
         </span>
       }
-      meta={describeSummary(section.summary, filtered)}
+      meta={meta}
     >
       {section.audits.length > 0 ? (
         <AuditsTable
@@ -72,7 +75,7 @@ const ProjectFacilitySection: React.FC<ProjectFacilitySectionProps> = ({
           onError={onRetry}
         />
       ) : (
-        <p className="px-4 py-6 text-center text-sm text-gray-500">
+        <p className="px-4 py-6 text-center text-sm text-[var(--kma-muted)]">
           {filtered
             ? "No audits match the filters."
             : "No audits have been started for this facility."}

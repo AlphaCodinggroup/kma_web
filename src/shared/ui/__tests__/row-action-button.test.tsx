@@ -5,12 +5,13 @@ import { Pencil } from "lucide-react";
 import RowActionButton from "../row-action-button";
 
 describe("RowActionButton", () => {
-  it("renders a button labelled and titled with ariaLabel", () => {
+  it("renders a named button with an accessible tooltip trigger", () => {
     render(<RowActionButton icon={Pencil} ariaLabel="Edit user" />);
 
     const button = screen.getByRole("button", { name: "Edit user" });
     expect(button).toHaveAttribute("type", "button");
-    expect(button).toHaveAttribute("title", "Edit user");
+    expect(button).toHaveAccessibleName("Edit user");
+    expect(button).toHaveAttribute("data-state", "closed");
   });
 
   it("renders the given icon", () => {
@@ -38,7 +39,7 @@ describe("RowActionButton", () => {
 
     expect(screen.getByRole("button", { name: "Sized" })).toHaveClass(
       expected,
-      "rounded-lg"
+      "rounded"
     );
   });
 
@@ -46,9 +47,9 @@ describe("RowActionButton", () => {
     variant: "default" | "danger" | undefined;
     expected: string;
   }> = [
-    { variant: "default", expected: "text-black" },
-    { variant: "danger", expected: "text-red-600" },
-    { variant: undefined, expected: "text-black" },
+    { variant: "default", expected: "text-[var(--kma-fg)]" },
+    { variant: "danger", expected: "text-[var(--kma-danger)]" },
+    { variant: undefined, expected: "text-[var(--kma-fg)]" },
   ];
 
   it.each(variantCases)(
@@ -64,7 +65,7 @@ describe("RowActionButton", () => {
 
       expect(screen.getByRole("button", { name: "Variant" })).toHaveClass(
         expected,
-        "bg-white"
+        "bg-[var(--kma-surface)]"
       );
     }
   );
@@ -83,7 +84,7 @@ describe("RowActionButton", () => {
 
     const button = screen.getByRole("button", { name: "Disabled" });
     expect(button).toBeDisabled();
-    expect(button).toHaveClass("opacity-60", "hover:bg-white");
+    expect(button).toHaveClass("opacity-60", "hover:bg-[var(--kma-surface)]");
     expect(button).not.toHaveClass("cursor-pointer");
   });
 

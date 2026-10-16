@@ -337,6 +337,22 @@ describe("ProjectDetailView — sections and summary", () => {
     expect(screen.getByTestId("metric-completed")).toHaveTextContent("1");
   });
 
+  it("separates delivered and unavailable states from work in progress", () => {
+    state.audits.audits = [
+      makeAudit({ id: "working", status: "audit_in_progress" }),
+      makeAudit({ id: "done", status: "completed" }),
+      makeAudit({ id: "delivered", status: "final_report_sent_to_client" }),
+      makeAudit({ id: "unavailable", status: "unknown" }),
+      makeAudit({ id: "deleted", status: "deleted" }),
+    ];
+    renderView();
+    expect(screen.getByTestId("metric-in-progress")).toHaveTextContent("1");
+    expect(screen.getByTestId("metric-completed")).toHaveTextContent("1");
+    expect(screen.getByTestId("metric-delivered")).toHaveTextContent("1");
+    expect(screen.getByTestId("metric-unavailable")).toHaveTextContent("1");
+    expect(screen.getByText("unavailable")).toBeInTheDocument();
+  });
+
   it("counts the facilities that only appear in audits", () => {
     state.project.data = makeProject({ facilities: [] });
     state.audits = {
@@ -438,7 +454,7 @@ describe("ProjectDetailView — report", () => {
     await userEvent.click(screen.getByRole("button", { name: "Download report" }));
 
     await waitFor(() =>
-      expect(alert).toHaveBeenCalledWith("Error downloading the report. Please try again.")
+      expect(screen.getByText("Error downloading the report. Please try again.")).toBeInTheDocument()
     );
   });
 
@@ -563,7 +579,7 @@ describe("ProjectDetailView — audit deletion", () => {
     );
 
     await waitFor(() =>
-      expect(alert).toHaveBeenCalledWith("Error deleting the audit. Please try again.")
+      expect(screen.getByText("Error deleting the audit. Please try again.")).toBeInTheDocument()
     );
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
@@ -642,7 +658,7 @@ describe("ProjectDetailView — search and filters", () => {
     ]);
     expect(
       within(screen.getByRole("combobox", { name: "Filter by status" })).getAllByRole("option")
-    ).toHaveLength(5);
+    ).toHaveLength(8);
     expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
   });
 

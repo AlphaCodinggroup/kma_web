@@ -1,5 +1,6 @@
 "use client";
 
+import { useUrlParameter } from "@shared/lib/useUrlParameter";
 import React, {
   useCallback,
   useMemo,
@@ -30,7 +31,7 @@ type FacilitiesContentProps = {
 export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
   createTriggerRef,
 }) => {
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useUrlParameter("facilities_q");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
@@ -45,7 +46,8 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     null,
   );
 
-  const [showArchived, setShowArchived] = useState(false);
+  const [archive, setArchive] = useUrlParameter("facilities_status", "active");
+  const showArchived = archive === "archived";
 
   const [openRestore, setOpenRestore] = useState(false);
   const [facilityToRestore, setFacilityToRestore] = useState<Facility | null>(
@@ -89,13 +91,13 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     error: updateError,
   } = useUpdateFacilityMutation();
 
-  const { mutateAsync: deleteFacility, isPending: isDeleting } =
+  const { mutateAsync: deleteFacility, isPending: isDeleting, error: deleteError, reset: resetDelete } =
     useDeleteFacilityMutation();
 
-  const { mutateAsync: archiveFacility, isPending: isArchiving } =
+  const { mutateAsync: archiveFacility, isPending: isArchiving, error: archiveError, reset: resetArchive } =
     useArchiveFacilityMutation();
 
-  const { mutateAsync: restoreFacility, isPending: isRestoring } =
+  const { mutateAsync: restoreFacility, isPending: isRestoring, error: restoreError, reset: resetRestore } =
     useRestoreFacilityMutation();
 
   // Expose create trigger to parent via ref
@@ -180,10 +182,12 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     (id: string) => {
       const found = facilities.find((f) => f.id === id);
       if (!found) return;
+      // Un error de un intento anterior no debe aparecer en el diálogo de otra instalación.
+      resetDelete();
       setFacilityToDelete(found);
       setOpenDelete(true);
     },
-    [facilities],
+    [facilities, resetDelete],
   );
 
   const confirmDelete = useCallback(async () => {
@@ -203,10 +207,12 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     (id: string) => {
       const found = facilities.find((f) => f.id === id);
       if (!found) return;
+      // Un error de un intento anterior no debe aparecer en el diálogo de otra instalación.
+      resetArchive();
       setFacilityToArchive(found);
       setOpenArchive(true);
     },
-    [facilities],
+    [facilities, resetArchive],
   );
 
   const confirmArchive = useCallback(async () => {
@@ -226,10 +232,12 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
     (id: string) => {
       const found = facilities.find((f) => f.id === id);
       if (!found) return;
+      // Un error de un intento anterior no debe aparecer en el diálogo de otra instalación.
+      resetRestore();
       setFacilityToRestore(found);
       setOpenRestore(true);
     },
-    [facilities],
+    [facilities, resetRestore],
   );
 
   const confirmRestore = useCallback(async () => {
@@ -265,7 +273,7 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         onQueryChange={setQuery}
         placeholder="Search facility by name, address or city..."
         showArchived={showArchived}
-        onToggleArchived={() => setShowArchived(!showArchived)}
+        onToggleArchived={() => setArchive(showArchived ? "active" : "archived")}
       >
         <FacilityTable
           items={visibleFacilities}
@@ -316,6 +324,7 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         confirmLabel="Delete"
         cancelLabel="Cancel"
         loading={isDeleting}
+        error={deleteError?.message ?? null}
         onConfirm={confirmDelete}
       />
 
@@ -336,12 +345,14 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         confirmLabel="Archive"
         cancelLabel="Cancel"
         loading={isArchiving}
+        error={archiveError?.message ?? null}
         onConfirm={confirmArchive}
       />
 
       {/* Modal de confirmación de restore */}
       <ConfirmDialog
         open={openRestore}
+        variant="primary"
         onOpenChange={(o) => {
           setOpenRestore(o);
           if (!o) setFacilityToRestore(null);
@@ -356,6 +367,7 @@ export const FacilitiesContent: React.FC<FacilitiesContentProps> = ({
         confirmLabel="Restore"
         cancelLabel="Cancel"
         loading={isRestoring}
+        error={restoreError?.message ?? null}
         onConfirm={confirmRestore}
       />
     </>

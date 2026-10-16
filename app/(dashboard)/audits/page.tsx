@@ -1,184 +1,167 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Audit } from "@entities/audit/model";
 import AuditsTable from "@features/audits/ui/AuditsTable";
+import { toAuditStatusFilter } from "@features/audits/ui/AuditsFilters";
 import AuditsToolbar from "@features/audits/ui/AuditsToolBar";
-import { cn } from "@shared/lib/cn";
-import PageHeader from "@shared/ui/page-header";
-import useListAudits from "@features/audits/lib/hooks/useListAudits";
+import { useInfiniteAudits } from "@features/audits/lib/hooks/useInfiniteAudits";
 import { useDeleteAudit } from "@features/audits/lib/hooks/useDeleteAudit";
 import { useAuditors } from "@features/audits/lib/hooks/useAuditors";
-import type { Audit } from "@entities/audit/model";
 import { useOpenAuditReview } from "@features/audits/lib/hooks/useOpenAuditReview";
 import NoReportNeededModal from "@features/audits/ui/NoReportNeededModal";
+import PageHeader from "@shared/ui/page-header";
+import ConfirmDialog from "@shared/ui/confirm-dialog";
+import { Button } from "@shared/ui/controls";
+import { useUrlParameter } from "@shared/lib/useUrlParameter";
 
 const AuditsPage: React.FC = () => {
-  const [query, setQuery] = useState<string>("");
-
-  // Filter state
-  const [auditorFilter, setAuditorFilter] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
-
-  // Fetch audits with filters applied server-side
-  // Use useMemo to ensure React Query detects filter changes
-  const listOptions = useMemo(() => {
-    const opts: import("@features/audits/lib/hooks/useListAudits").UseListAuditsOptions = {
-      limit: 200, // Hybrid pagination threshold
-    };
-    if (statusFilter) opts.status = statusFilter;
-    if (auditorFilter) opts.auditor = auditorFilter;
-    return opts;
-  }, [statusFilter, auditorFilter]);
-
-  const { data, isLoading, isError, isFetching, refetch } = useListAudits(listOptions);
+  const [query, setQuery] = useUrlParameter("q");
+  const [auditorFilter, setAuditorFilter] = useUrlParameter("auditor");
+  const [rawStatusFilter, setStatusFilter] = useUrlParameter("status");
+  // Un ?status= que el filtro no ofrece (marcador viejo, URL escrita a mano) equivale a «todos» y no llega al backend.
+  const statusFilter = toAuditStatusFilter(rawStatusFilter);
+  const [pageValue, setPageValue] = useUrlParameter("page", "1");
+  const [sizeValue, setSizeValue] = useUrlParameter("size", "25");
+  const pageSize = Math.max(1, Math.min(100, Number(sizeValue) || 25));
+  const page = Math.max(1, Number(pageValue) || 1);
+  const listOptions = useMemo(() => ({
+    ...(statusFilter ? { status: statusFilter } : {}),
+    ...(auditorFilter ? { auditor: auditorFilter } : {}),
+  }), [statusFilter, auditorFilter]);
+  const list = useInfiniteAudits(listOptions);
   const deleteMutation = useDeleteAudit();
-
-  // Fetch auditors from API
   const { auditors: availableAuditors } = useAuditors();
+  const returnQuery = new URLSearchParams();
+  if (query) returnQuery.set("q", query);
+  if (auditorFilter) returnQuery.set("auditor", auditorFilter);
+  if (statusFilter) returnQuery.set("status", statusFilter);
+  if (pageValue !== "1") returnQuery.set("page", pageValue);
+  if (sizeValue !== "25") returnQuery.set("size", sizeValue);
+  const returnTo = returnQuery.size ? `/audits?${returnQuery}` : undefined;
+  const { openReview: handleEdit, editingId, noReportNeeded } = useOpenAuditReview({ onReady: () => list.refetch(), returnTo });
+  const [pendingDelete, setPendingDelete] = useState<Audit | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const deleting = useRef(false);
 
-  const {
-    openReview: handleEdit,
-    editingId,
-    noReportNeeded,
-  } = useOpenAuditReview({ onReady: () => refetch() });
-
-  // Detect pagination mode: server-side if last_eval_id present, client-side otherwise
-  const paginationMode = useMemo(() => {
-    return data?.last_eval_id ? "server" : "client";
-  }, [data?.last_eval_id]);
-
-  // Client-side text search (only applied in client-side mode)
-  const clientFiltered = useMemo<Audit[]>(() => {
-    if (!data?.audits) return [];
-
-    // In server-side mode, data is already filtered by backend
-    if (paginationMode === "server") {
-      return data.audits;
-    }
-
-    // In client-side mode, apply text search filter
+  // Cada fila aparece una sola vez aunque los datos cambien entre páginas del servidor.
+  const loaded = useMemo(() => [...new Map((list.data?.pages ?? []).flatMap(chunk => chunk.audits).map(audit => [audit.id, audit])).values()], [list.data]);
+  const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return data.audits;
-
-    return data.audits.filter((row) => {
-      const projectId = row.projectId?.toLowerCase?.() ?? "";
-      const projectName = row.projectName?.toLowerCase?.() ?? "";
-      const facilityName = row.facilityName?.toLowerCase?.() ?? "";
-      const flowName = row.flowName?.toLowerCase?.() ?? "";
-      const createdAt = row.createdAt?.toLowerCase?.() ?? "";
-      return (
-        projectId.includes(q) ||
-        projectName.includes(q) ||
-        facilityName.includes(q) ||
-        flowName.includes(q) ||
-        createdAt.includes(q)
-      );
-    });
-  }, [data, query, paginationMode]);
-
-  // Pagination logic based on mode
-  const { paginatedData, totalPages, totalItems } = useMemo(() => {
-    if (paginationMode === "server") {
-      // Server-side: display data as-is, use total from backend
-      return {
-        paginatedData: clientFiltered,
-        totalPages: Math.ceil((data?.total ?? 0) / pageSize),
-        totalItems: data?.total ?? 0,
-      };
-    } else {
-      // Client-side: paginate in memory
-      const total = clientFiltered.length;
-      const pages = Math.ceil(total / pageSize);
-      const start = (currentPage - 1) * pageSize;
-      const end = start + pageSize;
-
-      return {
-        paginatedData: clientFiltered.slice(start, end),
-        totalPages: pages,
-        totalItems: total,
-      };
-    }
-  }, [clientFiltered, currentPage, pageSize, paginationMode, data?.total]);
-
-  // Reset to page 1 when filters change
+    return !q ? loaded : loaded.filter(audit => [audit.projectId, audit.projectName, audit.facilityName, audit.flowName, audit.auditorName, audit.createdAt].some(value => value?.toLowerCase().includes(q)));
+  }, [loaded, query]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const items = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const needsPageRestore = page > totalPages && Boolean(list.hasNextPage);
+  const { data: loadedPages, isFetching, isFetchNextPageError, isRefetchError, fetchNextPage } = list;
   useEffect(() => {
-    setCurrentPage(1);
-  }, [auditorFilter, statusFilter, query, pageSize]);
-
-  const handleClearFilters = useCallback(() => {
+    if (!needsPageRestore || !loadedPages || isFetching || isFetchNextPageError || isRefetchError) return;
+    void fetchNextPage({ cancelRefetch: false });
+  }, [needsPageRestore, loadedPages, isFetching, isFetchNextPageError, isRefetchError, fetchNextPage]);
+  const changeFilter = (setter: (value: string) => void, value: string) => {
+    setter(value);
+    setPageValue("1");
+  };
+  const clearFilters = () => {
     setAuditorFilter("");
     setStatusFilter("");
-  }, []);
-
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const handleDelete = useCallback(
-    async (audit: Audit) => {
-      const confirmed = window.confirm(
-        `Are you sure you want to delete the audit for "${audit.projectName ?? audit.id}"?\n\nThis action cannot be undone.`
-      );
-
-      if (!confirmed) return;
-
-      try {
-        setDeletingId(audit.id);
-        await deleteMutation.mutateAsync(audit.id);
-      } catch (err) {
-        console.error("Error deleting audit:", err);
-        alert("Error deleting the audit. Please try again.");
-      } finally {
-        setDeletingId(null);
-      }
-    },
-    [deleteMutation]
-  );
+    setQuery("");
+    setPageValue("1");
+  };
+  const confirmDelete = useCallback(async () => {
+    if (!pendingDelete || deleting.current) return;
+    deleting.current = true;
+    setDeletingId(pendingDelete.id);
+    setDeleteError(null);
+    try {
+      await deleteMutation.mutateAsync(pendingDelete.id);
+      setPendingDelete(null);
+    } catch {
+      setDeleteError("The audit could not be deleted. Please try again.");
+    } finally {
+      deleting.current = false;
+      setDeletingId(null);
+    }
+  }, [deleteMutation, pendingDelete]);
 
   return (
-    <main className={cn("min-h-dv hoverflow-hidden bg-white")}>
-      <PageHeader title="Audits" />
-      <div
-        className={cn(
-          "w-full rounded-xl border border-gray-200 bg-white px-4 py-3"
+    <div className="min-w-0 space-y-6">
+      <PageHeader title="Audits" subtitle="Review findings, coordinate feedback, and move each audit forward." />
+      <section className="overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--kma-border)] px-4 py-4 sm:px-6">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h2 className="text-lg font-semibold">Review queue</h2>
+            <span className="text-sm tabular-nums text-[var(--kma-muted)]">{list.isLoading ? "Loading…" : `${filtered.length} loaded`}</span>
+          </div>
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[var(--kma-muted)]">
+            <span className="sr-only">Loaded results:</span>
+            <span><strong className="font-semibold tabular-nums text-[var(--kma-fg)]">{loaded.filter(audit => audit.status === "draft_report_pending_review").length}</strong> pending</span>
+            <span><strong className="font-semibold tabular-nums text-[var(--kma-fg)]">{loaded.filter(audit => audit.status === "draft_report_in_review").length}</strong> in review</span>
+            <span className="sr-only">in loaded results</span>
+          </p>
+        </div>
+        <div className="border-b border-[var(--kma-border)] p-4 sm:px-6">
+          <AuditsToolbar
+            searchValue={query}
+            onSearchChange={value => changeFilter(setQuery, value)}
+            searchPlaceholder="Search audits…"
+            auditorFilter={auditorFilter}
+            statusFilter={statusFilter}
+            onAuditorFilterChange={value => changeFilter(setAuditorFilter, value)}
+            onStatusFilterChange={value => changeFilter(setStatusFilter, value)}
+            onClearFilters={clearFilters}
+            availableAuditors={availableAuditors}
+          />
+        </div>
+        {list.isRefetchError && (
+          <div className="mx-4 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--kma-danger-border)] bg-[var(--kma-danger-bg)] p-3 sm:mx-5">
+            <p role="alert" className="text-sm text-[var(--kma-danger)]">Audits could not be refreshed. Your previously loaded results and filters are preserved.</p>
+            <Button fullWidth={false} onClick={() => void list.refetch()} disabled={list.isFetching} isLoading={list.isRefetching}>Retry refresh</Button>
+          </div>
         )}
-      >
-        <AuditsToolbar
-          searchValue={query}
-          onSearchChange={setQuery}
-          searchPlaceholder="Search audits…"
-          auditorFilter={auditorFilter}
-          statusFilter={statusFilter}
-          onAuditorFilterChange={setAuditorFilter}
-          onStatusFilterChange={setStatusFilter}
-          onClearFilters={handleClearFilters}
-          availableAuditors={availableAuditors}
-        />
         <AuditsTable
-          items={paginatedData}
+          items={items}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={audit => { setDeleteError(null); setPendingDelete(audit); }}
           deletingId={deletingId}
           editingId={editingId}
-          loading={isLoading}
-          fetching={isFetching}
-          error={isError}
-          onError={refetch}
+          loading={list.isLoading}
+          fetching={list.isFetching && !list.isFetchingNextPage}
+          error={list.isError && !list.data}
+          onError={() => void list.refetch()}
           currentPage={currentPage}
           totalPages={totalPages}
           pageSize={pageSize}
-          totalItems={totalItems}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={setPageSize}
+          totalItems={filtered.length}
+          onPageChange={value => setPageValue(String(value))}
+          onPageSizeChange={value => changeFilter(setSizeValue, String(value))}
         />
-      </div>
-      <NoReportNeededModal
-        open={noReportNeeded.open}
-        onOpenChange={noReportNeeded.onOpenChange}
+        {!list.isLoading && list.data && (
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--kma-border)] bg-[var(--kma-subtle)] px-4 py-3 text-xs sm:px-6" role="status">
+            <span className="text-[var(--kma-muted)]">
+              {loaded.length} audits loaded{list.isRefetchError ? ". Showing previously loaded results; refresh failed." : list.hasNextPage ? ". More results are available." : ". All available results loaded."}
+              {needsPageRestore ? list.isFetchNextPageError || list.isRefetchError ? ` Page ${page} needs additional results; retry to continue.` : ` Loading results to restore page ${page}.` : ""}
+              {query && list.hasNextPage ? " Search applies to loaded audits; load more to search additional results." : ""}
+            </span>
+            {list.hasNextPage && <Button fullWidth={false} onClick={() => void list.fetchNextPage()} disabled={list.isFetching} isLoading={list.isFetchingNextPage}>{list.isFetchNextPageError ? "Retry loading more" : "Load more audits"}</Button>}
+            {list.isFetchNextPageError && <p className="w-full text-[var(--kma-danger)]" role="alert">More audits could not be loaded. Your current results and filters are preserved.</p>}
+          </div>
+        )}
+      </section>
+      <NoReportNeededModal open={noReportNeeded.open} onOpenChange={noReportNeeded.onOpenChange} />
+      <ConfirmDialog
+        open={Boolean(pendingDelete)}
+        onOpenChange={open => { if (!open && !deleting.current) setPendingDelete(null); }}
+        title="Delete audit?"
+        description={`Delete the audit for “${pendingDelete?.projectName ?? pendingDelete?.id ?? ""}”? This action cannot be undone.`}
+        confirmLabel="Delete audit"
+        loading={Boolean(deletingId)}
+        error={deleteError}
+        onConfirm={confirmDelete}
       />
-    </main>
+    </div>
   );
 };
 

@@ -128,6 +128,22 @@ describe("FlowEditor - conditional navigation", () => {
     expect(conditionalPanel("NO")).toBeNull();
   });
 
+  it("names the conditional destination and each source-specific answer control", async () => {
+    const user = userEvent.setup();
+    renderEditor(conditionalFlow(), "edit");
+    await selectTargetQuestion(user);
+    await user.click(conditionalToggle("YES"));
+    const panel = within(conditionalRow("YES"));
+    expect(panel.getByRole("combobox", { name: "Target Step (when conditions match)" })).toHaveValue("");
+    await user.click(panel.getByRole("button", { name: /add condition/i }));
+    const source = panel.getByRole("combobox", { name: "Condition 1 source step" });
+    await user.selectOptions(source, "AR-Q00");
+    expect(panel.getByRole("combobox", { name: "Condition 1 answer" })).toHaveValue("");
+    await user.selectOptions(source, "AR-S01");
+    expect(panel.queryByRole("combobox", { name: "Condition 1 answer" })).not.toBeInTheDocument();
+    expect(panel.getByRole("combobox", { name: "Condition 1 selected option" })).toHaveValue("");
+  });
+
   it("expands the panel when the conditional navigation is enabled", async () => {
     const user = userEvent.setup();
     renderEditor(conditionalFlow(), "edit");

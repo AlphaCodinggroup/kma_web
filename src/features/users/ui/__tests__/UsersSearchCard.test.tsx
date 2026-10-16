@@ -10,9 +10,9 @@ describe("UsersSearchCard", () => {
     );
 
     expect(
-      screen.getByRole("heading", { level: 2, name: "Managements" })
+      screen.getByRole("heading", { level: 2, name: "Team directory" })
     ).toBeInTheDocument();
-    expect(screen.getByText("Total Managements: 7")).toBeInTheDocument();
+    expect(screen.getByText("Total users: 7")).toBeInTheDocument();
   });
 
   // Total en cero es dato válido, no ausencia.
@@ -21,7 +21,7 @@ describe("UsersSearchCard", () => {
       <UsersSearchCard query="" onQueryChange={vi.fn()} total={0} />
     );
 
-    expect(screen.getByText("Total Managements: 0")).toBeInTheDocument();
+    expect(screen.getByText("Total users: 0")).toBeInTheDocument();
   });
 
   it("renders the labelled search input with the current query", () => {
@@ -29,7 +29,7 @@ describe("UsersSearchCard", () => {
       <UsersSearchCard query="jane" onQueryChange={vi.fn()} total={1} />
     );
 
-    const input = screen.getByLabelText("Search Managements");
+    const input = screen.getByLabelText("Search users");
     expect(input).toHaveValue("jane");
     expect(input).toHaveAttribute("type", "search");
   });
@@ -37,7 +37,7 @@ describe("UsersSearchCard", () => {
   it("uses the default search placeholder when none is given", () => {
     render(<UsersSearchCard query="" onQueryChange={vi.fn()} total={0} />);
 
-    expect(screen.getByLabelText("Search Managements")).toHaveAttribute(
+    expect(screen.getByLabelText("Search users")).toHaveAttribute(
       "placeholder",
       "Search…"
     );
@@ -53,7 +53,7 @@ describe("UsersSearchCard", () => {
       />
     );
 
-    expect(screen.getByLabelText("Search Managements")).toHaveAttribute(
+    expect(screen.getByLabelText("Search users")).toHaveAttribute(
       "placeholder",
       "Search a user"
     );
@@ -66,7 +66,7 @@ describe("UsersSearchCard", () => {
       <UsersSearchCard query="" onQueryChange={onQueryChange} total={0} />
     );
 
-    await user.type(screen.getByLabelText("Search Managements"), "ab");
+    await user.type(screen.getByLabelText("Search users"), "ab");
 
     // El componente es controlado: cada tecla parte del mismo valor vacío.
     expect(onQueryChange).toHaveBeenCalledTimes(2);
@@ -84,7 +84,7 @@ describe("UsersSearchCard", () => {
     expect(screen.getByTestId("table-slot")).toBeInTheDocument();
   });
 
-  it("applies the card base classes and merges a custom className", () => {
+  it("passes a custom className to the directory section", () => {
     const { container } = render(
       <UsersSearchCard
         query=""
@@ -95,9 +95,6 @@ describe("UsersSearchCard", () => {
     );
 
     expect(container.firstElementChild).toHaveClass(
-      "rounded-2xl",
-      "border",
-      "bg-white",
       "card-extra"
     );
   });

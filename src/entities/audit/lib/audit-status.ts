@@ -11,14 +11,16 @@ import type { AuditStatus } from "@entities/audit/model";
 
 /** Estados que el backend puede emitir (shared/statemachine). */
 export const AUDIT_STATUSES: readonly AuditStatus[] = [
+  "audit_in_progress",
   "draft_report_pending_review",
   "draft_report_in_review",
   "final_report_sent_to_client",
   "completed",
+  "deleted",
 ] as const;
 
-/** Estado inicial, al que cae cualquier valor que no esté en la lista. */
-export const DEFAULT_AUDIT_STATUS: AuditStatus = "draft_report_pending_review";
+/** Un dato ausente nunca se convierte en trabajo pendiente. */
+export const DEFAULT_AUDIT_STATUS: AuditStatus = "unknown";
 
 /** isAuditStatus indica si la cadena es uno de los estados conocidos. */
 export function isAuditStatus(raw: unknown): raw is AuditStatus {
@@ -28,7 +30,7 @@ export function isAuditStatus(raw: unknown): raw is AuditStatus {
 }
 
 /**
- * toAuditStatus devuelve el estado cuando es conocido y el inicial cuando no.
+ * toAuditStatus conserva el estado conocido y señala los datos desconocidos.
  *
  * Cubre también la cadena vacía y el valor ausente, que con `??` se colaban.
  */

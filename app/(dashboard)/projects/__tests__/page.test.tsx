@@ -42,13 +42,29 @@ async function renderPage() {
 describe("ProjectsPage", () => {
   beforeEach(() => {
     delete document.body.dataset.created;
+    window.history.replaceState(null, "", "/projects");
+  });
+
+  it("restores the facilities tab from a shared URL", async () => {
+    window.history.replaceState(null, "", "/projects?tab=facilities");
+    await renderPage();
+    expect(screen.getByRole("button", { name: "New Facility" })).toBeTruthy();
+    expect(screen.getByText("facilities content")).toBeTruthy();
+  });
+
+  it("preserves filters when saving the active tab in the URL", async () => {
+    window.history.replaceState(null, "", "/projects?projects_q=north");
+    await renderPage();
+    await userEvent.click(screen.getByRole("tab", { name: "Facilities" }));
+    expect(new URLSearchParams(window.location.search).get("tab")).toBe("facilities");
+    expect(new URLSearchParams(window.location.search).get("projects_q")).toBe("north");
   });
 
   it("renders the header and starts on the projects tab", async () => {
     await renderPage();
 
     expect(
-      screen.getByRole("heading", { name: "Projects & Facilities Management" })
+      screen.getByRole("heading", { name: "Projects" })
     ).toBeTruthy();
     expect(screen.getByRole("button", { name: "New Project" })).toBeTruthy();
     expect(screen.getByText("projects content")).toBeTruthy();

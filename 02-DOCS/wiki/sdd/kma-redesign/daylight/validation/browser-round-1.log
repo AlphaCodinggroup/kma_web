@@ -1,0 +1,50 @@
+
+> kma_web@1.0.15 test:e2e
+> playwright test
+
+
+Running 39 tests using 1 worker
+
+(node:3603551) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › e2e/auth.spec.ts:5:7 › Autenticación › una ruta protegida redirige al login sin sesión (698ms)
+  ✓   2 [chromium] › e2e/auth.spec.ts:10:7 › Autenticación › la raíz lleva al login (361ms)
+  ✓   3 [chromium] › e2e/auth.spec.ts:15:7 › Autenticación › credenciales inválidas no inician sesión (414ms)
+  ✓   4 [chromium] › e2e/auth.spec.ts:26:7 › Autenticación › credenciales válidas entran al dashboard (499ms)
+  ✓   5 [chromium] › e2e/auth.spec.ts:32:7 › Autenticación › la sesión sobrevive una recarga (632ms)
+  ✓   6 [chromium] › e2e/crud.spec.ts:18:7 › Proyectos › alta, edición, archivo, restauración y borrado de un proyecto (2.7s)
+  ✓   7 [chromium] › e2e/crud.spec.ts:75:7 › Proyectos › el nombre en blanco no crea el proyecto (1.2s)
+  ✓   8 [chromium] › e2e/crud.spec.ts:94:7 › Facilities › alta, edición y borrado de una facility (3.5s)
+  ✓   9 [chromium] › e2e/crud.spec.ts:183:7 › Usuarios › alta, edición de rol y borrado de un usuario (2.3s)
+  ✓  10 [chromium] › e2e/crud.spec.ts:236:7 › Flows › el listado filtra y abre el editor de un flow (1.2s)
+  ✓  11 [chromium] › e2e/crud.spec.ts:265:7 › Reportes › el listado de reportes carga y filtra (1.1s)
+  ✓  12 [chromium] › e2e/flow-editor.spec.ts:22:5 › mobile steps select the inspector and export a real JSON download (1.3s)
+  ✓  13 [chromium] › e2e/flow-editor.spec.ts:56:5 › unsaved flow edits block navigation and recover after reload without changing the seed (11.5s)
+  ✓  14 [chromium] › e2e/flow-editor.spec.ts:104:5 › uploads a reference image, saves and exports an isolated flow (1.2s)
+  ✓  15 [chromium] › e2e/premium.spec.ts:24:7 › list actions and form fields stay usable at 390px (2.1s)
+  ✓  16 [chromium] › e2e/premium.spec.ts:24:7 › list actions and form fields stay usable at 768px (2.3s)
+  ✓  17 [chromium] › e2e/premium.spec.ts:56:5 › fieldwork and unknown audit states never enter the review queue (870ms)
+  ✓  18 [chromium] › e2e/premium.spec.ts:73:5 › flow title and step drawer keep their proportions across breakpoints (2.9s)
+  ✓  19 [chromium] › e2e/premium.spec.ts:104:5 › all screens reflow at 320px and the CSS viewport of 200 percent zoom (13.8s)
+  ✓  20 [chromium] › e2e/premium.spec.ts:118:7 › automated accessibility of all screens in light (47.7s)
+  ✓  21 [chromium] › e2e/premium.spec.ts:118:7 › automated accessibility of all screens in dark (46.8s)
+  ✓  22 [chromium] › e2e/redesign.spec.ts:17:5 › appearance persists on login and follows the system with reduced motion (580ms)
+  ✓  23 [chromium] › e2e/redesign.spec.ts:34:5 › mobile navigation traps focus, closes on Escape and opens Facilities (1.1s)
+  ✓  24 [chromium] › e2e/redesign.spec.ts:55:5 › audit filters and search survive refresh and a visit to another screen (1.2s)
+  ✓  25 [chromium] › e2e/redesign.spec.ts:68:5 › clicking the blank dialog backdrop closes the form and restores focus (1.2s)
+  ✓  26 [chromium] › e2e/redesign.spec.ts:81:5 › tabs and cached navigation keep page context and sidebar synchronized (1.2s)
+  ✓  27 [chromium] › e2e/redesign.spec.ts:97:5 › cursor loading retains filters and keeps partial results after an error (1.2s)
+  ✓  28 [chromium] › e2e/redesign.spec.ts:126:5 › deleting a report refreshes the rendered list immediately (1.0s)
+  ✓  29 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 390px in light appearance (8.2s)
+  ✓  30 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 390px in dark appearance (8.7s)
+  ✓  31 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 768px in light appearance (9.7s)
+  ✓  32 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 768px in dark appearance (9.3s)
+  ✓  33 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 1440px in light appearance (9.5s)
+  ✓  34 [chromium] › e2e/redesign.spec.ts:152:9 › all screens at 1440px in dark appearance (9.2s)
+  ✓  35 [chromium] › e2e/redesign.spec.ts:178:5 › secondary review actions keep readable colors in both appearances (1.8s)
+  ✓  36 [chromium] › e2e/report-flow.spec.ts:163:7 › Flujo de reporte por la interfaz › de la auditoría enriquecida al PDF (6.8s)
+  ✓  37 [chromium] › e2e/report-flow.spec.ts:278:7 › Flujo de reporte por la interfaz › una auditoría sin hallazgos no ofrece reporte (3.1s)
+  ✓  38 [chromium] › e2e/routes.spec.ts:5:7 › Navegación › todas las rutas cargan sin errores de servidor (5.6s)
+  ✓  39 [chromium] › e2e/routes.spec.ts:26:7 › Navegación › el menú lateral navega entre secciones (989ms)
+
+  39 passed (3.8m)

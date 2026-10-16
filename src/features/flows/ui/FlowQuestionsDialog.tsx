@@ -1,22 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { HelpCircle, X } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { cn } from "@shared/lib/cn";
-import { Modal } from "@shared/ui/modal";
+import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalCloseButton } from "@shared/ui/modal";
 import { Badge } from "@shared/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
+import { Button } from "@shared/ui/controls";
+import { Loading } from "@shared/ui/Loading";
 
-/** =========================
- *  Tipos de Vista (UI only)
- *  ========================= */
 export type QuestionType = "yes_no" | "multiple_choice" | "text_input";
 
 export interface FlowQuestionVM {
   id: string;
   text: string;
   type: QuestionType;
-  options?: string[]; // para multiple_choice
+  options?: string[];
   visibleIf?: { questionId: string; equals: string | number | boolean };
 }
 
@@ -29,155 +27,63 @@ export interface FlowDetailVM {
 export interface FlowQuestionsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  flow: FlowDetailVM; // UI-dummy; luego reemplazamos por dominio real
+  flow: FlowDetailVM;
   className?: string;
+  isLoading?: boolean | undefined;
+  error?: string | undefined;
+  onRetry?: (() => void) | undefined;
   "data-testid"?: string;
 }
 
-/** =========================
- *  Helpers de presentación
- *  ========================= */
-function typeBadgeLabel(t: QuestionType) {
-  switch (t) {
-    case "yes_no":
-      return "Yes/No";
-    case "multiple_choice":
-      return "Multiple Choice";
-    case "text_input":
-      return "Text Input";
-    default:
-      return t;
+function typeBadgeLabel(type: QuestionType) {
+  switch (type) {
+    case "yes_no": return "Yes/No";
+    case "multiple_choice": return "Multiple Choice";
+    case "text_input": return "Text Input";
+    default: return type;
   }
 }
 
-const QuestionCard: React.FC<{ index: number; q: FlowQuestionVM }> = ({
-  index,
-  q,
-}) => {
-  return (
-    <Card
-      className={cn(
-        "mb-4 rounded-xl border border-gray-200 bg-white shadow-sm"
-      )}
-    >
-      <CardHeader className="flex flex-row items-center justify-between gap-4 pb-3 pt-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 text-sm font-semibold text-gray-700">
-            {`Q${index + 1}`}
-          </div>
-          <CardTitle className="text-base font-medium leading-snug text-black">
-            {q.text}
-          </CardTitle>
-        </div>
+const QuestionCard: React.FC<{ index: number; q: FlowQuestionVM }> = ({ index, q }) => (
+  <article className="py-5">
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <span className="mt-0.5 inline-flex h-6 min-w-6 shrink-0 items-center justify-center border border-[var(--kma-border)] px-1 text-xs font-medium tabular-nums text-[var(--kma-muted)]">Q{index + 1}</span>
+        <h4 className="break-words text-base font-medium leading-6 text-[var(--kma-fg)]">{q.text}</h4>
+      </div>
+      <Badge variant="soft" tone="neutral" size="sm" className="shrink-0" aria-label={`question-type-${q.type}`}>{typeBadgeLabel(q.type)}</Badge>
+    </div>
+    {q.type === "multiple_choice" && q.options && q.options.length > 0 ? (
+      <div className="mt-3 pl-8">
+        <p className="text-sm text-[var(--kma-muted)]">Options:</p>
+        <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-[var(--kma-fg)]">{q.options.map((option, index) => <li key={index}>{option}</li>)}</ul>
+      </div>
+    ) : null}
+    {q.visibleIf ? (
+      <div className="mt-3 flex items-start gap-2 pl-8 text-[var(--kma-muted)]">
+        <HelpCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <p className="text-xs"><span className="font-medium">Conditional:</span> Shows when {q.visibleIf.questionId.toUpperCase()} = "{String(q.visibleIf.equals)}"</p>
+      </div>
+    ) : null}
+  </article>
+);
 
-        <Badge
-          variant="soft"
-          tone="neutral"
-          size="sm"
-          className="shrink-0 select-none"
-          aria-label={`question-type-${q.type}`}
-        >
-          {typeBadgeLabel(q.type)}
-        </Badge>
-      </CardHeader>
-
-      {q.type === "multiple_choice" && q.options && q.options.length > 0 ? (
-        <CardContent className="pt-0">
-          <p className="mb-1 text-sm text-gray-600">Options:</p>
-          <ul className="ml-1 list-disc space-y-1 pl-5 text-sm text-gray-800">
-            {q.options.map((opt, i) => (
-              <li key={i} className="leading-relaxed">
-                {opt}
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      ) : null}
-
-      {q.visibleIf ? (
-        <CardContent className="pt-0">
-          <div className="mt-3 flex items-start gap-2 rounded-md bg-amber-50 px-3 py-2 text-amber-800">
-            <HelpCircle className="mt-0.5 h-4 w-4 shrink-0" />
-            <p className="text-xs">
-              <span className="font-medium">Conditional:</span>{" "}
-              <span>
-                Shows when {q.visibleIf.questionId.toUpperCase()} = "
-                {String(q.visibleIf.equals)}"
-              </span>
-            </p>
-          </div>
-        </CardContent>
-      ) : null}
-    </Card>
-  );
-};
-
-/** =========================
- *  Componente principal
- *  ========================= */
-export const FlowQuestionsDialog: React.FC<FlowQuestionsDialogProps> = ({
-  open,
-  onOpenChange,
-  flow,
-  className,
-  "data-testid": testId,
-}) => {
-  const count = flow.questions.length;
-  const headingId = React.useId();
-
-  return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <div
-        className={cn(
-          "relative mx-auto w-full max-w-3xl",
-          "rounded-2xl border border-gray-200 bg-white shadow-xl",
-          "outline-none",
-          className
-        )}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={headingId}
-        data-testid={testId ?? "flow-questions-dialog"}
-      >
-        {/* Botón de cierre (X) en la esquina superior derecha */}
-
-        {/* Header */}
-        <div className="sticky top-0 z-10 rounded-t-2xl bg-white px-6 pb-4 pt-6">
-          <button
-            type="button"
-            aria-label="Close questions modal"
-            data-testid="close-questions-dialog"
-            onClick={() => onOpenChange(false)}
-            className={cn(
-              "absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center cursor-pointer"
-            )}
-          >
-            <X className="h-4 w-4" />
-          </button>
-          <h2
-            id={headingId}
-            className="text-2xl font-semibold leading-tight text-black"
-          >
-            {flow.title}
-          </h2>
-          {flow.description ? (
-            <p className="mt-1 text-sm text-gray-600">{flow.description}</p>
-          ) : null}
-        </div>
-
-        {/* Body scrollable */}
-        <div className="max-h-[70vh] overflow-y-auto px-6 pb-6">
-          <h3 className="mb-4 text-base font-semibold text-black">
-            Questions ({count})
-          </h3>
-
-          {flow.questions.map((q, idx) => (
-            <QuestionCard key={q.id} index={idx} q={q} />
-          ))}
+export const FlowQuestionsDialog: React.FC<FlowQuestionsDialogProps> = ({ open, onOpenChange, flow, className, isLoading = false, error, onRetry, "data-testid": testId }) => (
+  <Modal open={open} onOpenChange={onOpenChange}>
+    <ModalContent className={cn("flex max-h-[calc(100dvh-2rem)] max-w-3xl flex-col overflow-hidden", className)}>
+      <div data-testid={testId ?? "flow-questions-dialog"} className="flex min-h-0 flex-col">
+        <ModalCloseButton aria-label="Close questions modal" data-testid="close-questions-dialog" onClick={() => onOpenChange(false)} />
+        <ModalHeader className="shrink-0 pr-8">
+          <ModalTitle className="break-words">{flow.title}</ModalTitle>
+          {flow.description ? <ModalDescription>{flow.description}</ModalDescription> : null}
+        </ModalHeader>
+        <div className="min-h-0 overflow-y-auto">
+          <h3 className="border-y border-[var(--kma-border)] py-3 text-sm font-semibold text-[var(--kma-fg)]">Questions ({flow.questions.length})</h3>
+          {isLoading ? <Loading text="Loading questions…" /> : error ? <div role="alert" className="py-8"><p className="text-sm text-[var(--kma-danger)]">{error}</p>{onRetry ? <Button type="button" variant="secondary" fullWidth={false} className="mt-4" onClick={onRetry}>Try again</Button> : null}</div> : flow.questions.length === 0 ? <p className="py-8 text-sm text-[var(--kma-muted)]">This flow has no questions to display.</p> : <div className="divide-y divide-[var(--kma-border)]">{flow.questions.map((question, index) => <QuestionCard key={question.id} index={index} q={question} />)}</div>}
         </div>
       </div>
-    </Modal>
-  );
-};
+    </ModalContent>
+  </Modal>
+);
 
 export default FlowQuestionsDialog;

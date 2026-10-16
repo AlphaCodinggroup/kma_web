@@ -41,17 +41,13 @@ const AuditsToolbar: React.FC<AuditsToolbarProps> = ({
     onAuditorFilterChange && onStatusFilterChange && onClearFilters;
 
   return (
-    <section className={cn("space-y-4 mb-4", className)}>
-      <div>
-        <h2 className="text-base font-semibold text-gray-900">Search Audit</h2>
-        <p className="text-sm text-gray-600">Find audits by project, facility, flow, or auditor</p>
-      </div>
-      <div className="flex items-center gap-3">
+    <section aria-label="Search and filter audits" className={cn("w-full", className)}>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <SearchInput
           placeholder={searchPlaceholder}
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
-          containerClassName="flex-1"
+          containerClassName="w-full lg:max-w-sm lg:flex-1"
         />
         {showFilters && (
           <AuditsFilters
@@ -61,6 +57,7 @@ const AuditsToolbar: React.FC<AuditsToolbarProps> = ({
             onStatusChange={onStatusFilterChange}
             onClearFilters={onClearFilters}
             availableAuditors={availableAuditors}
+            searchActive={searchValue !== ""}
           />
         )}
       </div>

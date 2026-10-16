@@ -68,8 +68,22 @@ describe("useDeleteReport", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(deleteMock).toHaveBeenCalledWith("audit-1");
     expect(invalidateQueries).toHaveBeenCalledWith({
-      queryKey: ["reports", "list"],
+      queryKey: ["reports"],
     });
+  });
+
+  it("invalidates the actual cached unfiltered and filtered list keys", async () => {
+    deleteMock.mockResolvedValue(undefined);
+    const { client, wrapper } = createWrapper();
+    client.setQueryData(["reports", {}], { items: [{ id: "report-1" }] });
+    client.setQueryData(["reports", { projectId: "project-1" }], { items: [] });
+
+    const { result } = renderHook(() => useDeleteReport(), { wrapper });
+    result.current.mutate("report-1");
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(client.getQueryState(["reports", {}])?.isInvalidated).toBe(true);
+    expect(client.getQueryState(["reports", { projectId: "project-1" }])?.isInvalidated).toBe(true);
   });
 
   it("exposes the error and skips the invalidation", async () => {
