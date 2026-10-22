@@ -98,11 +98,11 @@ describe("ConfirmDialog", () => {
     expect(props.onOpenChange).not.toHaveBeenCalled();
   });
 
-  it("disables both buttons and shows the loading label while loading", () => {
+  it("disables both buttons and announces loading while keeping its action label", () => {
     renderDialog({ loading: true });
 
-    // El botón de confirmar pasa a isLoading, por lo que su texto cambia.
-    expect(screen.getByRole("button", { name: "Loading..." })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Confirm" })).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
   });
 
@@ -111,7 +111,7 @@ describe("ConfirmDialog", () => {
     const user = userEvent.setup();
     renderDialog({ onConfirm, loading: true });
 
-    await user.click(screen.getByRole("button", { name: "Loading..." }));
+    await user.click(screen.getByRole("button", { name: "Confirm" }));
 
     expect(onConfirm).not.toHaveBeenCalled();
   });
@@ -143,7 +143,7 @@ describe("ConfirmDialog", () => {
     renderDialog({ error: "Deletion failed" });
 
     const error = screen.getByText("Deletion failed");
-    expect(error).toHaveClass("text-red-600");
+    expect(error).toHaveClass("text-[var(--kma-danger)]");
   });
 
   it("does not render an error message when error is null", () => {
@@ -156,15 +156,14 @@ describe("ConfirmDialog", () => {
     renderDialog();
 
     expect(screen.getByRole("button", { name: "Confirm" })).toHaveClass(
-      "bg-red-600",
-      "rounded-xl"
+      "kma-button-destructive"
     );
   });
 
   it("merges a custom className on the modal content", () => {
-    const { container } = renderDialog({ className: "dialog-extra" });
+    renderDialog({ className: "dialog-extra" });
 
-    expect(container.querySelector(".dialog-extra")).not.toBeNull();
+    expect(document.body.querySelector(".dialog-extra")).not.toBeNull();
   });
 
   it("closes on Escape", async () => {

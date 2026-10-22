@@ -32,11 +32,11 @@ vi.mock("@widgets/dashboard/DashboardActivitySection", () => ({
   default: ({
     items,
   }: {
-    items: Array<{ project: string; auditor: string; time: string }>;
+    items: Array<{ project: string; facility: string; flow: string; auditor: string; time: string }>;
   }) => (
     <ul data-testid="activity">
       {items.map((item, index) => (
-        <li key={index}>{`${item.project} / ${item.auditor} / ${item.time}`}</li>
+        <li key={index}>{`${item.project} / ${item.facility} / ${item.flow} / ${item.auditor} / ${item.time}`}</li>
       ))}
     </ul>
   ),
@@ -101,13 +101,24 @@ describe("DashboardPage", () => {
     vi.unstubAllEnvs();
   });
 
-  it("renders the seven metrics with their titles", async () => {
+  it("links each review stage to its real audit filter and count", async () => {
+    stubSummary();
+    await renderPage();
+    expect(screen.getByRole("link", { name: /Pending review/ })).toHaveAttribute("href", "/audits?status=draft_report_pending_review");
+    expect(screen.getByRole("link", { name: /Pending review/ })).toHaveTextContent("2");
+    expect(screen.getByRole("link", { name: /In review/ })).toHaveAttribute("href", "/audits?status=draft_report_in_review");
+    expect(screen.getByRole("link", { name: /In review/ })).toHaveTextContent("1");
+    expect(screen.getByRole("link", { name: /Delivered/ })).toHaveAttribute("href", "/audits?status=final_report_sent_to_client");
+    expect(screen.getByRole("link", { name: /Delivered/ })).toHaveTextContent("5");
+  });
+
+  it("renders the four secondary metrics with their titles", async () => {
     stubSummary();
 
     await renderPage();
 
     expect(screen.getByRole("heading", { name: "Dashboard" })).toBeTruthy();
-    expect(screen.getByTestId("metrics").children).toHaveLength(7);
+    expect(screen.getByTestId("metrics").children).toHaveLength(4);
   });
 
   // El locale sale de NEXT_PUBLIC_LOCALE (default en-US): antes estaba escrito
@@ -120,9 +131,9 @@ describe("DashboardPage", () => {
     await renderPage();
 
     expect(
-      screen.getByText(`Totals Projects=${(1200).toLocaleString("en-US")}`)
+      screen.getByText(`Projects=${(1200).toLocaleString("en-US")}`)
     ).toBeTruthy();
-    expect(screen.getByText(/Totals Projects=1[.,]?200/)).toBeTruthy();
+    expect(screen.getByText(/Projects=1[.,]?200/)).toBeTruthy();
   });
 
   it("keeps a zero metric instead of showing it as absent", async () => {
@@ -130,7 +141,7 @@ describe("DashboardPage", () => {
 
     await renderPage();
 
-    expect(screen.getByText("Facilities Unassigned=0")).toBeTruthy();
+    expect(screen.getByText("Unassigned facilities=0")).toBeTruthy();
   });
 
   it("shows a dash for a non finite metric", async () => {
@@ -143,7 +154,7 @@ describe("DashboardPage", () => {
 
     await renderPage();
 
-    expect(screen.getByText("Totals Projects=-")).toBeTruthy();
+    expect(screen.getByText("Projects=-")).toBeTruthy();
   });
 
   it("shows the empty state when there are no metrics", async () => {
@@ -176,6 +187,26 @@ describe("DashboardPage", () => {
     expect(refetch).toHaveBeenCalledTimes(1);
   });
 
+  it("retains available data if a background refresh fails", async () => {
+    stubSummary({ isError: true });
+    await renderPage();
+    expect(screen.getByRole("status")).toHaveTextContent("Showing the last available overview");
+    expect(screen.getByTestId("metrics").children).toHaveLength(4);
+    expect(screen.getByRole("link", { name: /Pending review/ })).toHaveTextContent("2");
+  });
+
+  it("disables refresh while an overview request is pending", async () => {
+    stubSummary({ isFetching: true });
+    await renderPage();
+    expect(screen.getByRole("button", { name: "Refresh" })).toBeDisabled();
+  });
+
+  it("shows a dash rather than inventing an unavailable pipeline count", async () => {
+    stubSummary({ data: { metrics: makeMetrics({ totalDraftReportsPendingReview: Number.NaN }), recentActivity: [] } });
+    await renderPage();
+    expect(screen.getByRole("link", { name: /Pending review/ })).toHaveTextContent("-");
+  });
+
   it("refetches from the refresh button", async () => {
     const refetch = stubSummary();
 
@@ -185,7 +216,7 @@ describe("DashboardPage", () => {
     expect(refetch).toHaveBeenCalledTimes(1);
   });
 
-  it("composes the activity row as project | facility - flow", async () => {
+  it("keeps the project, facility, flow and author as separate activity fields", async () => {
     stubSummary({
       data: {
         metrics: makeMetrics(),
@@ -204,7 +235,7 @@ describe("DashboardPage", () => {
     await renderPage();
 
     expect(
-      screen.getByText(/Proyecto \| Planta - Curb ramps \/ jane \//)
+      screen.getByText(/Proyecto \/ Planta \/ Curb ramps \/ jane \//)
     ).toBeTruthy();
   });
 

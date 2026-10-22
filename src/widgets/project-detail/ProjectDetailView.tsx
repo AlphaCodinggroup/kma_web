@@ -90,7 +90,9 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
   const summary = useMemo(() => {
     const { inProgress, completed } = summarizeProjectAudits(audits);
     const facilities = allSections.filter((section) => section.facilityId).length;
-    return { facilities, inProgress, completed };
+    const delivered = audits.filter(audit => audit.status === "final_report_sent_to_client").length;
+    const unavailable = audits.filter(audit => audit.status === "unknown").length;
+    return { facilities, inProgress, completed, delivered, unavailable };
   }, [audits, allSections]);
 
   // ---- Buscador y filtros ----
@@ -134,12 +136,17 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
     onReady: () => void refetchAudits(),
   });
 
+  const [reportError, setReportError] = useState<string | null>(null);
+  const [auditDeleteError, setAuditDeleteError] = useState<string | null>(null);
+  const [projectDeleteError, setProjectDeleteError] = useState<string | null>(null);
+
   // ---- Reporte ----
   const handleDownloadReport = useCallback(() => {
     if (!report) return;
+    setReportError(null);
     void downloadReport(report).catch((error: unknown) => {
       console.error("[ProjectDetailView] Error downloading report:", error);
-      alert("Error downloading the report. Please try again.");
+      setReportError("Error downloading the report. Please try again.");
     });
   }, [downloadReport, report]);
 
@@ -182,7 +189,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
         setOpenDelete(false);
         router.push("/projects" as Route);
       },
-      onError: (err) => console.error("Failed to delete project", err),
+      onError: (err) => { console.error("Failed to delete project", err); setProjectDeleteError("The project could not be deleted. Try again."); },
     });
 
   // ---- Borrado de auditorías ----
@@ -195,12 +202,13 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
 
   const confirmDeleteAudit = useCallback(async () => {
     if (!auditToDelete) return;
+    setAuditDeleteError(null);
     try {
       await deleteAudit(auditToDelete.id);
       setAuditToDelete(null);
     } catch (err) {
       console.error("Error deleting audit:", err);
-      alert("Error deleting the audit. Please try again.");
+      setAuditDeleteError("Error deleting the audit. Please try again.");
     }
   }, [auditToDelete, deleteAudit]);
 
@@ -225,7 +233,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
   }
 
   return (
-    <main className="flex w-full flex-col gap-6">
+    <section className="flex w-full flex-col gap-6">
       <ProjectDetailHeader
         project={project}
         summary={summary}
@@ -237,8 +245,14 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
         onDelete={() => setOpenDelete(true)}
       />
 
-      <section aria-label="Facilities" className="space-y-3">
-        <h2 className="text-lg font-bold">Facilities</h2>
+      <section aria-label="Consolidated report" className="flex flex-wrap items-center justify-between gap-4 border-b border-l-2 border-[var(--kma-border)] border-l-[var(--kma-accent)] pb-5 pl-4">
+        <div><h2 className="text-base font-semibold">Consolidated project report</h2><p className="mt-1 text-sm text-[var(--kma-muted)]">One report for all completed audits in this project.</p></div>
+        <p className="text-sm font-semibold text-[var(--kma-primary)]">{report ? "Ready to download" : "Available after review and approval"}</p>
+        {reportError && <p role="alert" className="w-full text-sm text-[var(--kma-danger)]">{reportError}</p>}
+      </section>
+
+      <section aria-label="Facilities" className="space-y-4">
+        <h2 className="text-base font-semibold">Facilities</h2>
         {isAuditsError ? (
           <Retry
             text="The project's audits could not be loaded."
@@ -246,7 +260,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
           />
         ) : null}
         {isAuditsLoading ? (
-          <p className="text-sm text-gray-500">Loading audits…</p>
+          <p className="text-sm text-[var(--kma-muted)]">Loading audits…</p>
         ) : null}
         {!isAuditsLoading && audits.length > 0 ? (
           <ProjectAuditsToolbar
@@ -261,17 +275,17 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
           />
         ) : null}
         {sections.length === 0 && !isAuditsLoading && !isFiltering ? (
-          <p className="rounded-xl border border-gray-200 bg-white px-4 py-6 text-center text-sm text-gray-500">
+          <p className="rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-6 text-center text-sm text-[var(--kma-muted)]">
             This project has no facilities yet.
           </p>
         ) : null}
         {sections.length === 0 && !isAuditsLoading && isFiltering ? (
-          <div className="rounded-xl border border-gray-200 bg-white px-4 py-6 text-center text-sm text-gray-500">
+          <div className="rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-6 text-center text-sm text-[var(--kma-muted)]">
             <p>No audits match the filters.</p>
             <button
               type="button"
               onClick={clearFilters}
-              className="mt-3 rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-100"
+              className="mt-3 min-h-11 rounded border border-[var(--kma-border)] px-4 py-2 text-sm font-semibold text-[var(--kma-fg)] hover:bg-[var(--kma-subtle)]"
             >
               Clear filters
             </button>
@@ -313,6 +327,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
         confirmLabel="Delete"
         cancelLabel="Cancel"
         loading={isDeletingProject}
+        error={projectDeleteError}
         onConfirm={() => deleteProject(project.id)}
       />
 
@@ -333,6 +348,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
           confirmLabel="Delete"
           cancelLabel="Cancel"
           loading={isDeletingAudit}
+          error={auditDeleteError}
           onConfirm={confirmDeleteAudit}
         />
       )}
@@ -341,7 +357,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectId }) => {
         open={noReportNeeded.open}
         onOpenChange={noReportNeeded.onOpenChange}
       />
-    </main>
+    </section>
   );
 };
 

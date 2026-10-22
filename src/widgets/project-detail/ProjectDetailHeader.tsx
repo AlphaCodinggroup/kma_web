@@ -3,15 +3,14 @@
 import React from "react";
 import Link from "next/link";
 import type { Route } from "next";
-import { ArrowLeft, Download, Loader2, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Download, Pencil, Trash2 } from "lucide-react";
 import type { Project } from "@entities/projects/model";
 import { ProjectStatusBadge } from "@shared/ui/badge";
-import { cn } from "@shared/lib/cn";
-import MetricCard from "@widgets/dashboard/MetricCard";
+import { Button } from "@shared/ui/controls";
 
 export interface ProjectDetailHeaderProps {
   project: Project;
-  summary: { facilities: number; inProgress: number; completed: number };
+  summary: { facilities: number; inProgress: number; completed: number; delivered?: number; unavailable?: number };
   isAdmin: boolean;
   /** El proyecto tiene un reporte descargable. */
   reportAvailable: boolean;
@@ -20,9 +19,6 @@ export interface ProjectDetailHeaderProps {
   onEdit: () => void;
   onDelete: () => void;
 }
-
-const actionClassName =
-  "inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 /** Cabecera del detalle: identidad del proyecto, resumen y acciones. */
 const ProjectDetailHeader: React.FC<ProjectDetailHeaderProps> = ({
@@ -38,25 +34,25 @@ const ProjectDetailHeader: React.FC<ProjectDetailHeaderProps> = ({
   const auditors = project.users?.map((user) => user.name).filter(Boolean) ?? [];
 
   return (
-    <header className="space-y-4" data-testid="project-detail-header">
+    <header className="space-y-5" data-testid="project-detail-header">
       <Link
         href={"/projects" as Route}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 no-underline hover:opacity-70"
+        className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[var(--kma-muted)] no-underline hover:opacity-70"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Projects
       </Link>
 
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 space-y-1">
+      <div className="flex flex-wrap items-start justify-between gap-5 border-b border-[var(--kma-border)] pb-6">
+        <div className="min-w-0 flex-1 basis-80 space-y-2">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-extrabold">{project.name}</h1>
+            <h1 className="kma-page-title break-words [overflow-wrap:anywhere]">{project.name}</h1>
             <ProjectStatusBadge status={project.status} />
           </div>
           {project.description ? (
-            <p className="text-sm text-gray-700">{project.description}</p>
+            <p className="text-sm text-[var(--kma-muted)]">{project.description}</p>
           ) : null}
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-[var(--kma-muted)]">
             {auditors.length > 0
               ? `Auditors: ${auditors.join(", ")}`
               : "No auditors assigned"}
@@ -64,8 +60,11 @@ const ProjectDetailHeader: React.FC<ProjectDetailHeaderProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button
+          <Button
             type="button"
+            fullWidth={false}
+            isLoading={downloadingReport}
+            loadingLabel="Downloading…"
             onClick={onDownloadReport}
             disabled={!reportAvailable || downloadingReport}
             title={
@@ -73,67 +72,49 @@ const ProjectDetailHeader: React.FC<ProjectDetailHeaderProps> = ({
                 ? "Download the project report"
                 : "The report is available once audits are completed"
             }
-            className={cn(
-              actionClassName,
-              "border-gray-900 bg-black text-white hover:bg-gray-800"
-            )}
           >
-            {downloadingReport ? (
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-            ) : (
-              <Download className="h-4 w-4" aria-hidden="true" />
-            )}
-            {downloadingReport ? "Downloading…" : "Download report"}
-          </button>
-          <button
+            <Download className="h-4 w-4" aria-hidden="true" />
+            Download report
+          </Button>
+          <Button
             type="button"
+            variant="secondary"
+            fullWidth={false}
             onClick={onEdit}
             disabled={!isAdmin}
             title={!isAdmin ? "Only administrators can edit projects" : "Edit project"}
-            className={cn(
-              actionClassName,
-              "border-gray-300 bg-white text-gray-900 hover:bg-gray-100"
-            )}
           >
             <Pencil className="h-4 w-4" aria-hidden="true" />
             Edit
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="destructive"
+            fullWidth={false}
             onClick={onDelete}
             disabled={!isAdmin}
             title={!isAdmin ? "Only administrators can delete projects" : "Delete project"}
-            className={cn(
-              actionClassName,
-              "border-red-300 bg-white text-red-600 hover:bg-red-50"
-            )}
           >
             <Trash2 className="h-4 w-4" aria-hidden="true" />
             Delete
-          </button>
+          </Button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <MetricCard
-          title="Facilities"
-          value={summary.facilities}
-          icon="building"
-          data-testid="metric-facilities"
-        />
-        <MetricCard
-          title="Audits in progress"
-          value={summary.inProgress}
-          icon="clock"
-          data-testid="metric-in-progress"
-        />
-        <MetricCard
-          title="Completed audits"
-          value={summary.completed}
-          icon="file-check"
-          data-testid="metric-completed"
-        />
-      </div>
+      <dl className="grid grid-cols-2 overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)] sm:grid-cols-3 lg:flex lg:flex-wrap">
+        {[
+          { label: "Facilities", value: summary.facilities, testId: "metric-facilities" },
+          { label: "Audits in progress", value: summary.inProgress, testId: "metric-in-progress" },
+          { label: "Completed audits", value: summary.completed, testId: "metric-completed" },
+          ...(summary.delivered ? [{ label: "Delivered audits", value: summary.delivered, testId: "metric-delivered" }] : []),
+          ...(summary.unavailable ? [{ label: "Status unavailable", value: summary.unavailable, testId: "metric-unavailable" }] : []),
+        ].map(({ label, value, testId }) => (
+          <div key={testId} data-testid={testId} className="min-w-0 border-b border-r border-[var(--kma-border)] p-4 last:border-r-0 lg:flex-1 lg:border-b-0">
+            <dt className="text-sm text-[var(--kma-muted)]">{label}</dt>
+            <dd className="mt-1 text-2xl font-semibold tabular-nums">{value}</dd>
+          </div>
+        ))}
+      </dl>
     </header>
   );
 };

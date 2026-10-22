@@ -34,7 +34,7 @@ export function Progress({
       aria-valuemax={safeMax}
       {...ariaValue(safeValue, safeMax)}
       className={cn(
-        "h-2 w-full overflow-hidden rounded-full bg-gray-200",
+        "h-2 w-full overflow-hidden rounded-full bg-[var(--kma-subtle)] ",
         className
       )}
     >
@@ -114,7 +114,7 @@ export function ProgressRing({
         />
       </svg>
       {showValue && safeValue !== null ? (
-        <span className="absolute text-xl font-semibold text-black">
+        <span className="absolute text-xl font-semibold text-[var(--kma-fg)]">
           {Math.round((safeValue / safeMax) * 100)}%
         </span>
       ) : null}

@@ -15,6 +15,10 @@ export default [
   {
     ignores: [
       ".next/**",
+      ".rsc/**",
+      ".claude/**",
+      ".codex/**",
+      ".agents/**",
       "node_modules/**",
       "dist/**",
       "coverage/**",
@@ -24,6 +28,10 @@ export default [
     ],
   },
   js.configs.recommended,
+  {
+    files: ["01-TOOLS/**/*.mjs"],
+    languageOptions: { globals: { process: "readonly", console: "readonly", Buffer: "readonly", URL: "readonly", setTimeout: "readonly", clearTimeout: "readonly" } },
+  },
   {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {

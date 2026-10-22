@@ -42,8 +42,8 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        "h-11 px-4 text-left align-middle text-xs font-bold text-black",
-        "bg-gray-50",
+        "h-11 px-4 text-left align-middle text-xs font-medium text-[var(--kma-muted)]",
+        "bg-[var(--kma-subtle)] ",
         className
       )}
       {...props}
@@ -79,8 +79,8 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     <tr
       ref={ref}
       className={cn(
-        "border-b transition-colors border-b-gray-200",
-        "hover:bg-gray-100",
+        "border-b transition-colors border-b-[var(--kma-border)] ",
+        "hover:bg-[var(--kma-subtle)] ",
         className
       )}
       {...props}
@@ -98,7 +98,7 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
   ({ className, ...props }, ref) => (
     <td
       ref={ref}
-      className={cn("p-4 text-sm text-gray-900 align-top", className)}
+      className={cn("px-4 py-4 text-sm text-[var(--kma-fg)] align-top", className)}
       {...props}
     />
   )
@@ -116,7 +116,7 @@ export const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-sm text-gray-500", className)}
+    className={cn("mt-4 text-sm text-[var(--kma-muted)] ", className)}
     {...props}
   />
 ));

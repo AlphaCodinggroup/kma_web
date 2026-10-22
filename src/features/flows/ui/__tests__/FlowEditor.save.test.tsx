@@ -481,11 +481,18 @@ describe("FlowEditor - validation and save", () => {
 
     await clickSave(user);
 
-    // El editor se reemplaza por el indicador de carga a pantalla completa.
+    // El contenido permanece visible y bloquea envíos repetidos durante el guardado.
     expect(screen.getByText("Saving...")).toBeInTheDocument();
-    expect(
-      screen.queryByPlaceholderText("Untitled Flow")
-    ).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Flow title" })).toHaveValue("Ramps");
+    expect(screen.getByRole("textbox", { name: "Flow title" })).toBeDisabled();
+    const pendingSave = screen.getByRole("button", { name: "Saving..." });
+    expect(pendingSave).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Export" })).toBeDisabled();
+    // Mientras guarda no se puede tocar el flujo: sin acciones de imagen y sin abrir el cajón de pasos.
+    expect(screen.queryByRole("button", { name: "Add Image" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Browse steps" })).toBeDisabled();
+    await user.click(pendingSave);
+    expect(repoMock.update).toHaveBeenCalledTimes(1);
 
     resolveUpdate?.();
     await waitFor(() =>
@@ -557,18 +564,40 @@ describe("FlowEditor - validation and save", () => {
     expect(screen.getByPlaceholderText("Untitled Flow")).toHaveValue("Ramps");
   });
 
+  it("selects a recovered draft step when the original selection no longer exists", async () => {
+    const flow = makeValidFlow();
+    const recovered = { ...flow, title: "Recovered flow", steps: [makeEndStep({ id: "AR-E99" })] };
+    localStorage.setItem("flow-editor-draft-AR", JSON.stringify({ flow: recovered, savedAt: "2026-01-01T00:00:00.000Z" }));
+    renderEditor(flow, "edit");
+    await userEvent.click(screen.getByRole("button", { name: "Recover draft" }));
+    expect(screen.getByRole("textbox", { name: "Flow title" })).toHaveValue("Recovered flow");
+    expect(screen.getByRole("textbox", { name: "Step ID" })).toHaveValue("AR-E99");
+    expect(screen.getByRole("button", { name: "Select step AR-E99" })).toHaveAttribute("aria-current", "step");
+  });
+
+  it("offers the saved local draft in English and restores its edited title", async () => {
+    const flow = makeValidFlow();
+    localStorage.setItem(`flow-editor-draft-${flow.id}`, JSON.stringify({ flow: { ...flow, title: "Recovered local flow" }, savedAt: new Date().toISOString() }));
+    renderEditor(flow, "edit");
+    const recovery = screen.getByRole("dialog", { name: "Draft found" });
+    await userEvent.click(within(recovery).getByRole("button", { name: "Recover draft" }));
+    expect(screen.queryByRole("dialog", { name: "Draft found" })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Flow title" })).toHaveValue("Recovered local flow");
+    expect(screen.getByText("Unsaved changes")).toBeInTheDocument();
+  });
+
   it("closes the success modal through the overlay and still navigates", async () => {
     const user = userEvent.setup();
     const flow = makeValidFlow();
     flow.steps = [makeEndStep()];
-    const { container } = renderEditor(flow, "edit");
+    renderEditor(flow, "edit");
 
     await clickSave(user);
     await waitFor(() =>
       expect(screen.getByRole("heading", { name: "Flow Saved" })).toBeInTheDocument()
     );
 
-    const overlay = container.querySelector("div.bg-black\\/40");
+    const overlay = screen.getByTestId("modal-overlay");
     await user.click(overlay as HTMLElement);
 
     expect(pushMock).toHaveBeenCalledWith("/flows");
