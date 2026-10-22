@@ -310,19 +310,19 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
         <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]" data-testid="flow-steps-panel">
             {header}
             <div className="min-h-0 flex-1 overflow-auto">
-                <table className="w-full min-w-[760px] border-collapse text-left text-sm" aria-label="Flow step sequence">
+                <table className="w-full min-w-[620px] border-collapse text-left text-sm" aria-label="Flow step sequence">
                     <thead>
                         <tr className="text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
                             {[
-                                ["ID", "w-[140px] px-4"],
-                                ["Type", "w-[100px] px-3"],
-                                ["Question / Title", "min-w-[200px] px-3"],
-                                ["Routing", "min-w-[220px] px-3"],
-                                ["Barriers", "w-[120px] px-3"],
+                                ["ID", "w-[110px] px-3"],
+                                ["Type", "w-[85px] px-2.5"],
+                                ["Question / Title", "min-w-[170px] px-3"],
+                                ["Routing", "min-w-[190px] px-2.5"],
+                                ["Barriers", "w-[90px] px-2"],
                             ].map(([label, cls]) => (
                                 <th key={label} scope="col" className={cn("sticky top-0 z-10 bg-[var(--kma-subtle)] py-3 shadow-[inset_0_-1px_0_var(--kma-border)]", cls)}>{label}</th>
                             ))}
-                            <th scope="col" className="sticky top-0 z-10 w-12 bg-[var(--kma-subtle)] py-3 shadow-[inset_0_-1px_0_var(--kma-border)]"><span className="sr-only">Actions</span></th>
+                            <th scope="col" className="sticky top-0 z-10 w-10 bg-[var(--kma-subtle)] py-3 shadow-[inset_0_-1px_0_var(--kma-border)]"><span className="sr-only">Actions</span></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[var(--kma-border)]">
@@ -335,7 +335,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                             const isDuplicateId = flow.steps.filter((s) => s.id === step.id).length > 1;
                             return (
                                 <tr key={`${step.id}-${index}`} {...rowHandlers(step)} className={rowTone(step, isSelected, incomplete, isDuplicateId)}>
-                                    <td className="px-4 py-3">
+                                    <td className="px-3 py-3">
                                         <div className="flex items-center gap-2">
                                             {draggable ? <span title="Drag to reorder" className="-ml-1 cursor-grab text-[var(--kma-muted)]"><GripVertical className="h-4 w-4" aria-hidden="true" /></span> : null}
                                             <button type="button" onClick={(e) => { e.stopPropagation(); onSelectStep(step.id); }} aria-label={`Select step ${step.id}`} aria-current={isSelected ? "step" : undefined} className="min-h-[var(--kma-control-height)] rounded text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kma-primary)]">
@@ -344,17 +344,17 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                                             {idMarks(step, incomplete, isDuplicateId)}
                                         </div>
                                     </td>
-                                    <td className="px-3 py-3"><span className={cn(CHIP, TONE.neutral, "whitespace-nowrap break-normal font-semibold")}>{step.type}</span></td>
+                                    <td className="px-2.5 py-3"><span className={cn(CHIP, TONE.neutral, "whitespace-nowrap break-normal font-semibold")}>{step.type}</span></td>
                                     <td className="px-3 py-3"><div className="line-clamp-2 leading-relaxed text-[var(--kma-fg)]">{stepTitle(step)}</div></td>
-                                    <td className="px-3 py-3">{renderRouting(step)}</td>
-                                    <td className="px-3 py-3">
+                                    <td className="px-2.5 py-3">{renderRouting(step)}</td>
+                                    <td className="px-2 py-3">
                                         {barriers ? (
                                             <div className="flex flex-wrap gap-1">{barriers.split(", ").map((b) => <span key={b} className={cn(CHIP, TONE.neutral)}>{b}</span>)}</div>
                                         ) : (
                                             <><span aria-hidden="true" className="text-[var(--kma-muted)]">-</span><span className="sr-only">None</span></>
                                         )}
                                     </td>
-                                    <td className="px-2 py-1 text-right">{deleteButton(step)}</td>
+                                    <td className="px-1.5 py-1 text-right">{deleteButton(step)}</td>
                                 </tr>
                             );
                         })}

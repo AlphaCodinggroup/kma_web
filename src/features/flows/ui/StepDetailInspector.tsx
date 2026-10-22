@@ -75,7 +75,7 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
     const images = selectedStep.images || [];
 
     return (
-        <section aria-label="Step details" className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]">
+        <section aria-label="Step details" className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)] shadow-xs">
             <div className="shrink-0 border-b border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-4 sm:px-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">

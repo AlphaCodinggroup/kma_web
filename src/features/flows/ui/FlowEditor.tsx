@@ -758,7 +758,7 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
     const inlineField = "min-w-0 rounded border border-transparent bg-transparent px-1.5 py-0.5 text-[var(--kma-fg)] transition-colors placeholder:text-[var(--kma-muted)] hover:border-[var(--kma-border)] focus:border-[var(--kma-primary)] focus:bg-[var(--kma-surface)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-80";
 
     return (
-        <div className="flex min-h-[650px] min-w-0 flex-col gap-3 xl:h-[calc(100dvh-205px)]" aria-busy={isSaving}>
+        <div className="flex h-full min-h-0 min-w-0 flex-col gap-3" aria-busy={isSaving}>
             <div className="flex shrink-0 flex-wrap items-start justify-between gap-x-6 gap-y-3 px-1 py-1">
                 <div className="min-w-0 flex-[1_1_20rem]">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -834,11 +834,11 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                 </ModalContent>
             </Modal>
 
-            <div className="flex min-h-0 flex-1 gap-4">
-                <div className="hidden min-w-0 flex-[3] flex-col xl:flex">
+            <div className="flex min-h-0 flex-1 gap-4 overflow-hidden">
+                <div className="hidden min-w-0 flex-[3] flex-col h-full min-h-0 xl:flex">
                     {renderStepsPanel("table")}
                 </div>
-                <div className="flex min-w-0 flex-1 flex-col xl:min-w-[340px] xl:max-w-[480px] xl:flex-[2]">
+                <div className="flex min-w-0 flex-1 flex-col h-full min-h-0 xl:min-w-[340px] xl:max-w-[480px] xl:flex-[2]">
                     <StepDetailInspector
                         selectedStep={selectedStep}
                         flow={flow}

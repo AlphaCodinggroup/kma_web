@@ -323,7 +323,10 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
         </ul>
         </>
       ) : <div
-        className={cn(bodyMaxHeightClassName ?? "max-h-dvh", "overflow-auto")}
+        className={cn(
+          "w-full overflow-x-auto",
+          bodyMaxHeightClassName ? cn("overflow-y-auto", bodyMaxHeightClassName) : ""
+        )}
       >
         <Table className="min-w-[850px] text-sm [&_td]:py-4 [&_th]:py-3 [&_th]:text-[var(--kma-muted)]">
           <TableHeader>

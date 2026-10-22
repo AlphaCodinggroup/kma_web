@@ -74,12 +74,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items = DEFAULT_NAV, widthClass
   return (
     <aside className={`${mobile ? "flex w-full" : `hidden lg:flex ${widthClassName}`} kma-theme-panel h-full shrink-0 bg-[var(--kma-nav)]`} aria-label="Primary">
       <div className="flex h-full min-h-0 w-full flex-col">
-        <div className="mx-6 border-b border-[var(--kma-border)] pb-5 pt-6">
+        <div className="mx-6 border-b border-[var(--kma-border)] pb-3 pt-3.5">
           <p className="text-sm font-semibold text-[var(--kma-fg)]">Audit workspace</p>
-          <p className="mt-1 text-xs text-[var(--kma-muted)]">Project and quality management</p>
+          <p className="mt-0.5 text-xs text-[var(--kma-muted)]">Project and quality management</p>
         </div>
-        <nav className="w-full flex-1 overflow-y-auto px-3 py-1" aria-label="Main navigation">
-          <ul className="space-y-1">
+        <nav className="w-full flex-1 overflow-y-auto lg:overflow-y-hidden px-3 py-1" aria-label="Main navigation">
+          <ul className="space-y-0.5">
             {visibleItems.map((item, index) => {
               const active = isActive(item.href);
               const pending = navigatingTo === item.href;
@@ -87,11 +87,11 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items = DEFAULT_NAV, widthClass
               const showGroup = item.group && (index === 0 || visibleItems[index - 1]?.group !== item.group);
               return (
                 <li key={item.href}>
-                  {showGroup && <p className="px-3 pb-2 pt-6 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--kma-muted)]">{item.group}</p>}
+                  {showGroup && <p className={`px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--kma-muted)] ${index === 0 ? "pt-2" : "pt-3.5"}`}>{item.group}</p>}
                   <Link href={item.href} prefetch onMouseEnter={() => router.prefetch(item.href)} onClick={() => {
                     if (!isActive(item.href)) setNavigatingTo(item.href);
                     onNavigate?.();
-                  }} aria-current={active ? "page" : undefined} aria-busy={pending} className={`kma-nav-link flex min-h-11 items-center gap-3 rounded px-3 py-2.5 text-sm font-medium transition-colors ${active ? "bg-[var(--kma-selected)] font-semibold text-[var(--kma-primary)]" : "text-[var(--kma-muted)] hover:bg-[var(--kma-selected)] hover:text-[var(--kma-fg)]"} ${pending ? "opacity-80" : ""}`}>
+                  }} aria-current={active ? "page" : undefined} aria-busy={pending} className={`kma-nav-link flex min-h-10 items-center gap-3 rounded px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-[var(--kma-selected)] font-semibold text-[var(--kma-primary)]" : "text-[var(--kma-muted)] hover:bg-[var(--kma-selected)] hover:text-[var(--kma-fg)]"} ${pending ? "opacity-80" : ""}`}>
                     {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />}
                     <span className="truncate">{item.label}</span>
                   </Link>
@@ -100,9 +100,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items = DEFAULT_NAV, widthClass
             })}
           </ul>
         </nav>
-        <div className="border-t border-[var(--kma-border)] p-3">
+        <div className="border-t border-[var(--kma-border)] p-2.5">
           {logoutError && <p role="alert" className="mb-2 px-3 text-xs text-[var(--kma-danger)]">{logoutError}</p>}
-          <button type="button" onClick={handleLogout} disabled={isSigningOut} className="flex min-h-11 w-full items-center gap-3 rounded px-3 py-2 text-[13px] font-medium text-[var(--kma-muted)] transition-colors hover:bg-[var(--kma-selected)] disabled:cursor-not-allowed disabled:opacity-60">
+          <button type="button" onClick={handleLogout} disabled={isSigningOut} className="flex min-h-10 w-full items-center gap-3 rounded px-3 py-2 text-[13px] font-medium text-[var(--kma-muted)] transition-colors hover:bg-[var(--kma-selected)] disabled:cursor-not-allowed disabled:opacity-60">
             {isSigningOut ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <LogOut className="h-4 w-4" aria-hidden="true" />}
             <span>Logout</span>
           </button>

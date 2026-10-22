@@ -24,16 +24,18 @@ export default function AppShell({ children, role, userName }: AppShellProps) {
   const searchParams = useSearchParams();
   const section = pathname?.split("/")[1] ?? "dashboard";
   const title = section === "projects" && searchParams?.get("tab") === "facilities" ? "Facilities" : SECTIONS[section] ?? "Workspace";
+  // Editor de flows: el contenido ocupa exactamente el alto de main y scrollea solo por dentro
+  const isFullHeight = section === "flows" && (pathname?.split("/").length ?? 0) > 2;
 
   return (
     <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
-      <div className="min-h-dvh bg-[var(--kma-nav)] text-[var(--kma-fg)]">
+      <div className="fixed inset-0 flex flex-col overflow-hidden bg-[var(--kma-nav)] text-[var(--kma-fg)]">
         <a href="#workspace-content" className="sr-only fixed left-4 top-2 z-50 rounded bg-[var(--kma-surface)] p-3 focus:not-sr-only">Skip to content</a>
         <AppHeader title={title} role={role} userName={userName} menuOpen={menuOpen} onMenuOpen={() => setMenuOpen(true)} />
-        <div className="flex h-[calc(100dvh-64px)] min-h-0">
+        <div className="flex min-h-0 flex-1">
           <SidebarNav role={role} />
-          <main id="workspace-content" className="min-w-0 flex-1 overflow-y-auto border-[var(--kma-border)] bg-[var(--kma-canvas)] lg:border-l" tabIndex={-1}>
-            <div className="mx-auto max-w-[1440px] px-4 py-6 md:px-6 lg:px-8 lg:py-8">{children}</div>
+          <main id="workspace-content" className={`min-w-0 flex-1 border-[var(--kma-border)] bg-[var(--kma-canvas)] lg:border-l ${isFullHeight ? "overflow-hidden" : "overflow-y-auto"}`} tabIndex={-1}>
+            <div className={isFullHeight ? "mx-auto h-full max-w-[1920px] px-3 py-4 md:px-4 lg:px-4" : "mx-auto max-w-[1920px] px-3 py-6 md:px-4 lg:px-4 lg:py-6"}>{children}</div>
           </main>
         </div>
       </div>

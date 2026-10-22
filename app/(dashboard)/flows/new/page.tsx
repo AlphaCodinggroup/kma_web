@@ -32,9 +32,9 @@ const EMPTY_FLOW: Flow = {
 
 export default function NewFlowPage() {
     return (
-        <section className="flex w-full flex-col gap-5">
+        <section className="flex h-full min-h-0 w-full flex-col">
             <PageHeader
-                className="mb-0"
+                className="sr-only"
                 title="Create New Flow"
                 subtitle="Design a new audit flow from scratch"
             />

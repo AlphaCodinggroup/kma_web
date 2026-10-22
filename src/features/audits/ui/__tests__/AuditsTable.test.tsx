@@ -156,11 +156,11 @@ describe("AuditsTable — rows", () => {
     expect(screen.getByText("Actions")).toBeInTheDocument();
   });
 
-  it("uses the default body height class and honours the override", () => {
+  it("uses the default horizontal scroll class and honours the override", () => {
     const { container, unmount } = render(
       <AuditsTable items={[makeAudit()]} onError={vi.fn()} />
     );
-    expect(container.querySelector(".max-h-dvh")).toBeInTheDocument();
+    expect(container.querySelector(".overflow-x-auto")).toBeInTheDocument();
     unmount();
 
     const second = render(
@@ -171,7 +171,6 @@ describe("AuditsTable — rows", () => {
       />
     );
     expect(second.container.querySelector(".max-h-96")).toBeInTheDocument();
-    expect(second.container.querySelector(".max-h-dvh")).not.toBeInTheDocument();
   });
 });
 
