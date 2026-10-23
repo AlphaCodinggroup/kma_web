@@ -130,6 +130,8 @@ export const FlowListDTOSchema = z.object({
 // ===============================
 // Tipos inferidos (para DX/TS)
 // ===============================
+export type ConditionDTO = z.infer<typeof ConditionDTOSchema>;
+export type ConditionalNextDTO = z.infer<typeof ConditionalNextDTOSchema>;
 export type FlowListDTO = z.infer<typeof FlowListDTOSchema>;
 export type FlowDTO = z.infer<typeof FlowDTOSchema>;
 export type FlowListItemDTO = z.infer<typeof FlowListItemDTOSchema>;
