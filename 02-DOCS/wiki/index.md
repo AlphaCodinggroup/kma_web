@@ -29,3 +29,7 @@ La instalación conserva la documentación existente en su ubicación.
 - Catalog completo: [especificación](sdd/specs/catalog-management.md), [plan](sdd/plans/catalog-management.md), [progreso](sdd/progress/catalog-management.md).
 
 - [Verificación de Catalog completo](sdd/verifications/catalog-management-2026-10-23.md).
+
+- [Verificación del CRUD y export de mitigaciones](sdd/verifications/mitigation-crud-export-2026-10-23.md).
+
+- [QA final del administrador de mitigaciones](sdd/verifications/mitigation-qa-2026-10-23.md).

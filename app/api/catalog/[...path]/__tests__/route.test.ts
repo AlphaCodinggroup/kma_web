@@ -325,3 +325,56 @@ it("rejects catalog pages above the shared maximum before upstream", async () =>
   expect((await call("items?limit=201")).status).toBe(400);
   expect(fetch).not.toHaveBeenCalled();
 });
+
+it("validates CRUD bodies and encodes both row identifiers", async () => {
+  const { PUT, DELETE } = await import("../route");
+  const body = { operation_id: operationId, base_version: "v1", expected_revision: "r1", item: { flow_id: "FLOW", barrier_id: "B1", question_code: "01", question: "Safe?", mitigation_id: "M1", barrier_statement: "Steps", proposed_mitigation: "Ramp", adas_reference: "ADA", cost: 0, unit: "each" } };
+  const context = { params: Promise.resolve({ path: ["items", "FLOW", "B1#01"] }) };
+  const req = (method: string, value: unknown) => new NextRequest("http://localhost/api/catalog/items/FLOW/B1%2301", { method, headers: { "content-type": "application/json" }, body: JSON.stringify(value) });
+  expect((await PUT(req("PUT", body), context)).status).toBe(200);
+  expect(fetch).toHaveBeenLastCalledWith("https://backend.example/api/admin/catalog/items/FLOW/B1%2301", expect.objectContaining({ method: "PUT" }));
+  expect(JSON.parse(vi.mocked(fetch).mock.calls.at(-1)![1]!.body as string)).toEqual(body);
+  expect((await DELETE(req("DELETE", { ...body, item: undefined }), context)).status).toBe(200);
+  expect((await PUT(req("PUT", { ...body, item: { ...body.item, cost: -1 } }), context)).status).toBe(400);
+});
+it("exports only the chosen version as bounded binary while preserving JSON failures", async () => {
+  vi.mocked(fetch).mockResolvedValueOnce(new Response(new Uint8Array([80, 75, 3, 4]), { headers: { "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "content-disposition": 'attachment; filename="catalog.xlsx"' } }));
+  const response = await call("export?version=v1&q=ignore&cursor=ignore");
+  expect(response.headers.get("content-type")).toContain("spreadsheetml");
+  expect([...new Uint8Array(await response.arrayBuffer())]).toEqual([80, 75, 3, 4]);
+  expect(fetch).toHaveBeenLastCalledWith("https://backend.example/api/admin/catalog/export?version=v1", expect.any(Object));
+  vi.mocked(fetch).mockResolvedValueOnce(Response.json({ message: "Version unavailable" }, { status: 409 }));
+  const failure = await call("export?version=v1");
+  expect(failure.status).toBe(409);
+  expect(await failure.json()).toEqual({ message: "Version unavailable" });
+  vi.mocked(fetch).mockResolvedValueOnce(new Response("too large", { headers: { "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "content-length": "4000000" } }));
+  expect((await call("export?version=v1")).status).toBe(502);
+});
+
+it.each([
+  { path: ["items"], method: "POST" },
+  { path: ["items", "FLOW", "B1#01"], method: "PUT" },
+  { path: ["items", "FLOW", "B1#01"], method: "DELETE" },
+])("protects CRUD $method with verified session, role, origin and validated body", async ({ path, method }) => {
+  const routes = await import("../route");
+  const handle = routes[method as "POST" | "PUT" | "DELETE"];
+  const payload = { operation_id: operationId, base_version: "v1", expected_revision: "r1", ...(method !== "DELETE" ? { item: { flow_id: "FLOW", barrier_id: "B1", question_code: "01", question: "Safe?", mitigation_id: "M1", barrier_statement: "Steps", proposed_mitigation: "Ramp", adas_reference: "ADA", cost: null, unit: "each" } } : {}) };
+  const execute = (body: unknown = payload, origin = "http://localhost", type = "application/json") => handle(new NextRequest("http://localhost/api/catalog/items", { method, headers: { origin, "content-type": type }, body: typeof body === "string" ? body : JSON.stringify(body) }), { params: Promise.resolve({ path }) });
+  state.role = null;
+  expect((await execute()).status).toBe(401);
+  state.role = "auditor";
+  expect((await execute()).status).toBe(403);
+  state.role = "admin";
+  expect((await execute(payload, "https://evil.example")).status).toBe(403);
+  expect((await execute(payload, "http://localhost", "text/plain")).status).toBe(415);
+  expect((await execute("{")).status).toBe(400);
+  expect((await execute({ ...payload, base_version: "" })).status).toBe(400);
+  expect(fetch).not.toHaveBeenCalled();
+  expect((await execute()).status).toBe(200);
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+it.each(["question", "barrier_statement", "adas_reference"])("rejects a missing required %s before calling the backend", async field => {
+  const item = { flow_id: "FLOW", barrier_id: "B1", question_code: "01", question: "Safe?", mitigation_id: "", barrier_statement: "Steps", proposed_mitigation: "", adas_reference: "ADA", cost: null, unit: "", [field]: "" };
+  expect((await call("items", { operation_id: operationId, base_version: "v1", expected_revision: "r1", item })).status).toBe(400);
+  expect(fetch).not.toHaveBeenCalled();
+});

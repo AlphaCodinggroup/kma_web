@@ -89,3 +89,25 @@ BE, FE e infraestructura completos. Evidencia consolidada en [verificación](../
 
 ## Publicación — 2026-10-23
 [FE PR78](https://github.com/AlphaCodinggroup/kma_web/pull/78) hacia new-ui ampliado y [BE PR137](https://github.com/AlphaCodinggroup/kma-backend/pull/137) hacia main creado. Veredicto integrado APPROVE tras security/correctness/tests sin hallazgos pendientes, verificaciones y recorrido real. Permanecen abiertos, sin merge/deploy.
+
+## Administrador de mitigaciones — 2026-10-23
+
+Implementación autorizada del plan en chat.
+
+- [x] CRUD durable y export backend.
+- [x] Rutas de infraestructura.
+- [x] Formulario, borrado y export frontend.
+- [x] Pruebas focalizadas e integración.
+- [x] Verificación de navegador y controles estáticos.
+
+Skills: implement, Go, Next.js, testing-go, testing-web, contratos KMA, DynamoDB, verify y review. No se fusiona ni despliega.
+
+Evidencia del administrador: [verificación](../verifications/mitigation-crud-export-2026-10-23.md). Control Drift global pendiente por enlaces preexistentes; controles focalizados y navegador aprobados.
+
+## QA solicitada — 2026-10-23
+
+Pablo pidió probar el administrador, cargar skills QA y pasar los controles. Se añade cobertura de navegador repetible (CRUD, import/export, historial, conflicto, recuperación, permisos, móvil/teclado/axe), pruebas de contrato binario y revisión de recuperación backend. Se reutiliza la evidencia vigente de límites grandes y se corrigen hallazgos con regresiones. Se revisa Drift hasta resolver los fallos verificables sin suprimir controles. Recursos de runtime propios registrados en /tmp/kma-catalog-complete-resources.json; la prueba restaura la versión activa de origen.
+
+QA final: [informe y casos aprobados](../verifications/mitigation-qa-2026-10-23.md). Dos defectos de descarga corregidos; gate web3602 pruebas y3E2E aprobados; SDK/race/lint/vet del catálogo y Drift global aprobados.
+
+Control final adicional: make fmt-check nativo aprobado tras aplicar solo gofmt a19 archivos previos; AST canónico verificado sin cambios de lógica. No se repitieron suites generales de esos módulos por formato.

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { catalogRepo } from "../catalog.repo.impl";
-const http = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
+const http = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() }));
 vi.mock("@shared/api/http.client", () => ({ httpClient: http }));
 beforeEach(() => {
   vi.resetAllMocks();
@@ -90,4 +90,31 @@ it("uses asynchronous imports and preserves item filters plus cancellation", asy
   http.get.mockResolvedValueOnce({ data: { items: [], next_cursor: null } });
   await catalogRepo.operations("next");
   expect(http.get).toHaveBeenLastCalledWith("/api/catalog/operations", { params: { limit: 20, cursor: "next" } });
+});
+
+it("creates, renames, deletes one row and exports only a pinned version", async () => {
+  const input = { operation_id: "op", base_version: "v1", expected_revision: "r1" };
+  const item = { flow_id: "FLOW", barrier_id: "B1", question_code: "02", question: "Safe?", mitigation_id: "M1", barrier_statement: "Steps", proposed_mitigation: "Ramp", adas_reference: "ADA", cost: 0, unit: "each" };
+  http.post.mockResolvedValue({ data: { status: "queued" } });
+  http.put.mockResolvedValue({ data: { status: "queued" } });
+  http.delete.mockResolvedValue({ data: { status: "queued" } });
+  await catalogRepo.mutate({ ...input, kind: "create", item });
+  expect(http.post).toHaveBeenLastCalledWith("/api/catalog/items", { ...input, item });
+  const target = { flow_id: "Flow/entry", catalog_item_id: "B1#01" };
+  await catalogRepo.mutate({ ...input, kind: "update", item, target });
+  expect(http.put).toHaveBeenCalledWith("/api/catalog/items/Flow%2Fentry/B1%2301", { ...input, item });
+  await catalogRepo.mutate({ ...input, kind: "delete", target });
+  expect(http.delete).toHaveBeenCalledWith("/api/catalog/items/Flow%2Fentry/B1%2301", { data: input });
+  await expect(catalogRepo.mutate({ ...input, kind: "delete" })).rejects.toThrow("identity");
+  const blob = new Blob(["xlsx"], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  http.get.mockResolvedValueOnce({ data: blob });
+  expect(await catalogRepo.export("v1")).toBe(blob);
+  expect(http.get).toHaveBeenLastCalledWith("/api/catalog/export", { params: { version: "v1" }, responseType: "blob" });
+});
+
+it("preserves JSON export errors received as a blob and rejects unexpected success types", async () => {
+  http.get.mockRejectedValueOnce({ code: "CONFLICT", message: "HTTP 409", details: { response: new Blob([JSON.stringify({ error: { message: "Version changed" } })], { type: "application/json" }) } });
+  await expect(catalogRepo.export("v1")).rejects.toMatchObject({ message: "Version changed" });
+  http.get.mockResolvedValueOnce({ data: new Blob(["bad"], { type: "text/plain" }) });
+  await expect(catalogRepo.export("v1")).rejects.toMatchObject({ message: "Unexpected catalog export response" });
 });
