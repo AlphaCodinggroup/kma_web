@@ -22,6 +22,7 @@ const DEFAULT_NAV: NavItem[] = [
   { label: "Facilities", href: "/projects?tab=facilities" as Route, icon: Building2, group: "Workspace" },
   { label: "Audits", href: "/audits" as Route, icon: ClipboardCheck, group: "Workspace" },
   { label: "Reports", href: "/reports" as Route, icon: FileText, group: "Workspace" },
+  { label: "Catalog", href: "/catalog" as Route, icon: FileText, group: "Administration" },
   { label: "Flows", href: "/flows" as Route, icon: GitBranch, group: "Administration" },
   { label: "User Management", href: "/users" as Route, icon: Users, group: "Administration" },
 ];
@@ -55,7 +56,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items = DEFAULT_NAV, widthClass
   }, [pathname, currentTab]);
 
   const normalizedRole = role?.toLowerCase();
-  const visibleItems = items.filter((item) => !item.hidden && (item.href !== "/users" || normalizedRole === "admin" || normalizedRole === "administrator"));
+  const visibleItems = items.filter((item) => !item.hidden && (!["/users", "/catalog"].includes(item.href) || normalizedRole === "admin" || normalizedRole === "administrator"));
 
   const handleLogout = useCallback(async () => {
     setLogoutError(null);
