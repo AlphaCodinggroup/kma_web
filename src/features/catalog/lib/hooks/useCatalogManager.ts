@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   CatalogFile,
+  CatalogMutation,
   CatalogOperation,
   CatalogVersion,
 } from "@entities/catalog/model/catalog";
@@ -16,7 +17,8 @@ type Confirmation =
   | { kind: "activate"; version: CatalogVersion; revision: string };
 type Pending = {
   id: string;
-  kind: "upload" | "activate";
+  kind: CatalogOperation["kind"];
+  mutation?: CatalogMutation;
   expected_revision?: string;
   file_name?: string;
   sha256?: string;
@@ -102,7 +104,7 @@ export function useCatalogManager() {
       if (
         stored &&
         typeof stored.id === "string" &&
-        ["upload", "activate"].includes(stored.kind ?? "")
+        ["upload", "activate", "create", "update", "delete"].includes(stored.kind ?? "")
       ) {
         setPending(stored as Pending);
         setActionError(
@@ -172,7 +174,7 @@ export function useCatalogManager() {
     await refresh();
   };
   const submit = async (operation: Pending, input: CatalogFile | null, retry: boolean) => {
-    if (!operation.expected_revision || (operation.kind === "upload" ? !input : !operation.version)) return;
+    if (!operation.expected_revision || (operation.kind === "upload" ? !input : operation.kind === "activate" ? !operation.version : !operation.mutation)) return;
     writeLock.current = true;
     setBusy(true);
     setActionError(null);
@@ -184,7 +186,9 @@ export function useCatalogManager() {
       const identity = { operation_id: operation.id, expected_revision: operation.expected_revision };
       const response = operation.kind === "upload"
         ? await catalogRepo.imports({ ...input!, ...identity })
-        : await catalogRepo.activate({ version: operation.version!, ...identity });
+        : operation.kind === "activate"
+          ? await catalogRepo.activate({ version: operation.version!, ...identity })
+          : await catalogRepo.mutate({ ...operation.mutation!, operation_id: operation.id });
       await acceptResult(response);
     } catch (cause) {
       if (!alive.current) return;
@@ -276,14 +280,20 @@ export function useCatalogManager() {
   }, [operations.data, pending, busy]);
   const recoveryAvailable = Boolean(pending?.expected_revision && (pending.kind === "upload"
     ? pending.file_name && typeof pending.sha256 === "string" && /^[a-f0-9]{64}$/.test(pending.sha256)
-    : pending.version));
-  const canRetry = recoveryAllowed && recoveryAvailable && Boolean(status.data?.enabled) && !busy && !preparingRetry && (pending?.kind === "activate" || Boolean(retryFile));
+    : pending.kind === "activate" ? pending.version : pending.mutation));
+  const canRetry = recoveryAllowed && recoveryAvailable && Boolean(status.data?.enabled) && !busy && !preparingRetry && (pending?.kind !== "upload" || Boolean(retryFile));
   const confirmRetry = async () => {
     if (!retryConfirmation || !pending || !canRetry || writeLock.current) return;
     setRetryConfirmation(false);
     await submit(pending, retryFile, true);
   };
   return {
+    mutate: async (mutation: CatalogMutation) => {
+      if (writeLock.current || pending || !status.data?.enabled) return;
+      const operation: Pending = { id: crypto.randomUUID(), kind: mutation.kind, expected_revision: mutation.expected_revision, mutation };
+      await submit(operation, null, false);
+      return operation.id;
+    },
     status: status.data,
     loading: status.isPending || history.isPending,
     error:

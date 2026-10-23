@@ -1,5 +1,6 @@
 import type {
   CatalogItemsQuery,
+  CatalogMutation,
   CatalogItemsPage,
   CatalogOperationsPage,
   CatalogStatus,
@@ -11,6 +12,8 @@ import type {
 } from "@entities/catalog/model/catalog";
 
 export interface CatalogRepo {
+  mutate(input: CatalogMutation & { operation_id: string }): Promise<CatalogOperation>;
+  export(version: string): Promise<Blob>;
   items(query: CatalogItemsQuery, signal?: AbortSignal): Promise<CatalogItemsPage>;
   operations(cursor?: string): Promise<CatalogOperationsPage>;
   imports(input: CatalogFile & CatalogIdentity): Promise<CatalogOperation>;
