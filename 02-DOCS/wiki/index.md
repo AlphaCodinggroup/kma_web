@@ -23,3 +23,5 @@
 - [Guía general](../../README.md).
 
 La instalación conserva la documentación existente en su ubicación.
+
+- [Frontend sin advertencias](ftd/frontend-startup-warnings.md).

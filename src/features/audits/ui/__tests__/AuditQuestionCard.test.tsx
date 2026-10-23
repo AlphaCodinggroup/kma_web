@@ -521,6 +521,26 @@ describe("AuditQuestionCard — UNSURE editing", () => {
     return user;
   };
 
+  it("associates each dynamic field label with its control", async () => {
+    const user = await renderEditing({
+      steps: [
+        { id: "q1", type: "Question", no_next: "f1" },
+        { id: "f1", type: "Form", fields: [NUMBER_FIELD, TEXT_FIELD, PHOTO_FIELD] },
+      ],
+    });
+    await user.click(screen.getByRole("button", { name: "NO" }));
+    expect(screen.getByRole("spinbutton", { name: /Measurements/ })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Notes" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Photos")).toHaveAttribute("type", "file");
+  });
+
+  it("associates fallback form labels with their controls", async () => {
+    const user = await renderEditing({ steps: [] });
+    await user.click(screen.getByRole("button", { name: "NO" }));
+    expect(screen.getByRole("spinbutton", { name: "Quantity" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Notes / Measurements" })).toBeInTheDocument();
+  });
+
   it("keeps Save disabled until an answer is picked", async () => {
     await renderEditing();
 

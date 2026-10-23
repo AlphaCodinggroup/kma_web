@@ -6,6 +6,7 @@ import type {
   AuditComment,
   AuditQuestionType,
   ReportSeverity,
+  AuditStep,
 } from "@entities/audit/model/audit-detail";
 import type { IsoDateString } from "@entities/audit/model";
 import { toAuditStatus } from "@entities/audit/lib/audit-status";
@@ -97,13 +98,7 @@ export type AnswerDTO = {
   values?: Record<string, unknown>;
 };
 
-export type StepDTO = {
-  id: string;
-  type?: string;
-  text?: string;
-  title?: string;
-  answer?: AnswerDTO;
-};
+export type StepDTO = AuditStep & { answer?: AnswerDTO };
 
 const emptyToNull = (v?: string | null): string | null => {
   const s = typeof v === "string" ? v.trim() : "";
@@ -292,18 +287,18 @@ function mapStepToQuestion(
 
   const rawAnswer =
     stepAnswer?.answer ??
-    (values && "answer" in values ? (values as any).answer : undefined) ??
+    (values && "answer" in values ? values.answer : undefined) ??
     (values && "measurements" in values
-      ? (values as any).measurements
+      ? values.measurements
       : undefined) ??
-    (values && "quantity" in values ? (values as any).quantity : undefined) ??
+    (values && "quantity" in values ? values.quantity : undefined) ??
     null;
 
-  const notes = (values as any).notes ?? (values as any).comments;
+  const notes = values.notes ?? values.comments;
 
-  const photos = (values as any).photos;
+  const photos = values.photos;
 
-  const attachments = toAttachmentsFromPhotos(photos, step.id);
+  const attachments = toAttachmentsFromPhotos(Array.isArray(photos) ? photos : undefined, step.id);
 
   const type = toQuestionType(step.type);
 
@@ -311,7 +306,7 @@ function mapStepToQuestion(
     id: step.id,
     type,
     text: step.text ?? step.title ?? "",
-    answer: toYesNo(rawAnswer),
+    answer: toYesNo(rawAnswer as AuditQuestion["answer"]),
     notes: typeof notes === "string" ? notes : null,
     attachments,
     code: step.id,

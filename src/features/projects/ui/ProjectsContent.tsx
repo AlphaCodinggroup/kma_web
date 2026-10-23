@@ -165,8 +165,8 @@ export const ProjectsContent: React.FC<ProjectsContentProps> = ({
     if (!sortField || !sortOrder) return filtered;
 
     return [...filtered].sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
+      let aVal: string;
+      let bVal: string;
 
       switch (sortField) {
         case "name":

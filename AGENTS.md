@@ -59,7 +59,7 @@
   (`src/shared/lib/report-format.ts`); changing one requires checking the other.
 - `isAllowedReturnPath` (`src/features/audits/lib/audit-edit-href.ts`) is the only guard against an
   open redirect through `returnTo`; do not accept an unvalidated redirect target elsewhere.
-- Do not lower the coverage thresholds in `vitest.config.ts`, and do not add a `file:`, `link:`, or
+- Do not lower the coverage thresholds in `vitest.config.mts`, and do not add a `file:`, `link:`, or
   git dependency.
 
 ## Development and verification
@@ -72,7 +72,7 @@ Run these from the repository root.
 | Lint | `npm run lint` | |
 | Typecheck | `npm run typecheck` | |
 | Unit tests | `npm run test:run`; a single file: `npx vitest run <path>` | `npm test` is watch mode. |
-| Coverage gate | `npm run test:coverage` | 90% floors in `vitest.config.ts`; `COVERAGE_MIN` can only raise them. |
+| Coverage gate | `npm run test:coverage` | 90% floors in `vitest.config.mts`; `COVERAGE_MIN` can only raise them. |
 | Build | `npm run build` | Needs the variables `env.ts` validates; see `.github/workflows/ci.yml`'s `build` job for compile-time values. |
 | Full verification | `npm run verify` | lint + typecheck + coverage + build, in that order; matches what CI's two jobs run together. |
 | Local platform | In `../kma-backend`: `make up`, then `make seed-docker` or `make seed` | Web at `http://localhost:3000`; mock Cognito `admin`/`admin123`. Shared, mutable stack. |
@@ -84,7 +84,7 @@ Run these from the repository root.
   suite.
 - A change to the local `frontend` Docker service needs `../kma-backend`'s `docker compose build
   frontend`, because its bind mounts (`src`, `app`, `public`, and top-level configs) do not include
-  `package.json` or `vitest.config.ts`.
+  `package.json` or `vitest.config.mts`.
 
 ## Load task-specific guidance
 
