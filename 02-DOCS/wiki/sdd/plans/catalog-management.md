@@ -80,13 +80,13 @@ Contrato acordado entre implementadores: POST /api/admin/catalog/imports recibe 
 S3 privado conserva XLSX inmutable temporal7d. Operación/outbox se registran transaccionalmente antes de aceptar; envío SQS sólo referencias, reconciliador cada minuto. Worker160s presupuesto/180s Lambda, cuatro escritores/lotes25/tres intentos, versiones propias por intento y propiedad temporal; activación CAS tras completar. Mantener upload anterior. Consulta limita50 por defecto/200máximo más bytes; cursor vincula versión/filtros. UI inglesa, filtros en URL, descarta respuestas antiguas, consulta histórica sin activar, polling y recuperación reciente. Preparar Compose, SAM, Terragrunt y artefactos sin apply/deploy.
 
 ### Tareas y comprobación
-- [ ] BE: importación/outbox/worker/reconciliación; pruebas de fallo, reintentos y CAS verdes.
-- [ ] BE: lectura activa/histórica paginada; recorrido sin pérdidas/duplicados ni mezcla de versiones.
-- [ ] FE: tabla/detalle/filtros/versiones y BFF; pruebas de contrato y estados verdes.
-- [ ] FE: carga asíncrona/progreso/recuperación; prueba de recarga y respuesta perdida.
-- [ ] Infra: recursos, rutas, artefactos; validación local de configuración.
-- [ ] Integración: referencia1843 y máximo10000/3MiB, navegador y recuperación aislada.
-- [ ] Revisión independiente, evidencia, commits y PRs vinculados.
+- [x] BE: importación/outbox/worker/reconciliación; pruebas de fallo, reintentos y CAS verdes.
+- [x] BE: lectura activa/histórica paginada; recorrido sin pérdidas/duplicados ni mezcla de versiones.
+- [x] FE: tabla/detalle/filtros/versiones y BFF; pruebas de contrato y estados verdes.
+- [x] FE: carga asíncrona/progreso/recuperación; prueba de recarga y respuesta perdida.
+- [x] Infra: recursos, rutas, artefactos; validación local de configuración.
+- [x] Integración: referencia1843 y máximo10000/3MiB, navegador y recuperación aislada.
+- [x] Revisión independiente, evidencia, commits y PRs vinculados: web78 y backend137.
 
 ### Análisis previo
 Constitución leída, contrato Go como fuente, proxy compartido, permisos admin, snapshots y CAS conservados. Tareas FE/Go/infra con propietarios separados y contratos fijados. El costo de verificación se limita a checks afectados y un build estable. Riegos prioritarios: brecha DB/cola resuelta con outbox; escritor vencido con intento/lease propio; mezcla de páginas con cursor de versión. Sin contradicciones abiertas con el alcance aprobado.

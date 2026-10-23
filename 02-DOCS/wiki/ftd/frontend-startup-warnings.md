@@ -2,7 +2,7 @@
 type: implementation
 author: Pablo
 branch: fix/frontend-startup-warnings
-status: verified-local
+status: published
 ---
 # Frontend sin advertencias
 
@@ -18,7 +18,7 @@ Tipos y mappers de auditorías y flows, repositorio de auditorías, componentes 
 ## Checklist
 - [x] Reproducir y corregir las causas sin desactivar reglas ni bajar el 90% de cobertura.
 - [x] Comprobar el contenido aislado del PR con lint, tipos, pruebas afectadas y build.
-- [ ] Crear el PR solicitado sin fusionar ni desplegar.
+- [x] Crear el PR solicitado sin fusionar ni desplegar: https://github.com/AlphaCodinggroup/kma_web/pull/78.
 
 ## Evidencia de la rama del PR
 Con Node 22 y npm 10, lint con cero advertencias, TypeScript y build terminaron con código 0. Las pruebas afectadas aprobaron 19 archivos y 618 casos. Logs locales: /tmp/kma-warnings-pr-static.log, /tmp/kma-warnings-pr-tests.log y /tmp/kma-warnings-pr-build.log. Se revisó el diff contra 2f55f89 y se comprobó whitespace respetando CRLF. No se repitió la cobertura completa: el cambio conserva el umbral y se reutiliza la evidencia previa indicada abajo.
