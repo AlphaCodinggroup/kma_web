@@ -1,0 +1,20 @@
+version: 1
+project:
+  root: .
+  stacks: [nextjs, typescript, go]
+  package_managers: [npm, go]
+  monorepo: false
+sdd:
+  artifact_store: 02-DOCS/wiki/sdd
+  execution_mode: automatic
+  registry_path: .rsc/skill-registry.json
+  delivery_strategy:
+    default: single-pr
+testing:
+  strict_tdd: true
+  runners: [vitest, go-test]
+  commands:
+    apply: [npm run test:run]
+    verify: [npm run verify]
+models:
+  enabled: false
