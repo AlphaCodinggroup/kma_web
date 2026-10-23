@@ -27,3 +27,5 @@ La instalación conserva la documentación existente en su ubicación.
 - [Frontend sin advertencias](ftd/frontend-startup-warnings.md).
 
 - Catalog completo: [especificación](sdd/specs/catalog-management.md), [plan](sdd/plans/catalog-management.md), [progreso](sdd/progress/catalog-management.md).
+
+- [Verificación de Catalog completo](sdd/verifications/catalog-management-2026-10-23.md).
