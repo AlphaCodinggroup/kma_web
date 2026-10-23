@@ -13,9 +13,10 @@ export interface SearchInputProps extends Omit<InputProps, "type"> {
  */
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   (
-    { className, containerClassName, placeholder = "Search…", ...props },
+    { className, containerClassName, placeholder = "Search…", id, ...props },
     ref
   ) => {
+    const generatedId = React.useId();
     return (
       <div className={cn("relative", containerClassName)}>
         <SearchIcon
@@ -24,6 +25,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
         />
         <Input
           ref={ref}
+          id={id ?? generatedId}
           type="search"
           placeholder={placeholder}
           className={cn("pl-10", className)}

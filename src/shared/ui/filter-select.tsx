@@ -25,8 +25,10 @@ export function FilterSelect({
   ariaLabel,
   className,
 }: FilterSelectProps) {
+  const id = React.useId();
   return (
     <select
+      id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label={ariaLabel}

@@ -17,6 +17,7 @@ import { useUpdateAuditAnswerMutation } from "../lib/hooks/useUpdateAuditAnswerM
 import type { AnswerItemUpdate } from "@entities/audit/model/audit-review-answer-update";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { httpClient } from "@shared/api/http.client";
+import type { AuditStep, AuditFormField } from "@entities/audit/model/audit-detail";
 
 export type QuestionType = "yes_no" | "multiple_choice" | "number" | "text";
 
@@ -30,7 +31,7 @@ export interface AttachmentVM {
 export interface AuditQuestionCardProps {
   auditId?: string | undefined;
   questionId?: string | undefined;
-  steps?: any[] | undefined;
+  steps?: AuditStep[] | undefined;
   index?: number;
   text: string;
   type: QuestionType;
@@ -190,12 +191,15 @@ function EvidenceComposition({ children, attachments, onViewAttachment, classNam
 
 /* ===== Dynamic Form Fields ===== */
 
-interface FlowFormField {
-  id: string;
-  type: "text" | "number" | "photo" | "button";
-  label: string;
-  placeholder?: string;
-  unit?: string;
+type FlowFormField = AuditFormField;
+type FormValue = string | number | string[] | File[];
+
+function inputValue(value: FormValue | undefined): string | number {
+  return typeof value === "string" || typeof value === "number" ? value : "";
+}
+
+function photoUrls(value: FormValue | undefined): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
 function DynamicFormFields({
@@ -204,8 +208,8 @@ function DynamicFormFields({
   onChange,
 }: {
   fields: FlowFormField[];
-  values: Record<string, any>;
-  onChange: (key: string, value: any) => void;
+  values: Record<string, FormValue>;
+  onChange: (key: string, value: FormValue) => void;
 }) {
   const fieldPrefix = React.useId();
   // Fallback: no fields defined in the flow → show generic form
@@ -220,7 +224,7 @@ function DynamicFormFields({
             id={`${fieldPrefix}-quantity`}
             type="number"
             className="w-full rounded border bg-[var(--kma-surface)] px-3 py-2 text-sm"
-            value={values.quantity ?? ""}
+            value={inputValue(values.quantity)}
             onChange={(e) => onChange("quantity", Number(e.target.value))}
           />
         </div>
@@ -231,7 +235,7 @@ function DynamicFormFields({
           <textarea
             id={`${fieldPrefix}-notes`}
             className="h-20 w-full rounded border bg-[var(--kma-surface)] px-3 py-2 text-sm"
-            value={values.notes ?? ""}
+            value={inputValue(values.notes)}
             onChange={(e) => onChange("notes", e.target.value)}
           />
         </div>
@@ -261,7 +265,7 @@ function DynamicFormFields({
                 type="number"
                 className="w-full rounded border bg-[var(--kma-surface)] px-3 py-2 text-sm"
                 placeholder={field.placeholder ?? ""}
-                value={values[field.id] ?? ""}
+                value={inputValue(values[field.id])}
                 onChange={(e) =>
                   onChange(
                     field.id,
@@ -283,7 +287,7 @@ function DynamicFormFields({
                 id={`${fieldPrefix}-${field.id}`}
                 className="h-20 w-full rounded border bg-[var(--kma-surface)] px-3 py-2 text-sm"
                 placeholder={field.placeholder ?? ""}
-                value={values[field.id] ?? ""}
+                value={inputValue(values[field.id])}
                 onChange={(e) => onChange(field.id, e.target.value)}
               />
             </div>
@@ -291,7 +295,7 @@ function DynamicFormFields({
         }
 
         if (field.type === "photo") {
-          const previews: string[] = values[field.id] ?? [];
+          const previews = photoUrls(values[field.id]);
           return (
             <div key={field.id}>
               <label htmlFor={`${fieldPrefix}-${field.id}`} className="mb-1 block text-xs font-semibold text-[var(--kma-muted)]">
@@ -309,7 +313,7 @@ function DynamicFormFields({
                   onChange(field.id, [...previews, ...urls]);
                   // Store File objects under a prefixed key for later upload
                   const existingFiles: File[] =
-                    values[`__files__${field.id}`] ?? [];
+                    (values[`__files__${field.id}`] as File[] | undefined) ?? [];
                   onChange(`__files__${field.id}`, [
                     ...existingFiles,
                     ...files,
@@ -390,7 +394,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
   const [savePending, setSavePending] = useState(false);
   const saving = useRef(false);
   const [draftAnswer, setDraftAnswer] = useState<"YES" | "NO" | null>(null);
-  const [draftForm, setDraftForm] = useState<Record<string, any>>({});
+  const [draftForm, setDraftForm] = useState<Record<string, FormValue>>({});
   const { mutateAsync: updateAnswer, isPending } =
     useUpdateAuditAnswerMutation();
 
@@ -398,7 +402,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
   // Supports recursive Form linking (loading subsequent Form fields)
   const noNextFormFields = React.useMemo((): FlowFormField[] => {
     if (!steps || !questionId) return [];
-    const questionStep = steps.find((s: any) => s.id === questionId);
+    const questionStep = steps.find((s) => s.id === questionId);
     if (!questionStep) return [];
     
     // Backend may use snake_case or camelCase
@@ -408,7 +412,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     
     while (nextIdToCheck && sanityCounter < 20) {
       sanityCounter++;
-      const step = steps.find((s: any) => s.id === nextIdToCheck);
+      const step = steps.find((s) => s.id === nextIdToCheck);
       if (!step || step.type !== "Form") break;
       
       const stepFields = (step.fields ?? []) as FlowFormField[];
@@ -421,7 +425,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     return collectedFields;
   }, [steps, questionId]);
 
-  const handleFormChange = (key: string, value: any) => {
+  const handleFormChange = (key: string, value: FormValue) => {
     setDraftForm((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -438,7 +442,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     ];
 
     if (draftAnswer === "NO") {
-      const questionStep = steps?.find((s: any) => s.id === questionId);
+      const questionStep = steps?.find((s) => s.id === questionId);
       const noNextId = questionStep?.no_next ?? questionStep?.noNext;
       
       if (noNextId) {
@@ -479,7 +483,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
                      // Map to proper key. If field is 'photo', use 'photos'
                      const targetKey = fieldId === "photo" ? "photos" : fieldId;
                      // In case there were already existing strings under the array, append them
-                     const existingUrls = (draftForm[fieldId] || []).filter((u: any) => typeof u === "string" && !u.startsWith("blob:"));
+                     const existingUrls = photoUrls(draftForm[fieldId]).filter((u) => typeof u === "string" && !u.startsWith("blob:"));
                      cleanValues[targetKey] = [...existingUrls, ...finalS3Urls];
                  } catch (err) {
                      console.error("Failed to upload files:", err);
@@ -497,13 +501,13 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
           }
         }
         
-        let currentFormId = noNextId;
+        let currentFormId: string | null | undefined = noNextId;
         let sanity = 0;
         let pushedAnyForm = false;
 
         while (currentFormId && sanity < 20) {
           sanity++;
-          const formStep = steps?.find((s: any) => s.id === currentFormId);
+          const formStep = steps?.find((s) => s.id === currentFormId);
           if (!formStep || formStep.type !== "Form") break;
           
           const formFields = formStep.fields ?? [];

@@ -369,3 +369,15 @@ describe("SidebarNav", () => {
     );
   });
 });
+
+it.each(["admin", "administrator"])("shows Catalog after Reports for %s", role => {
+  render(<SidebarNav role={role as Role} />);
+  const links = screen.getAllByRole("link");
+  const reports = links.indexOf(screen.getByRole("link", { name: "Reports" }));
+  expect(links[reports + 1]).toHaveTextContent("Catalog");
+  expect(links[reports + 1]).toHaveAttribute("href", "/catalog");
+});
+it.each(["viewer", "auditor", "qc"])("hides Catalog for %s", role => {
+  render(<SidebarNav role={role as Role} />);
+  expect(screen.queryByRole("link", { name: "Catalog" })).not.toBeInTheDocument();
+});

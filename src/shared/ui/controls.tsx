@@ -6,12 +6,15 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
-  ({ className, ...props }, ref) => (
+  ({ className, htmlFor, children, ...props }, ref) => (
     <label
+      htmlFor={htmlFor}
       ref={ref}
       className={cn("block text-sm font-medium text-[var(--kma-fg)] mb-1", className)}
       {...props}
-    />
+    >
+      {children}
+    </label>
   )
 );
 Label.displayName = "Label";

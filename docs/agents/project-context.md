@@ -150,7 +150,7 @@ a backend limitation is documentation, not proof; check the backend before repea
   `main`/`develop`: a `quality` job (lint, typecheck, `test:run`, `test:coverage` with a 90% floor)
   and a separate `build` job. Playwright does not run in CI.
 - `CONFIRMED (stale doc):` the coverage step's comment says the threshold "rises as pending modules
-  are covered" and points at a plan doc in the backend repo; `vitest.config.ts` already treats 90%
+  are covered" and points at a plan doc in the backend repo; `vitest.config.mts` already treats 90%
   as the fixed gate.
 - `CONFIRMED:` `amplify.yml` builds with `npm ci && npm run build`, publishing `.next`.
   `INFERRED:` production deploys from `develop` (an incident note referenced an Amplify redeploy of

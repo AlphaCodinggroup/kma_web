@@ -15,7 +15,7 @@ tests alone. Assumes `../kma-backend` is checked out as a sibling; its
    `http://localhost:3000` as the backend's `frontend` service, with mock Cognito credentials
    `admin`/`admin123`.
 2. The `frontend` service bind-mounts `src`, `app`, `public`, and the top-level config files, but not
-   `package.json`, `package-lock.json`, `vitest.config.ts`, or `playwright.config.ts`. A dependency
+   `package.json`, `package-lock.json`, `vitest.config.mts`, or `playwright.config.ts`. A dependency
    change needs `docker compose build frontend` from `../kma-backend`; a bind-mounted source change
    does not.
 3. For a browser check, use Chrome DevTools MCP against `http://localhost:3000`, logged in as

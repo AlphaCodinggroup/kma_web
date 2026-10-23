@@ -48,6 +48,25 @@ export interface AuditComment {
 /**
  * Detalle completo de una auditoria, con preguntas y reporte.
  */
+export interface AuditFormField {
+  id: string;
+  type: "text" | "number" | "photo" | "button";
+  label: string;
+  placeholder?: string;
+  unit?: string;
+}
+
+export interface AuditStep {
+  id: string;
+  type?: string;
+  text?: string;
+  title?: string;
+  no_next?: string | null;
+  noNext?: string | null;
+  next?: string | null;
+  fields?: AuditFormField[];
+}
+
 export interface AuditDetail {
   id: string;
   flowId: string;
@@ -67,5 +86,5 @@ export interface AuditDetail {
   questions: AuditQuestion[];
   reportItems: AuditReportItem[];
   comments: AuditComment[];
-  steps?: any[];
+  steps?: AuditStep[];
 }
