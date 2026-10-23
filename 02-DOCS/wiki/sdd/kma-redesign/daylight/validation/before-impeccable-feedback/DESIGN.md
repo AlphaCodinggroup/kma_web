@@ -207,7 +207,7 @@ Una mesa de revisión con precisión arquitectónica: papel marfil, tinta grafit
 
 La composición conecta tareas, datos y evidencias reales. La marca aparece en el contraste de navegación, los recuentos y el encuadre de fotografías, mientras los estados conservan su significado operativo. El tema oscuro cambia el papel por grafito sin perder esta relación entre fondo, superficie y texto.
 
-Este sistema documenta la sustitución aprobada de la identidad petróleo; el [diseño anterior](../premium/DESIGN.md) queda como historia. La [dirección elegida](implementation.md) explica su intención y [PRODUCT.md](../../../../../PRODUCT.md) conserva las restricciones del producto. Los valores se extraen del [estilo global](../../../../../app/globals.css), las [fuentes locales](../../../../../app/layout.tsx), los [controles](../../../../../src/shared/ui/controls.tsx) y los componentes citados abajo; este documento no certifica comprobaciones de navegador ni una compilación final.
+Este sistema documenta la sustitución aprobada de la identidad petróleo; el [diseño anterior](../../../premium/DESIGN.md) queda como historia. La [dirección elegida](../../implementation.md) explica su intención y [PRODUCT.md](../../../../../../../PRODUCT.md) conserva las restricciones del producto. Los valores se extraen del [estilo global](../../../../../../../app/globals.css), las [fuentes locales](../../../../../../../app/layout.tsx), los [controles](../../../../../../../src/shared/ui/controls.tsx) y los componentes citados abajo; este documento no certifica comprobaciones de navegador ni una compilación final.
 
 **Key Characteristics:**
 
@@ -267,7 +267,7 @@ El dorado aporta luz a una base mineral; los colores semánticos señalan estado
 
 ## Layout
 
-El [espacio de trabajo](../../../../../src/widgets/shell/AppShell.tsx) tiene cabecera de (64 px), navegación lateral de (248 px) desde (1024 px) y contenido con ancho máximo de (1440 px). La zona de contenido tiene desplazamiento propio y ancho mínimo cero; sus márgenes interiores son (16 px), (24 px) desde `md` y (32 px) desde `lg`, con separación vertical de (24/32 px).
+El [espacio de trabajo](../../../../../../../src/widgets/shell/AppShell.tsx) tiene cabecera de (64 px), navegación lateral de (248 px) desde (1024 px) y contenido con ancho máximo de (1440 px). La zona de contenido tiene desplazamiento propio y ancho mínimo cero; sus márgenes interiores son (16 px), (24 px) desde `md` y (32 px) desde `lg`, con separación vertical de (24/32 px).
 
 La cabecera de página permite que título y acción cambien de línea; una regla inferior y el espacio de sección los separan del contenido. Listados y respuestas comparten contenedores continuos, con bordes entre filas. Los módulos adaptan tabla, detalles y acciones al espacio disponible, sin una cuadrícula fija universal.
 
@@ -300,13 +300,13 @@ La marca combina letras angulares con un cuadrado dorado de (6 px), separado por
 
 ### Buttons
 
-Acciones firmes y reconocibles, sin sombra de base. El [botón compartido](../../../../../src/shared/ui/controls.tsx) ofrece principal, secundario, discreto y destructivo; comparten esquinas, separación entre icono y texto (8 px), relleno (8 × 16 px) y altura mínima operativa.
+Acciones firmes y reconocibles, sin sombra de base. El [botón compartido](../../../../../../../src/shared/ui/controls.tsx) ofrece principal, secundario, discreto y destructivo; comparten esquinas, separación entre icono y texto (8 px), relleno (8 × 16 px) y altura mínima operativa.
 
 El principal usa dorado y grafito; el secundario usa superficie con borde; el discreto tiene fondo transparente; el destructivo usa el fondo suave, borde y texto de error. Al pasar el puntero, el principal mezcla dorado (88 %) con superficie, los secundarios usan tono sutil y el destructivo mezcla su fondo (85 %) con el tono de error. El foco usa un anillo (2 px). Pendiente y deshabilitado conservan la etiqueta y reducen opacidad; el ancho completo es el valor por defecto, con acciones de cabecera ajustadas a su contenido.
 
 ### Chips
 
-Etiquetas de estado compactas y legibles. El [badge compartido](../../../../../src/shared/ui/badge.tsx) ofrece variantes suave, sólida y de contorno; el estado habitual usa fondo suave, texto semántico y borde interior (1 px). Su tamaño pequeño tiene relleno (2 × 10 px) y el mediano (4 × 12 px). El texto expresa el estado aunque el color no se perciba.
+Etiquetas de estado compactas y legibles. El [badge compartido](../../../../../../../src/shared/ui/badge.tsx) ofrece variantes suave, sólida y de contorno; el estado habitual usa fondo suave, texto semántico y borde interior (1 px). Su tamaño pequeño tiene relleno (2 × 10 px) y el mediano (4 × 12 px). El texto expresa el estado aunque el color no se perciba.
 
 ### Cards / Containers
 
@@ -318,19 +318,19 @@ Campos rectos sobre papel, con etiqueta visible. Campo y textarea usan superfici
 
 ### Navigation
 
-Grafito persistente con texto marfil y gris claro. La [navegación](../../../../../src/widgets/shell/SidebarNav.tsx) usa filas con esquinas de control, iconos de trazo y altura mínima (44 px); la selección combina fondo dorado tenue, texto ocre claro y peso firme. El puntero introduce el fondo seleccionado; el estado pendiente muestra indicador de carga. El diálogo móvil mantiene esta misma identidad y devuelve el foco al cerrarse.
+Grafito persistente con texto marfil y gris claro. La [navegación](../../../../../../../src/widgets/shell/SidebarNav.tsx) usa filas con esquinas de control, iconos de trazo y altura mínima (44 px); la selección combina fondo dorado tenue, texto ocre claro y peso firme. El puntero introduce el fondo seleccionado; el estado pendiente muestra indicador de carga. El diálogo móvil mantiene esta misma identidad y devuelve el foco al cerrarse.
 
-La [apariencia](../../../../../src/shared/ui/theme-toggle.tsx) es un selector compacto con icono, borde y superficie. Ofrece claro, oscuro y sistema, se conserva en el acceso y se guarda mediante el proveedor de tema; el cambio de tema evita animar la transición global.
+La [apariencia](../../../../../../../src/shared/ui/theme-toggle.tsx) es un selector compacto con icono, borde y superficie. Ofrece claro, oscuro y sistema, se conserva en el acceso y se guarda mediante el proveedor de tema; el cambio de tema evita animar la transición global.
 
 ### Review pipeline
 
-Una [franja de tres tramos conectados](../../../../../src/widgets/dashboard/ReviewPipeline.tsx), con un único borde y radio exterior. Cada tramo enlaza a su cola filtrada y muestra su recuento real. La revisión pendiente usa el plano grafito y cifra dorada; los otros tramos usan papel. Mantiene tres columnas, alturas mínimas de (120 px) y (140 px) desde `md`, y cifras (32/40 px); en poco espacio se ocultan iconos y enlaces auxiliares visuales, conservando etiquetas y destinos accesibles.
+Una [franja de tres tramos conectados](../../../../../../../src/widgets/dashboard/ReviewPipeline.tsx), con un único borde y radio exterior. Cada tramo enlaza a su cola filtrada y muestra su recuento real. La revisión pendiente usa el plano grafito y cifra dorada; los otros tramos usan papel. Mantiene tres columnas, alturas mínimas de (120 px) y (140 px) desde `md`, y cifras (32/40 px); en poco espacio se ocultan iconos y enlaces auxiliares visuales, conservando etiquetas y destinos accesibles.
 
 ### Evidence and report
 
-Las fotografías proceden de adjuntos de auditoría, cerca de su respuesta y con estados de ausencia o error; la ilustración de acceso no representa evidencia. El archivo original [Daylight Section](../../../../../public/images/daylight-section.webp) pesa (157 410 bytes) y conserva su [prompt exacto y fecha](../../../../../public/images/daylight-section.webp.json).
+Las fotografías proceden de adjuntos de auditoría, cerca de su respuesta y con estados de ausencia o error; la ilustración de acceso no representa evidencia. El archivo original [Daylight Section](../../../../../../../public/images/daylight-section.webp) pesa (157 410 bytes) y conserva su [prompt exacto y fecha](../../../../../../../public/images/daylight-section.webp.json).
 
-La [vista previa de informe](../../../../../src/features/audits/ui/ReportPreview.tsx) es una isla documental: papel blanco, Source Sans 3, formato y paleta originales, independientemente del tema. Sus estilos pertenecen al informe y no sustituyen los tokens operativos anteriores.
+La [vista previa de informe](../../../../../../../src/features/audits/ui/ReportPreview.tsx) es una isla documental: papel blanco, Source Sans 3, formato y paleta originales, independientemente del tema. Sus estilos pertenecen al informe y no sustituyen los tokens operativos anteriores.
 
 ## Do's and Don'ts
 
