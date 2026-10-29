@@ -2,6 +2,14 @@
   "version": 1,
   "sources": [
     {
+      "path": "02-DOCS/wiki/ftd/catalog-active-default.md",
+      "hash": "dbc8c5b1a307d144d6d47db0bb1320fc4a3e9081d90cf169947f5afa3846e142",
+      "size": 2903,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
       "path": "02-DOCS/wiki/ftd/catalog-implementation-prompt.md",
       "hash": "f4426d29052954004944052282eac36702f370c0ad2b20d9f448f483d62ac413",
       "size": 23915,
@@ -19,8 +27,8 @@
     },
     {
       "path": "02-DOCS/wiki/ftd/catalog-upload-first.md",
-      "hash": "94442fd4ad9770afe6525551270a5ea3e14395cd259dd35284b5a33e0b351b5f",
-      "size": 2185,
+      "hash": "ead4d6e5b799fe51af402933248e42c5d3355653e2f91df454f510589a1e1f52",
+      "size": 2595,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
@@ -123,8 +131,8 @@
     },
     {
       "path": "02-DOCS/wiki/index.md",
-      "hash": "75c1baad7d78cc6a1353785bb2a0dbb184f764a6dbde7cb9096d9f9cd0ced993",
-      "size": 5299,
+      "hash": "ce5305cd2fa1b7e5c2619952fd8b9d92cdccafefddee68634c4199ac26ecbcb5",
+      "size": 5433,
       "format": "md",
       "topic": "02-DOCS/wiki",
       "status": "indexed"
@@ -139,8 +147,8 @@
     },
     {
       "path": "02-DOCS/wiki/project/changes-2026-10-29.md",
-      "hash": "d64f776261cca0e89afe0a631e71bce83bbd5ad7df6310c97dbfff976e426a9b",
-      "size": 8436,
+      "hash": "60ad9d7120b6ab460a1b1d4b447c6f131e13ea8a6b6b41dfaf7a594860bfd59d",
+      "size": 8939,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
@@ -163,16 +171,16 @@
     },
     {
       "path": "02-DOCS/wiki/project/environments.md",
-      "hash": "60e1c45d52ea8f101aa55d53cee263b0dce0f3059ddc25cfad7efc4d8b0a1a90",
-      "size": 2822,
+      "hash": "ef155f59b426c621387cf1bc957448e6eed2e15655045f8597f8e1f4518e6842",
+      "size": 2902,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/features.md",
-      "hash": "8198d8e6e327c76c6841cb1ca60e7f1ac02dadc055f2fe19e0d64371c8f83647",
-      "size": 8456,
+      "hash": "d8405abe5d4df8af6d8efe6a16c2e455664634f43603a4c4a6923df5b113a5ea",
+      "size": 8657,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"

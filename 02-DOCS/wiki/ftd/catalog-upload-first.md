@@ -20,7 +20,7 @@ confirmaciones, restricciones y contratos.
 - [x] No hay desbordamiento horizontal ni errores de consola en esas vistas.
 - [x] Lint, tipos y las pruebas existentes de UI del catálogo pasan.
 - [x] Explicar `version=legacy` sin modificar datos ni versiones.
-- [ ] Publicar y verificar el nuevo trabajo de Amplify en la rama Dev `new-ui`.
+- [x] Publicar y verificar el nuevo trabajo de Amplify en la rama Dev `new-ui`.
 
 ## Evidencia
 
@@ -46,4 +46,9 @@ sus registros de forma consistente. Este ajuste visual no modifica ese estado.
 
 ## Siguiente
 
-Publicar el cambio en `new-ui` y registrar el trabajo de Amplify confirmado.
+Desplegado en Dev: Amplify `10`, BUILD/DEPLOY/VERIFY en `SUCCEED`, commit
+`4ad8f103cf8681f7bcabb5c6f894bbd3f18621ca`. URL pública y CSS responden
+200; el visitante sin sesión es redirigido a login. La comprobación autenticada
+del orden se hizo en local, sin importaciones ni cambios de datos. Tiempo total
+aproximado: 9 minutos, incluidas pruebas y espera de Amplify. Sin pendientes funcionales
+en el alcance solicitado. Este registro de cierre se actualizó después del despliegue.

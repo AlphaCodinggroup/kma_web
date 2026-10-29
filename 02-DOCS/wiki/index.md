@@ -75,3 +75,5 @@ Conocimiento verificado de la web, escaneado en la rama `fix/frontend-startup-wa
 - [Actualización de RSC a 3.6.0](ftd/update-rsc-3-6-0.md).
 
 - [Carga XLSX como primera sección](ftd/catalog-upload-first.md): orden de Catalog y significado de `version=legacy`.
+
+- [Catálogo activo por defecto y logo de inicio](ftd/catalog-active-default.md): vista actual, historial y navegación a Dashboard.

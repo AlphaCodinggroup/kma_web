@@ -33,6 +33,7 @@ desajustes: [contexto del proyecto](../../../docs/agents/project-context.md#doma
 
 | Aspecto | Detalle |
 | --- | --- |
+| Versión por defecto | Se consulta la activa sin fijarla en URL; el cursor conserva la paginación. Historial explícito para consulta y restauración. [Entrega](../ftd/catalog-active-default.md). |
 | Prioridad visual | Upload XLSX aparece primero, seguido por la validación y después la consulta e historial; [verificación](../ftd/catalog-upload-first.md) |
 | Responsabilidad | Administración del catálogo de mitigaciones: estado, versiones históricas, navegación de ítems con filtros en URL (`version`, `q`, `flow_id`, `barrier_id`, `cursor`), validar/subir/activar XLSX, importaciones en segundo plano (operaciones), CRUD de ítems, exportación XLSX |
 | UI | [`CatalogManager`](../../../src/features/catalog/ui/CatalogManager.tsx), [`CatalogBrowser`](../../../src/features/catalog/ui/CatalogBrowser.tsx), [`CatalogItemEditor`](../../../src/features/catalog/ui/CatalogItemEditor.tsx) |

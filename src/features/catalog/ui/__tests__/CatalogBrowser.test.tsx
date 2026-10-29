@@ -10,14 +10,15 @@ const row = { catalog_item_id: "item-51", flow_id: "access", barrier_id: "B1", q
 const renderBrowser = (props: Partial<React.ComponentProps<typeof CatalogBrowser>> = {}) => render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><CatalogBrowser versions={[]} activeVersion="v1" {...props} /></QueryClientProvider>);
 beforeEach(() => { vi.clearAllMocks(); window.history.replaceState(null, "", "/catalog"); items.mockResolvedValue({ items: [row], version: "v1", next_cursor: null }); });
 describe("Catalog browsing", () => {
-  it("shows all fields including zero costs and pins the returned version in the URL", async () => {
+  it("shows all fields including zero costs without pinning the active version in the URL", async () => {
     renderBrowser();
     expect(await screen.findByText("Is entry safe?")).toBeVisible();
     await userEvent.click(screen.getByRole("button", { name: "Details Q51" }));
     expect(screen.getByText("Add ramp")).toBeVisible();
     expect(screen.getByText("ADA 1")).toBeVisible();
     expect(screen.getAllByText("0").length).toBeGreaterThan(0);
-    await waitFor(() => expect(new URLSearchParams(location.search).get("version")).toBe("v1"));
+    expect(new URLSearchParams(location.search).has("version")).toBe(false);
+    expect(screen.getByLabelText("Catalog version")).toHaveValue("active");
   });
   it("continues empty result pages when the server has a cursor", async () => {
     items.mockResolvedValueOnce({ items: [], version: "v1", next_cursor: "page2" });
@@ -25,7 +26,7 @@ describe("Catalog browsing", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Next page" })).toBeEnabled());
     await userEvent.click(screen.getByRole("button", { name: "Next page" }));
     expect(await screen.findByText("Is entry safe?")).toBeVisible();
-    expect(items).toHaveBeenLastCalledWith(expect.objectContaining({ version: "v1", cursor: "page2" }), expect.any(AbortSignal));
+    expect(items).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: "page2" }), expect.any(AbortSignal));
   });
   it("restores filters from the URL and clears the cursor on a new search", async () => {
     window.history.replaceState(null, "", "/catalog?version=old&q=ramp&flow_id=entry&barrier_id=B1&cursor=second");
@@ -97,8 +98,45 @@ it("navigates to a completed operation version and removes the old cursor", asyn
   await screen.findByText("Is entry safe?");
   items.mockResolvedValue({ items: [row], version: "v2", next_cursor: null });
   rerender(<QueryClientProvider client={client}><CatalogBrowser {...props} activeVersion="v2" revision="r2" result={{ operation_id: "op1", kind: "update", status: "completed", message: "Saved", version: "v2" }} /></QueryClientProvider>);
-  await waitFor(() => expect(new URLSearchParams(location.search).get("version")).toBe("v2"));
+  await waitFor(() => expect(new URLSearchParams(location.search).has("version")).toBe(false));
   expect(location.search).not.toContain("cursor=");
   expect(location.search).toContain("q=ramp");
-  await waitFor(() => expect(items).toHaveBeenLastCalledWith(expect.objectContaining({ version: "v2", q: "ramp" }), expect.any(AbortSignal)));
+  await waitFor(() => expect(items).toHaveBeenLastCalledWith(expect.objectContaining({ q: "ramp" }), expect.any(AbortSignal)));
+});
+
+it("keeps active browsing selected across pagination and new searches", async () => {
+  items.mockResolvedValueOnce({ items: [row], version: "legacy", next_cursor: "page2" });
+  renderBrowser({ activeVersion: "legacy" });
+  await screen.findByText("Is entry safe?");
+  expect(screen.getByLabelText("Catalog version")).toHaveValue("active");
+  expect(location.search).not.toContain("version=");
+  await userEvent.click(screen.getByRole("button", { name: "Next page" }));
+  await waitFor(() => expect(items).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: "page2" }), expect.any(AbortSignal)));
+  expect(items.mock.calls.at(-1)?.[0].version).toBeUndefined();
+  expect(location.search).not.toContain("version=");
+  await userEvent.type(screen.getByLabelText("Search catalog"), "ramp");
+  await userEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+  await waitFor(() => expect(items).toHaveBeenLastCalledWith(expect.objectContaining({ q: "ramp" }), expect.any(AbortSignal)));
+  expect(items.mock.calls.at(-1)?.[0]).not.toHaveProperty("cursor");
+  expect(items.mock.calls.at(-1)?.[0].version).toBeUndefined();
+});
+it("reloads active records when the active catalog changes without selecting history", async () => {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const { rerender } = render(<QueryClientProvider client={client}><CatalogBrowser versions={[]} activeVersion="v1" revision="r1" /></QueryClientProvider>);
+  await screen.findByText("Is entry safe?");
+  items.mockResolvedValue({ items: [{ ...row, question: "New active catalog" }], version: "v2", next_cursor: null });
+  rerender(<QueryClientProvider client={client}><CatalogBrowser versions={[]} activeVersion="v2" revision="r2" /></QueryClientProvider>);
+  expect(await screen.findByText("New active catalog")).toBeVisible();
+  expect(location.search).not.toContain("version=");
+  expect(screen.getByLabelText("Catalog version")).toHaveValue("active");
+});
+it("allows consulting the original catalog and returning to the active one", async () => {
+  renderBrowser({ versions: [{ version: "legacy", file_name: "Legacy catalog", active: false, status: "ready", item_count: 1, flow_count: 1, uploaded_at: null, uploaded_by: null, sha256: "" }] });
+  await screen.findByText("Is entry safe?");
+  await userEvent.selectOptions(screen.getByLabelText("Catalog version"), "legacy");
+  await waitFor(() => expect(items).toHaveBeenLastCalledWith(expect.objectContaining({ version: "legacy" }), expect.any(AbortSignal)));
+  expect(location.search).toContain("version=legacy");
+  await userEvent.click(screen.getByRole("button", { name: "View active catalog" }));
+  await waitFor(() => expect(new URLSearchParams(location.search).has("version")).toBe(false));
+  expect(screen.getByLabelText("Catalog version")).toHaveValue("active");
 });

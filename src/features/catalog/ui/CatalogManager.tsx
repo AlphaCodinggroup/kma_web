@@ -212,7 +212,7 @@ export default function CatalogManager() {
             <div>
               <dt className="text-[var(--kma-muted)]">Version</dt>
               <dd className="mt-1 break-all font-medium">
-                {model.status.active_version}
+                {model.status.active_version === "legacy" ? "Original catalog" : model.status.active?.file_name ?? model.status.active_version}
               </dd>
             </div>
             <div>
@@ -255,7 +255,7 @@ export default function CatalogManager() {
         <div>
           <h2 className="font-semibold">Version history</h2>
           <p className="mt-1 text-sm text-[var(--kma-muted)]">
-            Restore a complete version; every activation creates a new revision.
+            The active catalog and up to three previous versions are retained. Restore a previous catalog to make it active.
           </p>
         </div>
         {!model.loading && model.history.length === 0 && (
@@ -269,7 +269,7 @@ export default function CatalogManager() {
             >
               <div className="min-w-0 space-y-1 text-sm">
                 <p className="break-all font-medium">
-                  {version.file_name}
+                  {version.version === "legacy" ? "Original catalog" : version.file_name}
                   {version.active ? " · Active" : ""}
                 </p>
                 <p className="break-all text-xs text-[var(--kma-muted)]">

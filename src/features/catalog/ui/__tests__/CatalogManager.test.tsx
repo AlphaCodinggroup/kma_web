@@ -108,7 +108,7 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 async function selectAndValidate(user: ReturnType<typeof userEvent.setup>) {
-  await screen.findByText("legacy");
+  await screen.findByText("Original catalog");
   await user.upload(screen.getByLabelText("XLSX file"), workbook());
   await user.click(screen.getByRole("button", { name: "Validate file" }));
   await screen.findByRole("heading", { name: "Validation preview" });
@@ -164,7 +164,7 @@ describe("Catalog manager", () => {
     );
     const user = userEvent.setup();
     render(<CatalogManager />);
-    await screen.findByText("legacy");
+    await screen.findByText("Original catalog");
     await user.upload(screen.getByLabelText("XLSX file"), workbook());
     await user.click(screen.getByRole("button", { name: "Validate file" }));
     await waitFor(() => expect(repo.validate).toHaveBeenCalledTimes(1));
@@ -230,7 +230,7 @@ describe("Catalog manager", () => {
     );
     const user = userEvent.setup();
     render(<CatalogManager />);
-    await screen.findByText("legacy");
+    await screen.findByText("Original catalog");
     await user.upload(screen.getByLabelText("XLSX file"), workbook());
     await user.click(screen.getByRole("button", { name: "Validate file" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -329,7 +329,7 @@ describe("Catalog manager", () => {
   it("disables mutation when management is not enabled", async () => {
     repo.status.mockResolvedValueOnce({ ...initialStatus, enabled: false });
     render(<CatalogManager />);
-    await screen.findByText("legacy");
+    await screen.findByText("Original catalog");
     expect(
       screen.getByText(/Catalog changes are currently disabled/),
     ).toBeInTheDocument();
@@ -364,7 +364,7 @@ describe("Catalog manager", () => {
     render(<CatalogManager />);
     expect(await screen.findByRole("alert")).toHaveTextContent("Forbidden");
     await user.click(screen.getByRole("button", { name: "Refresh catalog" }));
-    expect(await screen.findByText("legacy")).toBeInTheDocument();
+    expect(await screen.findByText("Original catalog")).toBeInTheDocument();
   });
   it("keeps a pending operation across navigation and reconciles the original ID", async () => {
     repo.imports.mockRejectedValueOnce({
@@ -482,7 +482,7 @@ describe("Catalog manager", () => {
   it("rejects an empty local workbook without calling the validation endpoint", async () => {
     const user = userEvent.setup();
     render(<CatalogManager />);
-    await screen.findByText("legacy");
+    await screen.findByText("Original catalog");
     await user.upload(
       screen.getByLabelText("XLSX file"),
       new File([], "empty.xlsx"),
