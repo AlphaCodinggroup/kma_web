@@ -14,7 +14,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 
 - [02-DOCS/wiki/ftd/catalog-implementation-prompt.md](<../../02-DOCS/wiki/ftd/catalog-implementation-prompt.md>) — md, 23915 bytes.
 - [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3311 bytes.
-- [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 1741 bytes.
+- [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 2347 bytes.
 - [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2413 bytes.
 - [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2688 bytes.
 - [02-DOCS/wiki/ftd/install-rsc-harness.md](<../../02-DOCS/wiki/ftd/install-rsc-harness.md>) — md, 2777 bytes.
@@ -53,7 +53,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/verification.md](<../../02-DOCS/wiki/sdd/kma-redesign/verification.md>) — md, 2321 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/daylight
 
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md>) — md, 24584 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md>) — md, 24591 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/brand-red-logo.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/brand-red-logo.md>) — md, 1946 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/deployment.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/deployment.md>) — md, 3333 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/implementation.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/implementation.md>) — md, 6880 bytes.
