@@ -136,7 +136,7 @@ it("allows consulting the original catalog and returning to the active one", asy
   await userEvent.selectOptions(screen.getByLabelText("Catalog version"), "legacy");
   await waitFor(() => expect(items).toHaveBeenLastCalledWith(expect.objectContaining({ version: "legacy" }), expect.any(AbortSignal)));
   expect(location.search).toContain("version=legacy");
-  await userEvent.click(screen.getByRole("button", { name: "View active catalog" }));
+  await userEvent.selectOptions(screen.getByLabelText("Catalog version"), "active");
   await waitFor(() => expect(new URLSearchParams(location.search).has("version")).toBe(false));
   expect(screen.getByLabelText("Catalog version")).toHaveValue("active");
 });

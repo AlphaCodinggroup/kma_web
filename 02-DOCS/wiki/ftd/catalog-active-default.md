@@ -1,7 +1,7 @@
 ---
 author: Pablo
 branch: new-ui
-status: in-progress
+status: verified
 ---
 # Catálogo activo por defecto e historial acotado
 
@@ -22,7 +22,7 @@ lleva a `/dashboard` mediante un enlace accesible en escritorio y responsive.
 - [x] El historial permite consultar/restaurar las tres versiones anteriores conservadas.
 - [x] Pruebas de regresión, lint, tipos y navegador aprobados.
 - [x] El logo del encabezado permite volver a Dashboard con ratón y teclado.
-- [ ] Backend y web publicados y verificados en Dev.
+- [x] Backend y web publicados y verificados en Dev.
 
 ## Evidencia
 
@@ -52,3 +52,24 @@ paralelo, pasó: 3607 pruebas en 250 archivos; cobertura de líneas/sentencias
 96,42 %, ramas 92,89 % y funciones 93,93 %, conservando los mínimos del 90 %.
 No se modificaron flows ni los tiempos de prueba. Log:
 `/tmp/kma-catalog-active-coverage-final.log`. Publicar y verificar Dev.
+
+## Cierre de despliegue — 2026-10-29
+
+Publicado en new-ui, commit `ef1d7ff0070c232375561af744ee213ef2936afa`.
+Amplify11: BUILD/DEPLOY/VERIFY en SUCCEED. HTML y CSS públicos responden200;
+Catalog redirige al visitante sin sesión a login. La comprobación autenticada
+del selector y logo se hizo en local; no se importaron catálogos reales en AWS.
+BE Dev us-east-1 tiene actualizadas las cuatro Lambdas afectadas al commit
+`9f9e4ccc`, con reconciliación de retención invocada sin errores. Prod y la app
+móvil no se modificaron. Tiempo aproximado:23minutos. Sin pendientes funcionales.
+Este cierre se registró después del commit desplegado.
+
+## Simplificación del selector — 2026-10-29
+
+Pablo pidió eliminar el botón redundante View active catalog. Catalog version
+queda como único control para elegir la versión mostrada; Current active catalog
+permite volver a la activa. Criterio: el botón no aparece y el selector conserva
+consulta histórica y retorno al activo. Lint, tipos y las 48 pruebas de UI del catálogo aprobados. La prueba de
+retorno desde el original ahora elige Current active catalog en el selector.
+Chrome confirma ausencia del botón, selector activo y sin desbordamiento.
+Publicación de esta simplificación pendiente.

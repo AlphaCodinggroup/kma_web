@@ -23,7 +23,7 @@ revisar, no una regla deseada. No se cambió esa conexión durante esta entrega.
   `d3mbp3kh3ub3q9`, alojada en `us-east-2`.
 - [Web Dev](https://new-ui.d3mbp3kh3ub3q9.amplifyapp.com/dashboard): rama
   `new-ui`, etapa DEVELOPMENT. Commit publicado
-  `4ad8f103cf8681f7bcabb5c6f894bbd3f18621ca`, trabajo `10`, `SUCCEED`.
+  `ef1d7ff0070c232375561af744ee213ef2936afa`, trabajo `11`, `SUCCEED`.
   Incluye [Upload XLSX como primera sección](../ftd/catalog-upload-first.md).
 - [Web principal](https://main.d3mbp3kh3ub3q9.amplifyapp.com/dashboard): rama
   `main`, etapa PRODUCTION. No se redesplegó durante esta sesión.
@@ -50,3 +50,7 @@ Los ajustes locales de infraestructura y documentación quedaron sin commit ni
 push al cerrar la sesión. Consultar `git status` para conocer su estado posterior.
 Reverificar la configuración efectiva de AWS antes de otro despliegue; no inferir
 conexiones por nombres de ramas, etiquetas o regiones de alojamiento.
+
+Actualización posterior del BE Dev: enrichment, reports-worker, catalog y su
+worker quedaron en `9f9e4ccc`; las otras once funciones conservan la entrega
+anterior. [Catálogo activo y cierre de entrega](../ftd/catalog-active-default.md).

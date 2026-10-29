@@ -88,7 +88,6 @@ export default function CatalogBrowser({ versions, activeVersion, revision, canC
     <p className="text-xs text-[var(--kma-muted)]">Export includes every record in the selected version. Changes apply only to the active catalog.</p>
     {exportError && <p role="alert">{exportError}</p>}
     <p className="text-sm text-[var(--kma-muted)]">The active catalog is shown by default. Select a previous catalog to view it without replacing the active one.</p>
-    <Button variant="secondary" fullWidth={false} disabled={!activeVersion} onClick={() => { const { cursor: _cursor, ...filters } = draft; void _cursor; setPrevious([]); delete filters.version; navigate(filters); }}>View active catalog</Button>
     <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" onSubmit={event => {
       event.preventDefault(); setPrevious([]);
       const { cursor: _cursor, ...filters } = draft; void _cursor;
