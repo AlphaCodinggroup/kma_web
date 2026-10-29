@@ -2,7 +2,7 @@
 
 Inventario de rutas y huellas SHA-256. No acredita lectura, síntesis ni vigencia del contenido.
 Generado por `node scripts/second-brain.mjs`; no editar a mano.
-Fuentes indexadas: 511. Exclusiones explícitas: 7.
+Fuentes indexadas: 511. Exclusiones explícitas: 6.
 Los archivos eliminados desaparecen del inventario en la siguiente sincronización.
 
 Guía: [alcance y automatización](harness/second-brain.md).
@@ -35,7 +35,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/project/auth-and-session.md](<../../02-DOCS/wiki/project/auth-and-session.md>) — md, 4712 bytes.
 - [02-DOCS/wiki/project/changes-2026-10-29.md](<../../02-DOCS/wiki/project/changes-2026-10-29.md>) — md, 9160 bytes.
 - [02-DOCS/wiki/project/design-system-and-ui.md](<../../02-DOCS/wiki/project/design-system-and-ui.md>) — md, 5871 bytes.
-- [02-DOCS/wiki/project/dev-test-and-deploy.md](<../../02-DOCS/wiki/project/dev-test-and-deploy.md>) — md, 4718 bytes.
+- [02-DOCS/wiki/project/dev-test-and-deploy.md](<../../02-DOCS/wiki/project/dev-test-and-deploy.md>) — md, 5387 bytes.
 - [02-DOCS/wiki/project/environments.md](<../../02-DOCS/wiki/project/environments.md>) — md, 3142 bytes.
 - [02-DOCS/wiki/project/features.md](<../../02-DOCS/wiki/project/features.md>) — md, 8657 bytes.
 - [02-DOCS/wiki/project/overview.md](<../../02-DOCS/wiki/project/overview.md>) — md, 5604 bytes.
@@ -587,7 +587,6 @@ Los directorios ocultos también se omiten. Detalle de límites: [configuración
 - 01-TOOLS: tooling-or-build.
 - DESIGN.md: symlink.
 - PRODUCT.md: symlink.
-- coverage: tooling-or-build.
 - node\_modules: tooling-or-build.
 - src/shared/auth/\_\_tests\_\_/verify-access-token.test.ts: sensitive.
 - src/shared/auth/verify-access-token.ts: sensitive.

@@ -73,3 +73,14 @@ ver la [tabla de ambientes y conexiones](environments.md).
 
 - Sin `drift.lock` en este repo; `drift` está instalado, pero no hay documentos enlazados.
 - `scripts/rsc-compat.mjs` adapta la instalación RSC 3.0.10 (ver [instalación RSC](../ftd/install-rsc-original-checkouts.md)).
+
+## Higiene local — 2026-10-29
+
+Por pedido de Pablo, mantenimiento exclusivamente local. Se eliminaron seis
+ramas locales ya integradas en new-ui y el directorio vacío de worktrees. El
+checkout original permanece en new-ui. Se borraron el build de host, cobertura
+y resultados temporales; el frontend Docker usa su propio build y conserva los
+montajes de app/src/public/configuración. Junto con backend se recuperaron unos
+3,9 GiB. Se conservaron dependencias, configuración, servicios, datos, evidencia
+y ramas pendientes. No hubo push, merge, despliegue ni operaciones GitHub/AWS.
+Este registro queda en un commit local, pendiente de push por el alcance pedido.

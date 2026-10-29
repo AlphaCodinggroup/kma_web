@@ -163,8 +163,8 @@
     },
     {
       "path": "02-DOCS/wiki/project/dev-test-and-deploy.md",
-      "hash": "460cfffec59d591e777ca453081e03c3b8f4af2e10257404db2b0b4e4b8ef9b3",
-      "size": 4718,
+      "hash": "4bed8c097f5b3d816ab6eff9ec32e8786460528b49a0dc0ec073e6af9511b8a5",
+      "size": 5387,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
@@ -4102,10 +4102,6 @@
     {
       "path": "PRODUCT.md",
       "reason": "symlink"
-    },
-    {
-      "path": "coverage",
-      "reason": "tooling-or-build"
     },
     {
       "path": "node_modules",
