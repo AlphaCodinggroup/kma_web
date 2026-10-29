@@ -22,7 +22,7 @@ Desarrollar y mantener la consola de administración y revisión de auditorías 
 conservando sus contratos con el backend y sus comprobaciones de calidad.
 Clasificación aceptada: software complejo; cambios mediante ramas y solicitudes de revisión.
 Fuentes: [AGENTS.md](../../../AGENTS.md), [package.json](../../../package.json),
-[tsconfig.json](../../../tsconfig.json), [vitest.config.ts](../../../vitest.config.ts)
+[tsconfig.json](../../../tsconfig.json), [vitest.config.mts](../../../vitest.config.mts)
 y [CI](../../../.github/workflows/ci.yml).
 No había artículos en `wiki/stack/` para reconciliar; no se verificó el backend durante esta instalación.
 
@@ -30,7 +30,7 @@ No había artículos en `wiki/stack/` para reconciliar; no se verificó el backe
 
 1. Mantener TypeScript estricto, Next.js App Router y React conforme a `package.json` y `tsconfig.json`; usar npm, su archivo de versiones y Node 22 para las comprobaciones, como en CI.
 2. Ejecutar lint, comprobación de tipos y pruebas afectadas para implementación; `npm run verify` para cambios transversales; comprobar enlaces y comandos para documentación, según `AGENTS.md`.
-3. Conservar el mínimo del 90% en las cuatro métricas de `vitest.config.ts`; `COVERAGE_MIN` solo puede aumentarlo.
+3. Conservar el mínimo del 90% en las cuatro métricas de `vitest.config.mts`; `COVERAGE_MIN` solo puede aumentarlo.
 4. Respetar las capas y la separación de cada funcionalidad descritas en [el contexto](../../../docs/agents/project-context.md#architecture-boundaries); preservar cambios ajenos y evitar refactorizaciones fuera del alcance.
 5. Mantener la interfaz y las instrucciones para agentes en inglés, los comentarios de código y la documentación escrita durante esta tarea en español; comprobarlo contra `AGENTS.md` y las preferencias de Pablo.
 6. Obtener configuración del entorno únicamente de `src/shared/config/env.ts`; no introducir dependencias `file:`, `link:` ni Git, conforme a `AGENTS.md`.
@@ -40,7 +40,7 @@ No había artículos en `wiki/stack/` para reconciliar; no se verificó el backe
 10. Mantener la máquina de estados en el backend y el informe consolidado por proyecto; comprobar el generador PDF al modificar la vista previa, siguiendo [la guía de informes](../../../.agents/skills/kma-web-qc-report/SKILL.md).
 11. No guardar secretos en Git; usar los mecanismos existentes de configuración y [.gitignore](../../../.gitignore).
 12. Trabajar mediante ramas y solicitudes de revisión, según [el plan aceptado](../harness/installation-plan.md); publicar, desplegar u operar destructivamente requiere autorización que lo cubra. Subir a `main` o `develop` implica despliegue, según `AGENTS.md`.
-13. Mantener la autoría humana de commits y solicitudes de revisión, sin firmas de IA; principio heredado de [constitution](../../../.rsc/skills/constitution/SKILL.md).
+13. Mantener la autoría humana de commits y solicitudes de revisión, sin firmas de IA; principio adoptado en la [instalación del harness](../harness/installation-plan.md).
 14. Registrar decisiones significativas con fecha, opciones y motivo en [decisions.md](../harness/decisions.md); declarar lo que no se verificó y distinguir hechos, inferencias y dudas, según `AGENTS.md`.
 
 No se propone un nuevo objetivo numérico de rendimiento o accesibilidad en esta instalación.

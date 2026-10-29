@@ -6,6 +6,7 @@ import AuditQuestionCard, {
   type QuestionType,
   type AttachmentVM,
 } from "./AuditQuestionCard";
+import type { AuditStep } from "@entities/audit/model/audit-detail";
 import type { QuestionsFilterMode } from "./AuditQuestionsHeader";
 
 export interface QuestionItemVM {
@@ -23,7 +24,7 @@ export interface QuestionItemVM {
 
 export interface AuditQuestionsListProps {
   auditId?: string | undefined;
-  steps?: any[] | undefined;
+  steps?: AuditStep[] | undefined;
   items: QuestionItemVM[];
   filterMode?: QuestionsFilterMode;
   className?: string;
@@ -44,7 +45,7 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
     let answeredYes = q.answeredYes;
     let answerValue = q.answerValue;
 
-    const raw = (q as any).answer as string | number | boolean | null | undefined;
+    const raw = q.answer;
 
     if (answeredYes === undefined) {
       if (typeof raw === "boolean") {

@@ -220,52 +220,61 @@ export const StepDetailInspector: React.FC<StepDetailInspectorProps> = ({
                                 <div className="space-y-2">
                                     {(selectedStep as FormStep).fields.map((field, fIdx) => (
                                         <div key={fIdx} className="flex flex-col gap-3 border-t border-[var(--kma-border)] py-4">
-                                            <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
-                                                <div className="col-span-3 text-xs text-[var(--kma-muted)] shrink-0">{field.type}</div>
-                                                <Input
-                                                    aria-label={`Field ${fIdx + 1} label`}
-                                                    className="min-w-0 flex-1 bg-[var(--kma-surface)]"
-                                                    value={field.label}
-                                                    disabled={!isAdmin}
-                                                    onChange={(e) => onUpdateField(selectedStep.id, fIdx, { label: e.target.value })}
-                                                />
-                                                {field.id.startsWith("measurements") && (
-                                                    <select
-                                                        aria-label={`Field ${fIdx + 1} unit`}
-                                                        value={field.unit ?? '"'}
-                                                        disabled={!isAdmin}
-                                                        onChange={(e) => onUpdateField(selectedStep.id, fIdx, { unit: e.target.value })}
-                                                        className="min-h-11 sm:min-h-10 text-base sm:text-sm border border-[var(--kma-border)] rounded px-2 bg-[var(--kma-surface)] shrink-0"
-                                                    >
-                                                        <option value={'"'}>in (&quot;)</option>
-                                                        <option value={"cm"}>cm</option>
-                                                        <option value={"%"}>%</option>
-                                                    </select>
-                                                )}
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">{field.type}</div>
                                                 {isAdmin && (
                                                     <button
                                                         type="button"
                                                         onClick={() => onDeleteField(selectedStep.id, fIdx)}
                                                         className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-surface)] hover:text-[var(--kma-danger)]"
                                                         title="Delete field"
+                                                        aria-label={`Delete field ${fIdx + 1}`}
                                                     >
-                                                        <Trash2 className="h-4 w-4" />
+                                                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                                                     </button>
                                                 )}
                                             </div>
-                                            {(field.type === "text" || field.type === "number") && (
-                                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                                                    <div className="sm:w-20 text-xs text-[var(--kma-muted)] shrink-0 sm:text-right sm:pr-2">Placeholder</div>
+                                            <div className={field.id.startsWith("measurements") ? "grid gap-3 sm:grid-cols-[minmax(0,1fr)_9rem]" : "grid gap-3"}>
+                                                <div className="min-w-0">
+                                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">Label</span>
                                                     <Input
-                                                        className="min-w-0 flex-1 bg-[var(--kma-surface)]"
-                                                        placeholder="Optional placeholder..."
-                                                        aria-label={`Field ${fIdx + 1} placeholder`}
-                                                        value={field.placeholder ?? ""}
+                                                        aria-label={`Field ${fIdx + 1} label`}
+                                                        className="min-w-0 bg-[var(--kma-surface)]"
+                                                        value={field.label}
                                                         disabled={!isAdmin}
-                                                        onChange={(e) => onUpdateField(selectedStep.id, fIdx, { placeholder: e.target.value })}
+                                                        onChange={(e) => onUpdateField(selectedStep.id, fIdx, { label: e.target.value })}
                                                     />
                                                 </div>
-                                            )}
+                                                {field.id.startsWith("measurements") && (
+                                                    <div>
+                                                        <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">Unit</span>
+                                                        <select
+                                                            aria-label={`Field ${fIdx + 1} unit`}
+                                                            value={field.unit ?? '"'}
+                                                            disabled={!isAdmin}
+                                                            onChange={(e) => onUpdateField(selectedStep.id, fIdx, { unit: e.target.value })}
+                                                            className="min-h-11 w-full sm:min-h-10 text-base sm:text-sm border border-[var(--kma-border)] rounded px-2 bg-[var(--kma-surface)]"
+                                                        >
+                                                            <option value={'"'}>in (&quot;)</option>
+                                                            <option value={"cm"}>cm</option>
+                                                            <option value={"%"}>%</option>
+                                                        </select>
+                                                    </div>
+                                                )}
+                                                {(field.type === "text" || field.type === "number") && (
+                                                    <div className="min-w-0 sm:col-span-2">
+                                                        <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">Placeholder</span>
+                                                        <Input
+                                                            className="min-w-0 bg-[var(--kma-surface)]"
+                                                            placeholder="Optional placeholder..."
+                                                            aria-label={`Field ${fIdx + 1} placeholder`}
+                                                            value={field.placeholder ?? ""}
+                                                            disabled={!isAdmin}
+                                                            onChange={(e) => onUpdateField(selectedStep.id, fIdx, { placeholder: e.target.value })}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

@@ -13,6 +13,7 @@ import type {
 import type {
   FlowDTO,
   FlowListDTO,
+  FlowListItemDTO,
   FlowStepDTO,
   QuestionStepDTO,
   FormStepDTO,
@@ -20,6 +21,8 @@ import type {
   EndStepDTO,
   FormFieldDTO,
   StepMetadataDTO,
+  ConditionDTO,
+  ConditionalNextDTO,
 } from "@features/flows/api/flows.dto";
 
 function normalizeImages(image?: string | null, images?: string[] | null): string[] {
@@ -34,7 +37,7 @@ function normalizeImages(image?: string | null, images?: string[] | null): strin
 /** ------------------------
  *  Pasos: DTO -> Dominio
  *  -----------------------*/
-function mapConditionDTO(dto: any): Condition {
+function mapConditionDTO(dto: ConditionDTO): Condition {
   return {
     step_id: dto.step_id,
     answer: dto.answer,
@@ -42,7 +45,7 @@ function mapConditionDTO(dto: any): Condition {
   };
 }
 
-function mapConditionalNextDTO(dto: any): ConditionalNext {
+function mapConditionalNextDTO(dto: ConditionalNextDTO): ConditionalNext {
   return {
     conditions: dto.conditions.map(mapConditionDTO),
     next: dto.next,
@@ -167,9 +170,23 @@ export function mapFlowDTO(dto: FlowDTO): Flow {
 }
 
 // Mapper resiliente para el listado
-function mapFlowListItemDTO(dto: any): Flow {
+type FlowListStepDTO = {
+  type: string;
+  id?: string;
+  image?: string | null;
+  images?: string[] | null;
+  text?: string;
+  title?: string;
+  yes_next?: string | null;
+  no_next?: string | null;
+  fields?: FormFieldDTO[];
+  options?: SelectStepDTO["options"];
+};
+
+function mapFlowListItemDTO(dto: FlowListItemDTO): Flow {
   // Mapeo seguro de steps para el listado (rellena defaults)
-  const safeSteps: FlowStep[] = dto.steps.map((s: any) => {
+  const safeSteps: FlowStep[] = dto.steps.map((rawStep) => {
+    const s = rawStep as FlowListStepDTO;
     const base = { id: s.id || "unknown", image: s.image || null, images: normalizeImages(s.image, s.images) };
 
     switch (s.type) {
@@ -228,7 +245,7 @@ export function mapFlowListDTO(dto: FlowListDTO): FlowList {
 /** ------------------------
  *  Flow: Dominio -> DTO
  *  -----------------------*/
-function mapConditionToDTO(condition: Condition): any {
+function mapConditionToDTO(condition: Condition): ConditionDTO {
   return {
     step_id: condition.step_id,
     answer: condition.answer,
@@ -236,7 +253,7 @@ function mapConditionToDTO(condition: Condition): any {
   };
 }
 
-function mapConditionalNextToDTO(conditional: ConditionalNext): any {
+function mapConditionalNextToDTO(conditional: ConditionalNext): ConditionalNextDTO {
   return {
     conditions: conditional.conditions.map(mapConditionToDTO),
     next: conditional.next,
@@ -244,7 +261,7 @@ function mapConditionalNextToDTO(conditional: ConditionalNext): any {
   };
 }
 
-function mapStepMetadataToDTO(metadata?: StepMetadata): any {
+function mapStepMetadataToDTO(metadata?: StepMetadata): StepMetadataDTO | undefined {
   if (!metadata) return undefined;
   return {
     shared_quantity: metadata.sharedQuantity

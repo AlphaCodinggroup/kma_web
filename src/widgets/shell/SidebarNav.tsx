@@ -22,6 +22,7 @@ const DEFAULT_NAV: NavItem[] = [
   { label: "Facilities", href: "/projects?tab=facilities" as Route, icon: Building2, group: "Workspace" },
   { label: "Audits", href: "/audits" as Route, icon: ClipboardCheck, group: "Workspace" },
   { label: "Reports", href: "/reports" as Route, icon: FileText, group: "Workspace" },
+  { label: "Catalog", href: "/catalog" as Route, icon: FileText, group: "Administration" },
   { label: "Flows", href: "/flows" as Route, icon: GitBranch, group: "Administration" },
   { label: "User Management", href: "/users" as Route, icon: Users, group: "Administration" },
 ];
@@ -55,7 +56,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items = DEFAULT_NAV, widthClass
   }, [pathname, currentTab]);
 
   const normalizedRole = role?.toLowerCase();
-  const visibleItems = items.filter((item) => !item.hidden && (item.href !== "/users" || normalizedRole === "admin" || normalizedRole === "administrator"));
+  const visibleItems = items.filter((item) => !item.hidden && (!["/users", "/catalog"].includes(item.href) || normalizedRole === "admin" || normalizedRole === "administrator"));
 
   const handleLogout = useCallback(async () => {
     setLogoutError(null);
@@ -78,7 +79,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items = DEFAULT_NAV, widthClass
           <p className="text-sm font-semibold text-[var(--kma-fg)]">Audit workspace</p>
           <p className="mt-0.5 text-xs text-[var(--kma-muted)]">Project and quality management</p>
         </div>
-        <nav className="w-full flex-1 overflow-y-auto lg:overflow-y-hidden px-3 py-1" aria-label="Main navigation">
+        <nav className="w-full min-h-0 flex-1 overflow-y-auto px-3 py-1" aria-label="Main navigation">
           <ul className="space-y-0.5">
             {visibleItems.map((item, index) => {
               const active = isActive(item.href);

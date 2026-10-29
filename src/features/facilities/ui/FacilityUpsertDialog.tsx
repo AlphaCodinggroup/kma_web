@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, {
   useCallback,
   useEffect,
@@ -322,7 +323,10 @@ const FacilityUpsertDialog: React.FC<FacilityUpsertDialogProps> = ({
             </div>
             {photoPreview ? (
               <div className="mt-2 flex items-center gap-3">
-                <img
+                <Image
+                  width={128}
+                  height={96}
+                  unoptimized
                   src={photoPreview}
                   alt="Facility photo preview"
                   className="h-24 w-32 rounded object-cover border border-[var(--kma-border)]"

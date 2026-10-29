@@ -1,5 +1,7 @@
 "use client";
 
+import { errorMessage } from "@shared/lib/error-message";
+
 import { useUrlParameter } from "@shared/lib/useUrlParameter";
 import React, { useCallback, useMemo, useState } from "react";
 import UsersMetrics from "@features/users/ui/UsersMetrics";
@@ -136,9 +138,9 @@ const UsersPage: React.FC = () => {
         setIsCreateDialogOpen(false); // Close form
         // setEditingUser(null); // Maintained for success message
         await refetch();
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to save user", err);
-        const msg = err?.message || "Failed to save user. Please try again.";
+        const msg = errorMessage(err) || "Failed to save user. Please try again.";
         setCreateState((s) => ({ ...s, loading: false, error: msg }));
       }
     },
