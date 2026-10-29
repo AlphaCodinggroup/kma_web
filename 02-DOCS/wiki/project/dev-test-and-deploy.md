@@ -55,8 +55,9 @@ next, react, react-hooks y jsx-a11y). Reglas: `no-console` salvo warn/error, `no
 
 `npm ci`, luego `env >> .env` y `npm run build`; publica `.next` con caché de `node_modules`. Un push a
 `main` o `develop` despliega (regla de [`AGENTS.md`](../../../AGENTS.md)). Riesgo conocido: `env >> .env`
-escribe todas las variables de compilación, incluidos posibles secretos, en un archivo del build. NO
-VERIFICADO: configuración real de la consola de Amplify.
+escribe todas las variables de compilación, incluidos posibles secretos, en un archivo del build.
+La configuración efectiva de ramas, regiones y backend consumido se comprobó en AWS el 2026-10-29:
+ver la [tabla de ambientes y conexiones](environments.md).
 
 ## Docker y plataforma local
 

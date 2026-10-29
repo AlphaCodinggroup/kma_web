@@ -79,6 +79,26 @@ Continúa sin una sesión de Codex o Claude abierta. Su disponibilidad fuera de 
 iniciada depende de la configuración de systemd del usuario; no se habilita permanencia
 ni se cambian políticas del equipo desde el script.
 
+## Qué se hace automáticamente y qué requiere al agente
+
+| Evento | Automatización actual |
+| --- | --- |
+| Añadir, modificar o eliminar un documento permitido | El servicio actualiza rutas, hashes y enlaces del inventario en el siguiente ciclo de 10 segundos |
+| Cambiar código, configuración o infraestructura | No genera automáticamente una explicación; el agente debe actualizar el artículo del proyecto y el registro de cambios correspondiente |
+| Ejecutar pruebas o desplegar | No interpreta resultados ni certifica éxito; el agente debe guardar alcance, evidencia, versión, ambiente y límites |
+| Commit, push, merge o despliegue | No los ejecuta el servicio documental; requieren el alcance autorizado de cada tarea |
+
+Ambos servicios de usuario se comprobaron activos y habilitados el 2026-10-29;
+la permanencia del usuario ya estaba habilitada. Esta entrega no cambió esa
+política del equipo. Los scripts del inventario no llaman a un modelo para
+redactar resúmenes.
+
+El agente mantiene el [registro de cambios de esta entrega](../project/changes-2026-10-29.md)
+y las páginas pertinentes después de contrastar las fuentes, conforme a las
+instrucciones del repositorio. Si se cambia código manualmente fuera de una
+sesión de agente, su explicación no aparece sola en la wiki. Tener el inventario
+actualizado no equivale a tener todos los cambios explicados.
+
 ## Relación con RSC 3.6
 
 Este inventario amplía el descubrimiento documental de forma determinista. No declara que

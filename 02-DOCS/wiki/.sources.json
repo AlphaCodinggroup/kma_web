@@ -11,8 +11,16 @@
     },
     {
       "path": "02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md",
-      "hash": "c9381a6e99a6a6ba0a959a371d9e505f536aeb7504605cd39eb79aa437567de9",
-      "size": 3311,
+      "hash": "19d3aef62dfa0eedc7089e551eb9c11b9770cb9ac0571f4f2e47c988dd55c6d5",
+      "size": 3646,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/catalog-upload-first.md",
+      "hash": "94442fd4ad9770afe6525551270a5ea3e14395cd259dd35284b5a33e0b351b5f",
+      "size": 2185,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
@@ -27,8 +35,8 @@
     },
     {
       "path": "02-DOCS/wiki/ftd/frontend-startup-warnings.md",
-      "hash": "83ebc47858cd87df1a3ccfcc207acf6e8bfa5d06ea3a9bd5661e4cc9bffac449",
-      "size": 2413,
+      "hash": "ed7cbb4e1df2c7085e1c918f6befd25b6efdbb7ac0e3c83ca93f6495b8ac7813",
+      "size": 2743,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
@@ -91,8 +99,8 @@
     },
     {
       "path": "02-DOCS/wiki/harness/second-brain.md",
-      "hash": "60d1f8057842e6423a793f0fd4f6adc61da90d34376fee5b2a8874532e8d1856",
-      "size": 6546,
+      "hash": "a3691e3dc18fe07f4be225bd7f25ed6d26fdcb3089c79a9fd8dee47b30923648",
+      "size": 7935,
       "format": "md",
       "topic": "02-DOCS/wiki/harness",
       "status": "indexed"
@@ -115,8 +123,8 @@
     },
     {
       "path": "02-DOCS/wiki/index.md",
-      "hash": "cd8c8db8fd7975eea30e512d9c000f8dde8b4f035889b57ca25e7866d983ad59",
-      "size": 4898,
+      "hash": "75c1baad7d78cc6a1353785bb2a0dbb184f764a6dbde7cb9096d9f9cd0ced993",
+      "size": 5299,
       "format": "md",
       "topic": "02-DOCS/wiki",
       "status": "indexed"
@@ -125,6 +133,14 @@
       "path": "02-DOCS/wiki/project/auth-and-session.md",
       "hash": "82ee58c36120c43b819a5c31c5566729b2555f09c0ca61fe0f61e96e63196616",
       "size": 4712,
+      "format": "md",
+      "topic": "02-DOCS/wiki/project",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/project/changes-2026-10-29.md",
+      "hash": "d64f776261cca0e89afe0a631e71bce83bbd5ad7df6310c97dbfff976e426a9b",
+      "size": 8436,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
@@ -139,16 +155,24 @@
     },
     {
       "path": "02-DOCS/wiki/project/dev-test-and-deploy.md",
-      "hash": "4b2ab9321b0b7f64bb073272ab670c050ac547b796da9f207f4b061b1b9b9f80",
-      "size": 4619,
+      "hash": "460cfffec59d591e777ca453081e03c3b8f4af2e10257404db2b0b4e4b8ef9b3",
+      "size": 4718,
+      "format": "md",
+      "topic": "02-DOCS/wiki/project",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/project/environments.md",
+      "hash": "60e1c45d52ea8f101aa55d53cee263b0dce0f3059ddc25cfad7efc4d8b0a1a90",
+      "size": 2822,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/features.md",
-      "hash": "e43ccdb01345382ed8d119f37e20e157c8c5ec1cf5aefa92d0bf1d9da9c1cc94",
-      "size": 8039,
+      "hash": "8198d8e6e327c76c6841cb1ca60e7f1ac02dadc055f2fe19e0d64371c8f83647",
+      "size": 8456,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"

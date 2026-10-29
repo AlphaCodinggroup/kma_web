@@ -2,20 +2,21 @@
 
 Inventario de rutas y huellas SHA-256. No acredita lectura, síntesis ni vigencia del contenido.
 Generado por `node scripts/second-brain.mjs`; no editar a mano.
-Fuentes indexadas: 507. Exclusiones explícitas: 7.
+Fuentes indexadas: 510. Exclusiones explícitas: 7.
 Los archivos eliminados desaparecen del inventario en la siguiente sincronización.
 
 Guía: [alcance y automatización](harness/second-brain.md).
 
 ## 02-DOCS/wiki
 
-- [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 4898 bytes.
+- [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 5299 bytes.
 ## 02-DOCS/wiki/ftd
 
 - [02-DOCS/wiki/ftd/catalog-implementation-prompt.md](<../../02-DOCS/wiki/ftd/catalog-implementation-prompt.md>) — md, 23915 bytes.
-- [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3311 bytes.
+- [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3646 bytes.
+- [02-DOCS/wiki/ftd/catalog-upload-first.md](<../../02-DOCS/wiki/ftd/catalog-upload-first.md>) — md, 2185 bytes.
 - [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 2347 bytes.
-- [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2413 bytes.
+- [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2743 bytes.
 - [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2688 bytes.
 - [02-DOCS/wiki/ftd/install-rsc-harness.md](<../../02-DOCS/wiki/ftd/install-rsc-harness.md>) — md, 2777 bytes.
 - [02-DOCS/wiki/ftd/install-rsc-original-checkouts.md](<../../02-DOCS/wiki/ftd/install-rsc-original-checkouts.md>) — md, 5856 bytes.
@@ -25,15 +26,17 @@ Guía: [alcance y automatización](harness/second-brain.md).
 
 - [02-DOCS/wiki/harness/decisions.md](<../../02-DOCS/wiki/harness/decisions.md>) — md, 2433 bytes.
 - [02-DOCS/wiki/harness/installation-plan.md](<../../02-DOCS/wiki/harness/installation-plan.md>) — md, 4817 bytes.
-- [02-DOCS/wiki/harness/second-brain.md](<../../02-DOCS/wiki/harness/second-brain.md>) — md, 6546 bytes.
+- [02-DOCS/wiki/harness/second-brain.md](<../../02-DOCS/wiki/harness/second-brain.md>) — md, 7935 bytes.
 - [02-DOCS/wiki/harness/user-profile.md](<../../02-DOCS/wiki/harness/user-profile.md>) — md, 266 bytes.
 - [02-DOCS/wiki/harness/vscode.md](<../../02-DOCS/wiki/harness/vscode.md>) — md, 1617 bytes.
 ## 02-DOCS/wiki/project
 
 - [02-DOCS/wiki/project/auth-and-session.md](<../../02-DOCS/wiki/project/auth-and-session.md>) — md, 4712 bytes.
+- [02-DOCS/wiki/project/changes-2026-10-29.md](<../../02-DOCS/wiki/project/changes-2026-10-29.md>) — md, 8436 bytes.
 - [02-DOCS/wiki/project/design-system-and-ui.md](<../../02-DOCS/wiki/project/design-system-and-ui.md>) — md, 5871 bytes.
-- [02-DOCS/wiki/project/dev-test-and-deploy.md](<../../02-DOCS/wiki/project/dev-test-and-deploy.md>) — md, 4619 bytes.
-- [02-DOCS/wiki/project/features.md](<../../02-DOCS/wiki/project/features.md>) — md, 8039 bytes.
+- [02-DOCS/wiki/project/dev-test-and-deploy.md](<../../02-DOCS/wiki/project/dev-test-and-deploy.md>) — md, 4718 bytes.
+- [02-DOCS/wiki/project/environments.md](<../../02-DOCS/wiki/project/environments.md>) — md, 2822 bytes.
+- [02-DOCS/wiki/project/features.md](<../../02-DOCS/wiki/project/features.md>) — md, 8456 bytes.
 - [02-DOCS/wiki/project/overview.md](<../../02-DOCS/wiki/project/overview.md>) — md, 5604 bytes.
 - [02-DOCS/wiki/project/routes-and-bff.md](<../../02-DOCS/wiki/project/routes-and-bff.md>) — md, 8547 bytes.
 ## 02-DOCS/wiki/sdd

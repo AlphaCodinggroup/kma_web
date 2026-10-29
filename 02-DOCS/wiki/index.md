@@ -47,6 +47,8 @@ Conocimiento verificado de la web, escaneado en la rama `fix/frontend-startup-wa
 - [Sistema de diseño y UI](project/design-system-and-ui.md): Daylight, tokens, temas, responsive y accesibilidad.
 - [Autenticación y sesión](project/auth-and-session.md): Cognito, cookies, verificación, roles y CSRF.
 - [Desarrollo, tests y despliegue](project/dev-test-and-deploy.md): scripts, Vitest, Playwright, CI, Amplify y Docker.
+- [Ambientes y conexiones BE/FE](project/environments.md): tabla verificada de Dev y Prod, regiones, ramas, versiones y pendientes.
+- [Cambios y entregas del 23 al 29/10/2026](project/changes-2026-10-29.md): UI, correcciones, catálogo, PRs, despliegue, herramientas y pendientes.
 
 ### Mapa de la documentación del repositorio
 
@@ -71,3 +73,5 @@ Conocimiento verificado de la web, escaneado en la rama `fix/frontend-startup-wa
 - [Mantenimiento automático del second brain](harness/second-brain.md).
 
 - [Actualización de RSC a 3.6.0](ftd/update-rsc-3-6-0.md).
+
+- [Carga XLSX como primera sección](ftd/catalog-upload-first.md): orden de Catalog y significado de `version=legacy`.

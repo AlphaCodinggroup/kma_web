@@ -19,6 +19,42 @@ export default function CatalogManager() {
         title="Catalog"
         subtitle="Validate an XLSX file, replace the environment catalog, or restore a complete version."
       />
+      <Card className="space-y-4 p-5">
+        <div>
+          <h2 className="font-semibold">Upload XLSX</h2>
+          <p
+            id="catalog-file-help"
+            className="mt-1 text-sm text-[var(--kma-muted)]"
+          >
+            Maximum 3 MiB, 32 MiB uncompressed and 10,000 items; validation does
+            not change the active catalog.
+          </p>
+        </div>
+        <div>
+          <Label htmlFor="catalog-file">XLSX file</Label>
+          <Input
+            id="catalog-file"
+            type="file"
+            accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            aria-describedby="catalog-file-help"
+            disabled={
+              !model.status?.enabled || model.busy || Boolean(model.pending)
+            }
+            onChange={(event) =>
+              model.selectFile(event.target.files?.[0] ?? null)
+            }
+          />
+        </div>
+        <Button
+          variant="secondary"
+          fullWidth={false}
+          disabled={!model.file || !model.canChange}
+          isLoading={model.validating}
+          onClick={() => void model.validate()}
+        >
+          Validate file
+        </Button>
+      </Card>
       {model.error && (
         <p
           role="alert"
@@ -75,102 +111,6 @@ export default function CatalogManager() {
           )}
         </Card>
       )}
-      <Card className="space-y-4 p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <h2 className="font-semibold">Active catalog</h2>
-          <Button
-            variant="secondary"
-            fullWidth={false}
-            disabled={model.loading || model.busy}
-            onClick={() => void model.refresh()}
-          >
-            Refresh catalog
-          </Button>
-        </div>
-        {model.loading ? (
-          <p role="status" className="text-sm text-[var(--kma-muted)]">
-            Loading catalog…
-          </p>
-        ) : model.status ? (
-          <dl className="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <dt className="text-[var(--kma-muted)]">Version</dt>
-              <dd className="mt-1 break-all font-medium">
-                {model.status.active_version}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[var(--kma-muted)]">Revision</dt>
-              <dd className="mt-1 break-all">{model.status.revision}</dd>
-            </div>
-            <div>
-              <dt className="text-[var(--kma-muted)]">Items</dt>
-              <dd className="mt-1">
-                {number(model.status.active?.item_count)}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[var(--kma-muted)]">Flows</dt>
-              <dd className="mt-1">
-                {number(model.status.active?.flow_count)}
-              </dd>
-            </div>
-          </dl>
-        ) : (
-          <p className="text-sm text-[var(--kma-muted)]">
-            Catalog status is unavailable.
-          </p>
-        )}
-        {model.status && !model.status.enabled && (
-          <p role="status" className="text-sm text-[var(--kma-muted)]">
-            Catalog changes are currently disabled for this environment.
-          </p>
-        )}
-      </Card>
-      <CatalogBrowser versions={model.history} activeVersion={model.status?.active_version} revision={model.status?.revision} canChange={model.canChange} busy={model.busy || Boolean(model.pending)} result={model.result} error={model.error} onSave={model.mutate} />
-      <Card className="space-y-4 p-5">
-        <h2 className="font-semibold">Recent operations</h2>
-        {model.operationsError && <p role="alert">{model.operationsError}</p>}
-        {model.recentOperations.length === 0 && <p className="text-sm text-[var(--kma-muted)]">No recent operations.</p>}
-        <ul className="space-y-2 text-sm">{model.recentOperations.map(operation => <li key={operation.operation_id} className="break-words border-t border-[var(--kma-border)] py-2"><p>{operation.file_name ?? operation.kind} · {operation.status}</p><p className="text-xs text-[var(--kma-muted)]">{operation.operation_id}</p><p>{operation.message || operation.error}</p>{operation.total_items != null && <p>{number(operation.processed_items ?? 0)} / {number(operation.total_items)} records</p>}</li>)}</ul>
-        {model.moreOperations && <Button variant="secondary" fullWidth={false} disabled={model.loadingOperations} onClick={model.loadMoreOperations}>Load more operations</Button>}
-      </Card>
-      <Card className="space-y-4 p-5">
-        <div>
-          <h2 className="font-semibold">Upload XLSX</h2>
-          <p
-            id="catalog-file-help"
-            className="mt-1 text-sm text-[var(--kma-muted)]"
-          >
-            Maximum 3 MiB, 32 MiB uncompressed and 10,000 items; validation does
-            not change the active catalog.
-          </p>
-        </div>
-        <div>
-          <Label htmlFor="catalog-file">XLSX file</Label>
-          <Input
-            id="catalog-file"
-            type="file"
-            accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            aria-describedby="catalog-file-help"
-            disabled={
-              !model.status?.enabled || model.busy || Boolean(model.pending)
-            }
-            onChange={(event) =>
-              model.selectFile(event.target.files?.[0] ?? null)
-            }
-          />
-        </div>
-        <Button
-          variant="secondary"
-          fullWidth={false}
-          disabled={!model.file || !model.canChange}
-          isLoading={model.validating}
-          onClick={() => void model.validate()}
-        >
-          Validate file
-        </Button>
-      </Card>
       {preview && (
         <Card className="space-y-4 p-5">
           <div>
@@ -251,6 +191,66 @@ export default function CatalogManager() {
           </Button>
         </Card>
       )}
+      <Card className="space-y-4 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h2 className="font-semibold">Active catalog</h2>
+          <Button
+            variant="secondary"
+            fullWidth={false}
+            disabled={model.loading || model.busy}
+            onClick={() => void model.refresh()}
+          >
+            Refresh catalog
+          </Button>
+        </div>
+        {model.loading ? (
+          <p role="status" className="text-sm text-[var(--kma-muted)]">
+            Loading catalog…
+          </p>
+        ) : model.status ? (
+          <dl className="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <dt className="text-[var(--kma-muted)]">Version</dt>
+              <dd className="mt-1 break-all font-medium">
+                {model.status.active_version}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[var(--kma-muted)]">Revision</dt>
+              <dd className="mt-1 break-all">{model.status.revision}</dd>
+            </div>
+            <div>
+              <dt className="text-[var(--kma-muted)]">Items</dt>
+              <dd className="mt-1">
+                {number(model.status.active?.item_count)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[var(--kma-muted)]">Flows</dt>
+              <dd className="mt-1">
+                {number(model.status.active?.flow_count)}
+              </dd>
+            </div>
+          </dl>
+        ) : (
+          <p className="text-sm text-[var(--kma-muted)]">
+            Catalog status is unavailable.
+          </p>
+        )}
+        {model.status && !model.status.enabled && (
+          <p role="status" className="text-sm text-[var(--kma-muted)]">
+            Catalog changes are currently disabled for this environment.
+          </p>
+        )}
+      </Card>
+      <CatalogBrowser versions={model.history} activeVersion={model.status?.active_version} revision={model.status?.revision} canChange={model.canChange} busy={model.busy || Boolean(model.pending)} result={model.result} error={model.error} onSave={model.mutate} />
+      <Card className="space-y-4 p-5">
+        <h2 className="font-semibold">Recent operations</h2>
+        {model.operationsError && <p role="alert">{model.operationsError}</p>}
+        {model.recentOperations.length === 0 && <p className="text-sm text-[var(--kma-muted)]">No recent operations.</p>}
+        <ul className="space-y-2 text-sm">{model.recentOperations.map(operation => <li key={operation.operation_id} className="break-words border-t border-[var(--kma-border)] py-2"><p>{operation.file_name ?? operation.kind} · {operation.status}</p><p className="text-xs text-[var(--kma-muted)]">{operation.operation_id}</p><p>{operation.message || operation.error}</p>{operation.total_items != null && <p>{number(operation.processed_items ?? 0)} / {number(operation.total_items)} records</p>}</li>)}</ul>
+        {model.moreOperations && <Button variant="secondary" fullWidth={false} disabled={model.loadingOperations} onClick={model.loadMoreOperations}>Load more operations</Button>}
+      </Card>
       <Card className="space-y-4 p-5">
         <div>
           <h2 className="font-semibold">Version history</h2>

@@ -1,5 +1,9 @@
 # Features (`src/features`)
 
+Los recuentos por área de esta página corresponden al escaneo original del
+23/10/2026. El [registro consolidado](changes-2026-10-29.md) reúne las
+correcciones posteriores, la última verificación y el estado publicado.
+
 Estructura común: `api/` (implementación del puerto, que vive en `src/entities/*/api`), `lib/` (usecases y
 hooks de React Query) y `ui/`. Los tests viven en `__tests__` junto al código (249 archivos de test en
 `src/` y `app/`). Estado de servidor: React Query; formularios: `useState` a mano salvo `LoginForm`
@@ -25,16 +29,17 @@ desajustes: [contexto del proyecto](../../../docs/agents/project-context.md#doma
 (llamadas HTTP directas a Cognito: `InitiateAuth` con `USER_PASSWORD_AUTH` y `REFRESH_TOKEN_AUTH`,
 `GlobalSignOut`). Detalle en [auth-and-session.md](auth-and-session.md).
 
-## catalog (7 tests; en parte sin commitear)
+## catalog (integrado y desplegado en Dev)
 
 | Aspecto | Detalle |
 | --- | --- |
+| Prioridad visual | Upload XLSX aparece primero, seguido por la validación y después la consulta e historial; [verificación](../ftd/catalog-upload-first.md) |
 | Responsabilidad | Administración del catálogo de mitigaciones: estado, versiones históricas, navegación de ítems con filtros en URL (`version`, `q`, `flow_id`, `barrier_id`, `cursor`), validar/subir/activar XLSX, importaciones en segundo plano (operaciones), CRUD de ítems, exportación XLSX |
-| UI | [`CatalogManager`](../../../src/features/catalog/ui/CatalogManager.tsx), [`CatalogBrowser`](../../../src/features/catalog/ui/CatalogBrowser.tsx), [`CatalogItemEditor`](../../../src/features/catalog/ui/CatalogItemEditor.tsx) (sin commitear) |
+| UI | [`CatalogManager`](../../../src/features/catalog/ui/CatalogManager.tsx), [`CatalogBrowser`](../../../src/features/catalog/ui/CatalogBrowser.tsx), [`CatalogItemEditor`](../../../src/features/catalog/ui/CatalogItemEditor.tsx) |
 | Lógica | [`useCatalogManager`](../../../src/features/catalog/lib/hooks/useCatalogManager.ts) (claves `["catalog", "status" \| "versions" \| "operations" \| "items"]`); [`validate-catalog.ts`](../../../src/features/catalog/lib/usecases/validate-catalog.ts) (XLSX <= 3 MiB, base64, SHA-256 local) |
 | API | [`catalog.repo.impl.ts`](../../../src/features/catalog/api/catalog.repo.impl.ts) sobre `/api/catalog/*`; `catalog-error.ts` normaliza errores; modelo en `entities/catalog/model` |
 | Acceso | solo administradores (página y BFF) |
-| Estado | Commits de catálogo en HEAD, pero `CatalogManager`, `CatalogBrowser`, repo, hook y modelo tienen cambios sin commitear; no revisados aquí. Especificación: [catalog-management](../sdd/specs/catalog-management.md) |
+| Estado | Integrado en `new-ui` mediante #78/#80 y publicado en Amplify. Backend Dev actualizado con catálogo y worker. [Registro consolidado](changes-2026-10-29.md) y [ambientes](environments.md). Especificación: [catalog-management](../sdd/specs/catalog-management.md) |
 
 ## dashboard (3 tests)
 

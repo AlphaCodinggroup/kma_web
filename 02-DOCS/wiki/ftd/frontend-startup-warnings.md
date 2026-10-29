@@ -29,3 +29,10 @@ Drift global ya detectaba enlaces rotos y artículos obsoletos del harness/redis
 
 ## Siguiente
 Publicar la rama verificada y abrir el PR autorizado hacia new-ui; no fusionar ni desplegar.
+
+## Estado posterior — 2026-10-29
+
+El PR #78 fue fusionado en `new-ui` y sus cambios están publicados en Amplify.
+El texto anterior conserva el alcance de su verificación original. El
+[consolidado de cambios](../project/changes-2026-10-29.md) registra las correcciones
+posteriores, los PRs integrados y el despliegue vigente.

@@ -56,3 +56,10 @@ del script, y ambos controles ya pasaron sobre las correcciones de UI.
 ## Siguiente
 Todos los errores confirmados de esta revisión están corregidos localmente.
 Cambios sin commit ni publicación.
+
+## Estado posterior — 2026-10-29
+
+Estas correcciones quedaron integradas en #78 y publicadas en `new-ui`. Ya no
+son cambios de aplicación pendientes de commit. Ver el
+[consolidado de cambios](../project/changes-2026-10-29.md) para el estado de
+integración, despliegue y los ajustes documentales locales que sí siguen pendientes.
