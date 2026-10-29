@@ -113,8 +113,7 @@ async function scan(settings) {
   return { version: 1, sources: sources.sort(order), excluded: excluded.sort(order) };
 }
 const escapeLabel = (value) => value.replace(/[\\`*_[\]<>|]/g, '\\$&').replace(/[\r\n]/g, ' ');
-const url = (path) => path.split('/').map((part) => encodeURIComponent(part).replace(/[!'()*]/g,
-  (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`)).join('/');
+const url = (path) => path.replace(/[#?%<>\\\r\n\t]/g, (char) => encodeURIComponent(char));
 function markdown(state) {
   const lines = ['# Índice automático de fuentes', '',
     'Inventario de rutas y huellas SHA-256. No acredita lectura, síntesis ni vigencia del contenido.',
@@ -125,7 +124,7 @@ function markdown(state) {
   let topic;
   for (const source of [...state.sources].sort((a, b) => a.topic < b.topic ? -1 : a.topic > b.topic ? 1 : order(a, b))) {
     if (source.topic !== topic) { topic = source.topic; lines.push(`## ${escapeLabel(topic)}`, ''); }
-    lines.push(`- [${escapeLabel(source.path)}](../../${url(source.path)}) — ${source.format}, ${source.size} bytes.`);
+    lines.push(`- [${escapeLabel(source.path)}](<../../${url(source.path)}>) — ${source.format}, ${source.size} bytes.`);
   }
   lines.push('', '## Exclusiones', '',
     'No se lee el contenido de rutas sensibles, enlaces simbólicos ni árboles excluidos.',

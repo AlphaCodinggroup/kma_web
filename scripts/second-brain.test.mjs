@@ -46,6 +46,7 @@ test('add, modify, remove, and check preserve the originals and native ledger', 
 test('exclusions, documentation formats, URL escaping, and stable writes', async (t) => {
   const root = await fixture(t);
   const included = ['README.md', 'docs/a [b](c)# %.md', 'docs/data.json', 'docs/table.xlsx',
+    "docs/kitchens_&_kitchenettes (3)'s.xlsx", 'docs/control#?%<>\r\n.md',
     'docs/image.png', 'docs/manual.pdf', '02-DOCS/wiki/project/existing.md', 'nested/note.rst'];
   for (const path of included) await put(root, path);
   for (const path of ['node_modules/pkg/README.md', '.claude/README.md', '.worktrees/README.md',
@@ -60,7 +61,9 @@ test('exclusions, documentation formats, URL escaping, and stable writes', async
   assert.ok(result.excluded.some((s) => s.path === 'docs/DATOS.md' && s.reason === 'sensitive'));
   assert.ok(result.excluded.some((s) => s.path === 'docs/large.txt' && s.reason === 'size-limit'));
   const markdown = await readFile(join(root, '02-DOCS/wiki/sources.md'), 'utf8');
-  assert.ok(markdown.includes('../../docs/a%20%5Bb%5D%28c%29%23%20%25.md'));
+  assert.ok(markdown.includes('](<../../docs/a [b](c)%23 %25.md>)'));
+  assert.ok(markdown.includes("](<../../docs/kitchens_&_kitchenettes (3)'s.xlsx>)"));
+  assert.ok(markdown.includes('](<../../docs/control%23%3F%25%3C%3E%0D%0A.md>)'));
   assert.ok(!markdown.includes('DO NOT COPY'));
   const before = await stat(join(root, '02-DOCS/wiki/.sources.json'));
   assert.equal(run(root).status, 0);

@@ -64,6 +64,16 @@ systemctl --user status kma-web-second-brain.service
 journalctl --user -u kma-web-second-brain.service -n 30 --no-pager
 ```
 
+Al actualizar `scripts/second-brain.mjs`, reinicie el servicio para cargar la versión nueva:
+
+```sh
+systemctl --user restart kma-web-second-brain.service
+```
+
+Una unidad habilitada vuelve a arrancar después de reiniciar el equipo cuando se inicia el
+gestor de servicios del usuario. El arranque antes de iniciar sesión depende de la configuración
+local de permanencia del usuario.
+
 El servicio debe ejecutar Node con las rutas absolutas del script y `--root`, más `--watch`.
 Continúa sin una sesión de Codex o Claude abierta. Su disponibilidad fuera de una sesión
 iniciada depende de la configuración de systemd del usuario; no se habilita permanencia
