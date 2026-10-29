@@ -28,3 +28,13 @@ y borrar en una sola fila sin rótulos.
   y el botón de borrar se encuentra por `title=/delete/i`.
 - NO VERIFICADO: aspecto real en navegador, ancho efectivo del inspector y scroll de la tabla.
   El cálculo de 420/480/680 px en cada resolución es una estimación, no una medición.
+
+## Integración en new-ui (2026-10-29)
+
+Por pedido de Pablo se integran los historiales de #79, #80 y #81 con `new-ui`
+como base. #78 ya está fusionado allí. Los conflictos se resuelven conservando
+el código y la documentación más recientes: el cambio funcional de los tres PR
+ya está incluido. Sólo faltaba corregir el ancho del inspector en `DESIGN.md`.
+El código de aplicación resultante es idéntico al de `new-ui` (`f1cbdbd`), que ya
+pasó lint, tipos, 3604 tests, cobertura y build. No se repite esa suite porque
+esta integración sólo cambia documentación y registra la ascendencia Git.
