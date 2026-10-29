@@ -72,4 +72,10 @@ permite volver a la activa. Criterio: el botón no aparece y el selector conserv
 consulta histórica y retorno al activo. Lint, tipos y las 48 pruebas de UI del catálogo aprobados. La prueba de
 retorno desde el original ahora elige Current active catalog en el selector.
 Chrome confirma ausencia del botón, selector activo y sin desbordamiento.
-Publicación de esta simplificación pendiente.
+Publicado en new-ui, commit `318dfa5a8999566e7fc0033bd77116105f8f2464`,
+Amplify 12 SUCCEED. HTML/CSS públicos responden 200; acceso de invitado a Catalog
+redirige a login. La ausencia del botón y el selector se verificaron en local.
+Tiempo aproximado: 5 minutos, incluido el despliegue. Sin pendientes funcionales.
+El cierre documental se publica con el marcador estándar de Amplify
+[skip-cd](https://docs.aws.amazon.com/amplify/latest/userguide/edit-build-settings.html#skipping-build-for-a-commit)
+para evitar recompilar por metadatos sin cambios de aplicación.

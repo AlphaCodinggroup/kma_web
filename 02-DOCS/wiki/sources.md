@@ -12,7 +12,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 5433 bytes.
 ## 02-DOCS/wiki/ftd
 
-- [02-DOCS/wiki/ftd/catalog-active-default.md](<../../02-DOCS/wiki/ftd/catalog-active-default.md>) — md, 4157 bytes.
+- [02-DOCS/wiki/ftd/catalog-active-default.md](<../../02-DOCS/wiki/ftd/catalog-active-default.md>) — md, 4677 bytes.
 - [02-DOCS/wiki/ftd/catalog-implementation-prompt.md](<../../02-DOCS/wiki/ftd/catalog-implementation-prompt.md>) — md, 23915 bytes.
 - [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3646 bytes.
 - [02-DOCS/wiki/ftd/catalog-upload-first.md](<../../02-DOCS/wiki/ftd/catalog-upload-first.md>) — md, 2595 bytes.
