@@ -61,7 +61,7 @@ function renderTable(overrides?: Partial<UsersTableProps>) {
 /** Devuelve las celdas de la primera columna en el orden pintado. */
 function usernameColumn(): string[] {
   const rows = screen.getAllByRole("row").slice(1);
-  return rows.map((row) => within(row).getAllByRole("cell")[0]?.textContent ?? "");
+  return rows.map((row) => within(row).getAllByRole("cell")[3]?.textContent ?? "");
 }
 
 // ---------------------------------------------------------------------------
@@ -100,9 +100,9 @@ describe("UsersTable", () => {
   it("renders the role inside a pill", () => {
     renderTable();
 
-    const pill = screen.getByText("auditor");
+    const pill = screen.getByText("Auditor");
     expect(pill.tagName).toBe("SPAN");
-    expect(pill).toHaveClass("inline-flex", "rounded-full", "border");
+    expect(pill).toHaveClass("inline-flex", "border");
   });
 
   it("omits the role pill when the role is empty", () => {
@@ -119,7 +119,7 @@ describe("UsersTable", () => {
     });
 
     const row = screen.getAllByRole("row")[1];
-    const roleCell = within(row as HTMLElement).getAllByRole("cell")[3];
+    const roleCell = within(row as HTMLElement).getAllByRole("cell")[2];
     expect(roleCell?.textContent).toBe("");
   });
 
@@ -349,7 +349,7 @@ describe("UsersTable", () => {
     renderTable({ items: [users[0] as UserSummary] });
 
     expect(screen.getByRole("button", { name: "Delete user" })).toHaveClass(
-      "text-red-600"
+      "text-[var(--kma-danger)]"
     );
   });
 
@@ -361,8 +361,7 @@ describe("UsersTable", () => {
     const { container } = renderTable({ className: "table-extra" });
 
     expect(container.firstElementChild).toHaveClass(
-      "overflow-hidden",
-      "rounded-xl",
+      "overflow-x-auto",
       "table-extra"
     );
   });

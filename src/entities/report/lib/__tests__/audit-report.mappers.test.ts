@@ -154,9 +154,9 @@ describe("mapAuditReportDTO", () => {
   it.each([
     ["an unknown status", "processing"],
     ["an empty status", ""],
-  ])("falls back to the initial status for %s", (_label, status) => {
+  ])("keeps a safe unknown state for %s", (_label, status) => {
     expect(mapAuditReportDTO(makeReportDTO({ status })).status).toBe(
-      "draft_report_pending_review"
+      "unknown"
     );
   });
 });

@@ -1,0 +1,1733 @@
+
+> kma_web@1.0.15 verify
+> npm run lint && npm run typecheck && npm run test:coverage && npm run build
+
+
+> kma_web@1.0.15 lint
+> eslint
+
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/(dashboard)/users/page.tsx
+  139:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/entities/audit/lib/audit-detail.mappers.ts
+  295:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  297:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  299:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  302:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  302:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  304:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/entities/audit/model/audit-detail.ts
+  70:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/entities/flow/lib/mappers.ts
+   37:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  172:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  231:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  239:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  247:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/features/audits/api/audit.repo.impl.ts
+   31:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   40:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   73:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  154:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/features/audits/ui/AuditQuestionCard.tsx
+   33:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  207:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  392:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  400:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  410:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  423:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  440:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  481:81  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  505:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/features/audits/ui/AuditQuestionsList.tsx
+  26:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  47:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/features/facilities/lib/usecases/create-facility.usecase.ts
+  16:5  warning  Unused eslint-disable directive (no problems were reported from 'no-new')
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/features/facilities/lib/usecases/update-facility.usecase.ts
+  17:5  warning  Unused eslint-disable directive (no problems were reported from 'no-new')
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/features/facilities/ui/FacilityUpsertDialog.tsx
+  325:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/features/projects/ui/ProjectsContent.tsx
+  168:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  169:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/http.server.ts
+  129:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  137:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  139:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  150:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/interceptors/error.ts
+  184:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  185:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  224:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  224:63  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/ui/card.tsx
+  35:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/ui/controls.tsx
+  10:5  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+✖ 50 problems (0 errors, 50 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+
+
+> kma_web@1.0.15 typecheck
+> tsc --noEmit
+
+
+> kma_web@1.0.15 test:coverage
+> vitest run --coverage
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness
+      Coverage enabled with v8
+
+ ✓ src/entities/flow/lib/__tests__/mappers.test.ts (36 tests) 104ms
+ ✓ src/entities/audit/lib/__tests__/audit-detail.mappers.test.ts (92 tests) 122ms
+ ✓ src/features/audits/ui/__tests__/AuditsTable.test.tsx (59 tests) 3733ms
+ ✓ src/features/audits/ui/__tests__/AuditEditContent.test.tsx (32 tests) 2878ms
+ ✓ src/features/audits/ui/__tests__/AuditQuestionCard.test.tsx (63 tests) 4808ms
+   ✓ AuditQuestionCard — UNSURE editing > sends the measurements and the notes typed in the finding form 364ms
+   ✓ AuditQuestionCard — UNSURE editing > collects the fields of every chained Form step 305ms
+ ✓ src/widgets/project-detail/__tests__/ProjectDetailView.test.tsx (39 tests) 4739ms
+   ✓ ProjectDetailView — search and filters > searches the auditor, flow, facility and status 520ms
+   ✓ ProjectDetailView — search and filters > offers to clear when nothing matches 637ms
+ ✓ src/shared/interceptors/__tests__/error.test.ts (57 tests) 202ms
+ ✓ src/features/flows/ui/__tests__/FlowEditor.save.test.tsx (24 tests) 7900ms
+   ✓ FlowEditor - validation and save > rejects an empty flow listing the missing title and steps 360ms
+   ✓ FlowEditor - validation and save > rejects a Question step without text and without both targets 434ms
+   ✓ FlowEditor - validation and save > rejects a Select option without target naming its position 315ms
+   ✓ FlowEditor - validation and save > updates an existing flow with the exact domain payload 314ms
+   ✓ FlowEditor - validation and save > sends the edits made in the editor 609ms
+   ✓ FlowEditor - validation and save > derives applies_to_barriers from the conditional navigation sources 347ms
+   ✓ FlowEditor - validation and save > ignores conditions pointing to steps that no longer exist 358ms
+   ✓ FlowEditor - validation and save > clears a stale shared quantity when no conditional navigation points to the form 370ms
+   ✓ FlowEditor - validation and save > keeps the form metadata empty when the conditional target is another step 431ms
+   ✓ FlowEditor - validation and save > shows the saving state while the request is in flight 469ms
+   ✓ FlowEditor - validation and save > confirms the save, clears the dirty flag and navigates back to the list 506ms
+   ✓ FlowEditor - validation and save > reports an unexpected failure and keeps the editor usable 450ms
+   ✓ FlowEditor - validation and save > selects a recovered draft step when the original selection no longer exists 316ms
+   ✓ FlowEditor - validation and save > closes the success modal through the overlay and still navigates 323ms
+ ✓ src/features/reports/ui/__tests__/ReportsTable.test.tsx (46 tests) 4147ms
+ ✓ app/(dashboard)/audits/__tests__/page.test.tsx (34 tests) 4917ms
+   ✓ AuditsPage > renders the header, the toolbar and the table 508ms
+   ✓ AuditsPage > deletes an audit after the confirmation 376ms
+ ✓ src/features/facilities/api/__tests__/facilities.repo.impl.test.ts (55 tests) 78ms
+ ✓ app/(dashboard)/users/__tests__/page.test.tsx (23 tests) 2454ms
+   ✓ UsersPage > renders the header, the metrics and the table 466ms
+   ✓ UsersPage > closes the success modal and forgets the user being edited 382ms
+ ✓ src/features/flows/ui/__tests__/FlowEditor.steps.test.tsx (28 tests) 10248ms
+   ✓ FlowEditor - step management > adds the first step of an empty flow with the NEW prefix and selects it 311ms
+   ✓ FlowEditor - step management > adds one step of every type reusing the prefix of the first step 338ms
+   ✓ FlowEditor - step management > selects the new step directly when the current step has no empty links 506ms
+   ✓ FlowEditor - step management > offers linking both branches of a Question with two empty links 804ms
+   ✓ FlowEditor - step management > links only the chosen branch of a Question 795ms
+   ✓ FlowEditor - step management > offers only the Next field when the selected step is a Form 540ms
+   ✓ FlowEditor - step management > offers one entry per empty option when the selected step is a Select 587ms
+   ✓ FlowEditor - step management > keeps the new step unlinked and selected when the modal is skipped 660ms
+   ✓ FlowEditor - step management > cancels the auto-link modal when the overlay is clicked 311ms
+   ✓ FlowEditor - step management > creates and links a step from the Next Step selector 364ms
+   ✓ FlowEditor - step management > creates and links a step from a Select option 398ms
+   ✓ FlowEditor - step management > creates and links both branches of a Question independently 747ms
+   ✓ FlowEditor - step management > deletes a step after confirmation and moves the selection 393ms
+   ✓ FlowEditor - step management > keeps the step when the delete confirmation is declined 355ms
+   ✓ FlowEditor - step management > keeps the selection when a different step is deleted 301ms
+   ✓ FlowEditor - step management > leaves dangling references when the target step is deleted 450ms
+   ✓ FlowEditor - step management > does not rewrite the references pointing to a renamed step 339ms
+   ✓ FlowEditor - step management > keeps the step order unchanged when a drag is cancelled 303ms
+ ✓ src/features/facilities/ui/__tests__/FacilitiesContent.test.tsx (47 tests) 15877ms
+   ✓ FacilitiesContent > search > filters the list by North 315ms
+   ✓ FacilitiesContent > search > filters the list by dock road 386ms
+   ✓ FacilitiesContent > search > filters the list by bayview 396ms
+   ✓ FacilitiesContent > search > shows the empty message when nothing matches the query 330ms
+   ✓ FacilitiesContent > create > submits the name plus every optional field and closes on success 1259ms
+   ✓ FacilitiesContent > create > submits without a description when it is left empty 921ms
+   ✓ FacilitiesContent > create > keeps the dialog open when the creation fails 854ms
+   ✓ FacilitiesContent > create > closes the dialog from the close button 302ms
+   ✓ FacilitiesContent > edit > submits the facility id together with the edited values 787ms
+   ✓ FacilitiesContent > edit > keeps the signed photo preview without sending it back when editing text 732ms
+   ✓ FacilitiesContent > edit > still submits an explicit photo removal 412ms
+   ✓ FacilitiesContent > edit > still submits a replacement photo file without the previous URL 510ms
+   ✓ FacilitiesContent > edit > sends an emptied description so the backend clears it 453ms
+   ✓ FacilitiesContent > edit > drops the facility from the state when the edit dialog is dismissed 340ms
+   ✓ FacilitiesContent > edit > keeps the dialog open when the update fails 361ms
+   ✓ FacilitiesContent > delete > asks for confirmation and deletes the selected facility 308ms
+   ✓ FacilitiesContent > delete > dismisses the confirmation without deleting 368ms
+   ✓ FacilitiesContent > archive > asks for confirmation and archives the selected facility 405ms
+   ✓ FacilitiesContent > archive > keeps the confirmation open when the archive fails 323ms
+   ✓ FacilitiesContent > archive > dismisses the archive confirmation 331ms
+   ✓ FacilitiesContent > restore > asks for confirmation and restores the selected facility 404ms
+   ✓ FacilitiesContent > restore > dismisses the restore confirmation 452ms
+   ✓ FacilitiesContent > restore > blocks the restore confirmation while the mutation is pending 320ms
+   ✓ FacilitiesContent > name validation > shows the next required field and focuses it without losing entered values 691ms
+ ✓ src/features/projects/ui/__tests__/ProjectsContent.test.tsx (56 tests) 16162ms
+   ✓ ProjectsContent > search > filters the list by Alpha 393ms
+   ✓ ProjectsContent > search > filters the list by archived 456ms
+   ✓ ProjectsContent > search > filters the list by 2025-06 387ms
+   ✓ ProjectsContent > sorting > cycles the project column through ascending, descending and unsorted 347ms
+   ✓ ProjectsContent > sorting > restarts the cycle when a different column is selected 406ms
+   ✓ ProjectsContent > create > submits the mapped auditors and facilities and closes on success 891ms
+   ✓ ProjectsContent > create > submits empty auditor and facility lists when nothing is selected 396ms
+   ✓ ProjectsContent > create > offers facilities coming only from the loaded projects 636ms
+   ✓ ProjectsContent > create > falls back to the email and then to the id for auditors without a name 658ms
+   ✓ ProjectsContent > create > keeps the dialog open and logs when the creation fails 407ms
+   ✓ ProjectsContent > edit > opens the edit dialog prefilled with the selected project 348ms
+   ✓ ProjectsContent > edit > submits the project id together with the edited values 751ms
+   ✓ ProjectsContent > edit > drops the auditors and facilities removed from the chips 546ms
+   ✓ ProjectsContent > edit > ignores an auditor or facility that is already selected 362ms
+   ✓ ProjectsContent > edit > drops the project from the state when the edit dialog is dismissed 343ms
+   ✓ ProjectsContent > edit > edits a project without description or relations 420ms
+   ✓ ProjectsContent > edit > keeps the dialog open and logs when the update fails 336ms
+   ✓ ProjectsContent > delete > closes the confirmation and refetches through the mutation callback 336ms
+   ✓ ProjectsContent > delete > dismisses the confirmation without deleting 323ms
+   ✓ ProjectsContent > delete > blocks the confirmation buttons while the deletion is pending 324ms
+   ✓ ProjectsContent > archive > asks for confirmation and archives the selected project 389ms
+   ✓ ProjectsContent > archive > dismisses the archive confirmation 313ms
+   ✓ ProjectsContent > archive > blocks the archive confirmation while the mutation is pending 323ms
+   ✓ ProjectsContent > name validation > rejects a blank name and shows the required message 307ms
+   ✓ ProjectsContent > name validation > clears the required message once a name is typed 320ms
+ ✓ src/features/audits/lib/hooks/__tests__/useReportDrafts.test.tsx (35 tests) 129ms
+ ✓ src/entities/facility/lib/__tests__/mappers.test.ts (43 tests) 26ms
+ ✓ src/features/flows/ui/__tests__/FlowEditor.render.test.tsx (26 tests) 8234ms
+   ✓ FlowEditor - initial render > opens a mobile step dialog and selects a step without losing the editor 1004ms
+   ✓ FlowEditor - initial render > selects a step with the keyboard and identifies the active step 359ms
+   ✓ FlowEditor - initial render > filters steps by id, question text and form title 1698ms
+   ✓ FlowEditor - initial render > opens and closes the help modal 533ms
+   ✓ FlowEditor - initial render > marks the flow as dirty when the title changes and discards on confirm 738ms
+   ✓ FlowEditor - initial render > keeps the changes when the discard confirmation is declined 520ms
+   ✓ FlowEditor - initial render > handles an unavailable reference photo while retaining its removal action 301ms
+ ✓ src/shared/interceptors/__tests__/auth.test.ts (15 tests) 239ms
+ ✓ src/features/flows/api/__tests__/flows.repo.impl.test.ts (29 tests) 137ms
+ ✓ src/features/users/ui/__tests__/CreateUserDialog.test.tsx (35 tests) 4636ms
+   ✓ CreateUserDialog > keeps edited values when an error rerenders equivalent defaults 471ms
+   ✓ CreateUserDialog > marks a malformed email as invalid 347ms
+   ✓ CreateUserDialog > submits the trimmed values 955ms
+   ✓ CreateUserDialog > awaits an async onSubmit 804ms
+ ✓ src/features/projects/api/__tests__/projects.repo.impl.test.ts (48 tests) 38ms
+ ✓ src/features/audits/api/__tests__/audit.repo.impl.test.ts (39 tests) 64ms
+ ✓ src/shared/ui/__tests__/controls.test.tsx (47 tests) 487ms
+ ✓ src/features/audits/api/__tests__/audit-review.repo.impl.test.ts (23 tests) 48ms
+ ✓ src/features/audits/lib/hooks/__tests__/useExportAuditReport.test.tsx (23 tests) 148ms
+ ✓ src/features/flows/ui/__tests__/FlowEditor.conditional.test.tsx (16 tests) 9627ms
+   ✓ FlowEditor - conditional navigation > starts collapsed and disabled when the step has no conditional navigation 579ms
+   ✓ FlowEditor - conditional navigation > names the conditional destination and each source-specific answer control 910ms
+   ✓ FlowEditor - conditional navigation > expands the panel when the conditional navigation is enabled 402ms
+   ✓ FlowEditor - conditional navigation > keeps both branches independent 328ms
+   ✓ FlowEditor - conditional navigation > disabling the conditional navigation removes it from the payload 688ms
+   ✓ FlowEditor - conditional navigation > adds a condition on a previous Question step using answer 1020ms
+   ✓ FlowEditor - conditional navigation > adds a condition on a previous Select step using selected_option 1099ms
+   ✓ FlowEditor - conditional navigation > only offers the steps placed before the current one as condition sources 404ms
+   ✓ FlowEditor - conditional navigation > offers every step, including the current one, as conditional target 343ms
+   ✓ FlowEditor - conditional navigation > saves match_any as true when the OR logic is checked 795ms
+   ✓ FlowEditor - conditional navigation > saves match_any back to false when the OR logic is unchecked 585ms
+   ✓ FlowEditor - conditional navigation > supports several conditions and deletes the chosen one 503ms
+   ✓ FlowEditor - conditional navigation > renders an existing conditional navigation already expanded 317ms
+   ✓ FlowEditor - conditional navigation > keeps the stale answer when the condition source changes to a Select 1003ms
+   ✓ FlowEditor - conditional navigation > re-expands the collapsed panel after any other edit 421ms
+ ✓ src/widgets/shell/__tests__/SidebarNav.test.tsx (33 tests) 2185ms
+ ✓ src/features/audits/ui/__tests__/ReportPreview.test.tsx (22 tests) 874ms
+ ✓ src/shared/api/__tests__/http.client.test.ts (33 tests) 821ms
+   ✓ httpClient defaults > builds the instance from PublicEnv 307ms
+ ✓ src/features/facilities/lib/usecases/__tests__/update-facility.usecase.test.ts (26 tests) 81ms
+ ✓ src/features/facilities/lib/usecases/__tests__/create-facility.usecase.test.ts (20 tests) 65ms
+ ✓ src/entities/dashboard/lib/__tests__/mappers.test.ts (25 tests) 35ms
+ ✓ src/features/auth/lib/usecases/__tests__/login.test.ts (13 tests) 45ms
+ ✓ app/(standalone)/audits/[id]/edit/__tests__/page.test.tsx (15 tests) 1378ms
+   ✓ AuditEditPage > loads the audit of the route with resolved params 495ms
+   ✓ AuditEditPage > asks before leaving with unsaved changes and goes back on confirm 332ms
+ ✓ src/entities/audit/lib/__tests__/audit-review.mappers.test.ts (20 tests) 27ms
+ ✓ app/(dashboard)/dashboard/__tests__/page.test.tsx (16 tests) 1352ms
+   ✓ DashboardPage > links each review stage to its real audit filter and count 526ms
+ ✓ src/features/users/ui/__tests__/UsersTable.test.tsx (31 tests) 3997ms
+   ✓ UsersTable > sorts by 'Username' ascending on the first click 329ms
+ ✓ src/features/audits/lib/hooks/__tests__/useSendForReviewAudit.test.tsx (11 tests) 104ms
+ ✓ src/entities/audit/lib/__tests__/audit-review-finding-update.mappers.test.ts (27 tests) 37ms
+ ✓ src/entities/projects/lib/__tests__/mappers.test.ts (21 tests) 41ms
+ ✓ src/shared/ui/__tests__/table.test.tsx (19 tests) 173ms
+ ✓ src/features/audits/lib/usecases/__tests__/updateAuditFinding.test.ts (15 tests) 24ms
+ ✓ src/entities/audit/lib/__tests__/mappers.test.ts (21 tests) 48ms
+ ✓ src/features/projects/ui/__tests__/ProjectsContent.archived.test.tsx (9 tests) 2856ms
+   ✓ ProjectsContent — restoring a project > asks for confirmation before restoring 409ms
+   ✓ ProjectsContent — restoring a project > restores the chosen project once confirmed and closes the dialog 580ms
+   ✓ ProjectsContent — restoring a project > does not restore when the dialog is cancelled 405ms
+   ✓ ProjectsContent — restoring a project > keeps the dialog open and shows the backend error when the restore fails 446ms
+ ✓ src/entities/audit/lib/__tests__/audit-comments.mappers.test.ts (24 tests) 18ms
+ ✓ src/shared/ui/__tests__/badge.test.tsx (37 tests) 319ms
+ ✓ src/shared/lib/__tests__/download.test.ts (8 tests) 97ms
+ ✓ src/features/flows/ui/__tests__/FlowCard.test.tsx (12 tests) 1270ms
+ ✓ src/features/audits/api/__tests__/audit-comments.repo.impl.test.ts (16 tests) 47ms
+ ✓ app/(dashboard)/reports/__tests__/page.test.tsx (8 tests) 1464ms
+   ✓ ReportsPage > renders, filters and forwards list state 620ms
+   ✓ ReportsPage > deletes after confirmation and reports failures 325ms
+ ✓ src/entities/user/lib/__tests__/mappers.test.ts (34 tests) 33ms
+ ✓ src/features/flows/ui/__tests__/FlowEditor.form.test.tsx (13 tests) 6420ms
+   ✓ FlowEditor - Form step > edits the form title and reflects it in the sidebar 1358ms
+   ✓ FlowEditor - Form step > edits the next step 314ms
+   ✓ FlowEditor - Form step > adds a quantity field and disables its button afterwards 362ms
+   ✓ FlowEditor - Form step > adds a photo field with its own type and no placeholder row 518ms
+   ✓ FlowEditor - Form step > adds several measurement fields with incremental ids and the inch unit 576ms
+   ✓ FlowEditor - Form step > edits the label and the placeholder of a field 1609ms
+   ✓ FlowEditor - Form step > deletes a field 358ms
+ ✓ src/shared/ui/__tests__/tabs.test.tsx (14 tests) 657ms
+ ✓ src/features/flows/lib/__tests__/useFlowsQuery.test.tsx (10 tests) 431ms
+ ✓ src/features/reports/ui/__tests__/ReportsListCard.test.tsx (18 tests) 1065ms
+ ✓ src/features/users/api/__tests__/users.repo.impl.test.ts (19 tests) 22ms
+ ✓ src/shared/ui/__tests__/modal.test.tsx (23 tests) 643ms
+ ✓ src/features/reports/lib/hooks/__tests__/useDownloadReportFile.test.tsx (12 tests) 129ms
+ ✓ src/features/flows/ui/__tests__/FlowCardWithDialog.test.tsx (11 tests) 1415ms
+ ✓ src/shared/ui/__tests__/confirm-dialog.test.tsx (21 tests) 1253ms
+ ✓ src/features/flows/ui/__tests__/FlowQuestionsDialog.test.tsx (17 tests) 1077ms
+ ✓ app/(dashboard)/flows/__tests__/page.test.tsx (13 tests) 1291ms
+   ✓ FlowsPage > allows administrators to create a flow 497ms
+ ✓ src/widgets/project-detail/lib/__tests__/audit-filters.test.ts (24 tests) 30ms
+ ✓ src/features/audits/lib/hooks/__tests__/useListAudits.test.tsx (7 tests) 370ms
+ ✓ src/features/audits/lib/hooks/__tests__/usePoollAuditReview.test.tsx (8 tests) 734ms
+ ✓ src/features/audits/lib/hooks/__tests__/useOpenAuditReview.test.tsx (14 tests) 70ms
+ ✓ src/features/reports/lib/hooks/__tests__/useReportsQuery.test.tsx (8 tests) 336ms
+ ✓ src/features/reports/api/__tests__/reports.repo.impl.test.ts (13 tests) 34ms
+ ✓ src/features/flows/ui/__tests__/FlowEditor.select.test.tsx (9 tests) 3323ms
+   ✓ FlowEditor - Select step > writes both title and text from the single title/text control 877ms
+   ✓ FlowEditor - Select step > adds a new option with the default label and no target 414ms
+   ✓ FlowEditor - Select step > edits the label of an option 607ms
+   ✓ FlowEditor - Select step > edits the barrier id of an option 563ms
+ ✓ src/shared/ui/__tests__/page-header.test.tsx (16 tests) 298ms
+ ✓ src/features/audits/lib/resolve-audit-evidence.test.ts (21 tests) 16ms
+ ✓ src/features/projects/ui/__tests__/ArchivedProjectsTable.test.tsx (10 tests) 494ms
+ ✓ src/features/flows/ui/__tests__/FlowStepsTable.test.tsx (3 tests) 384ms
+ ✓ src/entities/report/lib/__tests__/report-list.mappers.test.ts (16 tests) 30ms
+ ✓ src/entities/report/lib/__tests__/audit-report.mappers.test.ts (9 tests) 22ms
+ ✓ src/features/dashboard/ui/__tests__/useDashboardSummary.test.tsx (6 tests) 334ms
+ ✓ src/widgets/project-detail/lib/__tests__/project-sections.test.ts (9 tests) 77ms
+ ✓ src/features/audits/lib/hooks/__tests__/useUpdateAuditReviewStatus.test.tsx (3 tests) 231ms
+ ✓ src/features/audits/lib/hooks/__tests__/useAuditComments.test.tsx (7 tests) 330ms
+ ✓ src/features/projects/ui/__tests__/management-mobile.behavior.test.tsx (4 tests) 801ms
+   ✓ compact management lists > shows the project identity, status and actions before opening Details 422ms
+ ✓ src/features/projects/lib/usecases/__tests__/create-project.test.ts (10 tests) 31ms
+ ✓ src/shared/ui/__tests__/row-action-button.test.tsx (14 tests) 292ms
+ ✓ src/features/audits/lib/hooks/__tests__/useUpdateAuditAnswerMutation.test.tsx (3 tests) 276ms
+ ✓ src/features/audits/api/__tests__/sendReview.repo.impl.test.ts (11 tests) 60ms
+ ✓ src/features/audits/lib/usecases/__tests__/updateAuditComment.test.ts (9 tests) 40ms
+ ✓ src/features/audits/lib/hooks/__tests__/useInfiniteAudits.test.tsx (4 tests) 633ms
+ ✓ src/features/dashboard/api/__tests__/dashboard.repo.impl.test.ts (10 tests) 34ms
+ ✓ src/features/audits/lib/usecases/__tests__/updateAuditAnswer.test.ts (8 tests) 53ms
+ ✓ src/features/flows/ui/__tests__/FlowEditor.question.test.tsx (8 tests) 3662ms
+   ✓ FlowEditor - Question step > edits the question text and reflects it in the sidebar 1650ms
+   ✓ FlowEditor - Question step > changes the yes_next target 384ms
+   ✓ FlowEditor - Question step > clears a target back to the empty placeholder and marks the step incomplete 371ms
+   ✓ FlowEditor - Question step > edits the barrier id 595ms
+ ✓ src/widgets/project-detail/__tests__/useProjectAuditFilters.test.tsx (7 tests) 89ms
+ ✓ src/features/reports/lib/hooks/__tests__/useAuditReport.test.tsx (6 tests) 182ms
+ ✓ src/features/audits/lib/hooks/__tests__/useUpdateAuditCommentMutation.test.tsx (2 tests) 195ms
+ ✓ src/widgets/project-detail/__tests__/ProjectFacilitySection.test.tsx (6 tests) 171ms
+ ✓ src/features/auth/ui/__tests__/LoginForm.test.tsx (6 tests) 1099ms
+ ✓ src/features/audits/ui/__tests__/ExportReportModal.test.tsx (9 tests) 654ms
+ ✓ src/features/audits/lib/hooks/__tests__/useCreateAuditCommentMutation.test.tsx (2 tests) 199ms
+ ✓ src/features/audits/lib/usecases/__tests__/createAuditComment.test.ts (8 tests) 17ms
+ ✓ src/features/audits/lib/hooks/__tests__/useAuditors.test.tsx (6 tests) 79ms
+ ✓ src/features/audits/lib/hooks/__tests__/useAuditDetail.test.tsx (6 tests) 168ms
+ ✓ src/widgets/project-detail/__tests__/ProjectDetailHeader.test.tsx (8 tests) 382ms
+ ✓ src/features/projects/ui/__tests__/management-forms.behavior.test.tsx (7 tests) 1327ms
+   ✓ management forms > shows user errors beside the fields and focuses the first invalid input 562ms
+ ✓ src/shared/ui/__tests__/search-input.test.tsx (14 tests) 217ms
+ ✓ src/features/projects/lib/usecases/__tests__/update-project.test.ts (6 tests) 51ms
+ ✓ src/features/audits/lib/hooks/__tests__/useAuditReviewDetail.test.tsx (5 tests) 164ms
+ ✓ src/features/audits/lib/hooks/__tests__/useUpdateAuditFindingMutation.test.tsx (2 tests) 162ms
+ ✓ src/widgets/dashboard/__tests__/ActivityItem.test.tsx (12 tests) 155ms
+ ✓ src/features/audits/lib/usecases/__tests__/updateAuditReviewStatus.test.ts (8 tests) 24ms
+ ✓ src/features/flows/ui/__tests__/mapFlowToDialogVM.test.ts (10 tests) 9ms
+ ✓ src/features/audits/ui/__tests__/ReportActionBar.test.tsx (8 tests) 570ms
+ ✓ src/features/facilities/lib/__tests__/buildFacilityOptionalFields.test.ts (13 tests) 10ms
+ ✓ src/features/audits/lib/hooks/__tests__/useCompleteReviewAuditMutation.test.tsx (3 tests) 223ms
+ ✓ src/features/users/ui/hooks/__tests__/useUsersQuery.test.tsx (4 tests) 228ms
+stderr | src/features/audits/ui/__tests__/CommentsSidebar.test.tsx > CommentsSidebar > preserves comment input and shows an error after a failed save
+[CommentsSidebar] Error saving comment Error: offline
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/features/audits/ui/__tests__/CommentsSidebar.test.tsx:26:39
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:39:7)
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1271:3)
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/vitest/dist/chunks/runBaseTests.3qpJUEJM.js:126:11
+
+ ✓ src/widgets/dashboard/__tests__/MetricCard.test.tsx (24 tests) 284ms
+ ✓ src/features/reports/lib/hooks/__tests__/useDeleteReport.test.tsx (4 tests) 232ms
+ ✓ src/features/audits/ui/__tests__/CommentsSidebar.test.tsx (4 tests) 1126ms
+   ✓ CommentsSidebar > preserves comment input and shows an error after a failed save 480ms
+ ✓ src/shared/ui/__tests__/card.test.tsx (31 tests) 141ms
+ ✓ src/features/audits/lib/hooks/__tests__/useSendForReview.test.tsx (4 tests) 239ms
+ ✓ src/features/projects/ui/hooks/__tests__/useProjectFormLookups.test.tsx (5 tests) 86ms
+ ✓ src/shared/lib/__tests__/useUrlParameter.test.tsx (6 tests) 54ms
+ ✓ src/features/projects/ui/hooks/__tests__/useProjectQuery.test.tsx (7 tests) 307ms
+ ✓ src/features/audits/ui/__tests__/AuditInfoPanel.test.tsx (6 tests) 117ms
+ ✓ src/features/reports/api/__tests__/audit-report.repo.impl.test.ts (8 tests) 13ms
+ ✓ src/widgets/dashboard/__tests__/DashboardMetrics.test.tsx (10 tests) 214ms
+ ✓ src/features/audits/lib/usecases/__tests__/listAudits.test.ts (8 tests) 27ms
+ ✓ src/processes/auth/__tests__/context.test.tsx (11 tests) 89ms
+ ✓ src/features/audits/lib/usecases/__tests__/listAuditComments.test.ts (7 tests) 16ms
+ ✓ src/features/audits/lib/usecases/__tests__/get-review-progress.test.ts (5 tests) 49ms
+ ✓ app/(dashboard)/projects/__tests__/page.test.tsx (6 tests) 796ms
+   ✓ ProjectsPage > restores the facilities tab from a shared URL 399ms
+ ✓ src/shared/lib/__tests__/useDebouncedSearch.test.ts (11 tests) 60ms
+ ✓ src/features/audits/lib/usecases/__tests__/send-for-review.test.ts (4 tests) 18ms
+ ✓ src/features/audits/lib/usecases/__tests__/completeReviewAudit.test.ts (6 tests) 24ms
+ ✓ src/entities/audit/lib/__tests__/sendReview.mappers.test.ts (16 tests) 16ms
+ ✓ src/shared/lib/__tests__/session-expiration-handler.test.ts (4 tests) 28ms
+ ✓ app/(dashboard)/flows/[id]/__tests__/page.test.tsx (5 tests) 234ms
+ ✓ src/features/audits/lib/hooks/__tests__/useProjectAudits.test.tsx (5 tests) 40ms
+ ✓ src/features/reports/lib/hooks/__tests__/usePollAuditReport.test.tsx (2 tests) 201ms
+ ✓ src/features/audits/lib/__tests__/audit-edit-href.test.ts (31 tests) 27ms
+ ✓ src/widgets/dashboard/__tests__/DashboardActivitySection.test.tsx (8 tests) 220ms
+ ✓ src/features/audits/lib/hooks/__tests__/useDeleteAudit.test.tsx (3 tests) 154ms
+ ✓ src/features/users/ui/__tests__/UsersSearchCard.test.tsx (8 tests) 246ms
+ ✓ src/features/projects/ui/__tests__/ProjectAuditsProgress.test.tsx (6 tests) 88ms
+ ✓ src/widgets/project-detail/__tests__/ProjectAuditsToolbar.test.tsx (4 tests) 269ms
+ ✓ src/shared/ui/__tests__/Pagination.test.tsx (8 tests) 298ms
+ ✓ src/features/facilities/ui/hooks/__tests__/useProjectFacilitiesQuery.test.tsx (4 tests) 168ms
+ ✓ src/entities/user/lib/__tests__/list.mappers.test.ts (9 tests) 22ms
+ ✓ src/entities/audit/lib/__tests__/audit-review-status.mappers.test.ts (7 tests) 16ms
+ ✓ src/features/projects/lib/usecases/__tests__/fetch-projects.test.ts (7 tests) 42ms
+ ✓ src/features/facilities/lib/usecases/__tests__/archive-facility.usecase.test.ts (6 tests) 25ms
+ ✓ src/widgets/shell/__tests__/AppShell.test.tsx (3 tests) 952ms
+   ✓ AppShell mobile navigation > opens an accessible drawer, then restores focus when Escape closes it 329ms
+   ✓ AppShell mobile navigation > keeps keyboard focus in the drawer and closes from its explicit button 306ms
+   ✓ AppShell mobile navigation > closes the drawer after choosing a destination 310ms
+ ✓ src/features/projects/lib/usecases/__tests__/deleteProject.test.ts (4 tests) 24ms
+ ✓ src/features/reports/lib/usecases/__tests__/fetch-reports.test.ts (6 tests) 17ms
+ ✓ src/features/projects/ui/hooks/__tests__/useRestoreProjectMutation.test.tsx (2 tests) 69ms
+ ✓ src/features/projects/lib/usecases/__tests__/archive-project.test.ts (4 tests) 41ms
+ ✓ src/features/audits/lib/usecases/__tests__/getAuditById.test.ts (4 tests) 13ms
+ ✓ src/features/users/ui/__tests__/UsersMetrics.test.tsx (6 tests) 139ms
+ ✓ src/features/reports/ui/__tests__/ReportsSearchCard.test.tsx (7 tests) 177ms
+ ✓ src/features/projects/lib/usecases/__tests__/restore-project.test.ts (4 tests) 21ms
+ ✓ src/shared/lib/__tests__/report-format.test.ts (18 tests) 28ms
+ ✓ src/shared/ui/__tests__/progress.test.tsx (5 tests) 156ms
+ ✓ src/features/facilities/lib/usecases/__tests__/delete-facility.usecase.test.ts (6 tests) 18ms
+ ✓ src/features/dashboard/lib/usecases/__tests__/get-dashboard-summary.test.ts (3 tests) 12ms
+ ✓ src/shared/lib/__tests__/date.test.ts (12 tests) 8ms
+ ✓ src/features/projects/lib/usecases/__tests__/get-project.test.ts (4 tests) 14ms
+ ✓ src/entities/audit/lib/__tests__/completeReview.mappers.test.ts (6 tests) 15ms
+ ✓ src/shared/ui/__tests__/dropdown-menu.behavior.test.tsx (2 tests) 417ms
+ ✓ src/shared/ui/__tests__/table-header.test.tsx (6 tests) 173ms
+ ✓ src/shared/ui/__tests__/confirm-title.test.tsx (6 tests) 77ms
+ ✓ src/shared/ui/__tests__/filter-select.test.tsx (4 tests) 182ms
+ ✓ src/features/audits/lib/usecases/__tests__/deleteAudit.test.ts (4 tests) 17ms
+ ✓ src/processes/auth/__tests__/hooks.test.tsx (2 tests) 42ms
+ ✓ src/widgets/shell/__tests__/AppHeader.test.tsx (11 tests) 141ms
+ ✓ src/features/projects/lib/__tests__/buildProjectOptionalFields.test.ts (6 tests) 11ms
+ ✓ src/shared/ui/__tests__/collapsible.test.tsx (3 tests) 160ms
+ ✓ src/entities/user/model/__tests__/sessions.test.ts (7 tests) 7ms
+ ✓ app/(dashboard)/flows/new/__tests__/page.test.tsx (1 test) 99ms
+stdout | src/features/facilities/ui/__tests__/probe.test.tsx > probe > lucide class names
+SVG_OUTER: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up h-4 w-4" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>
+
+stdout | src/features/facilities/ui/__tests__/probe.test.tsx > probe > URL object url availability
+createObjectURL: function revoke: function
+url: blob:nodedata:fda457dc-5fab-46e3-9e77-48b400441570
+
+stdout | src/features/facilities/ui/__tests__/probe.test.tsx > probe > file input change via fireEvent
+files len: 1
+files len: 0
+
+stdout | src/features/facilities/ui/__tests__/probe.test.tsx > probe > implicit submit with disabled submit button
+submitted: 1
+
+ ✓ src/features/facilities/ui/__tests__/probe.test.tsx (4 tests) 86ms
+ ✓ src/shared/ui/__tests__/modal-focus.test.tsx (1 test) 255ms
+ ✓ src/entities/flow/lib/__tests__/option-navigation.test.ts (3 tests) 13ms
+ ✓ src/shared/lib/__tests__/useMediaQuery.test.tsx (2 tests) 61ms
+ ✓ src/features/audits/ui/__tests__/AuditQuestionsList.test.tsx (2 tests) 74ms
+ ✓ app/(dashboard)/projects/[id]/__tests__/page.test.tsx (3 tests) 123ms
+ ✓ src/shared/lib/__tests__/report-progress.test.ts (19 tests) 10ms
+ ✓ src/shared/ui/__tests__/Retry.test.tsx (4 tests) 116ms
+ ✓ src/entities/audit/lib/__tests__/audit-status.test.ts (12 tests) 22ms
+ ✓ src/shared/lib/__tests__/file.test.ts (9 tests) 11ms
+ ✓ src/entities/flow/lib/__tests__/flow-code.test.ts (2 tests) 15ms
+ ✓ src/features/projects/ui/__tests__/ProjectsTable.test.tsx (1 test) 99ms
+ ✓ src/shared/ui/__tests__/theme-toggle.test.tsx (4 tests) 233ms
+ ✓ src/shared/ui/__tests__/Loading.test.tsx (2 tests) 103ms
+ ✓ src/shared/lib/__tests__/cn.test.ts (6 tests) 10ms
+stderr | app/api/projects/[id]/__tests__/route.test.ts > GET /api/projects/[id] > returns 502 when the backend does not answer
+[bff] GET /projects/p-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/__tests__/route.test.ts:180:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ src/features/audits/ui/__tests__/FinalReportHeader.test.tsx (1 test) 56ms
+stderr | app/api/facilities/[id]/__tests__/route.test.ts > GET /api/facilities/[id] > returns 502 when the backend does not answer
+[bff] GET /facilities/f-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/__tests__/route.test.ts:182:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/projects/[id]/__tests__/route.test.ts > PATCH /api/projects/[id] > returns 502 when the backend does not answer
+[bff] PATCH /projects/p-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/__tests__/route.test.ts:276:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/flows/[id]/__tests__/route.test.ts > GET /api/flows/[id] > returns 502 when the backend does not answer
+[bff] GET /flows/fl-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/[id]/__tests__/route.test.ts:181:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/facilities/[id]/__tests__/route.test.ts > PUT /api/facilities/[id] > returns 502 when the backend does not answer
+[bff] PUT /facilities/f-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/__tests__/route.test.ts:269:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/projects/[id]/__tests__/route.test.ts > DELETE /api/projects/[id] > returns 502 when the backend does not answer
+[bff] DELETE /projects/p-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/__tests__/route.test.ts:359:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/flows/[id]/__tests__/route.test.ts > PUT /api/flows/[id] > returns 502 when the backend does not answer
+[bff] PUT /flows/fl-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/[id]/__tests__/route.test.ts:268:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/facilities/[id]/__tests__/route.test.ts > DELETE /api/facilities/[id] > returns 502 when the backend does not answer
+[bff] DELETE /facilities/f-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/__tests__/route.test.ts:352:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/projects/[id]/__tests__/route.test.ts (33 tests) 928ms
+ ✓ app/api/facilities/[id]/__tests__/route.test.ts (29 tests) 827ms
+stderr | app/api/flows/[id]/__tests__/route.test.ts > DELETE /api/flows/[id] > returns 502 when the backend does not answer
+[bff] DELETE /flows/fl-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/[id]/__tests__/route.test.ts:354:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/flows/[id]/__tests__/route.test.ts (29 tests) 750ms
+stderr | app/api/users/[id]/__tests__/route.test.ts > PATCH /api/users/[id] > returns 502 when the backend does not answer
+[bff] PUT /users/u-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/users/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/users/[id]/__tests__/route.test.ts:197:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/users/[id]/__tests__/route.test.ts > DELETE /api/users/[id] > returns 502 when the backend does not answer
+[bff] DELETE /users/u-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/users/[id]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/users/[id]/__tests__/route.test.ts:280:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/projects/__tests__/route.test.ts > GET /api/projects > returns 502 when the backend does not answer
+[bff] GET /projects upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/__tests__/route.test.ts:193:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ src/shared/api/__tests__/http.server.test.ts (25 tests) 452ms
+stderr | app/api/audits/[auditId]/__tests__/route.test.ts > GET /api/audits/[auditId] > returns 502 when the backend does not answer
+[bff] GET /audits/a-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/[auditId]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/[auditId]/__tests__/route.test.ts:175:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/users/[id]/__tests__/route.test.ts (22 tests) 456ms
+stderr | app/api/audits/[auditId]/__tests__/route.test.ts > DELETE /api/audits/[auditId] > returns 502 when the backend does not answer
+[bff] DELETE /audits/a-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/[auditId]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/[auditId]/__tests__/route.test.ts:265:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/projects/__tests__/route.test.ts > POST /api/projects > returns 502 when the backend does not answer
+[bff] POST /projects upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/__tests__/route.test.ts:283:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/audits/[auditId]/__tests__/route.test.ts (20 tests) 420ms
+ ✓ app/api/projects/__tests__/route.test.ts (24 tests) 527ms
+ ✓ src/shared/config/__tests__/env.test.ts (30 tests) 297ms
+ ✓ src/features/auth/api/__tests__/cognito.repo.impl.test.ts (27 tests) 43ms
+stderr | app/api/facilities/__tests__/route.test.ts > GET /api/facilities > returns 502 when the backend does not answer
+[bff] GET /facilities upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/__tests__/route.test.ts:192:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/users/__tests__/route.test.ts > GET /api/users > returns 502 when the backend does not answer
+[bff] GET /users upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/users/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/users/__tests__/route.test.ts:168:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/facilities/__tests__/route.test.ts > POST /api/facilities > returns 502 when the backend does not answer
+[bff] POST /facilities upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/__tests__/route.test.ts:270:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/reports/[auditId]/__tests__/route.test.ts > GET /api/reports/[auditId] > returns 502 when the backend does not answer
+[bff] GET /reports/a-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/reports/[auditId]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/reports/[auditId]/__tests__/route.test.ts:171:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/facilities/__tests__/route.test.ts (22 tests) 763ms
+stderr | app/api/users/__tests__/route.test.ts > POST /api/users > returns 502 when the backend does not answer
+[bff] POST /users upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/users/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/users/__tests__/route.test.ts:258:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/reports/[auditId]/__tests__/route.test.ts > DELETE /api/reports/[auditId] > returns 502 when the backend does not answer
+[bff] DELETE /reports/a-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/reports/[auditId]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/reports/[auditId]/__tests__/route.test.ts:245:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/users/__tests__/route.test.ts (19 tests) 559ms
+stderr | app/api/flows/__tests__/route.test.ts > GET /api/flows > returns 502 when the backend does not answer
+[bff] GET /flows upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/__tests__/route.test.ts:138:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/reports/[auditId]/__tests__/route.test.ts (18 tests) 474ms
+stderr | app/api/comments/__tests__/route.test.ts > POST /api/comments > returns 502 when the backend does not answer
+[bff] POST /comments upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/comments/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/comments/__tests__/route.test.ts:151:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/flows/__tests__/route.test.ts > POST /api/flows > returns 502 when the backend does not answer
+[bff] POST /flows upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/__tests__/route.test.ts:228:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/comments/__tests__/route.test.ts > GET /api/comments > returns 502 when the backend does not answer
+[bff] GET /comments upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/comments/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/comments/__tests__/route.test.ts:239:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/comments/__tests__/route.test.ts (17 tests) 490ms
+ ✓ app/api/flows/__tests__/route.test.ts (18 tests) 504ms
+stderr | app/api/audits/__tests__/route.test.ts > GET /api/audits > returns 502 when the backend does not answer
+[bff] GET /audits upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/__tests__/route.test.ts:191:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/audits-review/[auditId]/findings/[questionCode]/__tests__/route.test.ts > PATCH /api/audits-review/[auditId]/findings/[questionCode] > returns 502 when the backend does not answer
+[bff] PATCH /audits-review/a-1/findings/q-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits-review/[auditId]/findings/[questionCode]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits-review/[auditId]/findings/[questionCode]/__tests__/route.test.ts:212:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/audits/__tests__/route.test.ts (17 tests) 497ms
+ ✓ app/api/audits-review/[auditId]/findings/[questionCode]/__tests__/route.test.ts (13 tests) 471ms
+stderr | app/api/uploads/presigned/__tests__/route.test.ts > POST /api/uploads/presigned > returns 502 when the backend does not answer
+[bff] POST /uploads/presigned upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/uploads/presigned/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/uploads/presigned/__tests__/route.test.ts:182:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/comments/[commentId]/__tests__/route.test.ts > PUT /api/comments/[commentId] > returns 502 when the backend does not answer
+[bff] PUT /comments/c-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/comments/[commentId]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/comments/[commentId]/__tests__/route.test.ts:194:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/session/__tests__/route.test.ts > DELETE /api/session > clears the cookies even when the provider sign out fails
+[api/session] global sign out failed: Error: provider down
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/session/__tests__/route.test.ts:254:45
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:39:7)
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1271:3)
+
+ ✓ app/api/uploads/presigned/__tests__/route.test.ts (12 tests) 291ms
+ ✓ app/api/session/__tests__/route.test.ts (22 tests) 545ms
+ ✓ app/api/comments/[commentId]/__tests__/route.test.ts (12 tests) 325ms
+stderr | app/api/uploads/__tests__/route.test.ts > POST /api/uploads > returns 502 when the backend does not answer
+[bff] POST /uploads upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/uploads/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/uploads/__tests__/route.test.ts:182:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/facilities/upload-img/__tests__/route.test.ts > POST /api/facilities/upload-img > returns 502 when the backend does not answer
+[bff] POST /facilities/upload-img upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/upload-img/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/upload-img/__tests__/route.test.ts:171:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/uploads/__tests__/route.test.ts (12 tests) 395ms
+ ✓ app/api/facilities/upload-img/__tests__/route.test.ts (14 tests) 453ms
+stderr | app/api/facilities/[id]/archive/__tests__/route.test.ts > POST /api/facilities/[id]/archive > returns 502 when the backend does not answer
+[bff] POST /facilities/f-1/archive upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/archive/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/archive/__tests__/route.test.ts:162:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/audits-review/[auditId]/answers/__tests__/route.test.ts > PUT /api/audits-review/[auditId]/answers > returns 502 when the backend does not answer
+[bff] PUT /audits-review/a-1/answers upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits-review/[auditId]/answers/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits-review/[auditId]/answers/__tests__/route.test.ts:184:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/facilities/[id]/archive/__tests__/route.test.ts (12 tests) 468ms
+ ✓ app/api/audits-review/[auditId]/answers/__tests__/route.test.ts (11 tests) 457ms
+stderr | app/api/audits-review/[auditId]/status/__tests__/route.test.ts > PATCH /api/audits-review/[auditId]/status > returns 502 when the backend does not answer
+[bff] PATCH /audits-review/a-1/status upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits-review/[auditId]/status/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits-review/[auditId]/status/__tests__/route.test.ts:183:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/reports/__tests__/route.test.ts > GET /api/reports > returns 502 when the backend does not answer
+[bff] GET /reports upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/reports/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/reports/__tests__/route.test.ts:181:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/reports/__tests__/route.test.ts (15 tests) 269ms
+ ✓ app/api/audits-review/[auditId]/status/__tests__/route.test.ts (11 tests) 251ms
+stderr | app/api/projects/[id]/archive/__tests__/route.test.ts > POST /api/projects/[id]/archive > returns 502 when the backend does not answer
+[bff] POST /projects/p-1/archive upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/archive/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/archive/__tests__/route.test.ts:173:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/projects/[id]/archive/__tests__/route.test.ts (12 tests) 354ms
+stderr | app/api/projects/[id]/restore/__tests__/route.test.ts > POST /api/projects/[id]/restore > returns 502 when the backend does not answer
+[bff] POST /projects/p-1/restore upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/restore/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/restore/__tests__/route.test.ts:173:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/audits/[auditId]/send-for-review/__tests__/route.test.ts > POST /api/audits/[auditId]/send-for-review > returns 502 when the backend does not answer
+[bff] POST /audits/a-1/send-for-review upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/[auditId]/send-for-review/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/[auditId]/send-for-review/__tests__/route.test.ts:174:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/projects/[id]/restore/__tests__/route.test.ts (12 tests) 344ms
+ ✓ app/api/audits/[auditId]/send-for-review/__tests__/route.test.ts (11 tests) 350ms
+ ✓ src/processes/auth/__tests__/session.test.ts (18 tests) 31ms
+stderr | app/api/audits/audit-reviews/[auditReviewId]/__tests__/route.test.ts > GET /api/audits/audit-reviews/[auditReviewId] > returns 502 when the backend does not answer
+[bff] GET /audits-review/r-1 upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/audit-reviews/[auditReviewId]/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits/audit-reviews/[auditReviewId]/__tests__/route.test.ts:174:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/audits/audit-reviews/[auditReviewId]/__tests__/route.test.ts (11 tests) 378ms
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > does not broaden the default allowlist to https://other-bucket.s3.us-east-2.amazonaws.com/image.jpg
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > does not broaden the default allowlist to https://kma-audit-bucket.s3.us-east-2.amazonaws.com.evil.example/image.jpg
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > does not broaden the default allowlist to http://169.254.169.254/latest/meta-data/
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/audits-review/[auditId]/complete-review/__tests__/route.test.ts > POST /api/audits-review/[auditId]/complete-review > returns 502 when the backend does not answer
+[bff] POST /audits-review/a-1/complete-review upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits-review/[auditId]/complete-review/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/audits-review/[auditId]/complete-review/__tests__/route.test.ts:161:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > respects an explicit override: 
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > respects an explicit override: storage.example.com
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > rechaza host interno
+[api/uploads/proxy] destino rechazado
+
+ ✓ app/api/audits-review/[auditId]/complete-review/__tests__/route.test.ts (10 tests) 369ms
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > rechaza localhost
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > rechaza IP privada
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > rechaza host arbitrario
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > rechaza esquema file
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > rechaza credenciales embebidas
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > rechaza un subdominio parecido pero distinto
+[api/uploads/proxy] destino rechazado
+
+stderr | app/api/uploads/proxy/__tests__/route.test.ts > PUT /api/uploads/proxy > propaga el error del almacenamiento
+[api/uploads/proxy] storage error: 403 AccessDenied
+
+ ✓ app/api/uploads/proxy/__tests__/route.test.ts (19 tests) 426ms
+ ✓ app/api/session/refresh/__tests__/route.test.ts (15 tests) 454ms
+stderr | app/api/flows/summary/__tests__/route.test.ts > GET /api/flows/summary > returns 502 when the backend does not answer
+[bff] GET /flows/summary upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/summary/__tests__/route.test.ts:57:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/flows/summary/__tests__/route.test.ts:142:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | src/shared/api/__tests__/backend-proxy.test.ts > proxyToBackend > responde 502 si el backend no contesta
+[bff] GET /audits upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/__tests__/backend-proxy.test.ts:132:13
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/__tests__/backend-proxy.test.ts:136:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | app/api/facilities/[id]/restore/__tests__/route.test.ts > POST /api/facilities/[id]/restore > returns 502 when the backend does not answer
+[bff] POST /facilities/f-1/restore upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/restore/__tests__/route.test.ts:55:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/facilities/[id]/restore/__tests__/route.test.ts:189:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/facilities/[id]/restore/__tests__/route.test.ts (10 tests) 279ms
+ ✓ src/shared/api/__tests__/backend-proxy.test.ts (9 tests) 297ms
+ ✓ app/api/flows/summary/__tests__/route.test.ts (10 tests) 321ms
+ ✓ src/shared/lib/__tests__/jwt.test.ts (10 tests) 12ms
+stderr | app/api/dashboard/__tests__/route.test.ts > GET /api/dashboard > returns 502 when the backend does not answer
+[bff] GET /dashboard upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/dashboard/__tests__/route.test.ts:57:11
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/dashboard/__tests__/route.test.ts:129:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/dashboard/__tests__/route.test.ts (8 tests) 321ms
+stderr | app/api/projects/[id]/facilities/__tests__/route.test.ts > GET /api/projects/[id]/facilities > answers 502 when the backend is unreachable
+[bff] GET /projects/p-1/facilities upstream error: Error: ECONNREFUSED
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/facilities/__tests__/route.test.ts:145:15
+    at mockCall (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/spy/dist/index.js:61:17)
+    at spy (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/tinyspy/dist/index.js:45:80)
+    at Module.proxyToBackend (/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/shared/api/backend-proxy.ts:153:23)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/api/projects/[id]/facilities/__tests__/route.test.ts:150:17
+    at file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ✓ app/api/projects/[id]/facilities/__tests__/route.test.ts (6 tests) 231ms
+ ✓ app/__tests__/page.test.tsx (1 test) 25ms
+ ✓ src/processes/auth/__tests__/guard.test.tsx (3 tests) 17ms
+ ✓ src/shared/auth/__tests__/verify-access-token.test.ts (8 tests) 930ms
+ ✓ app/(auth)/login/__tests__/page.test.tsx (3 tests) 325ms
+   ✓ LoginPage > renders the form when there is no session 302ms
+
+ Test Files  235 passed (235)
+      Tests  3360 passed (3360)
+   Start at  21:24:18
+   Duration  81.82s (transform 12.69s, setup 36.50s, collect 81.22s, tests 181.02s, environment 109.93s, prepare 45.15s)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   95.85 |    92.81 |   94.07 |   95.85 |                   
+ app               |     100 |      100 |     100 |     100 |                   
+  page.tsx         |     100 |      100 |     100 |     100 |                   
+ app/(auth)/login  |     100 |      100 |     100 |     100 |                   
+  page.tsx         |     100 |      100 |     100 |     100 |                   
+ ...hboard)/audits |     100 |    95.23 |   85.71 |     100 |                   
+  page.tsx         |     100 |    95.23 |   85.71 |     100 | 23-24,65          
+ ...ard)/dashboard |     100 |      100 |     100 |     100 |                   
+  page.tsx         |     100 |      100 |     100 |     100 |                   
+ ...shboard)/flows |     100 |    97.14 |      75 |     100 |                   
+  page.tsx         |     100 |    97.14 |      75 |     100 | 48                
+ ...rd)/flows/[id] |     100 |      100 |     100 |     100 |                   
+  page.tsx         |     100 |      100 |     100 |     100 |                   
+ ...ard)/flows/new |     100 |      100 |     100 |     100 |                   
+  page.tsx         |     100 |      100 |     100 |     100 |                   
+ ...oard)/projects |     100 |      100 |     100 |     100 |                   
+  page.tsx         |     100 |      100 |     100 |     100 |                   
+ .../projects/[id] |     100 |      100 |     100 |     100 |                   
+  page.tsx         |     100 |      100 |     100 |     100 |                   
+ ...board)/reports |    97.7 |     86.2 |     100 |    97.7 |                   
+  page.tsx         |    97.7 |     86.2 |     100 |    97.7 | 46-47             
+ ...shboard)/users |   99.51 |    95.34 |   85.71 |   99.51 |                   
+  page.tsx         |   99.51 |    95.34 |   85.71 |   99.51 | 114               
+ ...dits/[id]/edit |     100 |      100 |     100 |     100 |                   
+  page.tsx         |     100 |      100 |     100 |     100 |                   
+ app/api/audits    |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...ditId]/answers |     100 |       50 |     100 |     100 |                   
+  route.ts         |     100 |       50 |     100 |     100 | 10                
+ ...omplete-review |     100 |       50 |     100 |     100 |                   
+  route.ts         |     100 |       50 |     100 |     100 | 10                
+ ...[questionCode] |     100 |    33.33 |     100 |     100 |                   
+  route.ts         |     100 |    33.33 |     100 |     100 | 12-14             
+ ...uditId]/status |     100 |       50 |     100 |     100 |                   
+  route.ts         |     100 |       50 |     100 |     100 | 10                
+ ...dits/[auditId] |     100 |       80 |     100 |     100 |                   
+  route.ts         |     100 |       80 |     100 |     100 | 19                
+ ...end-for-review |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...auditReviewId] |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ app/api/comments  |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...ts/[commentId] |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ app/api/dashboard |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...api/facilities |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...acilities/[id] |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...s/[id]/archive |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...s/[id]/restore |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...ies/upload-img |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ app/api/flows     |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...api/flows/[id] |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ .../flows/summary |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ app/api/projects  |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ .../projects/[id] |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...s/[id]/archive |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...id]/facilities |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...s/[id]/restore |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ app/api/reports   |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...orts/[auditId] |     100 |       80 |     100 |     100 |                   
+  route.ts         |     100 |       80 |     100 |     100 | 19                
+ app/api/session   |   98.26 |    85.71 |     100 |   98.26 |                   
+  route.ts         |   98.26 |    85.71 |     100 |   98.26 | 33,163            
+ ...ession/refresh |   98.03 |    84.37 |     100 |   98.03 |                   
+  route.ts         |   98.03 |    84.37 |     100 |   98.03 | 20,155            
+ app/api/uploads   |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...oads/presigned |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ .../uploads/proxy |   86.41 |    81.48 |     100 |   86.41 |                   
+  route.ts         |   86.41 |    81.48 |     100 |   86.41 | ...,64-65,104-109 
+ app/api/users     |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...api/users/[id] |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...entities/audit |       0 |        0 |       0 |       0 |                   
+  model.ts         |       0 |        0 |       0 |       0 |                   
+ ...ties/audit/api |       0 |        0 |       0 |       0 |                   
+  ...ments.repo.ts |       0 |        0 |       0 |       0 |                   
+  ...eview.repo.ts |       0 |        0 |       0 |       0 |                   
+  audit.repo.ts    |       0 |        0 |       0 |       0 |                   
+  ...eview.repo.ts |       0 |        0 |       0 |       0 |                   
+ ...ties/audit/lib |    99.8 |    98.12 |     100 |    99.8 |                   
+  ...ts.mappers.ts |     100 |    96.77 |     100 |     100 | 63                
+  ...il.mappers.ts |   99.56 |    97.31 |     100 |   99.56 | 355               
+  ...te.mappers.ts |     100 |      100 |     100 |     100 |                   
+  ...us.mappers.ts |     100 |      100 |     100 |     100 |                   
+  ...ew.mappers.ts |     100 |      100 |     100 |     100 |                   
+  audit-status.ts  |     100 |      100 |     100 |     100 |                   
+  ...ew.mappers.ts |     100 |      100 |     100 |     100 |                   
+  mappers.ts       |     100 |      100 |     100 |     100 |                   
+  ...ew.mappers.ts |     100 |      100 |     100 |     100 |                   
+ ...es/audit/model |       0 |        0 |       0 |       0 |                   
+  audit-detail.ts  |       0 |        0 |       0 |       0 |                   
+  ...wer-update.ts |       0 |        0 |       0 |       0 |                   
+  ...ing-update.ts |       0 |        0 |       0 |       0 |                   
+  ...iew-status.ts |       0 |        0 |       0 |       0 |                   
+  audit-review.ts  |       0 |        0 |       0 |       0 |                   
+  comments.ts      |       0 |        0 |       0 |       0 |                   
+  ...leteReview.ts |       0 |        0 |       0 |       0 |                   
+  sendReview.ts    |       0 |        0 |       0 |       0 |                   
+ .../dashboard/api |       0 |        0 |       0 |       0 |                   
+  ...board.repo.ts |       0 |        0 |       0 |       0 |                   
+ .../dashboard/lib |     100 |      100 |     100 |     100 |                   
+  mappers.ts       |     100 |      100 |     100 |     100 |                   
+ ...ashboard/model |       0 |        0 |       0 |       0 |                   
+  dashboard.ts     |       0 |        0 |       0 |       0 |                   
+ ...ities/facility |       0 |        0 |       0 |       0 |                   
+  model.ts         |       0 |        0 |       0 |       0 |                   
+ ...s/facility/api |       0 |        0 |       0 |       0 |                   
+  ...ities.repo.ts |       0 |        0 |       0 |       0 |                   
+ ...s/facility/lib |   98.62 |    96.72 |     100 |   98.62 |                   
+  mappers.ts       |   98.62 |    96.72 |     100 |   98.62 | 170-171           
+ src/entities/flow |       0 |        0 |       0 |       0 |                   
+  model.ts         |       0 |        0 |       0 |       0 |                   
+ ...ities/flow/api |       0 |      100 |     100 |       0 |                   
+  flows.repo.ts    |       0 |      100 |     100 |       0 | 41                
+ ...ities/flow/lib |   97.97 |    91.45 |     100 |   97.97 |                   
+  mappers.ts       |   97.97 |    91.45 |     100 |   97.97 | 145-147,338-340   
+ ...ities/projects |       0 |        0 |       0 |       0 |                   
+  model.ts         |       0 |        0 |       0 |       0 |                   
+ ...s/projects/api |       0 |        0 |       0 |       0 |                   
+  projects.repo.ts |       0 |        0 |       0 |       0 |                   
+ ...s/projects/lib |     100 |      100 |     100 |     100 |                   
+  mappers.ts       |     100 |      100 |     100 |     100 |                   
+ ...ies/report/api |       0 |        0 |       0 |       0 |                   
+  ...eport.repo.ts |       0 |        0 |       0 |       0 |                   
+  reports.repo.ts  |       0 |        0 |       0 |       0 |                   
+ ...ies/report/lib |     100 |      100 |     100 |     100 |                   
+  ...rt.mappers.ts |     100 |      100 |     100 |     100 |                   
+  ...st.mappers.ts |     100 |      100 |     100 |     100 |                   
+ ...s/report/model |       0 |        0 |       0 |       0 |                   
+  audit-report.tsx |       0 |        0 |       0 |       0 |                   
+  ...t-progress.ts |       0 |        0 |       0 |       0 |                   
+  report-list.ts   |       0 |        0 |       0 |       0 |                   
+ src/entities/user |       0 |        0 |       0 |       0 |                   
+  list.model.ts    |       0 |        0 |       0 |       0 |                   
+ ...ities/user/api |       0 |        0 |       0 |       0 |                   
+  auth.repo.ts     |       0 |        0 |       0 |       0 |                   
+  users.repo.ts    |       0 |        0 |       0 |       0 |                   
+ ...ities/user/lib |   97.14 |    97.05 |     100 |   97.14 |                   
+  list.mappers.ts  |     100 |      100 |     100 |     100 |                   
+  mappers.ts       |   96.22 |    96.29 |     100 |   96.22 | 98-99             
+ ...ies/user/model |     100 |      100 |     100 |     100 |                   
+  sessions.ts      |     100 |      100 |     100 |     100 |                   
+ ...res/audits/api |     100 |    93.33 |     100 |     100 |                   
+  ....repo.impl.ts |     100 |    81.81 |     100 |     100 | 18-19             
+  ....repo.impl.ts |     100 |    85.71 |     100 |     100 | 33-34             
+  ....repo.impl.ts |     100 |    98.61 |     100 |     100 | 57                
+  ....repo.impl.ts |     100 |       75 |     100 |     100 | 14-15             
+ ...res/audits/lib |     100 |    98.18 |     100 |     100 |                   
+  ...-edit-href.ts |     100 |      100 |     100 |     100 |                   
+  ...ailability.ts |     100 |      100 |     100 |     100 |                   
+  ...dence.test.ts |     100 |      100 |     100 |     100 |                   
+  ...t-evidence.ts |     100 |    96.66 |     100 |     100 | 45                
+ ...dits/lib/hooks |     100 |     96.8 |     100 |     100 |                   
+  ...itComments.ts |     100 |      100 |     100 |     100 |                   
+  ...uditDetail.ts |     100 |      100 |     100 |     100 |                   
+  ...viewDetail.ts |     100 |      100 |     100 |     100 |                   
+  useAuditors.ts   |     100 |      100 |     100 |     100 |                   
+  ...itMutation.ts |     100 |      100 |     100 |     100 |                   
+  ...ntMutation.ts |     100 |      100 |     100 |     100 |                   
+  ...eleteAudit.ts |     100 |      100 |     100 |     100 |                   
+  ...uditReport.ts |     100 |    92.04 |     100 |     100 | ...60,183,190,201 
+  ...niteAudits.ts |     100 |      100 |     100 |     100 |                   
+  useListAudits.ts |     100 |      100 |     100 |     100 |                   
+  ...uditReview.ts |     100 |      100 |     100 |     100 |                   
+  ...uditReview.ts |     100 |      100 |     100 |     100 |                   
+  ...jectAudits.ts |     100 |      100 |     100 |     100 |                   
+  ...portDrafts.ts |     100 |    96.55 |     100 |     100 | 37,173,194,230    
+  ...dForReview.ts |     100 |      100 |     100 |     100 |                   
+  ...eviewAudit.ts |     100 |      100 |     100 |     100 |                   
+  ...erMutation.ts |     100 |      100 |     100 |     100 |                   
+  ...ntMutation.ts |     100 |      100 |     100 |     100 |                   
+  ...ngMutation.ts |     100 |      100 |     100 |     100 |                   
+  ...viewStatus.ts |     100 |      100 |     100 |     100 |                   
+ ...s/lib/usecases |     100 |      100 |     100 |     100 |                   
+  ...eviewAudit.ts |     100 |      100 |     100 |     100 |                   
+  ...ditComment.ts |     100 |      100 |     100 |     100 |                   
+  deleteAudit.ts   |     100 |      100 |     100 |     100 |                   
+  ...w-progress.ts |     100 |      100 |     100 |     100 |                   
+  getAuditById.ts  |     100 |      100 |     100 |     100 |                   
+  ...itComments.ts |     100 |      100 |     100 |     100 |                   
+  listAudits.ts    |     100 |      100 |     100 |     100 |                   
+  ...for-review.ts |     100 |      100 |     100 |     100 |                   
+  ...uditAnswer.ts |     100 |      100 |     100 |     100 |                   
+  ...ditComment.ts |     100 |      100 |     100 |     100 |                   
+  ...ditFinding.ts |     100 |      100 |     100 |     100 |                   
+  ...viewStatus.ts |     100 |      100 |     100 |     100 |                   
+ ...ures/audits/ui |   89.21 |    88.51 |   89.04 |   89.21 |                   
+  ...itContent.tsx |     100 |    96.42 |     100 |     100 | 78,115            
+  ...ditHeader.tsx |       0 |        0 |       0 |       0 | 1-105             
+  ...itTabsBar.tsx |     100 |       40 |     100 |     100 | 44-64             
+  ...InfoPanel.tsx |     100 |      100 |     100 |     100 |                   
+  ...stionCard.tsx |   97.57 |     91.3 |   95.83 |   97.57 | 359-370,728-731   
+  ...onsHeader.tsx |     100 |       80 |     100 |     100 | 41                
+  ...tionsList.tsx |   65.64 |    65.71 |      75 |   65.64 | ...39,166,172-181 
+  ...tsFilters.tsx |       0 |        0 |       0 |       0 | 1-62              
+  AuditsTable.tsx  |   99.05 |    87.14 |    92.3 |   99.05 | 184-185,244       
+  ...tsToolBar.tsx |       0 |        0 |       0 |       0 | 1-67              
+  ...tsSidebar.tsx |   88.51 |    73.91 |   66.66 |   88.51 | ...28-130,173-178 
+  ...portModal.tsx |     100 |       96 |     100 |     100 | 101               
+  ...ortHeader.tsx |     100 |      100 |     100 |     100 |                   
+  ...ededModal.tsx |     100 |      100 |     100 |     100 |                   
+  ...ActionBar.tsx |     100 |      100 |     100 |     100 |                   
+  ...rtPreview.tsx |     100 |     92.3 |     100 |     100 | 174,179,216-219   
+ ...tures/auth/api |     100 |      100 |     100 |     100 |                   
+  ....repo.impl.ts |     100 |      100 |     100 |     100 |                   
+ ...h/lib/usecases |     100 |    94.11 |     100 |     100 |                   
+  login.ts         |     100 |    94.11 |     100 |     100 | 50                
+ ...atures/auth/ui |     100 |      100 |     100 |     100 |                   
+  LoginForm.tsx    |     100 |      100 |     100 |     100 |                   
+ .../dashboard/api |     100 |      100 |     100 |     100 |                   
+  ....repo.impl.ts |     100 |      100 |     100 |     100 |                   
+ ...d/lib/usecases |     100 |      100 |     100 |     100 |                   
+  ...rd-summary.ts |     100 |      100 |     100 |     100 |                   
+ ...s/dashboard/ui |     100 |      100 |     100 |     100 |                   
+  ...ardSummary.ts |     100 |      100 |     100 |     100 |                   
+ ...facilities/api |     100 |      100 |     100 |     100 |                   
+  ....repo.impl.ts |     100 |      100 |     100 |     100 |                   
+ ...facilities/lib |     100 |      100 |     100 |     100 |                   
+  ...onalFields.ts |     100 |      100 |     100 |     100 |                   
+ ...s/lib/usecases |   98.83 |    98.97 |     100 |   98.83 |                   
+  ...ty.usecase.ts |     100 |      100 |     100 |     100 |                   
+  ...ty.usecase.ts |     100 |      100 |     100 |     100 |                   
+  ...ty.usecase.ts |     100 |      100 |     100 |     100 |                   
+  ...ty.usecase.ts |    97.7 |    97.77 |     100 |    97.7 | 120-121           
+ .../facilities/ui |   96.15 |    84.58 |   76.47 |   96.15 |                   
+  ...ityDialog.tsx |     100 |      100 |     100 |     100 |                   
+  ...ityDialog.tsx |     100 |      100 |     100 |     100 |                   
+  ...esContent.tsx |     100 |    85.13 |     100 |     100 | ...38,321,342,364 
+  ...earchCard.tsx |    97.5 |    83.33 |     100 |    97.5 | 49                
+  ...lityTable.tsx |   92.62 |    74.57 |   56.25 |   92.62 | ...,97-98,104-106 
+  ...ertDialog.tsx |   94.09 |    89.62 |   88.88 |   94.09 | ...89-192,199-201 
+ ...ities/ui/hooks |   14.43 |       40 |   33.33 |   14.43 |                   
+  ...tyMutation.ts |       0 |        0 |       0 |       0 | 1-30              
+  ...tyMutation.ts |       0 |        0 |       0 |       0 | 1-30              
+  ...tyMutation.ts |       0 |        0 |       0 |       0 | 1-30              
+  ...itiesQuery.ts |       0 |        0 |       0 |       0 | 1-37              
+  ...itiesQuery.ts |     100 |      100 |     100 |     100 |                   
+  ...tyMutation.ts |       0 |        0 |       0 |       0 | 1-16              
+  ...tyMutation.ts |       0 |        0 |       0 |       0 | 1-40              
+ ...ures/flows/api |     100 |    97.72 |     100 |     100 |                   
+  flows.dto.ts     |     100 |      100 |     100 |     100 |                   
+  ....repo.impl.ts |     100 |    97.61 |     100 |     100 | 91                
+ ...ures/flows/lib |     100 |    94.11 |     100 |     100 |                   
+  useFlowsQuery.ts |     100 |    94.11 |     100 |     100 | 47                
+ ...tures/flows/ui |   92.95 |    92.81 |      90 |   92.95 |                   
+  ...NavEditor.tsx |   99.45 |    87.27 |     100 |   99.45 | 47                
+  FlowCard.tsx     |     100 |     86.2 |     100 |     100 | 40,52,64,73       
+  ...ithDialog.tsx |     100 |    94.73 |   66.66 |     100 | 65                
+  FlowEditor.tsx   |    87.6 |    91.42 |   83.33 |    87.6 | ...74-592,970-985 
+  ...onsDialog.tsx |     100 |      100 |     100 |     100 |                   
+  FlowSection.tsx  |       0 |        0 |       0 |       0 | 1-53              
+  ...tepsTable.tsx |   99.52 |     97.5 |     100 |   99.52 | 198               
+  ...Inspector.tsx |     100 |    95.77 |    93.1 |     100 | 74,480,490        
+  StepSelector.tsx |     100 |     92.1 |     100 |     100 | 54,57,60          
+ ...ws/ui/adapters |     100 |      100 |     100 |     100 |                   
+  ...ToDialogVM.ts |     100 |      100 |     100 |     100 |                   
+ ...s/projects/api |     100 |      100 |     100 |     100 |                   
+  ....repo.impl.ts |     100 |      100 |     100 |     100 |                   
+ ...s/projects/lib |     100 |      100 |     100 |     100 |                   
+  ...onalFields.ts |     100 |      100 |     100 |     100 |                   
+  project-href.ts  |     100 |      100 |     100 |     100 |                   
+ ...s/lib/usecases |     100 |      100 |     100 |     100 |                   
+  ...ve-project.ts |     100 |      100 |     100 |     100 |                   
+  ...te-project.ts |     100 |      100 |     100 |     100 |                   
+  deleteProject.ts |     100 |      100 |     100 |     100 |                   
+  ...h-projects.ts |     100 |      100 |     100 |     100 |                   
+  get-project.ts   |     100 |      100 |     100 |     100 |                   
+  ...re-project.ts |     100 |      100 |     100 |     100 |                   
+  ...te-project.ts |     100 |      100 |     100 |     100 |                   
+ ...es/projects/ui |   98.97 |    85.11 |    87.8 |   98.97 |                   
+  ...ectsTable.tsx |     100 |    94.11 |     100 |     100 | 71                
+  ...ectDialog.tsx |     100 |      100 |     100 |     100 |                   
+  ...ectDialog.tsx |     100 |      100 |     100 |     100 |                   
+  ...sProgress.tsx |     100 |      100 |     100 |     100 |                   
+  ...tsContent.tsx |   99.15 |    81.73 |   88.88 |   99.15 | 193,198,342       
+  ...earchCard.tsx |    97.5 |     90.9 |     100 |    97.5 | 50                
+  ...ectsTable.tsx |   97.43 |    85.96 |   73.33 |   97.43 | 67,84-87          
+  ...ertDialog.tsx |   99.27 |    83.14 |     100 |   99.27 | 147-148           
+ ...jects/ui/hooks |   61.14 |    89.58 |   61.53 |   61.14 |                   
+  ...ctMutation.ts |       0 |        0 |       0 |       0 | 1-39              
+  ...ctMutation.ts |       0 |        0 |       0 |       0 | 1-22              
+  ...ctMutation.ts |       0 |        0 |       0 |       0 | 1-39              
+  ...ormLookups.ts |     100 |      100 |     100 |     100 |                   
+  ...ojectQuery.ts |     100 |      100 |     100 |     100 |                   
+  ...jectsQuery.ts |       0 |        0 |       0 |       0 | 1-31              
+  ...ctMutation.ts |     100 |      100 |     100 |     100 |                   
+  ...ctMutation.ts |       0 |        0 |       0 |       0 | 1-21              
+ ...es/reports/api |     100 |    90.47 |     100 |     100 |                   
+  ....repo.impl.ts |     100 |    66.66 |     100 |     100 | 10-11             
+  ....repo.impl.ts |     100 |      100 |     100 |     100 |                   
+ ...orts/lib/hooks |   99.45 |    95.23 |     100 |   99.45 |                   
+  ...uditReport.ts |     100 |      100 |     100 |     100 |                   
+  ...leteReport.ts |     100 |      100 |     100 |     100 |                   
+  ...ReportFile.ts |   99.09 |     92.3 |     100 |   99.09 | 129               
+  ...uditReport.ts |     100 |      100 |     100 |     100 |                   
+  ...portsQuery.ts |     100 |      100 |     100 |     100 |                   
+ ...s/lib/usecases |     100 |      100 |     100 |     100 |                   
+  fetch-reports.ts |     100 |      100 |     100 |     100 |                   
+ ...res/reports/ui |   98.83 |    89.04 |     100 |   98.83 |                   
+  ...sListCard.tsx |     100 |      100 |     100 |     100 |                   
+  ...earchCard.tsx |     100 |      100 |     100 |     100 |                   
+  ReportsTable.tsx |   98.35 |    87.87 |     100 |   98.35 | 86-87,134         
+ ...ures/users/api |     100 |      100 |     100 |     100 |                   
+  ....repo.impl.ts |     100 |      100 |     100 |     100 |                   
+ ...tures/users/ui |   99.76 |    88.02 |    82.6 |   99.76 |                   
+  ...serDialog.tsx |     100 |      100 |     100 |     100 |                   
+  UsersMetrics.tsx |     100 |      100 |     100 |     100 |                   
+  ...earchCard.tsx |     100 |      100 |     100 |     100 |                   
+  UsersTable.tsx   |   99.45 |    75.71 |   71.42 |   99.45 | 105               
+ ...users/ui/hooks |     100 |      100 |     100 |     100 |                   
+  useUsersQuery.ts |     100 |      100 |     100 |     100 |                   
+ ...processes/auth |     100 |      100 |     100 |     100 |                   
+  context.tsx      |     100 |      100 |     100 |     100 |                   
+  guard.tsx        |     100 |      100 |     100 |     100 |                   
+  hooks.ts         |     100 |      100 |     100 |     100 |                   
+  session.ts       |     100 |      100 |     100 |     100 |                   
+ src/shared/api    |   98.55 |    90.64 |     100 |   98.55 |                   
+  backend-proxy.ts |   98.19 |    91.54 |     100 |   98.19 | 149-150           
+  http.client.ts   |     100 |    76.47 |     100 |     100 | 19-20,48,72       
+  http.server.ts   |   98.29 |    94.11 |     100 |   98.29 | 49-50             
+ src/shared/auth   |   96.77 |    87.09 |    87.5 |   96.77 |                   
+  ...ito-groups.ts |     100 |      100 |     100 |     100 |                   
+  ...cess-token.ts |   96.07 |    81.81 |   85.71 |   96.07 | 56-57             
+ src/shared/config |     100 |    88.88 |     100 |     100 |                   
+  env.ts           |     100 |    88.88 |     100 |     100 | 13,17,22,28       
+ ...d/interceptors |   93.65 |    84.93 |     100 |   93.65 |                   
+  auth.ts          |   97.27 |    91.66 |     100 |   97.27 | 71,113-114        
+  error.ts         |   91.13 |    81.63 |     100 |   91.13 | ...98,100,102,185 
+ src/shared/lib    |   98.81 |    98.26 |   97.05 |   98.81 |                   
+  cn.ts            |     100 |      100 |     100 |     100 |                   
+  coerce.ts        |     100 |      100 |     100 |     100 |                   
+  date.ts          |    87.5 |    85.71 |     100 |    87.5 | 19-20             
+  download.ts      |     100 |      100 |     100 |     100 |                   
+  file.ts          |     100 |      100 |     100 |     100 |                   
+  jwt.ts           |   92.59 |    93.33 |     100 |   92.59 | 19-20             
+  report-format.ts |     100 |      100 |     100 |     100 |                   
+  ...t-progress.ts |     100 |      100 |     100 |     100 |                   
+  ...on-handler.ts |     100 |      100 |     100 |     100 |                   
+  ...ncedSearch.ts |     100 |      100 |     100 |     100 |                   
+  useMediaQuery.ts |     100 |      100 |     100 |     100 |                   
+  ...lParameter.ts |     100 |      100 |      75 |     100 |                   
+ ...ared/providers |       0 |        0 |       0 |       0 |                   
+  ...-provider.tsx |       0 |        0 |       0 |       0 | 1-65              
+ src/shared/ui     |    99.3 |    96.42 |   97.77 |    99.3 |                   
+  Loading.tsx      |     100 |      100 |     100 |     100 |                   
+  Pagination.tsx   |     100 |      100 |     100 |     100 |                   
+  Retry.tsx        |     100 |      100 |     100 |     100 |                   
+  badge.tsx        |     100 |      100 |     100 |     100 |                   
+  brand-mark.tsx   |     100 |      100 |     100 |     100 |                   
+  card.tsx         |     100 |      100 |     100 |     100 |                   
+  collapsible.tsx  |     100 |      100 |     100 |     100 |                   
+  ...rm-dialog.tsx |     100 |    88.88 |     100 |     100 | 74                
+  ...irm-title.tsx |     100 |      100 |     100 |     100 |                   
+  controls.tsx     |     100 |      100 |     100 |     100 |                   
+  ...down-menu.tsx |     100 |      100 |     100 |     100 |                   
+  ...er-select.tsx |     100 |      100 |     100 |     100 |                   
+  ...ntity-row.tsx |     100 |      100 |     100 |     100 |                   
+  modal.tsx        |     100 |    88.88 |     100 |     100 | 34-38,79          
+  page-header.tsx  |     100 |      100 |     100 |     100 |                   
+  progress.tsx     |     100 |    95.45 |     100 |     100 | 67                
+  ...on-button.tsx |     100 |      100 |     100 |     100 |                   
+  search-input.tsx |     100 |      100 |     100 |     100 |                   
+  table-header.tsx |     100 |      100 |     100 |     100 |                   
+  table.tsx        |     100 |      100 |     100 |     100 |                   
+  tabs.tsx         |     100 |      100 |     100 |     100 |                   
+  ...-provider.tsx |       0 |        0 |       0 |       0 | 1-11              
+  theme-toggle.tsx |     100 |      100 |     100 |     100 |                   
+  tooltip.tsx      |     100 |      100 |     100 |     100 |                   
+ ...gets/dashboard |     100 |    94.28 |     100 |     100 |                   
+  ActivityItem.tsx |     100 |    84.61 |     100 |     100 | 25-27             
+  ...tySection.tsx |     100 |      100 |     100 |     100 |                   
+  ...rdMetrics.tsx |     100 |      100 |     100 |     100 |                   
+  MetricCard.tsx   |     100 |      100 |     100 |     100 |                   
+  ...wPipeline.tsx |     100 |      100 |     100 |     100 |                   
+ ...project-detail |     100 |    95.33 |   95.23 |     100 |                   
+  ...tsToolbar.tsx |     100 |      100 |     100 |     100 |                   
+  ...ailHeader.tsx |     100 |    94.73 |     100 |     100 | 34                
+  ...etailView.tsx |     100 |    94.11 |   91.66 |     100 | ...45,204,305,319 
+  ...tySection.tsx |     100 |      100 |     100 |     100 |                   
+  ...ditFilters.ts |     100 |    94.11 |     100 |     100 | 24                
+ ...ect-detail/lib |     100 |    95.83 |     100 |     100 |                   
+  audit-filters.ts |     100 |      100 |     100 |     100 |                   
+  ...t-sections.ts |     100 |     90.9 |     100 |     100 | 35,79             
+ src/widgets/shell |     100 |    91.22 |     100 |     100 |                   
+  AppHeader.tsx    |     100 |      100 |     100 |     100 |                   
+  AppShell.tsx     |     100 |    42.85 |     100 |     100 | 25-26             
+  SidebarNav.tsx   |     100 |    97.77 |     100 |     100 | 67                
+-------------------|---------|----------|---------|---------|-------------------
+
+> kma_web@1.0.15 build
+> next build
+
+   ▲ Next.js 15.5.9
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 10.5s
+   Linting and checking validity of types ...
+
+ ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+
+./app/(dashboard)/users/page.tsx
+139:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/entities/audit/lib/audit-detail.mappers.ts
+295:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+297:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+299:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+302:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+302:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+304:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/entities/audit/model/audit-detail.ts
+70:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/entities/flow/lib/mappers.ts
+37:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+45:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+170:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+172:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+231:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+239:65  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+247:57  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/features/audits/api/audit.repo.impl.ts
+31:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+40:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+72:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+73:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+153:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+154:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/features/audits/ui/AuditQuestionCard.tsx
+33:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+206:26  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+207:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+392:61  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+400:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+410:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+423:49  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+440:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+481:81  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+505:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/features/audits/ui/AuditQuestionsList.tsx
+26:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+47:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/features/facilities/lib/usecases/create-facility.usecase.ts
+16:5  Warning: Unused eslint-disable directive (no problems were reported from 'no-new').
+
+./src/features/facilities/lib/usecases/update-facility.usecase.ts
+17:5  Warning: Unused eslint-disable directive (no problems were reported from 'no-new').
+
+./src/features/facilities/ui/FacilityUpsertDialog.tsx
+325:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/features/projects/ui/ProjectsContent.tsx
+168:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+169:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/shared/api/http.server.ts
+129:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+137:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+138:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+139:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+146:32  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+150:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/shared/interceptors/error.ts
+184:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+185:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+224:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+224:63  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/shared/ui/card.tsx
+35:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/shared/ui/controls.tsx
+10:5  Warning: A form label must be associated with a control.  jsx-a11y/label-has-associated-control
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/20) ...
+   Generating static pages (5/20) 
+   Generating static pages (10/20) 
+   Generating static pages (15/20) 
+ ✓ Generating static pages (20/20)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                  Size  First Load JS
+┌ ○ /                                                       216 B         102 kB
+├ ○ /_not-found                                              1 kB         103 kB
+├ ƒ /api/audits                                             216 B         102 kB
+├ ƒ /api/audits-review/[auditId]/answers                    216 B         102 kB
+├ ƒ /api/audits-review/[auditId]/complete-review            216 B         102 kB
+├ ƒ /api/audits-review/[auditId]/findings/[questionCode]    216 B         102 kB
+├ ƒ /api/audits-review/[auditId]/status                     216 B         102 kB
+├ ƒ /api/audits/[auditId]                                   216 B         102 kB
+├ ƒ /api/audits/[auditId]/send-for-review                   216 B         102 kB
+├ ƒ /api/audits/audit-reviews/[auditReviewId]               216 B         102 kB
+├ ƒ /api/comments                                           216 B         102 kB
+├ ƒ /api/comments/[commentId]                               216 B         102 kB
+├ ƒ /api/dashboard                                          216 B         102 kB
+├ ƒ /api/facilities                                         216 B         102 kB
+├ ƒ /api/facilities/[id]                                    216 B         102 kB
+├ ƒ /api/facilities/[id]/archive                            216 B         102 kB
+├ ƒ /api/facilities/[id]/restore                            216 B         102 kB
+├ ƒ /api/facilities/upload-img                              216 B         102 kB
+├ ƒ /api/flows                                              216 B         102 kB
+├ ƒ /api/flows/[id]                                         216 B         102 kB
+├ ƒ /api/flows/summary                                      216 B         102 kB
+├ ƒ /api/projects                                           216 B         102 kB
+├ ƒ /api/projects/[id]                                      216 B         102 kB
+├ ƒ /api/projects/[id]/archive                              216 B         102 kB
+├ ƒ /api/projects/[id]/facilities                           216 B         102 kB
+├ ƒ /api/projects/[id]/restore                              216 B         102 kB
+├ ƒ /api/reports                                            216 B         102 kB
+├ ƒ /api/reports/[auditId]                                  216 B         102 kB
+├ ƒ /api/session                                            216 B         102 kB
+├ ƒ /api/session/refresh                                    216 B         102 kB
+├ ƒ /api/uploads                                            216 B         102 kB
+├ ƒ /api/uploads/presigned                                  216 B         102 kB
+├ ƒ /api/uploads/proxy                                      216 B         102 kB
+├ ƒ /api/users                                              216 B         102 kB
+├ ƒ /api/users/[id]                                         216 B         102 kB
+├ ƒ /audits                                               8.48 kB         184 kB
+├ ƒ /audits/[id]/edit                                       23 kB         232 kB
+├ ƒ /dashboard                                            6.71 kB         158 kB
+├ ƒ /flows                                                5.62 kB         178 kB
+├ ƒ /flows/[id]                                             989 B         208 kB
+├ ƒ /flows/new                                              537 B         208 kB
+├ ƒ /login                                                14.3 kB         159 kB
+├ ƒ /projects                                               12 kB         220 kB
+├ ƒ /projects/[id]                                        6.18 kB         196 kB
+├ ƒ /reports                                              6.09 kB         176 kB
+└ ƒ /users                                                  10 kB         193 kB
++ First Load JS shared by all                              102 kB
+  ├ chunks/1255-9494d7e861e97d68.js                       45.9 kB
+  ├ chunks/4bd1b696-f785427dddbba9fb.js                   54.2 kB
+  └ other shared chunks (total)                           1.93 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

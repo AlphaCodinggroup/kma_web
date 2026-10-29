@@ -1,0 +1,4 @@
+
+> kma_web@1.0.15 typecheck
+> tsc --noEmit
+

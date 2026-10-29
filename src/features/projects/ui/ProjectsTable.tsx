@@ -3,6 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { cn } from "@shared/lib/cn";
+import { useMediaQuery } from "@shared/lib/useMediaQuery";
+import { MobileEntityRow } from "@shared/ui/mobile-entity-row";
+import { Button } from "@shared/ui/controls";
 import { projectDetailHref } from "@features/projects/lib/project-href";
 import {
   Table,
@@ -12,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui/table";
-import { Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import RowActionButton from "@shared/ui/row-action-button";
 import { Loading } from "@shared/ui/Loading";
 import { Retry } from "@shared/ui/Retry";
@@ -37,13 +40,14 @@ export interface ProjectsTableProps {
   sortField?: SortField | null;
   sortOrder?: SortOrder;
   onSort?: (field: SortField) => void;
+  onResetSort?: () => void;
 }
 
 export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   items,
   onEdit,
   onDelete,
-  onArchive: _onArchive,
+  onArchive,
   emptyMessage = "No projects found",
   className,
   isLoading = false,
@@ -52,8 +56,10 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   sortField,
   sortOrder,
   onSort,
+  onResetSort,
 }) => {
   const { isAdmin } = useSession();
+  const isCompact = useMediaQuery("(max-width: 1023px)");
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return <ArrowUpDown className="h-4 w-4 opacity-30" />;
     if (sortOrder === "asc") return <ArrowUp className="h-4 w-4" />;
@@ -72,17 +78,38 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
       />
     );
 
+  if (isCompact) return (
+    <div className={className}>
+      {onSort ? <div className="flex flex-wrap items-center gap-2 border-b border-[var(--kma-border)] px-4 py-3">
+        <select aria-label="Sort projects" value={sortField ?? ""} onChange={event => { if (event.target.value) onSort(event.target.value as SortField); else onResetSort?.(); }} className="min-h-11 min-w-0 flex-1 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] px-3 text-sm">
+          <option value="">Original order</option><option value="name">Project name</option><option value="auditor">Auditor</option><option value="facility">Facility</option><option value="status">Status</option><option value="createdAt">Created date</option>
+        </select>
+        <Button fullWidth={false} variant="ghost" aria-label="Change project sort direction" onClick={() => onSort(sortField ?? "name")}>{sortOrder === "asc" ? "Ascending" : sortOrder === "desc" ? "Descending" : "Sort"}</Button>
+      </div> : null}
+      {hasItems ? <ul aria-label="Projects" className="divide-y divide-[var(--kma-border)]">
+        {items.map(row => <MobileEntityRow key={row.id} title={<Link href={projectDetailHref(row.id)} className="no-underline hover:underline">{row.name}</Link>} status={<ProjectStatusBadge status={row.status} />} subtitle={row.users?.length ? row.users.map(user => user.name).join(", ") : "No auditors assigned"} actions={<>
+          <Link href={projectDetailHref(row.id)} className="inline-flex min-h-11 items-center rounded border border-[var(--kma-border)] px-3 text-sm font-medium no-underline">View project</Link>
+          <Button fullWidth={false} variant="secondary" disabled={!isAdmin} aria-label="Edit project" onClick={() => onEdit(row.id)}>Edit</Button>
+          <RowActionButton className="min-h-11 min-w-11" icon={Archive} ariaLabel="Archive project" disabled={!isAdmin} onClick={() => onArchive(row.id)} />
+          <RowActionButton className="min-h-11 min-w-11" icon={Trash2} ariaLabel="Delete project" variant="danger" disabled={!isAdmin} onClick={() => onDelete(row.id)} />
+        </>}>
+          <dl className="space-y-3"><div><dt className="font-medium text-[var(--kma-fg)]">Facilities</dt><dd>{row.facilities?.length ? row.facilities.map(facility => facility.name).join(", ") : "No facilities assigned"}</dd></div><div><dt className="font-medium text-[var(--kma-fg)]">Created</dt><dd>{formatIsoToYmdHm(row.createdAt) || "—"}</dd></div>{row.description ? <div><dt className="font-medium text-[var(--kma-fg)]">Description</dt><dd>{row.description}</dd></div> : null}</dl>
+        </MobileEntityRow>)}
+      </ul> : <p className="px-4 py-10 text-center text-sm text-[var(--kma-muted)]">{emptyMessage}</p>}
+    </div>
+  );
+
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-gray-200",
+        "overflow-x-auto",
         className
       )}
     >
-      <Table>
+      <Table className="min-w-[760px]">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[30%] px-4 py-3 text-black">
+            <TableHead className="w-[24%] px-5 py-3 text-[var(--kma-muted)]">
               <button
                 onClick={() => onSort?.("name")}
                 className="flex items-center gap-2 hover:opacity-70 transition-opacity font-semibold"
@@ -92,7 +119,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 {onSort && getSortIcon("name")}
               </button>
             </TableHead>
-            <TableHead className="w-[20%] px-4 py-3 text-black">
+            <TableHead className="w-[20%] px-5 py-3 text-[var(--kma-muted)]">
               <button
                 onClick={() => onSort?.("auditor")}
                 className="flex items-center gap-2 hover:opacity-70 transition-opacity font-semibold"
@@ -102,7 +129,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 {onSort && getSortIcon("auditor")}
               </button>
             </TableHead>
-            <TableHead className="w-[25%] px-4 py-3 text-black">
+            <TableHead className="w-[25%] px-5 py-3 text-[var(--kma-muted)]">
               <button
                 onClick={() => onSort?.("facility")}
                 className="flex items-center gap-2 hover:opacity-70 transition-opacity font-semibold"
@@ -112,7 +139,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 {onSort && getSortIcon("facility")}
               </button>
             </TableHead>
-            <TableHead className="w-[5%] px-4 py-3 text-black">
+            <TableHead className="w-[8%] px-5 py-3 text-[var(--kma-muted)]">
               <button
                 onClick={() => onSort?.("status")}
                 className="flex items-center gap-2 hover:opacity-70 transition-opacity font-semibold"
@@ -122,7 +149,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 {onSort && getSortIcon("status")}
               </button>
             </TableHead>
-            <TableHead className="w-[15%] px-4 py-3 text-black">
+            <TableHead className="w-[15%] px-5 py-3 text-[var(--kma-muted)]">
               <button
                 onClick={() => onSort?.("createdAt")}
                 className="flex items-center gap-2 hover:opacity-70 transition-opacity font-semibold"
@@ -132,7 +159,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 {onSort && getSortIcon("createdAt")}
               </button>
             </TableHead>
-            <TableHead className="w-[7%] px-4 py-3 text-black">
+            <TableHead className="w-[10%] px-5 py-3 text-[var(--kma-muted)]">
               Actions
             </TableHead>
           </TableRow>
@@ -142,17 +169,18 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
           {hasItems ? (
             items.map((row) => (
               <TableRow key={row.id}>
-                <TableCell className="px-4 py-4 text-black">
+                <TableCell className="px-5 py-4 text-[var(--kma-fg)]">
                   <Link
                     href={projectDetailHref(row.id)}
-                    className="font-semibold text-black no-underline hover:underline"
+                    className="font-semibold text-[var(--kma-fg)] no-underline hover:underline"
                   >
                     {row.name}
                   </Link>
+                  {row.description ? <p className="mt-1 max-w-[260px] truncate text-xs text-[var(--kma-muted)]" title={row.description}>{row.description}</p> : null}
                 </TableCell>
-                <TableCell className="px-4 py-4 text-black">
+                <TableCell className="px-5 py-4 text-[var(--kma-fg)]">
                   {row.users?.length ? (
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1 text-[var(--kma-muted)]">
                       {row.users.map((user, i) => (
                         <span key={i} className="text-sm">
                           {user.name}
@@ -164,13 +192,13 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   )}
                 </TableCell>
 
-                <TableCell className="px-4 py-4 text-black">
+                <TableCell className="px-5 py-4 text-[var(--kma-fg)]">
                   {row.facilities?.length ? (
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-col gap-1.5">
                       {row.facilities.map((facility, i) => (
                         <span
                           key={i}
-                          className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
+                          className="text-sm text-[var(--kma-muted)]"
                         >
                           {facility.name}
                         </span>
@@ -181,17 +209,17 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   )}
                 </TableCell>
 
-                <TableCell className="px-4 py-4 text-black">
+                <TableCell className="px-5 py-4 text-[var(--kma-fg)]">
                   {row.status ? (
                     <ProjectStatusBadge status={row.status} />
                   ) : (
                     "—"
                   )}
                 </TableCell>
-                <TableCell className="px-4 py-4 text-black">
+                <TableCell className="px-5 py-4 text-[var(--kma-fg)]">
                   {formatIsoToYmdHm(row.createdAt) ?? "—"}
                 </TableCell>
-                <TableCell className="px-4 py-4">
+                <TableCell className="px-5 py-4">
                   <div className="flex items-center justify-end gap-2">
                     <RowActionButton
                       icon={Pencil}
@@ -201,12 +229,14 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                       disabled={!isAdmin}
                       title={!isAdmin ? "Only administrators can edit projects" : "Edit project"}
                     />
-                    {/* <RowActionButton
+                    <RowActionButton
                       icon={Archive}
                       ariaLabel="Archive project"
                       onClick={() => onArchive(row.id)}
                       size="md"
-                    /> */}
+                      disabled={!isAdmin}
+                      title={!isAdmin ? "Only administrators can archive projects" : "Archive project"}
+                    />
                     <RowActionButton
                       icon={Trash2}
                       ariaLabel="Delete project"
@@ -224,7 +254,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
             <TableRow>
               <TableCell
                 colSpan={6}
-                className="px-4 py-10 text-center text-sm text-gray-600"
+                className="px-4 py-10 text-center text-sm text-[var(--kma-muted)]"
               >
                 {emptyMessage}
               </TableCell>

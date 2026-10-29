@@ -12,6 +12,8 @@ import {
 describe("isAllowedReturnPath", () => {
   it.each([
     "/projects/project-1",
+    "/audits",
+    "/audits?q=ramp&status=completed&auditor=jane",
     "/projects/a%2Fb",
     "/projects/project-1?status=completed&q=ramp",
   ])("accepts %s", (value) => {
@@ -26,7 +28,8 @@ describe("isAllowedReturnPath", () => {
     ["a fragment", "/projects/p-1#top"],
     ["a query on the list", "/projects?status=completed"],
     ["a backslash trick", "/projects/\\evil.example.com"],
-    ["another page", "/audits"],
+    ["an audit detail", "/audits/audit-1"],
+    ["a backslash in the audits list", "/audits?x=\\evil.example.com"],
     ["an empty value", ""],
     ["a non string", 42],
     ["undefined", undefined],
@@ -67,6 +70,9 @@ describe("buildAuditEditHref", () => {
 });
 
 describe("resolveAuditBackHref", () => {
+  it("returns to the audit list with its search and status intact", () => {
+    expect(resolveAuditBackHref("/audits?q=ramp&status=completed")).toBe("/audits?q=ramp&status=completed");
+  });
   it("returns to the source project", () => {
     expect(resolveAuditBackHref("/projects/project-1")).toBe("/projects/project-1");
   });

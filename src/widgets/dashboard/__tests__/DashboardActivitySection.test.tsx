@@ -46,8 +46,8 @@ describe("DashboardActivitySection", () => {
     const { container } = render(<DashboardActivitySection items={items} />);
 
     const dots = container.querySelectorAll("span[aria-hidden='true']");
-    expect(dots[0]).toHaveClass("bg-emerald-500");
-    expect(dots[1]).toHaveClass("bg-amber-500");
+    expect(dots[0]).toHaveClass("bg-[var(--kma-success)]");
+    expect(dots[1]).toHaveClass("bg-[var(--kma-warning)]");
   });
 
   it("renders the empty state when the list is empty", () => {
@@ -73,10 +73,7 @@ describe("DashboardActivitySection", () => {
       <DashboardActivitySection items={items} data-testid="activity-section" />
     );
 
-    expect(screen.getByTestId("activity-section")).toHaveClass(
-      "rounded-2xl",
-      "bg-white"
-    );
+    expect(screen.getByTestId("activity-section")).toBeInTheDocument();
   });
 
   it("renders activities sharing the same project name", () => {

@@ -43,7 +43,7 @@ describe("Card primitives", () => {
       name: "Card",
       Component: Card,
       tag: "DIV",
-      baseClasses: ["rounded-2xl", "border", "border-gray-200", "bg-white", "shadow-sm"],
+      baseClasses: ["rounded-lg", "border", "border-[var(--kma-border)]", "bg-[var(--kma-surface)]"],
     },
     { name: "CardHeader", Component: CardHeader, tag: "DIV", baseClasses: ["px-5", "pt-5"] },
     {
@@ -56,7 +56,7 @@ describe("Card primitives", () => {
       name: "CardDescription",
       Component: CardDescription,
       tag: "P",
-      baseClasses: ["text-xs", "text-gray-500"],
+      baseClasses: ["text-xs", "text-[var(--kma-muted)]"],
     },
     { name: "CardContent", Component: CardContent, tag: "DIV", baseClasses: ["px-5", "pb-5"] },
     {

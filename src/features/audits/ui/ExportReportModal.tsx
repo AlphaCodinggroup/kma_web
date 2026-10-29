@@ -91,13 +91,13 @@ export default function ExportReportModal({
             />
           )}
 
-          <p role="status" aria-live="polite" className="min-h-6 text-gray-700">
+          <p role="status" aria-live="polite" className="min-h-6 text-[var(--kma-fg)]">
             {progress.message}
           </p>
 
           {progress.phase === "done" && showFilename ? (
-            <div className="text-sm text-gray-600">
-              <p className="font-medium text-black">{filename}</p>
+            <div className="text-sm text-[var(--kma-muted)]">
+              <p className="font-medium text-[var(--kma-fg)]">{filename}</p>
               {progress.bytes !== null ? <p>{formatBytes(progress.bytes)}</p> : null}
             </div>
           ) : null}

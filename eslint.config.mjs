@@ -15,6 +15,11 @@ export default [
   {
     ignores: [
       ".next/**",
+      ".worktrees/**",
+      ".rsc/**",
+      ".claude/**",
+      ".codex/**",
+      ".agents/**",
       "node_modules/**",
       "dist/**",
       "coverage/**",
@@ -23,9 +28,14 @@ export default [
       "next-env.d.ts",
     ],
   },
+  { plugins: { "@next/next": nextPlugin } },
   js.configs.recommended,
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["01-TOOLS/**/*.mjs"],
+    languageOptions: { globals: { process: "readonly", console: "readonly", Buffer: "readonly", URL: "readonly", setTimeout: "readonly", clearTimeout: "readonly" } },
+  },
+  {
+    files: ["**/*.{ts,tsx,mts}"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -100,7 +110,6 @@ export default [
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
-      "@next/next": nextPlugin,
       react: reactPlugin,
       "react-hooks": reactHooks,
       "jsx-a11y": jsxA11y,

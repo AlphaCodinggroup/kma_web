@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import {
   FileText,
   BarChart3,
@@ -66,25 +65,14 @@ const MetricCard: React.FC<MetricCardProps> = ({
 }) => {
   const Icon = icon ? ICONS[icon] : undefined;
   return (
-    <Card
-      data-testid={testId}
-      className="rounded-2xl border border-gray-200 bg-white shadow-sm"
-    >
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between">
-          <CardTitle className="text-md font-semibold">{title}</CardTitle>
-          {Icon ? (
-            <Icon className="h-4 w-4 text-gray-600" aria-hidden="true" />
-          ) : null}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold tracking-tight">{value}</div>
-        {subtitle ? (
-          <div className="mt-1 text-xs text-gray-600">{subtitle}</div>
-        ) : null}
-      </CardContent>
-    </Card>
+    <article data-testid={testId} className="min-w-0 bg-[var(--kma-surface)] px-5 py-5">
+      <div className="flex items-center gap-2">
+        {Icon ? <Icon className="h-4 w-4 shrink-0 text-[var(--kma-muted)]" aria-hidden="true" /> : null}
+        <h3 className="text-sm font-medium text-[var(--kma-muted)]">{title}</h3>
+      </div>
+      <div className="mt-3 font-heading text-[32px] leading-none font-medium tabular-nums tracking-tight text-[var(--kma-fg)]">{value}</div>
+      {subtitle ? <div className="mt-1 text-xs text-[var(--kma-muted)]">{subtitle}</div> : null}
+    </article>
   );
 };
 

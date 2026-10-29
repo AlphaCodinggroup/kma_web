@@ -28,7 +28,7 @@ const MAX_LIST_PAGES = 50;
 
 // Helper para extraer robustamente el array de DTOs
 function extractDtos(data: unknown): AuditDTO[] {
-  const d = data as any;
+  const d = data as Record<string, unknown> | null | undefined;
   if (Array.isArray(d)) return d as AuditDTO[];
   if (Array.isArray(d?.audits)) return d.audits as AuditDTO[];
   if (Array.isArray(d?.items)) return d.items as AuditDTO[];
@@ -37,7 +37,7 @@ function extractDtos(data: unknown): AuditDTO[] {
 }
 
 function extractDetailDto(data: unknown): AuditDetailDTO | null {
-  const d = data as any;
+  const d = data as Record<string, unknown> | null | undefined;
   if (d && typeof d === "object") {
     if (d.audit && typeof d.audit === "object") return d.audit as AuditDetailDTO;
     if (d.data && typeof d.data === "object") return d.data as AuditDetailDTO;
@@ -69,8 +69,8 @@ async function ensureOk(res: Response): Promise<void> {
       body &&
         typeof body === "object" &&
         "message" in body &&
-        (body as any).message
-        ? (body as any).message
+        body.message
+        ? body.message
         : "Upstream error";
 
     throw new AuditsApiError(String(msg), res.status);
@@ -148,10 +148,10 @@ class AuditRepoHttp implements AuditRepo {
       });
       await ensureOk(res);
 
-      const data = await res.json();
+      const data = await res.json() as { total?: number; last_eval_id?: string };
       dtos.push(...extractDtos(data));
-      total = (data as any).total ?? total;
-      lastEvalId = (data as any).last_eval_id;
+      total = data.total ?? total;
+      lastEvalId = data.last_eval_id;
 
       if (!lastEvalId || dtos.length >= requested) break;
       cursor = lastEvalId;

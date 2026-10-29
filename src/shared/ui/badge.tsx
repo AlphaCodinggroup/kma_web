@@ -21,37 +21,14 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     ref
   ) => {
     const sizeCls =
-      size === "md" ? "px-3 py-1 text-xs" : "px-2.5 py-0.5 text-[11px]"; // sm (por defecto)
+      size === "md" ? "px-3 py-1 text-xs" : "px-2.5 py-0.5 text-xs"; // sm (por defecto)
 
-    const toneMap: Record<
-      BadgeTone,
-      { solid: string; soft: string; outline: string }
-    > = {
-      neutral: {
-        solid: "bg-gray-900 text-white",
-        soft: "bg-gray-100 text-gray-800 ring-1 ring-inset ring-gray-200",
-        outline: "text-gray-700 ring-1 ring-inset ring-gray-300",
-      },
-      success: {
-        solid: "bg-emerald-600 text-white",
-        soft: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
-        outline: "text-emerald-700 ring-1 ring-inset ring-emerald-300",
-      },
-      warning: {
-        solid: "bg-amber-600 text-white",
-        soft: "bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200",
-        outline: "text-amber-800 ring-1 ring-inset ring-amber-300",
-      },
-      danger: {
-        solid: "bg-red-600 text-white",
-        soft: "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200",
-        outline: "text-red-700 ring-1 ring-inset ring-red-300",
-      },
-      info: {
-        solid: "bg-sky-600 text-white",
-        soft: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-200",
-        outline: "text-sky-700 ring-1 ring-inset ring-sky-300",
-      },
+    const toneMap: Record<BadgeTone, { solid: string; soft: string; outline: string }> = {
+      neutral: { solid: "bg-[var(--kma-fg)] text-[var(--kma-surface)]", soft: "bg-[var(--kma-subtle)] text-[var(--kma-muted)] ring-1 ring-inset ring-[var(--kma-border)]", outline: "text-[var(--kma-muted)] ring-1 ring-inset ring-[var(--kma-border)]" },
+      success: { solid: "bg-[var(--kma-success)] text-[var(--kma-surface)]", soft: "bg-[var(--kma-success-bg)] text-[var(--kma-success)] ring-1 ring-inset ring-[var(--kma-success-border)]", outline: "text-[var(--kma-success)] ring-1 ring-inset ring-[var(--kma-success-border)]" },
+      warning: { solid: "bg-[var(--kma-warning)] text-[var(--kma-surface)]", soft: "bg-[var(--kma-warning-bg)] text-[var(--kma-warning)] ring-1 ring-inset ring-[var(--kma-warning-border)]", outline: "text-[var(--kma-warning)] ring-1 ring-inset ring-[var(--kma-warning-border)]" },
+      danger: { solid: "bg-[var(--kma-danger)] text-[var(--kma-surface)]", soft: "bg-[var(--kma-danger-bg)] text-[var(--kma-danger)] ring-1 ring-inset ring-[var(--kma-danger-border)]", outline: "text-[var(--kma-danger)] ring-1 ring-inset ring-[var(--kma-danger-border)]" },
+      info: { solid: "bg-[var(--kma-info)] text-[var(--kma-surface)]", soft: "bg-[var(--kma-info-bg)] text-[var(--kma-info)] ring-1 ring-inset ring-[var(--kma-info-border)]", outline: "text-[var(--kma-info)] ring-1 ring-inset ring-[var(--kma-info-border)]" },
     };
 
     const palette = toneMap[tone][variant];
@@ -75,10 +52,13 @@ Badge.displayName = "Badge";
 /* -------------------------- Badge de dominio --------------------------- */
 
 export const AUDIT_STATUS_LABELS: Record<AuditStatus, string> = {
-  draft_report_pending_review: "Draft Report Pending Review",
-  draft_report_in_review: "Draft Report In Review",
-  final_report_sent_to_client: "Final Report Sent to Client",
+  audit_in_progress: "Fieldwork in progress",
+  draft_report_pending_review: "Pending review",
+  draft_report_in_review: "In review",
+  final_report_sent_to_client: "Delivered",
   completed: "Completed",
+  deleted: "Deleted",
+  unknown: "Status unavailable",
 };
 
 const STATUS_LABELS = AUDIT_STATUS_LABELS;
@@ -92,12 +72,12 @@ export function StatusBadge({
   "children" | "tone" | "variant"
 >) {
   const label = STATUS_LABELS[status];
-  const isCompleted = status === "completed";
+  const tone: BadgeTone = status === "draft_report_pending_review" ? "warning" : status === "draft_report_in_review" ? "info" : status === "completed" || status === "final_report_sent_to_client" ? "success" : "neutral";
 
   return (
     <Badge
-      variant={isCompleted ? "solid" : "soft"}
-      tone="neutral"
+      variant="soft"
+      tone={tone}
       className={cn("tracking-tight", className)}
       {...rest}
     >
