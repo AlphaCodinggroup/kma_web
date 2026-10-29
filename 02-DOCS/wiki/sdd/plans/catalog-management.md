@@ -90,3 +90,13 @@ S3 privado conserva XLSX inmutable temporal7d. Operación/outbox se registran tr
 
 ### Análisis previo
 Constitución leída, contrato Go como fuente, proxy compartido, permisos admin, snapshots y CAS conservados. Tareas FE/Go/infra con propietarios separados y contratos fijados. El costo de verificación se limita a checks afectados y un build estable. Riegos prioritarios: brecha DB/cola resuelta con outbox; escritor vencido con intento/lease propio; mezcla de páginas con cursor de versión. Sin contradicciones abiertas con el alcance aprobado.
+
+## Plan aprobado — CRUD y exportación (2026-10-23)
+
+1. Backend: POST /items, PUT y DELETE /items/{flow_id}/{catalog_item_id}; operación durable con operation_id, base_version y expected_revision. Worker existente aplica un cambio a copia completa y activa mediante revisión esperada.
+2. Export: GET /export?version= devuelve XLSX completo; hoja Catalog compatible con import; generación compartida y validación de límites.
+3. Frontend: formulario Add/Edit, confirmación Delete, Export Excel, seguimiento de operaciones y recuperación. Preservar formulario ante errores/conflictos; actualizar versión activa al completar.
+4. Infraestructura: registrar rutas en SAM, Terragrunt y runtime local.
+5. Evidencia: CRUD independiente por fila, colisiones, costo cero/ausente, permisos, concurrencia y reintentos; export/reimport de referencia y máximo; lint, tipos, build y navegador.
+
+Contrato de escritura: {operation_id,base_version,expected_revision,item?:{flow_id,barrier_id,question_code,question,mitigation_id,barrier_statement,proposed_mitigation,adas_reference,cost,unit}}. item solo en POST/PUT; operación kind create/update/delete y respuesta 202 en curso. Mantener rango 1–10000 registros. Trabajar en checkouts originales y ramas actuales.

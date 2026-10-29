@@ -127,7 +127,7 @@ export default function CatalogManager() {
           </p>
         )}
       </Card>
-      <CatalogBrowser versions={model.history} activeVersion={model.status?.active_version} />
+      <CatalogBrowser versions={model.history} activeVersion={model.status?.active_version} revision={model.status?.revision} canChange={model.canChange} busy={model.busy || Boolean(model.pending)} result={model.result} error={model.error} onSave={model.mutate} />
       <Card className="space-y-4 p-5">
         <h2 className="font-semibold">Recent operations</h2>
         {model.operationsError && <p role="alert">{model.operationsError}</p>}

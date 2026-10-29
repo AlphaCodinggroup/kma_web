@@ -46,7 +46,7 @@ export type CatalogIdentity = {
 };
 export type CatalogOperation = {
   operation_id: string;
-  kind: "upload" | "activate";
+  kind: "upload" | "activate" | "create" | "update" | "delete";
   status: "queued" | "running" | "completed" | "failed" | "conflict";
   message: string;
   processed_items?: number;
@@ -89,3 +89,12 @@ export type CatalogItemsQuery = {
 };
 export type CatalogItemsPage = { items: CatalogItem[]; version: string; next_cursor: string | null };
 export type CatalogOperationsPage = { items: CatalogOperation[]; next_cursor: string | null };
+
+export type CatalogItemInput = { [K in Exclude<keyof CatalogItem, "catalog_item_id" | "cost">]: string } & { cost: number | null };
+export type CatalogMutation = {
+  kind: "create" | "update" | "delete";
+  base_version: string;
+  expected_revision: string;
+  target?: { flow_id: string; catalog_item_id: string };
+  item?: CatalogItemInput;
+};

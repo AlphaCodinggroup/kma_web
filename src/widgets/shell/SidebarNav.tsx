@@ -79,7 +79,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items = DEFAULT_NAV, widthClass
           <p className="text-sm font-semibold text-[var(--kma-fg)]">Audit workspace</p>
           <p className="mt-0.5 text-xs text-[var(--kma-muted)]">Project and quality management</p>
         </div>
-        <nav className="w-full flex-1 overflow-y-auto lg:overflow-y-hidden px-3 py-1" aria-label="Main navigation">
+        <nav className="w-full min-h-0 flex-1 overflow-y-auto px-3 py-1" aria-label="Main navigation">
           <ul className="space-y-0.5">
             {visibleItems.map((item, index) => {
               const active = isActive(item.href);

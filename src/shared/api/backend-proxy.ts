@@ -16,6 +16,7 @@ import { PublicEnv, serverEnv } from "@shared/config/env";
 export type ProxyOptions = {
   /** Método HTTP hacia el backend. Por defecto el mismo de la petición. */
   method?: string;
+  binary?: { contentType: string; maxBytes: number };
   /** Ruta en el backend, sin la base. Ejemplo: "/facilities/123/restore". */
   path: string;
   /** Query params a reenviar. Se ignoran los ausentes y los vacíos. */
@@ -79,7 +80,7 @@ function buildUpstreamUrl(req: NextRequest, options: ProxyOptions): string {
 }
 
 /** Reempaqueta la respuesta del backend conservando status y forma. */
-async function repackage(res: Response): Promise<NextResponse> {
+async function repackage(res: Response, binary?: ProxyOptions["binary"]): Promise<NextResponse> {
   const contentType = res.headers.get("content-type") ?? "";
 
   if (res.status === 204) {
@@ -91,6 +92,37 @@ async function repackage(res: Response): Promise<NextResponse> {
     return NextResponse.json(data, { status: res.status });
   }
 
+  if (binary && res.ok) {
+    if (res.status !== 200 || contentType.split(";")[0] !== binary.contentType || !res.body) {
+      await res.body?.cancel().catch(() => undefined);
+      throw new Error("Unexpected binary response");
+    }
+    const reader = res.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    try {
+      const length = res.headers.get("content-length");
+      if (Number(length) > binary.maxBytes) throw new Error("Binary response exceeds limit");
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        size += value.byteLength;
+        if (size > binary.maxBytes) throw new Error("Binary response exceeds limit");
+        chunks.push(value);
+      }
+      // fetch descomprime el cuerpo: Content-Length solo coincide sin codificación.
+      const encoding = res.headers.get("content-encoding");
+      if ((!encoding || encoding === "identity") && length !== null && Number(length) !== size) throw new Error("Incomplete binary response");
+    } catch (cause) {
+      await reader.cancel().catch(() => undefined);
+      throw cause;
+    } finally { reader.releaseLock(); }
+    return new NextResponse(Buffer.concat(chunks), { status: res.status, headers: {
+      "Content-Type": binary.contentType,
+      "Content-Disposition": res.headers.get("content-disposition") ?? 'attachment; filename="catalog.xlsx"',
+      "Cache-Control": "no-store",
+    } });
+  }
   const text = await res.text().catch(() => "");
   if (!text) return NextResponse.json(null, { status: res.status });
   return NextResponse.json({ message: text }, { status: res.status });
@@ -119,7 +151,7 @@ export async function proxyToBackend(
   const upstreamUrl = buildUpstreamUrl(req, options);
 
   const headers: Record<string, string> = {
-    Accept: "application/json",
+    Accept: options.binary?.contentType ?? "application/json",
     Authorization: `Bearer ${token}`,
   };
 
@@ -159,7 +191,7 @@ export async function proxyToBackend(
     });
 
     if (res.status === 401) return unauthorized();
-    return await repackage(res);
+    return await repackage(res, options.binary);
   } catch (err) {
     console.error(`[bff] ${method} ${options.path} upstream error:`, err);
     return NextResponse.json({ message: "Bad Gateway" }, { status: 502 });

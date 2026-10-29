@@ -1,0 +1,4091 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "path": "02-DOCS/wiki/ftd/catalog-implementation-prompt.md",
+      "hash": "f4426d29052954004944052282eac36702f370c0ad2b20d9f448f483d62ac413",
+      "size": 23915,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md",
+      "hash": "c9381a6e99a6a6ba0a959a371d9e505f536aeb7504605cd39eb79aa437567de9",
+      "size": 3311,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/flow-inspector-width.md",
+      "hash": "9f9306a161f1c17c5f612b871b9bef0e18f404058211cdef7131d4a6e7fe9029",
+      "size": 1741,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/frontend-startup-warnings.md",
+      "hash": "83ebc47858cd87df1a3ccfcc207acf6e8bfa5d06ea3a9bd5661e4cc9bffac449",
+      "size": 2413,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/impeccable-claude-code.md",
+      "hash": "48fd70416941ddf00e0ac1303fcc67b3d41bcb415148d717cf109ebe1f9caeb0",
+      "size": 2688,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/install-rsc-harness.md",
+      "hash": "c69432a333c41c198c7b851f650c907680bf5f2bac3d0788ccc0de89025058b1",
+      "size": 2777,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/install-rsc-original-checkouts.md",
+      "hash": "f045e67c7d5939abb2f4ef496e7d15e99793a5db8b40602a2836b3fc9402943d",
+      "size": 5856,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/ui-scroll-fixes.md",
+      "hash": "ee9007769157f693d0a077c4be15903562267d3f22d3b7d60007300004f0e926",
+      "size": 3808,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/update-rsc-3-6-0.md",
+      "hash": "9b24a6947e9d01b2e9ab93ff10bc1a37e19e42bd2b6d1d3ea84586856993525a",
+      "size": 804,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/harness/decisions.md",
+      "hash": "56114b0fe807ada5bf2c22253fcf8cf9e8c890a1f5f05b068030a86b87e89877",
+      "size": 2433,
+      "format": "md",
+      "topic": "02-DOCS/wiki/harness",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/harness/installation-plan.md",
+      "hash": "36888d1996d7e252669c390837805d31a426ff3359899cfc27ad075e6bdeb412",
+      "size": 4817,
+      "format": "md",
+      "topic": "02-DOCS/wiki/harness",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/harness/second-brain.md",
+      "hash": "05f3ca962bae54ec55d62150cbb30d889c502be8f874bef4900444ccadac98dc",
+      "size": 6160,
+      "format": "md",
+      "topic": "02-DOCS/wiki/harness",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/harness/user-profile.md",
+      "hash": "523b4a62d116e5d19e04fc8124d13a4791be29b663519f4692846a1b4b8a4c4b",
+      "size": 266,
+      "format": "md",
+      "topic": "02-DOCS/wiki/harness",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/harness/vscode.md",
+      "hash": "e7316407d181a51acdaf333f79dac2cc0a22a74107ea3e4ffe7af1798070d4c5",
+      "size": 1617,
+      "format": "md",
+      "topic": "02-DOCS/wiki/harness",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/index.md",
+      "hash": "cd8c8db8fd7975eea30e512d9c000f8dde8b4f035889b57ca25e7866d983ad59",
+      "size": 4898,
+      "format": "md",
+      "topic": "02-DOCS/wiki",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/project/auth-and-session.md",
+      "hash": "82ee58c36120c43b819a5c31c5566729b2555f09c0ca61fe0f61e96e63196616",
+      "size": 4712,
+      "format": "md",
+      "topic": "02-DOCS/wiki/project",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/project/design-system-and-ui.md",
+      "hash": "05425c159e77c4f5c988262dda006007920ca312d4432aae9d1ca74329df5742",
+      "size": 5871,
+      "format": "md",
+      "topic": "02-DOCS/wiki/project",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/project/dev-test-and-deploy.md",
+      "hash": "4b2ab9321b0b7f64bb073272ab670c050ac547b796da9f207f4b061b1b9b9f80",
+      "size": 4619,
+      "format": "md",
+      "topic": "02-DOCS/wiki/project",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/project/features.md",
+      "hash": "e43ccdb01345382ed8d119f37e20e157c8c5ec1cf5aefa92d0bf1d9da9c1cc94",
+      "size": 8039,
+      "format": "md",
+      "topic": "02-DOCS/wiki/project",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/project/overview.md",
+      "hash": "85458b0f1a017c9ce000499e40d6f3653bcf7b50ee07f0697174d9778f2d98c5",
+      "size": 5604,
+      "format": "md",
+      "topic": "02-DOCS/wiki/project",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/project/routes-and-bff.md",
+      "hash": "bbf566ffbb810a4fe4e0dba754839a592856394bc4c0743b39b7f177d6a06606",
+      "size": 8547,
+      "format": "md",
+      "topic": "02-DOCS/wiki/project",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/constitution.md",
+      "hash": "5848cf81985ebaeda66ee8d884ee6002cc50e9af38f2407c98e958f8be8f4d7f",
+      "size": 5112,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/accessibility-results.json",
+      "hash": "f4b54a9bb4647a2b18087725515accd4ff9fb66979419de27cb0758643615b13",
+      "size": 454,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md",
+      "hash": "43df26ef872edeab2125acb0631e0dca5d3cfbda22e15c6042e826b2ebc132df",
+      "size": 24584,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/brand-red-logo.md",
+      "hash": "a1a97f2f03e1eba00bbcf2738c86b187e7168f6679aa5d664bb20a280685233c",
+      "size": 1946,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/deployment.md",
+      "hash": "ec5d6b8f31690cede6bdaacf5ba52c3251b78fd7c5a79cd271be3dcad3c80468",
+      "size": 3333,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/implementation.md",
+      "hash": "107e9490aaa0cbfac8dcaea99f4b1a9e52cef4077e695ac94acd7b14fc77883a",
+      "size": 6880,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/login-illustration-prompt.txt",
+      "hash": "b31709339acf325ab470989ede0961ad42a0d5822a9de402eb0105783487645e",
+      "size": 1602,
+      "format": "txt",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/main-parity.md",
+      "hash": "00701737cf02abd0be1bf31826d65a85663452297072a8b46420a40560741b76",
+      "size": 6748,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/user-feedback.md",
+      "hash": "d92ad743cb9e5d8807065163aa57b34ffdf217dbd762920012af85c377bbcc2b",
+      "size": 3906,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-dark.json",
+      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
+      "size": 2449,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-light.json",
+      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
+      "size": 2449,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/audits-dark-1440.png",
+      "hash": "8b588646067ca76069a44168a7ae270f959daa6af1a360be1e815583ec89f083",
+      "size": 134993,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/audits-dark-390.png",
+      "hash": "b5f06c6c1724f985b34595970de345eb66f918766b20537bb2c1945ee2bd8f8f",
+      "size": 47763,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/audits-dark-768.png",
+      "hash": "4d31e4dee62260aa76c42a4c2e21b47c602cadcd38a182b6c0f606e48f57f65a",
+      "size": 59023,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/audits-light-1440.png",
+      "hash": "54f7260ab017983a9b352408626440cebd1de5e0e78046cb974e4219bf80e3d0",
+      "size": 132775,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/audits-light-390.png",
+      "hash": "a7b7c82a6a0e4a56867d507df93bae809a1702ff46826f636edb718bdfecd75b",
+      "size": 46812,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/audits-light-768.png",
+      "hash": "cdd6cf47c0999fe030cc6c1de677e7a1c5db293dc21bfa7cb8b252214ab1671f",
+      "size": 57895,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/dashboard-dark-1440.png",
+      "hash": "392b9ca93a7fc109c273a064177b94d373134bd2564699f20be3b19ee589e195",
+      "size": 119428,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/dashboard-dark-390.png",
+      "hash": "aa019473c6bd00d848a2058dc3bada945640bb5fa5938a1ea7698b6c0c4ee210",
+      "size": 50761,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/dashboard-dark-768.png",
+      "hash": "40440e669df8a540498ed663c11faec760358db4d1108e48130951389909e144",
+      "size": 76437,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/dashboard-light-1440.png",
+      "hash": "459001d43ade75af87db206178848758248e9dc9d4dca1802d2e50850ae0d66e",
+      "size": 115942,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/dashboard-light-390.png",
+      "hash": "0a1b7c4267df24a8990cb1fd7dd1c997b8fc6ec69cc94b30c59b0a2ca823e584",
+      "size": 49510,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/dashboard-light-768.png",
+      "hash": "1df474cd34d1e1da45037b5e15a8eeec36b903dc86d3f30d25159f6f17ec7f95",
+      "size": 74282,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/facilities-dark-1440.png",
+      "hash": "2d71bdc12b22b03498dad48a7754b13c5b9bde9fade3819b36d88f9b75b2d5bd",
+      "size": 99312,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/facilities-dark-390.png",
+      "hash": "3dfe4c801f9435af54c6b2bcf72b8e09e1ee210c1edd28f48d8214e46c9d9f58",
+      "size": 39895,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/facilities-dark-768.png",
+      "hash": "845ccb0f941e0976bea28ce3403db71bef5f15e6187421bae12b3f719d2e34ef",
+      "size": 49638,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/facilities-light-1440.png",
+      "hash": "666e763525d226ab41bcee5cc11e82c8aa112a5db47509833ca70e13b572c5b9",
+      "size": 97608,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/facilities-light-390.png",
+      "hash": "758da33fd7bf2e9943ba0610ae6827b0de50d04fada16dfaf4e42fa6ab60d52a",
+      "size": 39092,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/facilities-light-768.png",
+      "hash": "ff576dab50aa3bee51184491b112260d6e39b114fa14022753d0a047719d5271",
+      "size": 48642,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flow-editor-dark-1440.png",
+      "hash": "4f1dc9b7da4c4668607255cf63f06603031d4d0160f4d5add9e33a1162dc45ae",
+      "size": 88533,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flow-editor-dark-390.png",
+      "hash": "3468ea2fb0152b898bf72489b509cfed932ddfc86fec7f60334442c42cac1248",
+      "size": 40111,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flow-editor-dark-768.png",
+      "hash": "cc5f460bacd8cb262661cb15b736c583122de3c3fdec193accbbac9bba576d26",
+      "size": 47037,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flow-editor-light-1440.png",
+      "hash": "b844faad1221e84d6fc87dad01dc20f66009b963b1798e9203913d911866451d",
+      "size": 86844,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flow-editor-light-390.png",
+      "hash": "7a49396cd7cbf759e4828e64f4f5e844f8030db88b9f998b146b54d093dca6ca",
+      "size": 39079,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flow-editor-light-768.png",
+      "hash": "8365c2eb0fb15502fed01c930468a2c8e6e3afe5e2e3733d8b75bb8623575399",
+      "size": 46025,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flows-dark-1440.png",
+      "hash": "96c0870e33fdc049038becd8622a3d8ec3e76e8faf6c0f1e2191fe2b8977cff7",
+      "size": 50207,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flows-dark-390.png",
+      "hash": "871da8f9c0b7fca2e2215fafc5d2e2e7840fbbc112c5670cf006a02e47fae93b",
+      "size": 26615,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flows-dark-768.png",
+      "hash": "d214070b34f9a1b2eaf3cb62cce8ad5d09b28ae9b1a112aafa807683524cbf16",
+      "size": 31327,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flows-light-1440.png",
+      "hash": "46053e5b4d3cd429e3f3d1dbd63c4b6b38368d3cb0432507a371383e9c7d16a9",
+      "size": 49309,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flows-light-390.png",
+      "hash": "60c7765d7a4d4fb8c87dcd8f97e1596e4fbbc150d66795b9a1ee1920fcb614a7",
+      "size": 25875,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/flows-light-768.png",
+      "hash": "f6c60dd37ea3802fa80521388d89e47ba7f15df9457256559828d5c15c0d4fbc",
+      "size": 30743,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/login-dark-1440.png",
+      "hash": "af99c322675958f3f3675ba8e5685e66aa83b20da1b9ecbadd884b4e0c46417a",
+      "size": 249926,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/login-dark-390.png",
+      "hash": "d21c74917f98c8e1f8e171620be09f3638cdfc39502af847b507488a2e777fc7",
+      "size": 23095,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/login-dark-768.png",
+      "hash": "29e68beb78011c1314d5c4122ce19d8f9b2c38140df43873916a058e81ab7f60",
+      "size": 25681,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/login-light-1440.png",
+      "hash": "c9b6b289ca68a439b8a67d15fbfc87f57988eee22e3d1f3aacbf2b20ed5fedbc",
+      "size": 249750,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/login-light-390.png",
+      "hash": "17e6c4e0d78539ac8791e790e310f9462c38f2e0f452cefe72293cc4e893168c",
+      "size": 22857,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/login-light-768.png",
+      "hash": "162a622aac251445fb02c1b39a415d8c640c7fe99c6840f327e2d10f4fc8c5e9",
+      "size": 25406,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/project-detail-dark-1440.png",
+      "hash": "b7cde840f0fcaf3822d403ce5734c6e025dea3634695c8fdc19fa0fd08827d8d",
+      "size": 94746,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/project-detail-dark-390.png",
+      "hash": "4b6a45bc94a5423c4be09f31687ffe2d0fa6b62eed404fa8df7e4ad08c94f3a6",
+      "size": 38835,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/project-detail-dark-768.png",
+      "hash": "165d998f62574e6b4ee04db1baa0891f334e0601da7011595fe4a7d958f63cfa",
+      "size": 61240,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/project-detail-light-1440.png",
+      "hash": "c8bdf11ec26bdc344854fd6f7a087454f57250ae27c240a44abea76de8893da0",
+      "size": 93291,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/project-detail-light-390.png",
+      "hash": "9199f8abbf8632947489df76687e8e67d3c2854efe11edc1134f81a89712d767",
+      "size": 37754,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/project-detail-light-768.png",
+      "hash": "486eb245d88e42e5ae969531f473c4e2e640c678fc9c50a6915ce3e5b26fd726",
+      "size": 60027,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/projects-dark-1440.png",
+      "hash": "edea82c10fefaf5a8197a51cf77daae427d936c1a288e6b367865bbdb1bc62a3",
+      "size": 115420,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/projects-dark-390.png",
+      "hash": "2151ae726e674c08819b63019ae451a56f7b45cdab9959143158d51d077bc82f",
+      "size": 44160,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/projects-dark-768.png",
+      "hash": "e336dcede632bbf08c605808b6a937fb95d9c1b67a5e2d009c01ce5da245e079",
+      "size": 53014,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/projects-light-1440.png",
+      "hash": "95104bdac132436e02184e61ec874ba33f5201cf6a3fd265656873136ca2b38e",
+      "size": 113530,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/projects-light-390.png",
+      "hash": "38b1b49f67b67aaee8f1181af43d4aaa536f43f63ff5ff702693d8ccd118670a",
+      "size": 43026,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/projects-light-768.png",
+      "hash": "1b0d76f2fa7a12697d0d9391d69584ab8d910a086f5a7cf526be4741b3a453eb",
+      "size": 52015,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/reports-dark-1440.png",
+      "hash": "90e4c28f6d3249e51fa302f4c6dc133cfca3ff2b2ab47dc69c21105261fc16de",
+      "size": 82829,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/reports-dark-390.png",
+      "hash": "6d76b1a22f7f67a2298c2dcdf3e12fb9660f819794d8da4c7c7875e124bd7f22",
+      "size": 50549,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/reports-dark-768.png",
+      "hash": "c6825d8b905813ca9de7ce5708a3c56266aa30eceda398abf3582e5f8f68f03d",
+      "size": 56159,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/reports-light-1440.png",
+      "hash": "7a1fe037d841fa24474916ad925729ee4782f2c6c4d2740add87e449837ce678",
+      "size": 81944,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/reports-light-390.png",
+      "hash": "f43cc58c989b1583802b3ca6e03e6804ac3f986e1ada996572ac97689975f086",
+      "size": 49653,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/reports-light-768.png",
+      "hash": "f2ddaaa51b7991c33c03794f3982e9e6ad82fdc68146167f704420de97a04306",
+      "size": 55432,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/review-dark-1440.png",
+      "hash": "cf622ef1a604b8aa81321017ce91b41f00f0d96ba5f69057475084f2b7d985ac",
+      "size": 100144,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/review-dark-390.png",
+      "hash": "e4cceb8d9cd6441b9731bdaa1ab74b895b52dddb46e7891ad0616458a1ee1be9",
+      "size": 85469,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/review-dark-768.png",
+      "hash": "0687e77b5674feb91220a528f3cace8c28af5db937988ca6ceba666833714e27",
+      "size": 77231,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/review-light-1440.png",
+      "hash": "d3210fafde0c09fedcb95da10796cfe3f955129ac3ac17e7a8fc3a6726384783",
+      "size": 98101,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/review-light-390.png",
+      "hash": "3b4746f4f0bcf933852699a804e5691e2e18b7da8ef37994c566698f64f7dbf1",
+      "size": 83213,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/review-light-768.png",
+      "hash": "7a61f71cf1a01a0f8c2f17adfede32e40a2a842f324d072eacaf6fedb573663a",
+      "size": 75320,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/users-dark-1440.png",
+      "hash": "932de80e395a8fa0cefa2649e3b3deb5f6d264c6e45d750e6a30d6cbefe509d8",
+      "size": 68569,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/users-dark-390.png",
+      "hash": "433de09ef31bd638bcd6a7dddb97f59721b9eecfdb0452b0d7ed53e9271993bd",
+      "size": 39187,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/users-dark-768.png",
+      "hash": "2d6cac78e6d9c74d01590584ad7e10d5b2eba2c06a2e1dcb4ff5dccc6f05b931",
+      "size": 47034,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/users-light-1440.png",
+      "hash": "a8bb69e9fd80d798f0fca5e4cf347d5b5e2a0fd9f9250cc8cb2ff819ccb37741",
+      "size": 67581,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/users-light-390.png",
+      "hash": "2c35903f7ac729163e49d405b0c1ae1cc6d8d65d877649f49cc1fa433a8297d2",
+      "size": 38464,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/users-light-768.png",
+      "hash": "e1c1c946df370f693fafd7c8e045d1bbc7c4f5b4c09512f9eb91645afea268a3",
+      "size": 46340,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/DESIGN.md",
+      "hash": "ca050dccea6d66ea916ccdf628190f96e96d2638b3b68ee7b3453822aac2e74a",
+      "size": 19137,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-1440.png",
+      "hash": "dc1932a8f375450be848d8381ff7730c1a497f62df5c5041d83af1d08f83816e",
+      "size": 140008,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-390.png",
+      "hash": "7bc4a97e03206bea4a8cabaf1bfa68fb78f7d3724f13ad77ece3202b2e7a8051",
+      "size": 51831,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-768.png",
+      "hash": "b4b1fd204e6309db6079123dcdd2baf044cd13a5e2ac4dd63db82666caf63a16",
+      "size": 62836,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-light-1440.png",
+      "hash": "4ac4a181e6a1abee4a5f6c4432018ea02eb27c7792bfaf7afdf53b7fb7f4b29a",
+      "size": 137888,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-light-390.png",
+      "hash": "27063110542a5ff840f06726d21ebc2a573b4b5c1273e1db23d572142606daac",
+      "size": 50588,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-light-768.png",
+      "hash": "05f4f3cf8b5fd48aa62f76bb051ecb9b90cfae320917bc8ead4ec9aa708f1bc8",
+      "size": 61482,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-dark-1440.png",
+      "hash": "b1a32e31d613e165f833c83d9920008f1695b6db5d38b8eb383bcfbad9732f8f",
+      "size": 119384,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-dark-390.png",
+      "hash": "3bfac141fadf7465c832a8de9b24728ca3f1dafe3aabba3d6fa34a334b41322c",
+      "size": 53027,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-dark-768.png",
+      "hash": "0db3c350f7f011d5f2c7d64d240705cee436ffe8e2c3944ea46c817b74b0c0fc",
+      "size": 80419,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-1440.png",
+      "hash": "7019ef157074acf3037425105b0ea084de492fb549d9a801c9670601b7b161fe",
+      "size": 117032,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-390.png",
+      "hash": "42b7df134be561b26dac262c2218f781b0ff902981e20ef2986a3f019b5f294f",
+      "size": 51854,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-768.png",
+      "hash": "f11aa45769d1ed42ebcfb7d75619c764ef4d354d87eb9253d577ab334ff3dd91",
+      "size": 78464,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/design.json",
+      "hash": "ca4d0c8cfd3dbe683a339ffc046577e52a8249d36df13729881c40e5aaf20958",
+      "size": 43184,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-1440.png",
+      "hash": "fc753d5da300dc7ccf0509b6b35b8442bbc66340f96bcad903c8636910bcde6d",
+      "size": 107102,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-390.png",
+      "hash": "295e400063719b16121bfe635931438e2a0bf7e22d23d603cfc56fbe54a8ffb3",
+      "size": 43650,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-768.png",
+      "hash": "88d2ce55529d9f6c92560e34d7268d8cf27dde96a986a6b0ef2b122a037ebf4d",
+      "size": 53735,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-light-1440.png",
+      "hash": "4c21657af38b28c4410fe5031d547715e259d27625e05a9713155effb3ee4ae5",
+      "size": 105383,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-light-390.png",
+      "hash": "46f903f17f256403c31e244cbf3231f88590917448f4414d07c9b736d9d7a660",
+      "size": 42921,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-light-768.png",
+      "hash": "72f22a72a35ae4a52a56842ed75647cdfe6fe2749d3268aa1fb12beb783248fb",
+      "size": 52780,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flow-editor-dark-1440.png",
+      "hash": "80b574fe02132fd11949a5af761632ff3f37bec73614e50b87e3c527a17ff435",
+      "size": 95841,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flow-editor-dark-390.png",
+      "hash": "609aede6c1116cc96272734519ee2f21f385251eddf7a287f0dfd2266bd27192",
+      "size": 44169,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flow-editor-dark-768.png",
+      "hash": "1bfb6f8d0f4abbf01f91145b7718f1430b95672a4b62ec9019e4bcad8944492c",
+      "size": 51129,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flow-editor-light-1440.png",
+      "hash": "eb2ad3e612751ae391b20ad23bf9a7b47f3e934331f99923235fbc7db4d466ed",
+      "size": 94615,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flow-editor-light-390.png",
+      "hash": "3f2805153ba07264a2bb0173d1a6079c14e0f8f5ff710cf1269a8a200b25b4cf",
+      "size": 43260,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flow-editor-light-768.png",
+      "hash": "fba5ebe0fd33619b9921271659bfdfe04f653d1bf0c21c86b12e6cd6105f7dfc",
+      "size": 50094,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flows-dark-1440.png",
+      "hash": "f9741805229c4428d0b8dfcc8556cb6fb3242ad08b6e0025dd1d8db10fdaa2de",
+      "size": 55593,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flows-dark-390.png",
+      "hash": "120febfdffa3a2a1954f5cdf08fb502025aa7a1e19be56b70f997085fd9ddf69",
+      "size": 30050,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flows-dark-768.png",
+      "hash": "dc8774c319b79dbb15d84972c09cccd4e550815b5dbd47c691d80f1c1c471f3f",
+      "size": 35128,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flows-light-1440.png",
+      "hash": "10f5f20ccd8823253808bce78338cc4791175d4cd2fbda842069406a01499eab",
+      "size": 55277,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flows-light-390.png",
+      "hash": "9ffc942b8e9eb6996b90aea41cabf90f466b047cae1adb7c497803820d3a888a",
+      "size": 29567,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/flows-light-768.png",
+      "hash": "5a5ea31a04dddc2b0d0384296937c85b142051f135dbe49271480e2596baca36",
+      "size": 34527,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/login-dark-1440.png",
+      "hash": "1d1a8d48fa37a3870c0adba62e4c947f11a9da03a3f24888a431d18b5b302973",
+      "size": 266216,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/login-dark-390.png",
+      "hash": "4d6bf8b7780819c7ffe7d4c1864e507ef91a854d1a7bb2b8f9d89d8aa784f597",
+      "size": 26360,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/login-dark-768.png",
+      "hash": "a1c54ce8a2fb3c7891e1a059ef4792440a3a33fb880e22c1e3136e587e741b8d",
+      "size": 29217,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/login-light-1440.png",
+      "hash": "224c498546ef95080c90715c5ff2a2ed28112b15f004e4da9411c79285594c7a",
+      "size": 265808,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/login-light-390.png",
+      "hash": "74c5664c834dbd02f8506e50de6009a5c2ec819d5c1bc8ec64acf8cb69491291",
+      "size": 25562,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/login-light-768.png",
+      "hash": "698aeafce24e8607d04b279b6f50118e055068e85f51356e0802fe9f4d3a7dc7",
+      "size": 28473,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/project-detail-dark-1440.png",
+      "hash": "253a4738b32ad22e9f790cc32946ed83cbcdaf6be44b6a1acb22460f0bcad2c0",
+      "size": 101675,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/project-detail-dark-390.png",
+      "hash": "6a205002ad39d8f0245b1d86026273c1651b0a12fe67b31d82ba7c7db89286e1",
+      "size": 45446,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/project-detail-dark-768.png",
+      "hash": "455e17f4cc8168dc788b5c4b9cf8dfb09697d09e905c3062212c1fcb37b95a98",
+      "size": 66861,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/project-detail-light-1440.png",
+      "hash": "0dc2c9cb4684d1f35ee1d04dd67d6daf10529cd5c2875c0718878ed4beaeaca0",
+      "size": 100434,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/project-detail-light-390.png",
+      "hash": "8a31c5d5266464c5e84677a2dc771208a1df3559188e4b740fcdb3ae28571fa9",
+      "size": 44963,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/project-detail-light-768.png",
+      "hash": "50b9bf2a06f9511522a6e31d010b7cd0c3bddd9e7380edc0ec2cb0d1e49eb28c",
+      "size": 65804,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/projects-dark-1440.png",
+      "hash": "44db5f6809a2a6e28ab82412f4238d538860fc8a47f2da802da770478411cd32",
+      "size": 120355,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/projects-dark-390.png",
+      "hash": "010c782cad37cdb9fd3079df02693b82909d5806a8ece0d298ab999cbcba9165",
+      "size": 48447,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/projects-dark-768.png",
+      "hash": "ac0dfa03d92245567847cd40ad220e03a69f95694260980073854e820af8a72f",
+      "size": 57950,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/projects-light-1440.png",
+      "hash": "44a3b5c49e3c87372443f0d4ba181508bedf90031da679a5b0fb9ae15219003b",
+      "size": 118364,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/projects-light-390.png",
+      "hash": "3b86680d4fa9d82dd99c969b3323c1fbebf8e89761cc8518dff6426c0562a750",
+      "size": 47480,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/projects-light-768.png",
+      "hash": "0f501239a309c26f68f918e34860630ffd65dc20bffe5552e4aa33c2beeb45a0",
+      "size": 56766,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/reports-dark-1440.png",
+      "hash": "a1963188f2bd5d9ae46281c3456b093dd61446d45686d526cf4ad8589fb9751f",
+      "size": 79099,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/reports-dark-390.png",
+      "hash": "0fb1405a7ef802a8e1523f663480adb19f8b116e4b2ddc6a538b01deb94ef9a6",
+      "size": 52457,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/reports-dark-768.png",
+      "hash": "9cf9dee2e63356a765908273041c47ead017a8c3f399deb13bd568097e3165ae",
+      "size": 58138,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/reports-light-1440.png",
+      "hash": "9c7c59a0cfd17ffc1f7fa79f18c32e39c3d82b8d9e32d2961214d0e44d9c7f88",
+      "size": 78495,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/reports-light-390.png",
+      "hash": "4b2abf6e45ea9c69698ee2fc69e8702b78ac4ab57f644300ba10a3e472be61e6",
+      "size": 51203,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/reports-light-768.png",
+      "hash": "9184e417c2a2209ed1663d7bc48f04be3d3bb9a6227f0e910ef4da91d3968317",
+      "size": 56928,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/review-dark-1440.png",
+      "hash": "951b209636343c7f37fbf81a33607c15b9328dd3f586036c004467895f676f16",
+      "size": 106983,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/review-dark-390.png",
+      "hash": "0821f0c36e113ea103649a696d2eab7ebcfb5898ca681f0bfb08dce20319b3dd",
+      "size": 92677,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/review-dark-768.png",
+      "hash": "1cf7f4bcbc9320e2e9d1baf09752815551939388d59671634f9dbcaa38bb5598",
+      "size": 84056,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/review-light-1440.png",
+      "hash": "3e188ca818d68e4caefd6ba0e389201d318d5ff1a04c25554dd54eace4660b84",
+      "size": 104796,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/review-light-390.png",
+      "hash": "2f9269d1437c804e91b5521008ca8bd5ffacf691d3f36e30233142ea1503bd24",
+      "size": 90418,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/review-light-768.png",
+      "hash": "5e0e27af1839199e51332687b85ac397ab41bfba0787c29dd675e29f80a142a0",
+      "size": 82013,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/users-dark-1440.png",
+      "hash": "1f9d4ea8caed18b8923820cdd7c8b8d559add4823481e0be5ba68e2c5304c079",
+      "size": 76096,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/users-dark-390.png",
+      "hash": "92ff86834850d5ae3c81638bf53c284ff79dfd0abfea14f774dce98928d4292e",
+      "size": 43712,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/users-dark-768.png",
+      "hash": "73d484ed2aaf822f49d4413638683241f3bea0d57c980ee1fbda5b69310f76b9",
+      "size": 51979,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/users-light-1440.png",
+      "hash": "50136596687b6dc23ddb59c98df4b64741e584c4fcb442b85dc8262d4e83a050",
+      "size": 75223,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/users-light-390.png",
+      "hash": "b002717210e1285448761fa3824068e1f16d4276f997ee1b06104ce6b3b9cc54",
+      "size": 42925,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/users-light-768.png",
+      "hash": "9371681ccd259300490182c828b9ae865669559c1065d8c943838236255999b7",
+      "size": 50994,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-mobile-fix/dashboard-dark-390.png",
+      "hash": "eb1357182579e2af1c4a4442e33de7143cccbe40d06aef271d7c9a8ec0d63075",
+      "size": 44294,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-mobile-fix",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-mobile-fix/dashboard-light-390.png",
+      "hash": "f8d8d65ddd90739d85b4efc187b652a16ae5f45a7111c26aae58d7a6e8b103c4",
+      "size": 43460,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-mobile-fix",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/capturas.md",
+      "hash": "0e927085d93bb35f09bb2d5a9decc844f96bf2ecf175371629263dafb913df31",
+      "size": 8471,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-1440.png",
+      "hash": "32da4724a450f2c9b8829b0a22155451b330a3ab777318373c53976304aa4f88",
+      "size": 337551,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-390.png",
+      "hash": "ae2ae4f9753dc5e5b3372afe07d16ac2791ba9699d3776431eec80b848a1337c",
+      "size": 495153,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-768.png",
+      "hash": "6c2b7d032edf4bc8792b6160de499356b91288f3f0eae1af9dbd1f14ea15fd70",
+      "size": 445525,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-1440.png",
+      "hash": "95a36e11def6ed59122caf4d5cbe93e94a5c210c03fa7827d7b617a8fb47f0cf",
+      "size": 320762,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-390.png",
+      "hash": "e53442553a1cc9176bdbf91e53a1178f76ec5f28c54e10a38301e6673b07cdda",
+      "size": 461547,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-768.png",
+      "hash": "bb834d06e45fc33d8bf84ab2ad8944843c4a79661ebe11eacc9d251bd2af7973",
+      "size": 418628,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/README.md",
+      "hash": "a36b8455212a70a743ef683691dda2da1254a7be540c4b48613a53cc025d627b",
+      "size": 1452,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-1440.png",
+      "hash": "a4bb6e5a05ff5ae3c848fe262cd54b12c2b65a25037f79493b14856bd65d3f9b",
+      "size": 301788,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-390.png",
+      "hash": "4f3750c40215c366904c3462c22cb1768387190565c4f294794f0b0250b3125e",
+      "size": 37352,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-768.png",
+      "hash": "b633d6636f9b85e7def35aa25f7922790b000a880994006eda7ad06f9603f7b5",
+      "size": 43879,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-light-1440.png",
+      "hash": "911d90454be932e87f44f8bd3e5d5028398aced3cf299a44bf3744a7ef95c540",
+      "size": 327158,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-light-390.png",
+      "hash": "bc89f341bee1ecbf01612d86bb979a5929bb22dbe1dbce00176561e04f2b83d4",
+      "size": 37142,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-light-768.png",
+      "hash": "8380198c88f83c439c9b19496edfbe5fd03c65ff02c1e31f998e92b5a7f7ef3e",
+      "size": 43734,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/entrega.md",
+      "hash": "bfc7e3293ae7d24255cbddbd74c4f86c59b5c9d80a78b4497d1d7978f5e2ddfa",
+      "size": 8311,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/gallery.html",
+      "hash": "b3517dd2f3faf78dcdcb67f6a39fdcecb2720c989df4b8138d11d085b2cc235d",
+      "size": 3673,
+      "format": "html",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-baseline/flow-editor-main-production-light.png",
+      "hash": "541daf0fff69ee95d91f225792ae4d14790f05fa5a9826d00650e73e3c5c9680",
+      "size": 126927,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-baseline",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-baseline/flow-editor-new-ui-before-dark.png",
+      "hash": "a8807c67c4c1307df6f734a038f1c1e2776501a69d6a6148976fc26f30a195c0",
+      "size": 117239,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-baseline",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity/flow-editor-dark-1440.png",
+      "hash": "26e7ef7194095fbe52cef039861c7f6de7d3b3f6daf217dbb8d105884b71f36f",
+      "size": 115201,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity/flow-editor-dark-390.png",
+      "hash": "23457cea0eea21b869861b8ac256106ffe84afeac2f180b1461f8d7afc63fb52",
+      "size": 37404,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity/flow-editor-light-1280.png",
+      "hash": "4280965b2521205408283a864b022a7c009eafdadf31e71168049306849cad4d",
+      "size": 104362,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity/flow-editor-light-1440.png",
+      "hash": "ae9d0b765272849a52067d3c066715c9654e6bcb6e0de635e362fd6f6324a622",
+      "size": 114296,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/manifest.json",
+      "hash": "02c3938986493d9cc49b3a5af60be36db3af9d64ed980178bf428515fea3c6a1",
+      "size": 2946,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/review.md",
+      "hash": "d65b751ff2213eb6e6fdff105dc0de293481b7405c233da03b9d9219b260e44b",
+      "size": 4936,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/reviewed-project.pdf",
+      "hash": "c92ed88b9966dde4bbd2605a7f4aac144053614ae3fbd72806f41860b8cd19a6",
+      "size": 11857,
+      "format": "pdf",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-dark.json",
+      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
+      "size": 2449,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-light.json",
+      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
+      "size": 2449,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-1440.png",
+      "hash": "dc1932a8f375450be848d8381ff7730c1a497f62df5c5041d83af1d08f83816e",
+      "size": 140008,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-390.png",
+      "hash": "fefe6dffdf11a64d85a65f59249efc2897d6012176aa64c5629de2513e9d9b02",
+      "size": 51760,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-768.png",
+      "hash": "7bf746855763cec794673437ceea6cf285c44a4c246dc8049f6ff55919a16f95",
+      "size": 61008,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-light-1440.png",
+      "hash": "f956ee6e7c1f84c1b3e346f07471802b38664fd8ae6b30ccf346835d30a59b1d",
+      "size": 137859,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-light-390.png",
+      "hash": "3a0fcc4f044b1f9105aa046941ff7db194c37efa03f89c26c9f281ca881e51a1",
+      "size": 50441,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-light-768.png",
+      "hash": "0fed44f4b3df359506e0a09d61330012acee1b62725574262ddd1056e7e80607",
+      "size": 59654,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/contact-dark-1440.png",
+      "hash": "8ad3afa0b320120de76fd45d017414a20a284f7d66065c311bdf14d9ed78eb50",
+      "size": 567934,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/contact-dark-390.png",
+      "hash": "60fa77bf894950cb62aca5cb68942e52c77a490271b9014aeab0c52ae02e1fff",
+      "size": 390352,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/contact-dark-768.png",
+      "hash": "9861de4768de6ba3874aae379bf3548d2e9dab6faad421ff349badc474537fe9",
+      "size": 427132,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/contact-light-1440.png",
+      "hash": "942285f07895a87d857e0a583a9b24ffb7086a2ab9531f7a347a805372196ef8",
+      "size": 544729,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/contact-light-390.png",
+      "hash": "c832d3c8785727ef36258cf284277a3165a95c9088e3a9cb8784b97d5597c095",
+      "size": 360402,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/contact-light-768.png",
+      "hash": "79b2e46623e6b1335d1dcaba6e7b70860d50cbef8c2825f11f25ec16c7b531c8",
+      "size": 400152,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/dashboard-dark-1440.png",
+      "hash": "aea145ff57f33810a9069c5fa640d9c276b9f3affa6f81acf2b842d01c7bb299",
+      "size": 119478,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/dashboard-dark-390.png",
+      "hash": "3bfac141fadf7465c832a8de9b24728ca3f1dafe3aabba3d6fa34a334b41322c",
+      "size": 53027,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/dashboard-dark-768.png",
+      "hash": "c38a9568729f15c0c7a7022f876594db568d929efc828ca3a2ffb087257263ba",
+      "size": 80511,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/dashboard-light-1440.png",
+      "hash": "8aca695eac46db1144fc4b64d5f1e79973deb16574b8da0a67409b1f5a2896a8",
+      "size": 117111,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/dashboard-light-390.png",
+      "hash": "42b7df134be561b26dac262c2218f781b0ff902981e20ef2986a3f019b5f294f",
+      "size": 51854,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/dashboard-light-768.png",
+      "hash": "f7296a6cb081e1dab77adabeb034a7c41419b79b7a7550a6df377b47d9a8a3e4",
+      "size": 78548,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/facilities-dark-1440.png",
+      "hash": "fc753d5da300dc7ccf0509b6b35b8442bbc66340f96bcad903c8636910bcde6d",
+      "size": 107102,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/facilities-dark-390.png",
+      "hash": "295e400063719b16121bfe635931438e2a0bf7e22d23d603cfc56fbe54a8ffb3",
+      "size": 43650,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/facilities-dark-768.png",
+      "hash": "88d2ce55529d9f6c92560e34d7268d8cf27dde96a986a6b0ef2b122a037ebf4d",
+      "size": 53735,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/facilities-light-1440.png",
+      "hash": "ceb43b7fc3b92d521eeb817bc357f6dd726ccdbeaae1cf34805e19699f8add37",
+      "size": 105385,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/facilities-light-390.png",
+      "hash": "46f903f17f256403c31e244cbf3231f88590917448f4414d07c9b736d9d7a660",
+      "size": 42921,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/facilities-light-768.png",
+      "hash": "72f22a72a35ae4a52a56842ed75647cdfe6fe2749d3268aa1fb12beb783248fb",
+      "size": 52780,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flow-editor-dark-1440.png",
+      "hash": "80b574fe02132fd11949a5af761632ff3f37bec73614e50b87e3c527a17ff435",
+      "size": 95841,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flow-editor-dark-390.png",
+      "hash": "609aede6c1116cc96272734519ee2f21f385251eddf7a287f0dfd2266bd27192",
+      "size": 44169,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flow-editor-dark-768.png",
+      "hash": "1bfb6f8d0f4abbf01f91145b7718f1430b95672a4b62ec9019e4bcad8944492c",
+      "size": 51129,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flow-editor-light-1440.png",
+      "hash": "eb2ad3e612751ae391b20ad23bf9a7b47f3e934331f99923235fbc7db4d466ed",
+      "size": 94615,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flow-editor-light-390.png",
+      "hash": "3f2805153ba07264a2bb0173d1a6079c14e0f8f5ff710cf1269a8a200b25b4cf",
+      "size": 43260,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flow-editor-light-768.png",
+      "hash": "fba5ebe0fd33619b9921271659bfdfe04f653d1bf0c21c86b12e6cd6105f7dfc",
+      "size": 50094,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flows-dark-1440.png",
+      "hash": "f9741805229c4428d0b8dfcc8556cb6fb3242ad08b6e0025dd1d8db10fdaa2de",
+      "size": 55593,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flows-dark-390.png",
+      "hash": "120febfdffa3a2a1954f5cdf08fb502025aa7a1e19be56b70f997085fd9ddf69",
+      "size": 30050,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flows-dark-768.png",
+      "hash": "dc8774c319b79dbb15d84972c09cccd4e550815b5dbd47c691d80f1c1c471f3f",
+      "size": 35128,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flows-light-1440.png",
+      "hash": "10f5f20ccd8823253808bce78338cc4791175d4cd2fbda842069406a01499eab",
+      "size": 55277,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flows-light-390.png",
+      "hash": "9ffc942b8e9eb6996b90aea41cabf90f466b047cae1adb7c497803820d3a888a",
+      "size": 29567,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/flows-light-768.png",
+      "hash": "5a5ea31a04dddc2b0d0384296937c85b142051f135dbe49271480e2596baca36",
+      "size": 34527,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/login-dark-1440.png",
+      "hash": "1d1a8d48fa37a3870c0adba62e4c947f11a9da03a3f24888a431d18b5b302973",
+      "size": 266216,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/login-dark-390.png",
+      "hash": "4d6bf8b7780819c7ffe7d4c1864e507ef91a854d1a7bb2b8f9d89d8aa784f597",
+      "size": 26360,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/login-dark-768.png",
+      "hash": "8d91eb4a8720eb200e88993f0855f9de1670280968a36c9ebcd7df9080ad009a",
+      "size": 29218,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/login-light-1440.png",
+      "hash": "224c498546ef95080c90715c5ff2a2ed28112b15f004e4da9411c79285594c7a",
+      "size": 265808,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/login-light-390.png",
+      "hash": "74c5664c834dbd02f8506e50de6009a5c2ec819d5c1bc8ec64acf8cb69491291",
+      "size": 25562,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/login-light-768.png",
+      "hash": "698aeafce24e8607d04b279b6f50118e055068e85f51356e0802fe9f4d3a7dc7",
+      "size": 28473,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/project-detail-dark-1440.png",
+      "hash": "842dc4e0ca58d7228c3a84e40a459edb20210782710a2c88152f21b81d8a7bf2",
+      "size": 101680,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/project-detail-dark-390.png",
+      "hash": "344562a34a1fc7a0ba8fd4b6bc70253f8d78972e721b97adf364f3dffbf88b19",
+      "size": 45479,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/project-detail-dark-768.png",
+      "hash": "0ecbe40297266a2ff9c924f48351b3d42ccd4106e72341e476cd60c50071d4d8",
+      "size": 63861,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/project-detail-light-1440.png",
+      "hash": "0dc2c9cb4684d1f35ee1d04dd67d6daf10529cd5c2875c0718878ed4beaeaca0",
+      "size": 100434,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/project-detail-light-390.png",
+      "hash": "8a31c5d5266464c5e84677a2dc771208a1df3559188e4b740fcdb3ae28571fa9",
+      "size": 44963,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/project-detail-light-768.png",
+      "hash": "a274c291938a7abf50bea9c421f4b4425c112089865e34b2d146a3aae2a2497a",
+      "size": 62879,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/projects-dark-1440.png",
+      "hash": "44db5f6809a2a6e28ab82412f4238d538860fc8a47f2da802da770478411cd32",
+      "size": 120355,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/projects-dark-390.png",
+      "hash": "010c782cad37cdb9fd3079df02693b82909d5806a8ece0d298ab999cbcba9165",
+      "size": 48447,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/projects-dark-768.png",
+      "hash": "ac0dfa03d92245567847cd40ad220e03a69f95694260980073854e820af8a72f",
+      "size": 57950,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/projects-light-1440.png",
+      "hash": "44a3b5c49e3c87372443f0d4ba181508bedf90031da679a5b0fb9ae15219003b",
+      "size": 118364,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/projects-light-390.png",
+      "hash": "3b86680d4fa9d82dd99c969b3323c1fbebf8e89761cc8518dff6426c0562a750",
+      "size": 47480,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/projects-light-768.png",
+      "hash": "0f501239a309c26f68f918e34860630ffd65dc20bffe5552e4aa33c2beeb45a0",
+      "size": 56766,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/reports-dark-1440.png",
+      "hash": "a1963188f2bd5d9ae46281c3456b093dd61446d45686d526cf4ad8589fb9751f",
+      "size": 79099,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/reports-dark-390.png",
+      "hash": "382e2f6eb0ea7459884e52b07cb7c7689baf9d2cdff270506a1c8c0dc76744c8",
+      "size": 50553,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/reports-dark-768.png",
+      "hash": "f558d4ef3d1c9630f4816bc3280a7fccf174592cc22d5270bc1771a7a35ca5d6",
+      "size": 56215,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/reports-light-1440.png",
+      "hash": "9c7c59a0cfd17ffc1f7fa79f18c32e39c3d82b8d9e32d2961214d0e44d9c7f88",
+      "size": 78495,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/reports-light-390.png",
+      "hash": "c23e929532ed39073e43e22a1c90dd94fc2695dd546b77ee86095b8a475a92d1",
+      "size": 49304,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/reports-light-768.png",
+      "hash": "a8e70c226417b699435a84a39fb47e264724d038e71ab326d557f3b2c12a9989",
+      "size": 55009,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/review-dark-1440.png",
+      "hash": "951b209636343c7f37fbf81a33607c15b9328dd3f586036c004467895f676f16",
+      "size": 106983,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/review-dark-390.png",
+      "hash": "0821f0c36e113ea103649a696d2eab7ebcfb5898ca681f0bfb08dce20319b3dd",
+      "size": 92677,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/review-dark-768.png",
+      "hash": "1cf7f4bcbc9320e2e9d1baf09752815551939388d59671634f9dbcaa38bb5598",
+      "size": 84056,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/review-light-1440.png",
+      "hash": "3e188ca818d68e4caefd6ba0e389201d318d5ff1a04c25554dd54eace4660b84",
+      "size": 104796,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/review-light-390.png",
+      "hash": "2f9269d1437c804e91b5521008ca8bd5ffacf691d3f36e30233142ea1503bd24",
+      "size": 90418,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/review-light-768.png",
+      "hash": "5e0e27af1839199e51332687b85ac397ab41bfba0787c29dd675e29f80a142a0",
+      "size": 82013,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/reviewed-project.pdf",
+      "hash": "94f000fb2f3bf4e9d4e55969c7fb27b24b5d898a7712c13e07012900739cff33",
+      "size": 11858,
+      "format": "pdf",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/users-dark-1440.png",
+      "hash": "1f9d4ea8caed18b8923820cdd7c8b8d559add4823481e0be5ba68e2c5304c079",
+      "size": 76096,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/users-dark-390.png",
+      "hash": "92ff86834850d5ae3c81638bf53c284ff79dfd0abfea14f774dce98928d4292e",
+      "size": 43712,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/users-dark-768.png",
+      "hash": "73d484ed2aaf822f49d4413638683241f3bea0d57c980ee1fbda5b69310f76b9",
+      "size": 51979,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/users-light-1440.png",
+      "hash": "50136596687b6dc23ddb59c98df4b64741e584c4fcb442b85dc8262d4e83a050",
+      "size": 75223,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/users-light-390.png",
+      "hash": "b002717210e1285448761fa3824068e1f16d4276f997ee1b06104ce6b3b9cc54",
+      "size": 42925,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/users-light-768.png",
+      "hash": "a1ba0e74dafdb2e166f339fc47abab45b38a262216b1c8cf6ee7af3ba15352d7",
+      "size": 50992,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/user-feedback-review.md",
+      "hash": "0ef6c76cb6203939b70116208327218c602efa55c01ffd1c34abe6dab9bedf28",
+      "size": 2258,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/delivery.md",
+      "hash": "71b93a925d630c8a2220ef706dbc04674bbc82a6c951e292b284e4d25181a68c",
+      "size": 4834,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/plan.md",
+      "hash": "e8514f4214e74e5b4abad566ce48ba04f674a3133f58fb9a08ce81add30fb02f",
+      "size": 775,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/DESIGN.md",
+      "hash": "47d46ed2664836df08b13b786ebdd399ba0fe8096bab8bf64c037d5e33d09dd3",
+      "size": 3590,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/audits-dark-1440.png",
+      "hash": "caae2a119fb71a53f2d9c3ddaeb1faec586b74625bb9c59e2905d8eb15ab8c9a",
+      "size": 164417,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/audits-dark-390.png",
+      "hash": "214ed3a9b32db18cdfc031554c5b415ecaa162a8c549a6cd65cb4a282c726801",
+      "size": 62102,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/audits-dark-768.png",
+      "hash": "79157b69351bd65516ded2a63f6258987c0abee9708ffdce10d28eb8f2ffdeb9",
+      "size": 95626,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/audits-light-1440.png",
+      "hash": "d59c2cfed425566e321586eae54411a4aac2ad6909190ead2ca7cd6ca2756d55",
+      "size": 161844,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/audits-light-390.png",
+      "hash": "65c5d268d08fa6bc78bdbf00f7fe19db25a116aba295fe83bcaa8c329c183e85",
+      "size": 60570,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/audits-light-768.png",
+      "hash": "f982177da5a125a157307fc39321e0324e96b80616d1ab30c1ddfbbbdd613096",
+      "size": 94406,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/dashboard-dark-1440.png",
+      "hash": "aada838f3e4ff66fca2b9fdfeba7aaedf0888036eedea16b7a8e63b11834f93f",
+      "size": 103356,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/dashboard-dark-390.png",
+      "hash": "b8efd084c0c5d8e67a83527fc8d587e39b1bd4b89f7297a6ac72bc34ddbc1b6a",
+      "size": 47403,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/dashboard-dark-768.png",
+      "hash": "2a8daa9202a46ef780d100fad0c4273b2ba8c4482db38359d7809fd909808418",
+      "size": 72204,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/dashboard-light-1440.png",
+      "hash": "e2042595e7f9c094834180bb7b20291d512b207834757a6c4667f1cfa82ce62f",
+      "size": 102587,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/dashboard-light-390.png",
+      "hash": "7ff5f95a3eca8382ec6f1e8b24a98da67c14527e71a259accb894771c4725b2e",
+      "size": 46706,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/dashboard-light-768.png",
+      "hash": "db39f8756e466490a31c1934cffcfe60558ce1be8af542b6d0c3e3ebfe9d797f",
+      "size": 71497,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/facilities-dark-1440.png",
+      "hash": "a175eaaf23d8a651c3dd5cbfd0975341f3915ac3a2818cc334dfb7ddb696120c",
+      "size": 108783,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/facilities-dark-390.png",
+      "hash": "99fdf9be557e76c9cd1a1910f5cbe9974abb9056c708773ba04e16096fee1031",
+      "size": 54705,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/facilities-dark-768.png",
+      "hash": "72db30ac734157ce4c8ef93489a6a06f39fe9cf95b1cdc716a7bffc25942761b",
+      "size": 84252,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/facilities-light-1440.png",
+      "hash": "fbacd62eb29168ed7ae420bddfe6a22efd497acfacf191b5bb9a52239e91eaa3",
+      "size": 107141,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/facilities-light-390.png",
+      "hash": "06afecf5372b33eb4972d4f4860a08d22fc4d77e0255fc5ebfbb55d9f6b70e38",
+      "size": 54038,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/facilities-light-768.png",
+      "hash": "3bd61e328c4604ff51e043c292175d3d9936053b704f8f52aff23b81450ef613",
+      "size": 83605,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flow-editor-dark-1440.png",
+      "hash": "7bf33a6c4bf0086ef63c3c10877bdcd37b7f65732e3bcf65db2cde03285c75f1",
+      "size": 127364,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flow-editor-dark-390.png",
+      "hash": "57bfeafa898c042f3ed36493524bd27735a4b6a73a673814dadfb3b6bb139567",
+      "size": 45916,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flow-editor-dark-768.png",
+      "hash": "cdc3ac9d456f9b6e94bb53a05f21e244b46db8e7282778ca5193b03075709bb9",
+      "size": 71498,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flow-editor-light-1440.png",
+      "hash": "86fc36c61b2399079eb1b737b3d1161e91f7a523ad6c62218a525953388ec73f",
+      "size": 126491,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flow-editor-light-390.png",
+      "hash": "30ac98be904abacbac24c5fd87139fce6855b389dfccbf4a34b3243f6f61c0c5",
+      "size": 45661,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flow-editor-light-768.png",
+      "hash": "9d19af44ddffe5a7249e05a83633474040762e91fd20ac59f51794571b082c7e",
+      "size": 71110,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flows-dark-1440.png",
+      "hash": "4e1979bbb982e6b58d21d28ef57d9a4159d398968f56f559cb750fc92b8d1a64",
+      "size": 55446,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flows-dark-390.png",
+      "hash": "517c25359dbac0f736e53df6e11c3bc01abb1c2d63a3f668c11228eb391c9294",
+      "size": 30168,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flows-dark-768.png",
+      "hash": "1a4817f8d402a7b528b08dd150c2876f9c08a77dff13b164baae43c089596867",
+      "size": 53540,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flows-light-1440.png",
+      "hash": "65d144967eba5d0f5e8cfc4c0b7e576b060eb8e5d53ba00c1793dd1a541c2a8b",
+      "size": 54969,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flows-light-390.png",
+      "hash": "b72bcb1ac1e1a59ee898bfce3bb97cd2c056d0dfd90dcc23c7a210b28b3ce57a",
+      "size": 29810,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/flows-light-768.png",
+      "hash": "78c4ed8a46c15beed274ec4d8c5b2f464f28acdd51920936ff9d03816052244c",
+      "size": 52980,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/login-dark-1440.png",
+      "hash": "f2f25550ee9139acd1976b1cd9c2d5595dc715c2388c2c9e5e58fca71566e306",
+      "size": 66566,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/login-dark-390.png",
+      "hash": "8d764b4e07c030a2d8a672e10ec8393aa5a7ece8a3a65ed92e9835058d18b1f1",
+      "size": 26418,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/login-dark-768.png",
+      "hash": "4ee567bde936391550732e1a3730fa06d021e2dd0fe5e68de95a2b655a08e866",
+      "size": 28981,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/login-light-1440.png",
+      "hash": "99f7c0754a5c8e0666e32b37a09395234a3e79ee2946763744c3cec910afe283",
+      "size": 66173,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/login-light-390.png",
+      "hash": "d1855cc9e73c1857a2e2b96310792b7bb80142a0ad6a085dfe4c325dcfa5bad2",
+      "size": 26081,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/login-light-768.png",
+      "hash": "2f1f97c094cfc0a31d4505ba006fea1ed0633c9f0167feba7e0b3c0973d8d679",
+      "size": 28729,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/project-detail-dark-1440.png",
+      "hash": "8c25438669a099e1f8f547313b13b1ca04412514b3d0727099679ddaea14c8f0",
+      "size": 108260,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/project-detail-dark-390.png",
+      "hash": "34229c35a0f6fc569fb9e4808481df86b9d1cfdc114c40d092aaec8284e60e53",
+      "size": 50276,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/project-detail-dark-768.png",
+      "hash": "69714f36eec0b523cf935f053347ed29a8971d39395d780cad642b0894a32862",
+      "size": 87857,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/project-detail-light-1440.png",
+      "hash": "bb2b494ad2f99b3131549bf68cd728b8fd9c09ffbc4e7957a9ce3dcee5aabb06",
+      "size": 107116,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/project-detail-light-390.png",
+      "hash": "3a540933189dba24bb9c4af78043154919f04df38e5ef2797b8c6581e8a24b5d",
+      "size": 49490,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/project-detail-light-768.png",
+      "hash": "64dee07b637f82c83eedc2cacc7ee9a88cc4dc68dd10b1d1e0aa15e9bf8cde4c",
+      "size": 86790,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/projects-dark-1440.png",
+      "hash": "16b916f0eeaacbabf7696f1c9ddd66f2a04166bf86990c34e6e97b87e613bcf9",
+      "size": 129190,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/projects-dark-390.png",
+      "hash": "8f5a345944deb18f66bf5c6ee378d6d8e4bfac0eb681bae78a5b8e3bc8a3c1c1",
+      "size": 55412,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/projects-dark-768.png",
+      "hash": "4254b38d9d1feb522b6420cd163beece454dc56429d32ad8447d6fc4a35f6a63",
+      "size": 86296,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/projects-light-1440.png",
+      "hash": "445fe01809132a9f02b252fb1e9db47a3e445efb547ae2afd607dda1c21c5dde",
+      "size": 127877,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/projects-light-390.png",
+      "hash": "88f1d65eed35db58aa0037910a4f6476dabe5374b03428bf893a2c145b9f588c",
+      "size": 58269,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/projects-light-768.png",
+      "hash": "48eb2449889e85b39a3639b33770bb82ddcda2f2b608e77cd6c4016808d3c234",
+      "size": 85673,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/reports-dark-1440.png",
+      "hash": "f09e48ae4e28207468d6fb479467817893308dad667a1f395ad46deb68402732",
+      "size": 79423,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/reports-dark-390.png",
+      "hash": "1da811ae4d70698b1aa9b3feb888d7d591d94f5ebbd8a48fffff3aef9bb4bafa",
+      "size": 40969,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/reports-dark-768.png",
+      "hash": "5f00d2db75154ed6b7414bd43427e8e63bfe41a64fa99489191590d3b67ca9b0",
+      "size": 70486,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/reports-light-1440.png",
+      "hash": "03e01dcecd1c169f7330081da6a1d6877991de6e8ff4f64e27fd150d6e805942",
+      "size": 78850,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/reports-light-390.png",
+      "hash": "dae20545c03d4eff393250f453134cb0bb747190db1698dcb89f135f2bd12957",
+      "size": 40159,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/reports-light-768.png",
+      "hash": "54c3594dd8c8677c613ac140de95d011b70e3e3bf170b9202c2cc20e1e0f13bc",
+      "size": 69723,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/review-dark-1440.png",
+      "hash": "555ea656d8ac929506db9c1b0228f3c0498878f3d01385116ee2a55863c6270b",
+      "size": 72100,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/review-dark-390.png",
+      "hash": "63a44b7b07a2f6f896b0557bb7467a65d5ac21e60c39bb37b03c7fd7e9500bfd",
+      "size": 70393,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/review-dark-768.png",
+      "hash": "6be7ffe28988e0ffaa50844282223d2f76118ccbdc217171d9cc444d896346ad",
+      "size": 70822,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/review-light-1440.png",
+      "hash": "61542136f27cb35c4d38df0049a74bd1c0d581c689827ac1b51cd3af4a5f1144",
+      "size": 70611,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/review-light-390.png",
+      "hash": "b639957991503e8c6c75cef73b922d8663e7007261266bb9760846aab7e126ec",
+      "size": 68607,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/review-light-768.png",
+      "hash": "cd3838018777b041f4194f8851dddab76da6d82954b1586d9a10ca94cdb538f5",
+      "size": 69246,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/users-dark-1440.png",
+      "hash": "705c62fce5a232b38c689eee6367ee413690c95e443890efb2cdca63926e4126",
+      "size": 73644,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/users-dark-390.png",
+      "hash": "01a403cf42b5737b6e5557e59b7a401c700368325d5efdf705d2759f50db3756",
+      "size": 37615,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/users-dark-768.png",
+      "hash": "b50253f02fdccc6c12fa9f145e66dc3c853cc6b1c1420a67d01304c3f38459a3",
+      "size": 62365,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/users-light-1440.png",
+      "hash": "ca67999f0130e074f1e7d392e5408a3c75b2b06dd29fc05d7aa45ae30b4a123a",
+      "size": 73101,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/users-light-390.png",
+      "hash": "ff8ad14a82c3df2974e6f87d69ab2ee15ccc82bff2400729b6189f76c2ffa14e",
+      "size": 37200,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/before/users-light-768.png",
+      "hash": "cb4dfd6ec20543b3b2ae20fe09e24348e9eb09d9c862b2257a1cdaee84ddff23",
+      "size": 61930,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/before",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/implementation.md",
+      "hash": "3161ce79796135ed072c56d9812c2559e1d256940af076345a5d00df096dcbc7",
+      "size": 1669,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-dark.json",
+      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
+      "size": 2449,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-light.json",
+      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
+      "size": 2449,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-1440.png",
+      "hash": "e3c172870a6be62478f8db6b82dc461992ccd5ee039c1528da95f6c71faa108b",
+      "size": 141665,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-390.png",
+      "hash": "fbbeeeef1add74da39c3de7571141937a9022be4457208bdaaccb4fac2eb75f3",
+      "size": 54155,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-768.png",
+      "hash": "3542573baf377cfd905b77785c270292815ddaae8285c79f08c3462c5926b256",
+      "size": 60253,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-light-1440.png",
+      "hash": "35a4bb5d2c0a6c81584d1a93f146024b85e07fddb00333bc9d175c473383d095",
+      "size": 140937,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-light-390.png",
+      "hash": "8174e5e3f2556a46f97bdcb83cfe70d36065a83f8a84b25894c4a57b9059356e",
+      "size": 53762,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-light-768.png",
+      "hash": "af23e6618289ad004f5653258cbd65786be164ee125b6274c0583b0d41b20067",
+      "size": 60066,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/dashboard-dark-1440.png",
+      "hash": "fa49b082b971bac8ca0a7f3f0d2286d6fb3bf62452a8e013abf0ccf8997651c4",
+      "size": 108620,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/dashboard-dark-390.png",
+      "hash": "76d375fc54bc147df8c803120d1bd7f94dac88f077d5bb2b42d86c31cef7b72b",
+      "size": 49561,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/dashboard-dark-768.png",
+      "hash": "be7e0f2fad0822d73de714d74ec68a3d95504a0211509a76c88576610e990e21",
+      "size": 84126,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/dashboard-light-1440.png",
+      "hash": "8108a48b0c13ccb5c77caf3f2d5a64481ae5e7d61f9e787b8f6073101aacddb8",
+      "size": 108198,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/dashboard-light-390.png",
+      "hash": "42df1ce01ca13ea4b8c6c4f68e78fcc3468cd61fbe5640d98eb17cb6b92a16ad",
+      "size": 49420,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/dashboard-light-768.png",
+      "hash": "529168f75b7ee4df88b5e0d431565d285d8541b43b6a1fa2b8d58ed12ce1c1bd",
+      "size": 84057,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/facilities-dark-1440.png",
+      "hash": "6bea91fb16633c8064c8127defc5403507f057f612466b9193c56558966573ca",
+      "size": 105291,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/facilities-dark-390.png",
+      "hash": "904c111bff889e64446bdc0ebb67e41392c91a90bd2d661ac0b8f0e22bcf91fd",
+      "size": 46629,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/facilities-dark-768.png",
+      "hash": "21936d0c391d69d68e12159bc6afb91a6c029dda20a719ff125834317565f810",
+      "size": 54135,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/facilities-light-1440.png",
+      "hash": "9b56086bef8323e2acdb4c498809a17c675f62d7446aeb985efc869de3e74010",
+      "size": 104333,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/facilities-light-390.png",
+      "hash": "6069d6885c135ed22126273e1c96b895121c599d533efc563f5a1d7764c46a02",
+      "size": 46206,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/facilities-light-768.png",
+      "hash": "8541e39e3e60ae4a0022697040b37a56d1e2e23152684a44f79772e1dc886501",
+      "size": 53711,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flow-editor-dark-1440.png",
+      "hash": "d1a5119c2eca491d5d65a7201ac339414646f6866ad79c8f5e3485d917323a3a",
+      "size": 99069,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flow-editor-dark-390.png",
+      "hash": "678cf88ddefeaec882cd06342c8b9c3133ab31cccf528b5248e981d8bc390f91",
+      "size": 42789,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flow-editor-dark-768.png",
+      "hash": "ee6a32567d0c3fbfde168170d90ed1e4ece5a7335ea56f087e95c390b83608b9",
+      "size": 46438,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flow-editor-light-1440.png",
+      "hash": "447bb095ee312c2ec85903ac979b30a18f12f49aa4083f528d163ca81254e126",
+      "size": 98238,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flow-editor-light-390.png",
+      "hash": "3687907862da257b573ef708886c9f6f6bb77ad98d3c7b5d4d4a1c7d85a78385",
+      "size": 42407,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flow-editor-light-768.png",
+      "hash": "d848ef82f4f235fa19fd81913048f75a6fe919f474ff738c33b7ce44c6c0224c",
+      "size": 46115,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flows-dark-1440.png",
+      "hash": "09095ec3cae9f2918f395e1438ee068a7e98d54a67f15f975f27e9f8031ffa88",
+      "size": 50754,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flows-dark-390.png",
+      "hash": "d8b1ba28c846ac73665ac5b8fbc305b8e3993c8612f9b2283a511b574a42d420",
+      "size": 27169,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flows-dark-768.png",
+      "hash": "11afc43a271959cff0dba791e68803e1775d9c9522a2d31585959ff629dc69b6",
+      "size": 30632,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flows-light-1440.png",
+      "hash": "7161ea2c11fb32eb68911b3344e1bb5ec61d2b7115ed79ee58ab97c6b43eece1",
+      "size": 50414,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flows-light-390.png",
+      "hash": "dd7191a85ae2186228a28e0d75664f5f5a0c892336e386dac6c5d400adcdfccf",
+      "size": 27093,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/flows-light-768.png",
+      "hash": "d4eae5dcc85a591f24cf85cd308c51d9603a89927667f141bb3034b5981ddc39",
+      "size": 30496,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/login-dark-1440.png",
+      "hash": "1418a015a7026aeea162bc7d53b216520d0a6ff3e775c785d260b045c8fd2db8",
+      "size": 52201,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/login-dark-390.png",
+      "hash": "90fc828d3ab020b9dec7376d67092fc3cd5c6af0ddee4f4fed88c88a7a7ea09b",
+      "size": 25418,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/login-dark-768.png",
+      "hash": "257f1aa36b78627206d196f1d65e986a8ba17952456877dfd2293252d6f16d6f",
+      "size": 28384,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/login-light-1440.png",
+      "hash": "4b667cedb1e4bcf82e364f902fa61683c3ee814bf8813b96facc0e95c36884b0",
+      "size": 52352,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/login-light-390.png",
+      "hash": "dbb122a7ae1e7dab19e562bd4068276f9e6b666ba6b2391ce3a085f7751b5278",
+      "size": 25509,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/login-light-768.png",
+      "hash": "a18ec0b20e5a47f582dd52a2cbf3de43abf5241bc39afc2bc7883196af873ce3",
+      "size": 28345,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/project-detail-dark-1440.png",
+      "hash": "ab3d66d048a9e31005c928c87c5aa87e3d8b96ce5d11a784a88d6443dab3a480",
+      "size": 99203,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/project-detail-dark-390.png",
+      "hash": "0b00d7d25306a82691f6b04dcf41f53f1808b96a5a8435ab3b72801b76053f2c",
+      "size": 54716,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/project-detail-dark-768.png",
+      "hash": "f80e8712c1032aecbfaee769de90a05f1fbe30f908ec12ac88c98359e32ace28",
+      "size": 63859,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/project-detail-light-1440.png",
+      "hash": "4e05cbd8b6b546f75ffda765b75e3cb04f047af69cb3d267b3bed42b07fd37c7",
+      "size": 98677,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/project-detail-light-390.png",
+      "hash": "e3b62ba62e5570f12e5c29e3d82c9d98ffb17153f5ed311abedd890ecb78917c",
+      "size": 54400,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/project-detail-light-768.png",
+      "hash": "95d00a0690be4e5630dd25ed2108a1a16adca683c73002f00177fe955ad71bc3",
+      "size": 63314,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/projects-dark-1440.png",
+      "hash": "b054f7abf232ffaff3c3f822dea01565f96b6a8870d5d2ea524061e943fd778a",
+      "size": 120172,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/projects-dark-390.png",
+      "hash": "7710a8bee90677d02aafdf66b52991b8760b5c5dba38e755c3705a91c136ea4f",
+      "size": 51972,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/projects-dark-768.png",
+      "hash": "8be64d76f2c5d8c154996056ebea5cc8103602a2b19a0c46081acc20f0764baa",
+      "size": 59753,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/projects-light-1440.png",
+      "hash": "b292234a148d9ae41eab01ba2b3ecd4c0a91922dbd4a346386bbb22fdb4ca71a",
+      "size": 119597,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/projects-light-390.png",
+      "hash": "6f2787616f4298d701a0e42820f35780ec0af3d3c2e892123620a3824b3c75c3",
+      "size": 51479,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/projects-light-768.png",
+      "hash": "d58eef8bbaa97bc9228684603c3b8ad4ff3609563db7b81ad37d11f7a8b64384",
+      "size": 58921,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/reports-dark-1440.png",
+      "hash": "fef0160671c6468855e753f0902af0eecbaebb1eec80a7b7e53002d5f4528640",
+      "size": 77659,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/reports-dark-390.png",
+      "hash": "131b159cc56841a9d0fe73d0567acb45792d65b3c51c606023651a87f41e9a3f",
+      "size": 50042,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/reports-dark-768.png",
+      "hash": "da2c4b6f94c27e23ecfe0142ba34febcdf951a26a150744ba689cf8cc2c8a357",
+      "size": 57496,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/reports-light-1440.png",
+      "hash": "04a61b01ae74e6ef45d39d475e87932143531766aa7503965490cbb199ff47a7",
+      "size": 77327,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/reports-light-390.png",
+      "hash": "b0d4607877898be9904eed84275121ae79240e5a3f1edb801b3495117071d2c2",
+      "size": 49858,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/reports-light-768.png",
+      "hash": "7221ed62f52337ccfdf8c321a2346ebc9caf657ce0e10bb406fa95e2532c2310",
+      "size": 57120,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/review-dark-1440.png",
+      "hash": "407c8fce0c7ce9a79639188a3d60e497b753dcf2203c6cd055689e69557b3a80",
+      "size": 79998,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/review-dark-390.png",
+      "hash": "a7d861869fa486236e558c2e21cd9d7b9f5df77ab0b575f066be8ac5c55d7dfe",
+      "size": 75575,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/review-dark-768.png",
+      "hash": "acecd4b1d176a3e0a60ff5f5b2ed5fa8a50b5ec295551d1f068899c7a6f963eb",
+      "size": 78213,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/review-light-1440.png",
+      "hash": "c3edd6e415abd7648b991eafcc6bedff3b0d9c3fb78b95af299bc7d941a7b831",
+      "size": 77833,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/review-light-390.png",
+      "hash": "27e8a97178d6e9e07723a6ef87a6bc4373806340e895edb5bb6eb33eebcc4d47",
+      "size": 73167,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/review-light-768.png",
+      "hash": "5d0884015d72786d69308ba83505eb05c57e3ebff110292ad80129bd86fb3cbe",
+      "size": 76021,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/reviewed-project.pdf",
+      "hash": "f0a720ed21feae11c96389d1cd3034b83edb3ac99c164396a0acda557db840ec",
+      "size": 11858,
+      "format": "pdf",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/users-dark-1440.png",
+      "hash": "c04d2952767f6d1320b175d92c0f794e1760e37b71cf34bd3d45d613e799f010",
+      "size": 71987,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/users-dark-390.png",
+      "hash": "fc5a91b4f095b1c4c49c3c895822da4af9634084f728179e546801c8bacbeaec",
+      "size": 41180,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/users-dark-768.png",
+      "hash": "ee2ed41691692e156c06a1a77bc85214e0e1209bf08ae8d87af302c499033ba9",
+      "size": 50158,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/users-light-1440.png",
+      "hash": "cdf635c0b7c7e33de5ba837a0b6f6d6a144e85b504c0f9bb67b4f692136275c9",
+      "size": 71546,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/users-light-390.png",
+      "hash": "ef18a42b3c99f601270411451bb07e566669fdb633b16462ea1facb86d35fe01",
+      "size": 41024,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/users-light-768.png",
+      "hash": "022d1353dee8c185c0610117a12992f122b1451899c54dbaab4f53fb0301eace",
+      "size": 50207,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/report.md",
+      "hash": "f66d7fb94b2482b5b4f52cdca0cd54c215e77b0185afaa00b561b0684af3d6eb",
+      "size": 2465,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/progress.md",
+      "hash": "6065d1e93dae886e6d5d051a39f2087818e124a35ee3f90d48537037927ab688",
+      "size": 5073,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/reviewed-project.pdf",
+      "hash": "d5621077ee6536a088b817bf6670242877705702827047ed4b6c79925225a5e3",
+      "size": 11858,
+      "format": "pdf",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/revision-2/DESIGN.md",
+      "hash": "9101a50f74a37c99ad297c2abccb7f62d70f0a0ad8bc086ebc719d9121609922",
+      "size": 3248,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/revision-2",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/revision-2/PRODUCT.md",
+      "hash": "fb8c7b050e1ba22c08785ec152ed92004b08f1c9fc3f9e7d4d85a643f34d075b",
+      "size": 1244,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/revision-2",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/revision-2/direction.md",
+      "hash": "8dbedefb8e935415a5fffc7c91378ed21a10e0fd5c0dfaa807c1ec8ef1e0c881",
+      "size": 3401,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/revision-2",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots.md",
+      "hash": "7914d3b09ca372efbf5a845db1190140587a1d6eae4d3ef1ec4f97c7d2bac8c1",
+      "size": 3736,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/audits-dark-1440.png",
+      "hash": "6b0d02127e7770effe66af96d8160df4ed72ecfe47b4240106306eabb8ca0ad6",
+      "size": 128957,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/audits-dark-390.png",
+      "hash": "d61716bc66ab62657fbd1f64dbee9bec63181b2f0aa0ddd53227a8cc9de4e58a",
+      "size": 49686,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/audits-dark-768.png",
+      "hash": "00be5737946d08ef7c1d4f96f0f14b60d017d3d37fe93c555acd59f5df06f17f",
+      "size": 82394,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/audits-light-1440.png",
+      "hash": "8ace83e0015b149532ddfdf62d9f2182992b995d24380b08a9a4317dda54c8d6",
+      "size": 127077,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/audits-light-390.png",
+      "hash": "b7a8efe286c9883f4eae99ef6c091e85b12a35f6c20c41195e4e38b1047b16b0",
+      "size": 48219,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/audits-light-768.png",
+      "hash": "98e9d2b4f27958bdb6138e351e1eb984a457b4522fbabd0885f34759ccc4b74b",
+      "size": 81283,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/dashboard-dark-1440.png",
+      "hash": "6847ce6b6c982854659a9e170a2c53b6d599e6a245b5af9502f08d5834c20919",
+      "size": 102976,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/dashboard-dark-390.png",
+      "hash": "c245540ade0971fcd184b58ca75c3e118aae48476aa8ba7090cbfd5229d36631",
+      "size": 40312,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/dashboard-dark-768.png",
+      "hash": "127cd37cfb8951bcef2c4341880121e9b197b50d0fe2c26705738c89bc0335cc",
+      "size": 87335,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/dashboard-light-1440.png",
+      "hash": "bf5f7450f506612676013ef518e9ed527f6e759f2331de56686315512969247f",
+      "size": 102575,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/dashboard-light-390.png",
+      "hash": "178533e92cfe8c083a6adef3e8af5aaf0a17e1fde05284cedd98ae8b8d3cb3d7",
+      "size": 40366,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/dashboard-light-768.png",
+      "hash": "9447e7c538f1cbd92a02d3ceff0594ee6387c89233439b40790330acde4275fe",
+      "size": 87246,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/facilities-dark-1440.png",
+      "hash": "00c842de5cfa4a6d584967d897a7eb243927d7c1166725eba0d7aad46bde4ac4",
+      "size": 110662,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/facilities-dark-390.png",
+      "hash": "73d21d8224ac73db7fb1266392b7474b94bfcd9180ba2807409a93938a5ff65d",
+      "size": 55423,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/facilities-dark-768.png",
+      "hash": "f04d79a0cb1a43562ada6854ceb39802ca9c794fa44d21a6f662b372088391d0",
+      "size": 82607,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/facilities-light-1440.png",
+      "hash": "e77ba9a004410e6be586436d3dc013b898856a5af8623207f84129c3c6b6e5f0",
+      "size": 109690,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/facilities-light-390.png",
+      "hash": "bb1fb2eedeb97ff579a199beacba77c929c91917a7eaebb8a2476d67fb13e2cd",
+      "size": 54571,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/facilities-light-768.png",
+      "hash": "22d5c6964e973773d2d4cc494c1a055bcad68232d67bc862c18b6ac7b3a979fa",
+      "size": 82057,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flow-editor-dark-1440.png",
+      "hash": "e9b87bfb3d65e8c522ee3c0ad321d392077823174e08a2579ac4a11f47ede273",
+      "size": 130640,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flow-editor-dark-390.png",
+      "hash": "5f2294f5163a1766665b324832a12ccd206e2f4f5fe951d02b26dba1b4e3db5c",
+      "size": 48688,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flow-editor-dark-768.png",
+      "hash": "9a1f79b3587fd73c23b48d50975b837138d3197a5712aab2a49777676dae6027",
+      "size": 73568,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flow-editor-light-1440.png",
+      "hash": "043f17c712dd8dd1edab188bd9bc3048ece1c6f745a25eee68a5684eb99eaea4",
+      "size": 130875,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flow-editor-light-390.png",
+      "hash": "e62917e955b6461001cdb7c229aca099dcbfe4d47aacd75e14ab97dfe64d0038",
+      "size": 48726,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flow-editor-light-768.png",
+      "hash": "5dd30fd2509b81c223a506807348b37bb12253ea892485bf5967f32d298d844c",
+      "size": 73895,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flows-dark-1440.png",
+      "hash": "db31a2892fd13c4eea28997a527c8f1336fdd6aa40fc3ab03e6493ce2368064a",
+      "size": 51382,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flows-dark-390.png",
+      "hash": "e88030225ce4a4ec9ba9b1edb69213047306117eaf45409c6b8073ad9d896c6d",
+      "size": 27151,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flows-dark-768.png",
+      "hash": "da5192fc1382eb7447bd44de660fc6fec276bff2393f077947650e30320f8db8",
+      "size": 48907,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flows-light-1440.png",
+      "hash": "4105a9ea0095ea755d34deca7f5f7b87ed390de8bed2173475fb9f806975bfaa",
+      "size": 50921,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flows-light-390.png",
+      "hash": "be6182da80317c440a0dbca41555c714ab668fcbfd2ff2332609a69493e832e8",
+      "size": 26647,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/flows-light-768.png",
+      "hash": "4ed38c30962aaad7643e9ef89c89ae6aeba1849ec42cbcffa8bd3fece2c570c5",
+      "size": 48654,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/login-dark-1440.png",
+      "hash": "9b6ddd8c90473651ad3596f497d50396955a27ecb5418132708ccb801f475ce7",
+      "size": 55452,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/login-dark-390.png",
+      "hash": "0cbd6d6a894f6508994bbdb6b7c3ae82c49098ac01c75227ea13a41853992861",
+      "size": 25289,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/login-dark-768.png",
+      "hash": "6c2f3bf5a0eac57c3581f734f02cf51faf6181f1947f2de1b4dd53a869558559",
+      "size": 27093,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/login-light-1440.png",
+      "hash": "e2b755f17dc0eed6a9e7af42f6bcdd1e6935a633de70ba5e519394d85f5361c3",
+      "size": 55160,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/login-light-390.png",
+      "hash": "344f3a2d8a3155d072e26f0f20dbfd30ae1884f4608fbbcf84891d95c59ddc18",
+      "size": 25108,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/login-light-768.png",
+      "hash": "22ab952fba4ba31cd9f65e8a057b3ad5c32a2923ddc9dee35bbd40d42adbdc67",
+      "size": 26947,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/mobile-flow-steps-final.png",
+      "hash": "f170132475765db45c89546a3cc5ac57496f3b97d3d752aa4e2811ee9aaa4445",
+      "size": 60028,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/mobile-navigation-final.png",
+      "hash": "f686c6cc01f46c270f37604f4ce5a09cb532ff1478425743529ab14adfae281e",
+      "size": 35726,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/project-detail-dark-1440.png",
+      "hash": "373b46060039e7dd4eb30d109329e8479ef6e2388d65d87c7bf402bfc9bb8652",
+      "size": 103405,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/project-detail-dark-390.png",
+      "hash": "e2e6458b16f976ce51069de3bb05851d9d6684bb43c446861d7b65f64ee1d1f0",
+      "size": 49876,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/project-detail-dark-768.png",
+      "hash": "d68673607cc8027863613208625b100fa9917124987e9ecbba0044214d2e6bc1",
+      "size": 84588,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/project-detail-light-1440.png",
+      "hash": "69302c0362458e26a71868174ea7289a3a911403df377a570f8cd474c373836a",
+      "size": 102839,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/project-detail-light-390.png",
+      "hash": "5324c394c4ea4b4abb39035ee95f47d31720dc638af9b396d882fb72216f7b44",
+      "size": 49518,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/project-detail-light-768.png",
+      "hash": "de7a417cb6448919a591295a045d78516a8e10ebc38fc266550de5d58177b9ab",
+      "size": 84141,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/projects-dark-1440.png",
+      "hash": "7975d3310197a7b4c490309f8ff57b0d8d924bc95bb1547cbb360876e9a1c2c3",
+      "size": 113968,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/projects-dark-390.png",
+      "hash": "ee457857c5541231f6c2068f6f37c31d529625eebc03f50d9078b068a3253947",
+      "size": 53107,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/projects-dark-768.png",
+      "hash": "2c7d1ce60b987ec9c2f6567a4123074c94f205582dac58e7d4010497f655bf17",
+      "size": 87335,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/projects-light-1440.png",
+      "hash": "bb1631ffcfe426f95f0bfed0cae48c32d039f1945bd3cf7b58a45607ec1e04f0",
+      "size": 112858,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/projects-light-390.png",
+      "hash": "2ed9fe22c59313ebbac7eb3eaca7edde976b4105bb47fa948c2ac919ead5c58b",
+      "size": 52523,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/projects-light-768.png",
+      "hash": "01685424fa96f56e39b815ee1af53840862580d8c80ae3cedbe43f0ffb676d12",
+      "size": 86872,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/reports-dark-1440.png",
+      "hash": "a1c0bd5bcd83dcdc975f5b913d45895282c377aaba7e7778d4b5327e2fe7533d",
+      "size": 71360,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/reports-dark-390.png",
+      "hash": "9155b91ff7e3f766340f53534e60629d3f470ec5229c28f903bf8e0f11f74bd3",
+      "size": 37112,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/reports-dark-768.png",
+      "hash": "a658f9d3e1ff6994b739547b1a2bdbe3c8d3a5a630bc0fc383e39c0d45bffa3a",
+      "size": 62087,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/reports-light-1440.png",
+      "hash": "76f5629428335ab96ce7675cf5f0f112786ed4bd0b0df97ca3d18a2b7acf8b1d",
+      "size": 70435,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/reports-light-390.png",
+      "hash": "de725b012c048ab112d65de840e7d976fd2aa0382fa4b8b579afff46d05e3915",
+      "size": 36728,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/reports-light-768.png",
+      "hash": "dd6f434fa439b2fc0f629ad81b0cde91df72131e2b028cb9d56748607043486f",
+      "size": 61523,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/review-dark-1440.png",
+      "hash": "a77e990748fa3b43b242af3b0777bc6daad18f61806a0e0ec68eb00d9931ed08",
+      "size": 84829,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/review-dark-390.png",
+      "hash": "e1e6b308de9689ac8bbe501545f64da4d33591de0d68735f48fcc39cdc783ba8",
+      "size": 78814,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/review-dark-768.png",
+      "hash": "ae9d69df309c170c3840c0778527ac3c68a1a1c68ab26bd95fa7cad7ab6bf408",
+      "size": 81421,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/review-dark-final.png",
+      "hash": "6f38cae2b73630f93b9d6687c15d41bea461afc26ec2ddc753b432e08739d2b3",
+      "size": 144811,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/review-light-1440.png",
+      "hash": "b0a66959619f9ad1fb14f02b97b4c61ee2af123a7e9bbfe97d53486702fc34d0",
+      "size": 84591,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/review-light-390.png",
+      "hash": "ed8571212af16f2441fe665a31469fcc9b409b15f09d9103722bd2fc4f6c1427",
+      "size": 78547,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/review-light-768.png",
+      "hash": "603253f53bbed1f90328a42ba3b485e70ec29f3f28bb589cc3820cd0c7fbb4b0",
+      "size": 81157,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/reviewed-project-page3.png",
+      "hash": "6aea2c5a5248616c17aaa8a188ca1f7c3d6362609abf19f088ad9623c5e5193a",
+      "size": 60742,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/users-dark-1440.png",
+      "hash": "425d78ee23b2e5d511bb6ab97c9ad566522ae724f29be50b31cf0724c398d904",
+      "size": 73184,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/users-dark-390.png",
+      "hash": "7951f8e9407db87ac043c7165893989578a026a456cc2927d3482ab5fb0207e0",
+      "size": 38842,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/users-dark-768.png",
+      "hash": "8b1cf1760acd8f640aee8328200c24ff3f953954f3c47a3a21957a80571c608b",
+      "size": 64143,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/users-light-1440.png",
+      "hash": "6bccb99012e4370aa1a9a1d79f856f6b5088e0701994218bfdc9560f274c6186",
+      "size": 73058,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/users-light-390.png",
+      "hash": "b3570270d208edbd78fbf0d5b22db5723b42613ab575e8d867a01cef8257b21e",
+      "size": 38857,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots/users-light-768.png",
+      "hash": "6c255c0cba295bcb4f0d69a9f726c4f9feba03b387351d509750e0049430bf91",
+      "size": 64091,
+      "format": "png",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign/screenshots",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/spec.md",
+      "hash": "63de046d17db88a141214b48f0db6f49f0e42e4b004cdd17d23747018022c8a7",
+      "size": 1299,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/tasks.md",
+      "hash": "4617c3a5286c443607946e6cd852ac112d430f9f084c1daf6a0c98f75da4bbbf",
+      "size": 849,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/validation-results.json",
+      "hash": "43d3148d7bcffa4c34f4fa6b266b011f7e30c6203a046d7874da5da983896325",
+      "size": 637,
+      "format": "json",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/kma-redesign/verification.md",
+      "hash": "d52c0da1c5fd28ea87d840bba27a6424b912b0a562b7bae1c05071214f1a0e97",
+      "size": 2321,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/kma-redesign",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/plans/catalog-management.md",
+      "hash": "6f3cf933d8e193bdc31dcf03f8e5bf700b195ff43043a733d8d7a251c8cf03c0",
+      "size": 10256,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/plans",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/progress/catalog-management.md",
+      "hash": "1413263c80135914205fb7e393f7dc29fcd9351f790709354618a989cbecaac1",
+      "size": 11688,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/progress",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/specs/catalog-management.md",
+      "hash": "9ca4b99ddf6e29c2459192ff53396616bde6046d5ae81347505b56dea17bf6b2",
+      "size": 3150,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/specs",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-22.md",
+      "hash": "f3386a09ffeb6d303cc413219d0a1e76b70d562a548e4068931f43e9c9ce6754",
+      "size": 8439,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/verifications",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-23.md",
+      "hash": "ad73b9a8b1e149d9346a7a676e0534912c81aa769fe2075619a2b9ab516a30a1",
+      "size": 4137,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/verifications",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/verifications/mitigation-crud-export-2026-10-23.md",
+      "hash": "1fc030f35edb45fc110efa7aa6ef26ebca6961cedae000fa6f0e67b4a4f58540",
+      "size": 4802,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/verifications",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/sdd/verifications/mitigation-qa-2026-10-23.md",
+      "hash": "668a3c881ee269c61729a6cae04ee363d846f7149e10359119f68858a6483875",
+      "size": 7384,
+      "format": "md",
+      "topic": "02-DOCS/wiki/sdd/verifications",
+      "status": "indexed"
+    },
+    {
+      "path": "AGENTS.md",
+      "hash": "db11b0b72682777aa0689aca60a1c95f686a1094616f9b7eb5d21c5b43c9dd3b",
+      "size": 16992,
+      "format": "md",
+      "topic": "raíz",
+      "status": "indexed"
+    },
+    {
+      "path": "CLAUDE.md",
+      "hash": "ff7bc9a950d7df24ec05730534a2a2dbe846c9dfdf66d5c9b109016818de15df",
+      "size": 356,
+      "format": "md",
+      "topic": "raíz",
+      "status": "indexed"
+    },
+    {
+      "path": "README.md",
+      "hash": "5eec29d2c4ae81fea257f6c7f0c7bfdf84ae0e041c1014f30f56dee0b01d7232",
+      "size": 4827,
+      "format": "md",
+      "topic": "raíz",
+      "status": "indexed"
+    },
+    {
+      "path": "docs/agents/project-context.md",
+      "hash": "13169253dcbe6c5d367a02d2e99774cdeb197c61dc778d6fe7e1cdf8b17c6be2",
+      "size": 13059,
+      "format": "md",
+      "topic": "docs/agents",
+      "status": "indexed"
+    },
+    {
+      "path": "docs/architecture/auth.md",
+      "hash": "dc325235beeb8e0096474720816e1e6ed9eb404839400a07a640619290db391d",
+      "size": 3914,
+      "format": "md",
+      "topic": "docs/architecture",
+      "status": "indexed"
+    },
+    {
+      "path": "public/fonts/albert-sans-OFL.txt",
+      "hash": "5c856c086e8743b84932aae46ced424729a703932b601e9eb8aaeac15a617ec6",
+      "size": 4390,
+      "format": "txt",
+      "topic": "public/fonts",
+      "status": "indexed"
+    },
+    {
+      "path": "public/fonts/alumni-sans-OFL.txt",
+      "hash": "08e1c6fa00b198f9cf90fd8c7f540ce400892063234d5a3b38dcae9f659c977f",
+      "size": 4483,
+      "format": "txt",
+      "topic": "public/fonts",
+      "status": "indexed"
+    },
+    {
+      "path": "public/fonts/chakra-petch-OFL.txt",
+      "hash": "13831d02389d917d22fcfa6c79f98f8acbf61d230add0e73a4d4dc5f3bfb9e56",
+      "size": 4396,
+      "format": "txt",
+      "topic": "public/fonts",
+      "status": "indexed"
+    },
+    {
+      "path": "public/fonts/manrope-OFL.txt",
+      "hash": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b",
+      "size": 4387,
+      "format": "txt",
+      "topic": "public/fonts",
+      "status": "indexed"
+    },
+    {
+      "path": "public/fonts/source-sans-3-OFL.txt",
+      "hash": "09746787287a289323b0ec3cff4d1a4a801331b82b7207c1e186f5d26619a392",
+      "size": 4579,
+      "format": "txt",
+      "topic": "public/fonts",
+      "status": "indexed"
+    },
+    {
+      "path": "src/features/flows/ui/app_example.md",
+      "hash": "1a837e928cebfc202e2099f1226fd52cc34d35b47b9a214ca3a856e37d975f11",
+      "size": 13403,
+      "format": "md",
+      "topic": "src/features/flows/ui",
+      "status": "indexed"
+    }
+  ],
+  "excluded": [
+    {
+      "path": "01-TOOLS",
+      "reason": "tooling-or-build"
+    },
+    {
+      "path": "DESIGN.md",
+      "reason": "symlink"
+    },
+    {
+      "path": "PRODUCT.md",
+      "reason": "symlink"
+    },
+    {
+      "path": "coverage",
+      "reason": "tooling-or-build"
+    },
+    {
+      "path": "node_modules",
+      "reason": "tooling-or-build"
+    },
+    {
+      "path": "src/shared/auth/__tests__/verify-access-token.test.ts",
+      "reason": "sensitive"
+    },
+    {
+      "path": "src/shared/auth/verify-access-token.ts",
+      "reason": "sensitive"
+    }
+  ]
+}

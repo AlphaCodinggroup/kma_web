@@ -5,13 +5,17 @@
     "codex"
   ],
   "skills": [
+    "accessibility",
     "analyze",
     "automation-strategy",
     "clarify",
+    "connect-tool",
     "constitution",
     "debug",
     "decision-challenge",
     "deprecation",
+    "design",
+    "e2e-testing",
     "fable-operator",
     "ftd",
     "harness",
@@ -32,8 +36,9 @@
     "specify",
     "suggest",
     "tasks",
-    "ui-engineering",
+    "testing-web",
     "unslop",
+    "ux",
     "verify",
     "worktrees"
   ],
@@ -46,9 +51,10 @@
     "refuter-tests"
   ],
   "ownSkills": [],
-  "catalogVersion": "3.0.10",
+  "catalogVersion": "3.6.0",
   "tier": null,
   "optOuts": [
+    "auto-update",
     "knowledge-sync",
     "trunk-open"
   ],
@@ -798,6 +804,11 @@
       "02-DOCS/wiki/harness/installation-plan.md": "36888d1996d7e252669c390837805d31a426ff3359899cfc27ad075e6bdeb412",
       "02-DOCS/wiki/harness/user-profile.md": "523b4a62d116e5d19e04fc8124d13a4791be29b663519f4692846a1b4b8a4c4b",
       "AGENTS.md": "e3a42dada9adafdcbfb84652886ba96b78a7fefa6a292fcfd6f8f0219a46e58c"
+    },
+    "maintenanceDrift": {
+      "action": "add testing-web,e2e-testing,accessibility",
+      "recordedAt": "2026-10-23T15:38:20.114Z",
+      "requiresReassessment": true
     }
   }
 }

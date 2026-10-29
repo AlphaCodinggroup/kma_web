@@ -40,3 +40,7 @@ Los diez escenarios A1–A10 del [prompt](../../ftd/catalog-implementation-promp
 Pablo solicitó implementar el plan completo: carga asíncrona de XLSX hasta 3 MiB y 10.000 filas; consulta de todos los registros activos e históricos completos con búsqueda/filtros/paginación y detalle; recuperación de operaciones y progreso persistido. La entrega amplía PR web 78 contra new-ui y abre PR backend contra main; no incluye merge ni despliegue.
 
 Aceptación adicional: el máximo válido debe importarse; un navegador cerrado no cancela el trabajo; pérdidas de envío, duplicados, reinicios y CAS conservan integridad; búsqueda alcanza páginas posteriores y nunca mezcla versiones; costos cero y ausentes siguen distintos.
+
+## Ampliación aprobada — administrador de mitigaciones
+
+Pablo aprobó el 2026-10-23 implementar CRUD por fila y exportación XLSX. Una edición no se propaga a filas con el mismo mitigation_id. Se permiten cambios de clave sin colisiones. Solo se modifica la versión activa; cada cambio genera una versión completa y restaurable. Se conserva el import, el historial, las auditorías e informes almacenados. El export incluye toda la versión seleccionada, con costos cero distintos de ausentes.

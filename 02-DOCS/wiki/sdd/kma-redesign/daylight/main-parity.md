@@ -11,7 +11,7 @@ Pablo comparó el editor de flujos de producción (`main`, 03e3d1d, Amplify `mai
 
 `main` es el padre directo de `new-ui` (03e3d1d); no avanzó mientras tanto. La divergencia nació dentro del rediseño:
 
-- La iteración "premium" conservaba la estructura de `main` ([antes](premium/before/flow-editor-light-1440.png)).
+- La iteración "premium" conservaba la estructura de `main` ([antes](../premium/before/flow-editor-light-1440.png)).
 - La iteración Daylight la reemplazó por un índice de pasos de 300 px y un inspector, y lo dejó escrito como norma en `DESIGN.md`, `implementation.md` y `validation/entrega.md`.
 - Las comparaciones "antes/después" (`validation/capturas.md`) usaron la iteración premium como "antes", nunca producción.
 - `PRODUCT.md` apuntaba a capturas de `main` en `../screenshots/`, una ruta que no existe.

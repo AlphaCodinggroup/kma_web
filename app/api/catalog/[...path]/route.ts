@@ -31,6 +31,15 @@ const file = {
       return bytes > 0 && bytes <= MAX_FILE_BYTES;
     }),
 };
+const cell = z.string().refine(value => Buffer.byteLength(value, "utf8") <= 32768, "Cell exceeds limit");
+const requiredCell = cell.refine(value => value.trim().length > 0, "Required field");
+const item = z.object({
+  flow_id: requiredCell, barrier_id: requiredCell, question_code: requiredCell,
+  question: requiredCell, mitigation_id: cell,
+  barrier_statement: requiredCell, proposed_mitigation: cell,
+  adas_reference: requiredCell, cost: z.number().finite().nonnegative().nullable(), unit: cell,
+}).strict();
+const mutation = { ...identity, base_version: nonEmpty };
 const schemas = {
   validate: z.object(file).strict(),
   imports: z.object({ ...file, ...identity }).strict(),
@@ -78,12 +87,14 @@ async function handle(req: NextRequest, context: Context) {
   const { path } = await context.params;
   const resource = path[0];
   const operation = resource === "operations" && path.length === 2;
+  const row = resource === "items" && path.length === 3;
+  const create = resource === "items" && path.length === 1 && req.method === "POST";
   const read =
-    (["status", "versions", "items", "operations"].includes(resource) && path.length === 1) ||
+    (["status", "versions", "items", "operations", "export"].includes(resource) && path.length === 1) ||
     operation;
-  const write = Object.hasOwn(schemas, resource) && path.length === 1;
+  const write = (Object.hasOwn(schemas, resource) && path.length === 1) || create || row;
   if (!read && !write) return error("Not found", 404);
-  if ((read && req.method !== "GET") || (write && req.method !== "POST"))
+  if ((!write && read && req.method !== "GET") || (write && !(row ? ["PUT", "DELETE"] : ["POST"]).includes(req.method)))
     return error("Method not allowed", 405);
 
   let upstreamPath = `/admin/catalog/${resource}`;
@@ -93,6 +104,13 @@ async function handle(req: NextRequest, context: Context) {
     if (!z.string().uuid().safeParse(path[1]).success)
       return error("Invalid operation_id", 400);
     upstreamPath += `/${segment.value}`;
+  }
+  if (row) {
+    for (const [index, label] of [[1, "flow_id"], [2, "catalog_item_id"]] as const) {
+      const segment = pathSegment(path[index], label);
+      if (!segment.ok) return segment.response;
+      upstreamPath += `/${segment.value}`;
+    }
   }
   if (write) {
     const origin = req.headers.get("origin");
@@ -115,16 +133,18 @@ async function handle(req: NextRequest, context: Context) {
         400,
       );
     }
-    const parsed = schemas[resource as keyof typeof schemas].safeParse(body);
+    const schema = create || row ? z.object({ ...mutation, ...(req.method !== "DELETE" ? { item } : {}) }).strict() : schemas[resource as keyof typeof schemas];
+    const parsed = schema.safeParse(body);
     if (!parsed.success)
       return error(
-        "Invalid catalog request: check the XLSX file (maximum 3 MiB), operation ID and expected revision",
+        "Invalid catalog request: check the fields, file limits, operation ID and expected revision",
         400,
       );
     return proxyToBackend(req, { path: upstreamPath, body: parsed.data });
   }
   return proxyToBackend(req, {
     path: upstreamPath,
+    ...(resource === "export" ? { forwardQuery: ["version"], binary: { contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", maxBytes: MAX_FILE_BYTES } } : {}),
     ...(["versions", "operations", "items"].includes(resource)
       ? { forwardQuery: resource === "items" ? ["limit", "cursor", "version", "q", "flow_id", "barrier_id"] : ["limit", "cursor"], numericQuery: { limit: resource === "items" ? 200 : 100 } }
       : {}),
@@ -133,3 +153,6 @@ async function handle(req: NextRequest, context: Context) {
 
 export const GET = handle;
 export const POST = handle;
+
+export const PUT = handle;
+export const DELETE = handle;

@@ -15,6 +15,7 @@ export default [
   {
     ignores: [
       ".next/**",
+      ".worktrees/**",
       ".rsc/**",
       ".claude/**",
       ".codex/**",
