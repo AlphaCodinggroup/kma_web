@@ -16,7 +16,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/ftd/catalog-implementation-prompt.md](<../../02-DOCS/wiki/ftd/catalog-implementation-prompt.md>) — md, 23915 bytes.
 - [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3646 bytes.
 - [02-DOCS/wiki/ftd/catalog-upload-first.md](<../../02-DOCS/wiki/ftd/catalog-upload-first.md>) — md, 2595 bytes.
-- [02-DOCS/wiki/ftd/collapsible-navigation.md](<../../02-DOCS/wiki/ftd/collapsible-navigation.md>) — md, 4523 bytes.
+- [02-DOCS/wiki/ftd/collapsible-navigation.md](<../../02-DOCS/wiki/ftd/collapsible-navigation.md>) — md, 5679 bytes.
 - [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 2347 bytes.
 - [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2743 bytes.
 - [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2688 bytes.

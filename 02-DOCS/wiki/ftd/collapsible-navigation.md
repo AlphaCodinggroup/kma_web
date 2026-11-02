@@ -78,7 +78,25 @@ la API de KMA escucha en `127.0.0.1:28080`; las cuatro rutas web de dashboard,
 projects, flows y users respondieron 200. El ajuste de puertos permanece local
 y no se publica en Amplify.
 
+## Cierre del despliegue — 2026-11-02
+
+- Commit publicado: `871fe886c6a195a983a394ae060279edc34ffc40` en `new-ui`.
+- Amplify inició automáticamente el trabajo `13`; BUILD, DEPLOY y VERIFY
+  finalizaron en `SUCCEED` a las 21:36:49 UTC. No se inició un trabajo manual.
+- HTTPS `/login`: 200. Los 13 recursos estáticos referenciados respondieron 200.
+  `/dashboard` sin sesión devuelve 307 a `/login`, como corresponde.
+- Chrome cargó la página pública de login sin errores ni advertencias de consola.
+  No se repitió la interacción autenticada en AWS: no se proporcionaron credenciales
+  de ese ambiente. El menú se comprobó en local y Amplify confirma el commit publicado.
+- El registro final se publica con `[skip-cd]`, conforme al procedimiento existente,
+  para no repetir el despliegue por un cambio exclusivamente documental.
+
+Hallazgo fuera de alcance, **UNVERIFIED**: GitHub informó 101 alertas de
+dependencias en la rama predeterminada al realizar el push. No se investigaron
+ni se atribuyen a esta rama; este cambio no modifica dependencias.
+
 ## Siguiente
 
-Publicar el commit y comprobar el trabajo de Amplify y la URL pública.
-La implementación y sus controles locales consumieron aproximadamente 20 minutos.
+Publicación funcional completada en la URL autorizada. El checkout principal
+conserva su rama y sus cambios locales. La implementación y sus controles locales
+consumieron aproximadamente 20 minutos; la publicación, aproximadamente 8 minutos.
