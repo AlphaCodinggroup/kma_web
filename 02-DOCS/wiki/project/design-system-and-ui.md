@@ -68,6 +68,10 @@ CONFIRMADO en código:
   Cambio de ancho del inspector: [flow-inspector-width](../ftd/flow-inspector-width.md) (sin comprobar en
   navegador). Nota: `DESIGN.md` aún describe el inspector de 340 a 480 px y `flex-3/flex-2`, anterior a
   ese cambio (CONTRADICCION menor con el código sin commitear).
+- La tabla de pasos ajusta sus columnas al ancho del panel con `table-layout: fixed` y sin ancho
+  mínimo. Títulos, IDs, rutas y barreras pueden ocupar varias líneas; las filas de escritorio usan
+  texto de 12 px y etiquetas de 11 px. Las acciones conservan 28 px con puntero preciso y 44 px en
+  táctil. El listado móvil mantiene su presentación. [Evidencia de ajuste automático](../ftd/responsive-flow-steps.md).
 - Login: dos columnas desde `lg`; por debajo se oculta la ilustración.
 
 ## Accesibilidad

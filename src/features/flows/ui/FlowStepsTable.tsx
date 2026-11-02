@@ -14,7 +14,7 @@ import {
 import { cn } from "@shared/lib/cn";
 
 // Chips de estado: colores sólidos del tema (nunca mezclas translúcidas) para que el contraste se mida sobre un fondo fijo.
-const CHIP = "inline-flex max-w-full items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] font-medium break-all";
+const CHIP = "inline-flex min-w-0 max-w-full flex-wrap items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] leading-4 font-medium [overflow-wrap:anywhere]";
 const TONE = {
     success: "border-[var(--kma-success-border)] bg-[var(--kma-success-bg)] text-[var(--kma-success)]",
     danger: "border-[var(--kma-danger-border)] bg-[var(--kma-danger-bg)] text-[var(--kma-danger)]",
@@ -152,12 +152,12 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                     {s.options.slice(0, 2).map((opt, idx) => (
                         <span
                             key={idx}
-                            className={cn(CHIP, "max-w-[170px]", opt.next ? TONE.info : TONE.warning)}
+                            className={cn(CHIP, opt.next ? TONE.info : TONE.warning)}
                             title={`${opt.label} -> ${opt.next || "Missing"}`}
                         >
-                            <span className="truncate">{opt.label}</span>
+                            <span className="min-w-0 [overflow-wrap:anywhere]">{opt.label}</span>
                             <ArrowRight className="inline h-3 w-3 shrink-0" aria-hidden="true" />
-                            <span className="shrink-0">{opt.next || "?"}</span>
+                            <span className="min-w-0 [overflow-wrap:anywhere]">{opt.next || "?"}</span>
                         </span>
                     ))}
                     {s.options.length > 2 && (
@@ -211,7 +211,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
             title={!isAdmin ? "Only administrators can delete steps" : "Delete step"}
             className={cn(
                 "inline-flex h-[var(--kma-control-height)] w-[var(--kma-control-height)] shrink-0 items-center justify-center rounded text-[var(--kma-muted)] transition-colors hover:bg-[var(--kma-danger-bg)] hover:text-[var(--kma-danger)] disabled:cursor-not-allowed disabled:opacity-40",
-                isTable && "fine-desktop:opacity-0 fine-desktop:group-hover:opacity-100 fine-desktop:group-focus-within:opacity-100 fine-desktop:focus-visible:opacity-100"
+                isTable && "fine-desktop:h-7 fine-desktop:w-7 fine-desktop:opacity-0 fine-desktop:group-hover:opacity-100 fine-desktop:group-focus-within:opacity-100 fine-desktop:focus-visible:opacity-100"
             )}
         >
             <Trash2 className="h-4 w-4" aria-hidden="true" />
@@ -235,7 +235,7 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
     );
 
     const header = (
-        <div className="kma-theme-panel shrink-0 space-y-3 border-b border-[var(--kma-brand-border)] bg-[var(--kma-brand)] p-4">
+        <div className={cn("kma-theme-panel shrink-0 space-y-3 border-b border-[var(--kma-brand-border)] bg-[var(--kma-brand)]", isTable ? "p-3" : "p-4")}>
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                     {isTable ? <h2 className="text-base font-semibold text-[var(--kma-brand-fg)]">Flow Steps</h2> : null}
@@ -310,19 +310,19 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
         <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]" data-testid="flow-steps-panel">
             {header}
             <div className="min-h-0 flex-1 overflow-auto">
-                <table className="w-full min-w-[620px] border-collapse text-left text-sm" aria-label="Flow step sequence">
+                <table className="w-full table-fixed border-collapse text-left text-xs" aria-label="Flow step sequence">
                     <thead>
-                        <tr className="text-xs font-semibold uppercase tracking-wider text-[var(--kma-muted)]">
+                        <tr className="text-[11px] font-semibold uppercase text-[var(--kma-muted)] [overflow-wrap:anywhere]">
                             {[
-                                ["ID", "w-[110px] px-3"],
-                                ["Type", "w-[85px] px-2.5"],
-                                ["Question / Title", "min-w-[170px] px-3"],
-                                ["Routing", "min-w-[190px] px-2.5"],
-                                ["Barriers", "w-[90px] px-2"],
+                                ["ID", "w-[15%] px-2"],
+                                ["Type", "w-[14%] px-1.5"],
+                                ["Question / Title", "px-2"],
+                                ["Routing", "w-[28%] px-1.5"],
+                                ["Barriers", "w-[13%] px-1.5"],
                             ].map(([label, cls]) => (
                                 <th key={label} scope="col" className={cn("sticky top-0 z-10 bg-[var(--kma-subtle)] py-3 shadow-[inset_0_-1px_0_var(--kma-border)]", cls)}>{label}</th>
                             ))}
-                            <th scope="col" className="sticky top-0 z-10 w-10 bg-[var(--kma-subtle)] py-3 shadow-[inset_0_-1px_0_var(--kma-border)]"><span className="sr-only">Actions</span></th>
+                            <th scope="col" className="sticky top-0 z-10 w-12 bg-[var(--kma-subtle)] py-3 shadow-[inset_0_-1px_0_var(--kma-border)] fine-desktop:w-9"><span className="sr-only">Actions</span></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[var(--kma-border)]">
@@ -335,26 +335,26 @@ export const FlowStepsTable: React.FC<FlowStepsTableProps> = ({
                             const isDuplicateId = flow.steps.filter((s) => s.id === step.id).length > 1;
                             return (
                                 <tr key={`${step.id}-${index}`} {...rowHandlers(step)} className={rowTone(step, isSelected, incomplete, isDuplicateId)}>
-                                    <td className="px-3 py-3">
-                                        <div className="flex items-center gap-2">
-                                            {draggable ? <span title="Drag to reorder" className="-ml-1 cursor-grab text-[var(--kma-muted)]"><GripVertical className="h-4 w-4" aria-hidden="true" /></span> : null}
-                                            <button type="button" onClick={(e) => { e.stopPropagation(); onSelectStep(step.id); }} aria-label={`Select step ${step.id}`} aria-current={isSelected ? "step" : undefined} className="min-h-[var(--kma-control-height)] rounded text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kma-primary)]">
-                                                <span className="whitespace-nowrap font-bold tabular-nums text-[var(--kma-fg)]">{step.id}</span>
+                                    <td className="px-2 py-2">
+                                        <div className="flex min-w-0 flex-wrap items-center gap-1">
+                                            {draggable ? <span title="Drag to reorder" className="shrink-0 cursor-grab text-[var(--kma-muted)]"><GripVertical className="h-3.5 w-3.5" aria-hidden="true" /></span> : null}
+                                            <button type="button" onClick={(e) => { e.stopPropagation(); onSelectStep(step.id); }} aria-label={`Select step ${step.id}`} aria-current={isSelected ? "step" : undefined} className="min-h-[var(--kma-control-height)] min-w-0 max-w-full rounded text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kma-primary)]">
+                                                <span className="break-all font-bold tabular-nums text-[var(--kma-fg)]">{step.id}</span>
                                             </button>
                                             {idMarks(step, incomplete, isDuplicateId)}
                                         </div>
                                     </td>
-                                    <td className="px-2.5 py-3"><span className={cn(CHIP, TONE.neutral, "whitespace-nowrap break-normal font-semibold")}>{step.type}</span></td>
-                                    <td className="px-3 py-3"><div className="line-clamp-2 leading-relaxed text-[var(--kma-fg)]">{stepTitle(step)}</div></td>
-                                    <td className="px-2.5 py-3">{renderRouting(step)}</td>
-                                    <td className="px-2 py-3">
+                                    <td className="px-1.5 py-2"><span className={cn(CHIP, TONE.neutral, "font-semibold")}>{step.type}</span></td>
+                                    <td className="px-2 py-2"><div className="leading-4 text-[var(--kma-fg)] [overflow-wrap:anywhere]">{stepTitle(step)}</div></td>
+                                    <td className="px-1.5 py-2">{renderRouting(step)}</td>
+                                    <td className="px-1.5 py-2">
                                         {barriers ? (
                                             <div className="flex flex-wrap gap-1">{barriers.split(", ").map((b) => <span key={b} className={cn(CHIP, TONE.neutral)}>{b}</span>)}</div>
                                         ) : (
                                             <><span aria-hidden="true" className="text-[var(--kma-muted)]">-</span><span className="sr-only">None</span></>
                                         )}
                                     </td>
-                                    <td className="px-1.5 py-1 text-right">{deleteButton(step)}</td>
+                                    <td className="px-0.5 py-1 text-center">{deleteButton(step)}</td>
                                 </tr>
                             );
                         })}

@@ -82,6 +82,14 @@
       "status": "indexed"
     },
     {
+      "path": "02-DOCS/wiki/ftd/responsive-flow-steps.md",
+      "hash": "f674dc86b51b1cf334ef49f79c7ef09998b8cc3fa06c5f70bcbf6f7aa49a3f9c",
+      "size": 3306,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
       "path": "02-DOCS/wiki/ftd/ui-scroll-fixes.md",
       "hash": "ee9007769157f693d0a077c4be15903562267d3f22d3b7d60007300004f0e926",
       "size": 3808,
@@ -131,8 +139,8 @@
     },
     {
       "path": "02-DOCS/wiki/index.md",
-      "hash": "15f870b8bc3f6107a033b31fd78f316c098d268db324d957274093af97263d2b",
-      "size": 5560,
+      "hash": "44c73a8260b01f88bc9e1867bd02b5087b25584fef0064dfd75724b4fecec115",
+      "size": 5692,
       "format": "md",
       "topic": "02-DOCS/wiki",
       "status": "indexed"
@@ -155,8 +163,8 @@
     },
     {
       "path": "02-DOCS/wiki/project/design-system-and-ui.md",
-      "hash": "193e7411cc3039911100cae2211cc8877f4ef488d4df5b754239e19823f09dac",
-      "size": 6235,
+      "hash": "0418a576fa69a3507e736ab5f7e580f488fc9ea16362c337995ccd5c5036df17",
+      "size": 6657,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"

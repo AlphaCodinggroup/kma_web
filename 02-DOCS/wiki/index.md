@@ -79,3 +79,5 @@ Conocimiento verificado de la web, escaneado en la rama `fix/frontend-startup-wa
 - [Catálogo activo por defecto y logo de inicio](ftd/catalog-active-default.md): vista actual, historial y navegación a Dashboard.
 
 - [Menú lateral ocultable](ftd/collapsible-navigation.md): botón de escritorio para aprovechar todo el ancho de la página.
+
+- [Tabla de pasos adaptable](ftd/responsive-flow-steps.md): columnas y contenido ajustados al panel sin desplazamiento horizontal.
