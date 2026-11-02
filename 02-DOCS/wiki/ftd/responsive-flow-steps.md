@@ -66,6 +66,21 @@ No se modifica el modelo de Flow, el backend, los permisos ni el tamaño de
 las pantallas ajenas a esta tabla. La continuación se publica en la misma UI
 `new-ui` autorizada por Pablo en esta sesión.
 
+## Publicación — 2026-11-02
+
+Commit `b375126b4c126cc8a5fbd3986ef0f6a3757d9785` publicado en `new-ui`.
+Amplify inició automáticamente el trabajo `14`; BUILD, DEPLOY y VERIFY
+finalizaron en `SUCCEED` a las 21:58:48 UTC.
+
+La URL `https://new-ui.d3mbp3kh3ub3q9.amplifyapp.com/login` responde 200.
+Los 13 recursos estáticos referenciados responden 200 y el CSS publicado incluye
+los nuevos porcentajes de columna (13, 14, 15 y 28 %). Chrome carga el login
+sin errores ni advertencias. No se ejerció la sesión autenticada en AWS; la
+interacción del editor se comprobó con el borrador local de prueba.
+
+El cierre documental se publica con `[skip-cd]` para no repetir el despliegue.
+
 ## Siguiente
 
-Publicar la actualización y confirmar el trabajo de Amplify.
+Sin pendientes funcionales de este ajuste. Recargar el editor publicado para
+obtener los nuevos estilos. Tiempo aproximado: 18 minutos.

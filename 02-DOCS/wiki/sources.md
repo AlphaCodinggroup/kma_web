@@ -22,7 +22,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2688 bytes.
 - [02-DOCS/wiki/ftd/install-rsc-harness.md](<../../02-DOCS/wiki/ftd/install-rsc-harness.md>) — md, 2777 bytes.
 - [02-DOCS/wiki/ftd/install-rsc-original-checkouts.md](<../../02-DOCS/wiki/ftd/install-rsc-original-checkouts.md>) — md, 5856 bytes.
-- [02-DOCS/wiki/ftd/responsive-flow-steps.md](<../../02-DOCS/wiki/ftd/responsive-flow-steps.md>) — md, 3306 bytes.
+- [02-DOCS/wiki/ftd/responsive-flow-steps.md](<../../02-DOCS/wiki/ftd/responsive-flow-steps.md>) — md, 4066 bytes.
 - [02-DOCS/wiki/ftd/ui-scroll-fixes.md](<../../02-DOCS/wiki/ftd/ui-scroll-fixes.md>) — md, 3808 bytes.
 - [02-DOCS/wiki/ftd/update-rsc-3-6-0.md](<../../02-DOCS/wiki/ftd/update-rsc-3-6-0.md>) — md, 804 bytes.
 ## 02-DOCS/wiki/harness
