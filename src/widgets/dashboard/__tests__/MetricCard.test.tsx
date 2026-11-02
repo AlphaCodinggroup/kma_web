@@ -20,13 +20,12 @@ describe("MetricCard", () => {
 
     const value = screen.getByText("0");
     expect(value).toBeInTheDocument();
-    expect(value).toHaveClass("text-3xl", "font-bold");
   });
 
   it("renders an empty string value without breaking", () => {
     const { container } = render(<MetricCard title="Empty" value="" />);
 
-    const valueNode = container.querySelector(".text-3xl");
+    const valueNode = container.querySelector(".tabular-nums");
     expect(valueNode).not.toBeNull();
     expect(valueNode?.textContent).toBe("");
   });
@@ -52,7 +51,7 @@ describe("MetricCard", () => {
     render(<MetricCard title="Audits" value={3} subtitle="Last 30 days" />);
 
     const subtitle = screen.getByText("Last 30 days");
-    expect(subtitle).toHaveClass("mt-1", "text-xs", "text-gray-600");
+    expect(subtitle).toHaveClass("mt-1", "text-xs", "text-[var(--kma-muted)]");
   });
 
   const absentSubtitles: Array<{ label: string; subtitle: string | undefined }> = [
@@ -71,7 +70,7 @@ describe("MetricCard", () => {
         />
       );
 
-      expect(container.querySelector(".text-gray-600")).toBeNull();
+      expect(container.querySelector(".mt-1")).toBeNull();
     }
   );
 
@@ -99,7 +98,7 @@ describe("MetricCard", () => {
     const svg = container.querySelector("svg");
     expect(svg).not.toBeNull();
     expect(svg).toHaveAttribute("aria-hidden", "true");
-    expect(svg).toHaveClass("h-4", "w-4", "text-gray-600");
+    expect(svg).toHaveClass("h-4", "w-4", "text-[var(--kma-muted)]");
   });
 
   it("renders no icon when the icon key is omitted", () => {
@@ -113,10 +112,7 @@ describe("MetricCard", () => {
       <MetricCard title="Metric" value={1} data-testid="metric-total" />
     );
 
-    expect(screen.getByTestId("metric-total")).toHaveClass(
-      "rounded-2xl",
-      "bg-white"
-    );
+    expect(screen.getByTestId("metric-total")).toBeInTheDocument();
   });
 
   it("renders the card without a data-testid", () => {

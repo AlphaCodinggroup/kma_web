@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KMA · Daylight Section · Antes y después</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2efea;color:#1c1f22;font:16px/1.5 system-ui,sans-serif}header{padding:24px;border-bottom:1px solid #d4d0c8}h1{font-size:26px;margin:0 0 8px}p{margin:0;color:#62655f}.controls{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}label{display:grid;gap:4px}select{min-height:44px;border:1px solid #d4d0c8;border-radius:4px;padding:8px;background:#fffefc;color:#1c1f22;font:inherit}main{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:24px}figure{margin:0;min-width:0}figcaption{margin-bottom:8px;font-weight:600}figure a{display:block}img{display:block;width:100%;height:auto;border:1px solid #d4d0c8}a{color:#795619}a:focus-visible,select:focus-visible{outline:3px solid #795619;outline-offset:3px}@media(max-width:700px){main{grid-template-columns:1fr}}
+</style>
+<header><h1>KMA · Daylight Section</h1><p>Fuentes y colores Kinpaku de Impeccable, apariencia completa y respuesta de controles inspirada en Neo Mirai.</p><div class="controls"><label>Pantalla<select id="screen"></select></label><label>Ancho<select id="width"><option>1440</option><option>768</option><option>390</option></select></label><label>Apariencia<select id="theme"><option value="light">Claro</option><option value="dark">Oscuro</option></select></label><label>Comparar con<select id="baseline"><option value="feedback">Daylight inicial</option><option value="petroleum">Versión petróleo</option></select></label></div></header>
+<main><figure><figcaption id="before-caption">Antes · Daylight inicial</figcaption><a id="before-link"><img id="before" alt=""></a></figure><figure><figcaption>Después · Daylight con Kinpaku</figcaption><a id="after-link"><img id="after" alt=""></a></figure></main>
+<section style="padding:24px"><h2 style="font-size:20px">Respuesta al cursor, presión y movimiento reducido</h2><p>Grabación de la aplicación durante la prueba de sus controles; sin sonido.</p><video controls preload="metadata" style="display:block;width:100%;max-width:960px;margin-top:16px" src="interaction.webm" poster="after/dashboard-light-1440.png">La grabación está disponible en <a href="interaction.webm">WebM</a>.</video></section>
+<script>
+const screens={dashboard:'Dashboard',login:'Login',projects:'Projects',facilities:'Facilities','project-detail':'Project detail',audits:'Audits',review:'Review',reports:'Reports',flows:'Flows','flow-editor':'Flow editor',users:'Users'};
+const select=document.querySelector('#screen');
+for(const [id,name] of Object.entries(screens)){const option=document.createElement('option');option.value=id;option.textContent=name;select.append(option);}
+function show(){const screen=select.value,width=document.querySelector('#width').value,theme=document.querySelector('#theme').value,feedback=document.querySelector('#baseline').value==='feedback';document.querySelector('#before-caption').textContent=feedback?'Antes · Daylight inicial':'Antes · petróleo';for(const [id,base] of [['before',feedback?'before-impeccable-feedback/':'../../premium/validation/pre-close/'],['after','after/']]){const source=base+screen+'-'+theme+'-'+width+'.png';document.querySelector('#'+id).src=source;document.querySelector('#'+id).alt=(id==='before'?'Antes: ':'Después: ')+screens[screen]+', '+width+' px, '+(theme==='light'?'claro':'oscuro');document.querySelector('#'+id+'-link').href=source;}}
+for(const el of document.querySelectorAll('select'))el.addEventListener('change',show);show();
+</script>
+</html>

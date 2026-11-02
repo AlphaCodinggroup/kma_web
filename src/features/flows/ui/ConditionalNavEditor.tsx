@@ -24,6 +24,7 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
     flow,
     disabled = false
 }) => {
+    const panelId = React.useId();
     const [isExpanded, setIsExpanded] = React.useState(!!conditional);
     const [isEnabled, setIsEnabled] = React.useState(!!conditional);
 
@@ -90,47 +91,32 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
     };
 
     return (
-        <div className="space-y-2 border-t pt-3">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+        <div className="space-y-2 border-t border-[var(--kma-border)] pt-5">
+            <Label className="sr-only">
                 {label}
             </Label>
             <div className="space-y-2">
-                <button
-                    type="button"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="w-full flex items-center justify-between p-2.5 bg-purple-50 hover:bg-purple-100/70 border border-purple-200 rounded-lg transition-colors text-left"
-                >
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            checked={isEnabled}
-                            disabled={disabled}
-                            onChange={(e) => handleToggle(e.target.checked)}
-                            onClick={(e) => e.stopPropagation()}
-                            className="rounded border-purple-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                        />
-                        <span className="text-xs font-semibold text-purple-900 uppercase tracking-wider">{label}</span>
-                        {isEnabled && conditional && (
-                            <span className="text-[10px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded-full font-medium">
-                                {conditional.conditions.length} condition(s)
-                            </span>
-                        )}
-                    </div>
-                    {isExpanded ? <ChevronUp className="h-4 w-4 text-purple-600" /> : <ChevronDown className="h-4 w-4 text-purple-600" />}
-                </button>
+                <div className="flex items-center gap-3 rounded border border-[var(--kma-border)] px-3">
+                    <input type="checkbox" checked={isEnabled} disabled={disabled} onChange={(e) => handleToggle(e.target.checked)} aria-label={`Enable ${label}`} className="h-5 w-5 shrink-0 rounded border-[var(--kma-border)] accent-[var(--kma-primary)]" />
+                    <button type="button" onClick={() => setIsExpanded(!isExpanded)} aria-expanded={isExpanded && isEnabled} aria-controls={panelId} className="flex min-h-11 min-w-0 flex-1 items-center justify-between gap-3 py-3 text-left text-[var(--kma-fg)]">
+                        <span className="flex flex-wrap items-center gap-2"><span className="text-sm font-medium">{label}</span>{isEnabled && conditional ? <span className="text-xs text-[var(--kma-muted)]">{conditional.conditions.length} condition(s)</span> : null}</span>
+                        {isExpanded && isEnabled ? <ChevronUp className="h-4 w-4 shrink-0" aria-hidden="true" /> : <ChevronDown className="h-4 w-4 shrink-0" aria-hidden="true" />}
+                    </button>
+                </div>
 
                 {isExpanded && isEnabled && conditional && (
-                    <div className="p-4 border border-purple-200 rounded-lg bg-purple-50/20 space-y-3">
-                    <p className="text-xs text-gray-500">{description}</p>
+                    <div id={panelId} className="border-t border-[var(--kma-border)] p-4 space-y-4">
+                    <p className="text-xs text-[var(--kma-muted)]">{description}</p>
 
                     {/* Paso de destino */}
                     <div>
-                        <Label className="text-xs font-semibold text-gray-700 mb-1 block">Target Step (when conditions match)</Label>
+                        <Label className="text-xs font-semibold text-[var(--kma-muted)] mb-1 block">Target Step (when conditions match)</Label>
                         <select
+                            aria-label="Target Step (when conditions match)"
                             value={conditional.next || ""}
                             disabled={disabled}
                             onChange={(e) => onChange({ ...conditional, next: e.target.value })}
-                            className="w-full rounded-md bg-white border border-gray-300 text-gray-900 text-xs focus:ring-purple-500 focus:border-purple-500 p-2"
+                            className="min-h-11 w-full min-w-0 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] p-2 text-base text-[var(--kma-fg)] focus:ring-[var(--kma-primary)] sm:min-h-10 sm:text-sm"
                         >
                             <option value="">Select target step...</option>
                             {flow.steps.map((s, sIdx) => (
@@ -149,32 +135,33 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
                             checked={conditional.match_any || false}
                             disabled={disabled}
                             onChange={(e) => onChange({ ...conditional, match_any: e.target.checked })}
-                            className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            className="rounded border-[var(--kma-border)] text-[var(--kma-primary)] focus:ring-[var(--kma-primary)]"
                         />
-                        <Label htmlFor={`match-any-${label}`} className="text-xs text-gray-700 cursor-pointer">
+                        <Label htmlFor={`match-any-${label}`} className="text-xs text-[var(--kma-muted)] cursor-pointer">
                             Match ANY condition (OR logic) - default is ALL (AND logic)
                         </Label>
                     </div>
 
                     {/* Lista de condiciones */}
                     <div>
-                        <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">Conditions</Label>
+                        <Label className="text-xs font-semibold text-[var(--kma-muted)] mb-1.5 block">Conditions</Label>
                         <div className="space-y-2">
                             {conditional.conditions.map((condition, idx) => {
                                 const selectedStep = flow.steps.find((s) => s.id === condition.step_id);
                                 return (
-                                    <div key={idx} className="p-2.5 bg-white border border-gray-200 rounded-md space-y-2 shadow-sm">
+                                    <div key={idx} data-condition-row className="border-t border-[var(--kma-border)] pt-3 space-y-2">
                                         <div className="flex items-start gap-2">
-                                            <div className="flex-1 space-y-1.5">
+                                            <div className="min-w-0 flex-1 space-y-2">
                                                 {/* Selección de paso */}
                                                 <select
+                                                    aria-label={`Condition ${idx + 1} source step`}
                                                     value={condition.step_id}
                                                     disabled={disabled}
                                                     onChange={(e) => {
                                                         const stepId = e.target.value;
                                                         handleUpdateCondition(idx, { step_id: stepId });
                                                     }}
-                                                    className="w-full rounded bg-gray-50 border border-gray-300 text-xs p-1.5"
+                                                    className="min-h-11 w-full min-w-0 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] p-2 text-base text-[var(--kma-fg)] sm:min-h-10 sm:text-sm"
                                                 >
                                                     <option value="">Select step...</option>
                                                     {availableSteps.map((s, sIdx) => (
@@ -187,10 +174,11 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
                                                 {/* Respuesta de pregunta */}
                                                 {selectedStep?.type === "Question" && (
                                                     <select
+                                                        aria-label={`Condition ${idx + 1} answer`}
                                                         value={condition.answer || ""}
                                                         disabled={disabled}
                                                         onChange={(e) => handleUpdateCondition(idx, { answer: e.target.value as "YES" | "NO" })}
-                                                        className="w-full rounded bg-gray-50 border border-gray-300 text-xs p-1.5"
+                                                        className="min-h-11 w-full min-w-0 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] p-2 text-base text-[var(--kma-fg)] sm:min-h-10 sm:text-sm"
                                                     >
                                                         <option value="">Select answer...</option>
                                                         <option value="YES">YES</option>
@@ -201,10 +189,11 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
                                                 {/* Opción de select */}
                                                 {selectedStep?.type === "Select" && (
                                                     <select
+                                                        aria-label={`Condition ${idx + 1} selected option`}
                                                         value={condition.selected_option || ""}
                                                         disabled={disabled}
                                                         onChange={(e) => handleUpdateCondition(idx, { selected_option: e.target.value })}
-                                                        className="w-full rounded bg-gray-50 border border-gray-300 text-xs p-1.5"
+                                                        className="min-h-11 w-full min-w-0 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] p-2 text-base text-[var(--kma-fg)] sm:min-h-10 sm:text-sm"
                                                     >
                                                         <option value="">Select option...</option>
                                                         {getSelectOptions(condition.step_id).map((opt, optIdx) => (
@@ -219,7 +208,7 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDeleteCondition(idx)}
-                                                    className="p-1 text-gray-400 hover:text-red-500 rounded"
+                                                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-subtle)] hover:text-[var(--kma-danger)]"
                                                     title="Delete condition"
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
@@ -233,7 +222,7 @@ export const ConditionalNavEditor: React.FC<ConditionalNavEditorProps> = ({
                                 <Button
                                     type="button"
                                     onClick={handleAddCondition}
-                                    className="w-full h-7 text-xs bg-purple-600 hover:bg-purple-700 text-white"
+                                    variant="secondary"
                                 >
                                     <Plus className="h-3 w-3 mr-1" /> Add Condition
                                 </Button>

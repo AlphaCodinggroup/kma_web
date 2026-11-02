@@ -545,21 +545,19 @@ describe("mapAuditDetailDTOToDomain", () => {
   it.each([
     ["an unknown status", "surprise"],
     ["an empty status", ""],
-  ])("falls back to the initial status for %s", (_label, status) => {
+  ])("flags the status as unknown for %s", (_label, status) => {
     expect(
       mapAuditDetailDTOToDomain(makeDetailDTO({ status })).status
-    ).toBe("draft_report_pending_review");
+    ).toBe("unknown");
   });
 
-  it("falls back to the initial status when the field is absent", () => {
+  it("flags the status as unknown when the field is absent", () => {
     // El DTO se arma sin `status`: exactOptionalPropertyTypes no admite
     // pasarlo como undefined explícito.
     const dto = makeDetailDTO({});
     delete (dto as { status?: string }).status;
 
-    expect(mapAuditDetailDTOToDomain(dto).status).toBe(
-      "draft_report_pending_review"
-    );
+    expect(mapAuditDetailDTOToDomain(dto).status).toBe("unknown");
   });
 
   it("normalizes blank ids to null", () => {

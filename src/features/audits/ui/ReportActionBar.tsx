@@ -2,7 +2,7 @@
 
 import React from "react";
 import { AlertTriangle, CheckCircle2, Download, Loader2, Undo2 } from "lucide-react";
-import { cn } from "@shared/lib/cn";
+import { Button } from "@shared/ui/controls";
 
 export interface ReportActionBarProps {
   isDirty: boolean;
@@ -21,10 +21,7 @@ export interface ReportActionBarProps {
   onDownload: () => void;
 }
 
-const RETURN_TOOLTIP = "Requires backend: return to the auditor";
-
-const buttonBase =
-  "inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+const RETURN_TOOLTIP = "Returning an audit is currently unavailable";
 
 /**
  * Barra fija al pie del reporte: aviso de cambios sin guardar y las acciones
@@ -48,12 +45,12 @@ const ReportActionBar: React.FC<ReportActionBarProps> = ({
 
   return (
     <div
-      className="sticky bottom-0 z-10 mt-4 space-y-3 border-t border-gray-200 bg-white/95 px-4 py-3 backdrop-blur"
+      className="sticky bottom-0 z-30 mt-4 space-y-3 border-y border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-4 sm:px-6"
       data-testid="report-action-bar"
     >
       {(isDirty || saveError) && (
         <div
-          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+          className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--kma-border)] pb-3 text-sm text-[var(--kma-warning)]"
           role="status"
         >
           <span className="flex items-center gap-2">
@@ -62,68 +59,71 @@ const ReportActionBar: React.FC<ReportActionBarProps> = ({
           </span>
           {isDirty && (
             <span className="flex items-center gap-2">
-              <button
+              <Button fullWidth={false}
                 type="button"
                 onClick={onDiscard}
                 disabled={isSaving}
-                className={cn(buttonBase, "border-gray-300 bg-white py-1.5 text-gray-900 hover:bg-gray-100")}
+                variant="secondary"
               >
                 Discard
-              </button>
-              <button
+              </Button>
+              <Button fullWidth={false}
                 type="button"
                 onClick={onSave}
                 disabled={isSaving || hasErrors}
                 title={hasErrors ? "Fix the highlighted fields first" : undefined}
-                className={cn(buttonBase, "border-black bg-black py-1.5 text-white hover:bg-gray-800")}
+                variant="primary"
               >
                 {isSaving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
                 {isSaving ? "Saving…" : "Save"}
-              </button>
+              </Button>
             </span>
           )}
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <button
-          type="button"
-          onClick={onApprove}
-          disabled={!canApprove || isDirty || approving}
-          title={blockedBySave ?? (canApprove ? "Approve and generate the report" : "Only an audit in review can be approved")}
-          className={cn(buttonBase, "border-black bg-black text-white hover:bg-gray-800")}
-        >
-          {approving ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-          )}
-          Approve
-        </button>
-        <button
-          type="button"
-          disabled
-          title={RETURN_TOOLTIP}
-          aria-description={RETURN_TOOLTIP}
-          className={cn(buttonBase, "border-gray-300 bg-white text-gray-900")}
-        >
-          <Undo2 className="h-4 w-4" aria-hidden="true" />
-          Return
-        </button>
-        <button
-          type="button"
-          onClick={onDownload}
-          disabled={!canDownload || isDirty || downloading}
-          title={blockedBySave ?? (canDownload ? "Download the project report" : "Available once the report is approved")}
-          className={cn(buttonBase, "border-gray-300 bg-white text-gray-900 hover:bg-gray-100")}
-        >
-          {downloading ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-          ) : (
-            <Download className="h-4 w-4" aria-hidden="true" />
-          )}
-          Download
-        </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-[var(--kma-muted)]">{isDirty ? "Unsaved report changes" : canDownload ? "Project PDF is ready" : canApprove ? "Review the findings before approval" : "Report actions depend on audit status"}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button fullWidth={false}
+            type="button"
+            onClick={onApprove}
+            disabled={!canApprove || isDirty || approving}
+            title={blockedBySave ?? (canApprove ? "Approve and generate the report" : "Only an audit in review can be approved")}
+            variant="primary"
+          >
+            {approving ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+            )}
+            Approve
+          </Button>
+          <Button fullWidth={false}
+            type="button"
+            disabled
+            title={RETURN_TOOLTIP}
+            aria-description={RETURN_TOOLTIP}
+            variant="secondary"
+          >
+            <Undo2 className="h-4 w-4" aria-hidden="true" />
+            Return
+          </Button>
+          <Button fullWidth={false}
+            type="button"
+            onClick={onDownload}
+            disabled={!canDownload || isDirty || downloading}
+            title={blockedBySave ?? (canDownload ? "Download the project report" : "Available once the report is approved")}
+            variant="secondary"
+          >
+            {downloading ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Download className="h-4 w-4" aria-hidden="true" />
+            )}
+            Download
+          </Button>
+        </div>
       </div>
     </div>
   );

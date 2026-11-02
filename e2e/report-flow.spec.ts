@@ -65,6 +65,8 @@ async function seedAudit(request: APIRequestContext, token: string) {
       id: auditId,
       flow_id: "flow-local-curb-ramps",
       flow_version: 1,
+      // El fixture entra por el alta legacy: pending_review publica el trabajo SQS.
+      status: "draft_report_pending_review",
       project_id: projectId,
       facility_id: facilityId,
       answers: [
@@ -146,9 +148,22 @@ async function openAuditsFilteredBy(page: Page, tag: string) {
 }
 
 test.describe("Flujo de reporte por la interfaz", () => {
-  test("de la auditoría enriquecida al PDF", async ({ page, request }) => {
+  let fixture: { token: string; auditId: string; projectId: string; facilityId: string } | undefined;
+
+  test.afterEach(async ({ request }) => {
+    if (!fixture) return;
+    const { token, auditId, projectId, facilityId } = fixture;
+    fixture = undefined;
+    for (const path of [`audits/${auditId}`, `facilities/${facilityId}`, `projects/${projectId}`]) {
+      const response = await request.delete(`${GATEWAY_URL}/api/${path}`, { headers: { Authorization: `Bearer ${token}` } });
+      expect([200, 204, 404], `Clean up this test's ${path}`).toContain(response.status());
+    }
+  });
+
+  test("de la auditoría enriquecida al PDF", async ({ page, request }, testInfo) => {
     const token = await backendToken(request);
-    const { auditId } = await seedAudit(request, token);
+    const { auditId, projectId, facilityId } = await seedAudit(request, token);
+    fixture = { token, auditId, projectId, facilityId };
     await waitForEnrichment(request, token, auditId);
 
     await login(page);
@@ -165,6 +180,9 @@ test.describe("Flujo de reporte por la interfaz", () => {
     // La pestaña de preguntas muestra las respuestas cargadas en campo.
     await page.waitForLoadState("networkidle");
     await expect(page.getByTestId("tab-questions")).toBeVisible();
+    const photograph = page.getByRole("img", { name: "photo.jpg", exact: true });
+    await expect(photograph).toBeVisible();
+    await expect.poll(() => photograph.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 
     // La pestaña de reporte muestra los hallazgos enriquecidos, con el texto
     // que aporta el catálogo y el costo calculado.
@@ -178,6 +196,33 @@ test.describe("Flujo de reporte por la interfaz", () => {
     // Un solo barrier con cantidad 2 y costo unitario 1250, con el formato
     // del PDF: "$2,500" en la fila y en el total de la facility.
     await expect(page.getByTestId("report-total")).toContainText("$2,500");
+
+    // Los comentarios se guardan junto al hallazgo antes de cerrar su panel.
+    await page.getByRole("button", { name: "Comments on finding 1" }).click();
+    await page.getByLabel("Add a comment", { exact: true }).fill("Verified during the local UI review.");
+    await page.getByRole("button", { name: "Comment", exact: true }).click();
+    await expect(page.getByText("Verified during the local UI review.", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Close comments panel" }).click();
+
+    // El guardado persiste antes de aprobar y habilita las acciones al completarse.
+    const quantity = page.getByRole("spinbutton", { name: "Quantity of finding 1", exact: true });
+    await quantity.fill("3");
+    await expect(page.getByRole("button", { name: "Approve", exact: true })).toBeDisabled();
+    // La etiqueta pasa a Saving… antes de terminar: esperar la respuesta real
+    // evita que reload aborte el PATCH y pierda la cantidad recién editada.
+    const savedFindingResponse = page.waitForResponse(response =>
+      response.request().method() === "PATCH" &&
+      response.url().includes(`/api/audits-review/${auditId}/findings/`)
+    );
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    expect((await savedFindingResponse).ok()).toBeTruthy();
+    await expect(page.getByRole("button", { name: "Approve", exact: true })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Save", exact: true })).toBeHidden();
+    await expect(page.getByTestId("report-total")).toContainText("$3,750");
+    await page.reload();
+    await expect(page.getByTestId("tab-report")).toHaveAttribute("aria-selected", "true");
+    await expect(quantity).toHaveValue("3");
+    await expect(page.locator(".report-paper")).toHaveCSS("background-color", "rgb(255, 255, 255)");
 
     // Approve genera el PDF sin descargarlo; después se descarga aparte.
     await page.getByRole("button", { name: "Approve" }).click();
@@ -199,7 +244,35 @@ test.describe("Flujo de reporte por la interfaz", () => {
 
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toMatch(/\.pdf$/);
+    await download.saveAs(testInfo.outputPath("reviewed-project.pdf"));
     expect(page.context().pages()).toHaveLength(pagesBefore);
+
+    // Se borra únicamente el reporte del proyecto efímero de esta corrida;
+    // el PDF descargado queda conservado como evidencia del recorrido completo.
+    const reportName = `E2E UI Project ${auditId.replace("audit-e2e-ui-", "")}`;
+    const auth = { Authorization: `Bearer ${token}` };
+    const generatedReport = await request.get(`${GATEWAY_URL}/api/reports/${auditId}`, { headers: auth });
+    expect(generatedReport.status()).toBe(200);
+    expect(await generatedReport.json()).toMatchObject({ id: auditId, project_id: projectId, report_name: reportName });
+
+    await page.goto("/reports");
+    await page.getByPlaceholder("Search reports...").fill(reportName);
+    const reportRow = page.getByRole("row").filter({ has: page.getByText(reportName, { exact: true }) });
+    await expect(reportRow).toHaveCount(1);
+    await expect(reportRow).toBeVisible();
+    await reportRow.getByRole("button", { name: "Delete report", exact: true }).click();
+    const deleteDialog = page.getByRole("dialog", { name: "Delete report?", exact: true });
+    await expect(deleteDialog).toContainText(reportName);
+    const deletedReportResponse = page.waitForResponse(response =>
+      response.request().method() === "DELETE" &&
+      response.url().endsWith(`/api/reports/${auditId}`)
+    );
+    await deleteDialog.getByRole("button", { name: "Delete report", exact: true }).click();
+    expect((await deletedReportResponse).status()).toBe(204);
+    await expect(reportRow).toBeHidden();
+    await expect(page.getByRole("status").filter({ hasText: "Report deleted." })).toBeVisible();
+    const removedReport = await request.get(`${GATEWAY_URL}/api/reports/${auditId}`, { headers: auth });
+    expect(removedReport.status()).toBe(404);
   });
 
   test("una auditoría sin hallazgos no ofrece reporte", async ({ page, request }) => {
@@ -226,6 +299,8 @@ test.describe("Flujo de reporte por la interfaz", () => {
         id: auditId,
         flow_id: "flow-local-curb-ramps",
         flow_version: 1,
+        // El fixture entra por el alta legacy: pending_review publica el trabajo SQS.
+        status: "draft_report_pending_review",
         project_id: projectId,
         facility_id: facilityId,
         answers: [
@@ -239,6 +314,7 @@ test.describe("Flujo de reporte por la interfaz", () => {
       },
     });
     expect(auditRes.status()).toBe(201);
+    fixture = { token, auditId, projectId, facilityId };
     await waitForEnrichment(request, token, auditId);
 
     await login(page);
@@ -247,10 +323,9 @@ test.describe("Flujo de reporte por la interfaz", () => {
     const row = page.getByTestId(`audit-row-${auditId}`);
     await expect(row).toBeVisible({ timeout: 30_000 });
 
-    // El botón de edición se pinta en rojo cuando la auditoría es conforme; el
-    // detalle se carga de forma diferida, así que se espera esa señal antes de
-    // hacer clic.
-    const editButton = row.getByRole("button", { name: /edit audit/i });
+    // La conformidad se comunica junto a una acción neutra y espera el detalle.
+    const editButton = row.getByRole("button", { name: "View audit", exact: true });
+    await expect(row.getByText("Compliant", { exact: true })).toBeVisible();
     await expect(editButton).toHaveAttribute("title", /fully compliant/i, {
       timeout: 30_000,
     });

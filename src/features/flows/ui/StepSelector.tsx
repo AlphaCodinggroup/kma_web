@@ -3,10 +3,14 @@
 import React from "react";
 import type { Flow, FlowStep, FormStep, QuestionStep, SelectStep } from "@entities/flow/model";
 import { Plus, HelpCircle, FileText, List, CheckCircle2 } from "lucide-react";
+import { Button } from "@shared/ui/controls";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@shared/ui/dropdown-menu";
 
 const STEP_TYPES = ["Question", "Form", "Select", "End"] as const;
 
 export interface StepSelectorProps {
+    id?: string;
+    ariaLabel?: string;
     value?: string | null | undefined;
     onChange: (val: string) => void;
     placeholder?: string;
@@ -21,6 +25,8 @@ export interface StepSelectorProps {
 
 export const StepSelector: React.FC<StepSelectorProps> = ({
     value,
+    id,
+    ariaLabel,
     onChange,
     placeholder = "Select next step...",
     stepId,
@@ -31,25 +37,8 @@ export const StepSelector: React.FC<StepSelectorProps> = ({
     disabled = false,
     className
 }) => {
-    const [showCreateMenu, setShowCreateMenu] = React.useState(false);
-    const createButtonRef = React.useRef<HTMLDivElement>(null);
-
-    // Cierra el menú al hacer click afuera
-    React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (createButtonRef.current && !createButtonRef.current.contains(event.target as Node)) {
-                setShowCreateMenu(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
     const handleCreateAndLink = (type: FlowStep["type"]) => {
-        if (stepId && field && onAddStep) {
-            onAddStep(type, { stepId, field });
-        }
-        setShowCreateMenu(false);
+        if (stepId && field && onAddStep) onAddStep(type, { stepId, field });
     };
 
     // Regla: Form step solo puede ser usado por UN step padre. Auto-referencia no permitida.
@@ -80,12 +69,14 @@ export const StepSelector: React.FC<StepSelectorProps> = ({
     };
 
     return (
-        <div className={`flex items-center gap-2 ${className || ""}`}>
+        <div className={`flex min-w-0 items-center gap-2 ${className || ""}`}>
             <select
+                id={id}
+                aria-label={ariaLabel}
                 value={value || ""}
                 onChange={(e) => onChange(e.target.value)}
                 disabled={disabled}
-                className="flex-1 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block p-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="min-h-11 min-w-0 flex-1 rounded bg-[var(--kma-surface)] border border-[var(--kma-border)] text-[var(--kma-fg)] text-base sm:min-h-10 sm:text-sm focus:ring-[var(--kma-primary)] focus:border-[var(--kma-primary)] block p-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <option value="">{placeholder}</option>
                 {flow.steps.map((s, idx) => {
@@ -102,36 +93,21 @@ export const StepSelector: React.FC<StepSelectorProps> = ({
 
             {/* Botón de creación en línea y enlazado */}
             {stepId && field && onAddStep && !disabled && (
-                <div className="relative" ref={createButtonRef}>
-                    <button
-                        type="button"
-                        onClick={() => setShowCreateMenu(!showCreateMenu)}
-                        className="px-2.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition-colors flex items-center gap-1 whitespace-nowrap shadow-sm"
-                        title="Create new step and link here"
-                    >
-                        <Plus className="h-3.5 w-3.5" />
-                        Create
-                    </button>
-
-                    {showCreateMenu && (
-                        <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50 min-w-[150px]">
-                            {STEP_TYPES.map((type) => (
-                                <button
-                                    type="button"
-                                    key={type}
-                                    onClick={() => handleCreateAndLink(type)}
-                                    className="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 flex items-center gap-2 text-gray-700"
-                                >
-                                    {type === "Question" && <HelpCircle className="h-3.5 w-3.5 text-blue-500" />}
-                                    {type === "Form" && <FileText className="h-3.5 w-3.5 text-green-500" />}
-                                    {type === "Select" && <List className="h-3.5 w-3.5 text-purple-500" />}
-                                    {type === "End" && <CheckCircle2 className="h-3.5 w-3.5 text-gray-500" />}
-                                    {type}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                        <Button type="button" variant="secondary" fullWidth={false} className="px-2.5" title="Create new step and link here">
+                            <Plus className="h-4 w-4" aria-hidden="true" />Create
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {STEP_TYPES.map((type) => (
+                            <DropdownMenuItem key={type} onSelect={() => handleCreateAndLink(type)}>
+                                {type === "Question" ? <HelpCircle className="h-4 w-4" aria-hidden="true" /> : type === "Form" ? <FileText className="h-4 w-4" aria-hidden="true" /> : type === "Select" ? <List className="h-4 w-4" aria-hidden="true" /> : <CheckCircle2 className="h-4 w-4" aria-hidden="true" />}
+                                {type}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             )}
         </div>
     );

@@ -2,7 +2,6 @@
 
 import React from "react";
 import { cn } from "@shared/lib/cn";
-import TableHeader from "@shared/ui/table-header";
 import SearchInput from "@shared/ui/search-input";
 
 export interface UsersSearchCardProps {
@@ -15,8 +14,7 @@ export interface UsersSearchCardProps {
 }
 
 /**
- * Card superior con buscador y botón "Add User".
- * Visual-only. Mantiene la estética del zip (bordes, gris claro, densidad).
+ * Directorio de usuarios con búsqueda y tabla integradas.
  */
 const UsersSearchCard: React.FC<UsersSearchCardProps> = ({
   query,
@@ -29,23 +27,21 @@ const UsersSearchCard: React.FC<UsersSearchCardProps> = ({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-gray-200 bg-white p-4 md:p-6",
+        "overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]",
         className
       )}
     >
-      <TableHeader
-        title="Managements"
-        subtitle="Total Managements"
-        total={total}
-      />
-      {/* Search input */}
-      <div className="mb-4">
-        <div className="relative">
+      <div className="grid items-center gap-4 border-b border-[var(--kma-border)] px-4 py-4 sm:px-6 lg:grid-cols-[auto_1fr]">
+        <div className="flex flex-wrap items-baseline gap-3">
+          <h2 className="text-base font-semibold">Team directory</h2>
+          <p className="border-l border-[var(--kma-border)] pl-3 text-sm tabular-nums text-[var(--kma-muted)]">Total users: {total}</p>
+        </div>
+        <div className="relative min-w-0 lg:justify-self-end lg:w-full lg:max-w-md">
           <SearchInput
             value={query}
             onChange={(e) => onQueryChange(e.currentTarget.value)}
             placeholder={placeholder}
-            aria-label="Search Managements"
+            aria-label="Search users"
           />
         </div>
       </div>

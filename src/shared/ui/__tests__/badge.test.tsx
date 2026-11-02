@@ -34,21 +34,21 @@ describe("Badge", () => {
     tone: "neutral" | "success" | "warning" | "danger" | "info";
     expected: string;
   }> = [
-    { variant: "solid", tone: "neutral", expected: "bg-gray-900" },
-    { variant: "solid", tone: "success", expected: "bg-emerald-600" },
-    { variant: "solid", tone: "warning", expected: "bg-amber-600" },
-    { variant: "solid", tone: "danger", expected: "bg-red-600" },
-    { variant: "solid", tone: "info", expected: "bg-sky-600" },
-    { variant: "soft", tone: "neutral", expected: "bg-gray-100" },
-    { variant: "soft", tone: "success", expected: "bg-emerald-50" },
-    { variant: "soft", tone: "warning", expected: "bg-amber-50" },
-    { variant: "soft", tone: "danger", expected: "bg-red-50" },
-    { variant: "soft", tone: "info", expected: "bg-sky-50" },
-    { variant: "outline", tone: "neutral", expected: "text-gray-700" },
-    { variant: "outline", tone: "success", expected: "text-emerald-700" },
-    { variant: "outline", tone: "warning", expected: "text-amber-800" },
-    { variant: "outline", tone: "danger", expected: "text-red-700" },
-    { variant: "outline", tone: "info", expected: "text-sky-700" },
+    { variant: "solid", tone: "neutral", expected: "bg-[var(--kma-fg)]" },
+    { variant: "solid", tone: "success", expected: "bg-[var(--kma-success)]" },
+    { variant: "solid", tone: "warning", expected: "bg-[var(--kma-warning)]" },
+    { variant: "solid", tone: "danger", expected: "bg-[var(--kma-danger)]" },
+    { variant: "solid", tone: "info", expected: "bg-[var(--kma-info)]" },
+    { variant: "soft", tone: "neutral", expected: "bg-[var(--kma-subtle)]" },
+    { variant: "soft", tone: "success", expected: "bg-[var(--kma-success-bg)]" },
+    { variant: "soft", tone: "warning", expected: "bg-[var(--kma-warning-bg)]" },
+    { variant: "soft", tone: "danger", expected: "bg-[var(--kma-danger-bg)]" },
+    { variant: "soft", tone: "info", expected: "bg-[var(--kma-info-bg)]" },
+    { variant: "outline", tone: "neutral", expected: "text-[var(--kma-muted)]" },
+    { variant: "outline", tone: "success", expected: "text-[var(--kma-success)]" },
+    { variant: "outline", tone: "warning", expected: "text-[var(--kma-warning)]" },
+    { variant: "outline", tone: "danger", expected: "text-[var(--kma-danger)]" },
+    { variant: "outline", tone: "info", expected: "text-[var(--kma-info)]" },
   ];
 
   it.each(paletteCases)(
@@ -64,7 +64,7 @@ describe("Badge", () => {
   );
 
   const sizeCases: Array<{ size: "sm" | "md"; expected: string[] }> = [
-    { size: "sm", expected: ["px-2.5", "py-0.5", "text-[11px]"] },
+    { size: "sm", expected: ["px-2.5", "py-0.5", "text-xs"] },
     { size: "md", expected: ["px-3", "py-1", "text-xs"] },
   ];
 
@@ -76,12 +76,12 @@ describe("Badge", () => {
   it("defaults to the soft/neutral/sm combination", () => {
     render(<Badge>Defaults</Badge>);
     const badge = screen.getByText("Defaults");
-    expect(badge).toHaveClass("bg-gray-100", "px-2.5", "text-[11px]");
+    expect(badge).toHaveClass("bg-[var(--kma-subtle)]", "px-2.5", "text-xs");
   });
 
   it("appends a custom className", () => {
     render(<Badge className="custom-badge">Custom</Badge>);
-    expect(screen.getByText("Custom")).toHaveClass("custom-badge", "bg-gray-100");
+    expect(screen.getByText("Custom")).toHaveClass("custom-badge", "bg-[var(--kma-subtle)]");
   });
 
   it("forwards extra span props to the DOM node", () => {
@@ -120,15 +120,15 @@ describe("StatusBadge", () => {
     expect(screen.getByText(AUDIT_STATUS_LABELS[status])).toBeInTheDocument();
   });
 
-  it("uses the solid variant when the status is completed", () => {
+  it("uses a success tone when the status is completed", () => {
     render(<StatusBadge status="completed" />);
-    // solid + neutral => bg-gray-900
-    expect(screen.getByText("Completed")).toHaveClass("bg-gray-900");
+    // solid + neutral => bg-[var(--kma-fg)]
+    expect(screen.getByText("Completed")).toHaveClass("bg-[var(--kma-success-bg)]");
   });
 
   it("uses the soft variant for any non completed status", () => {
     render(<StatusBadge status="draft_report_in_review" />);
-    expect(screen.getByText("Draft Report In Review")).toHaveClass("bg-gray-100");
+    expect(screen.getByText("In review")).toHaveClass("bg-[var(--kma-info-bg)]");
   });
 
   it("always adds the tracking-tight class and merges a custom className", () => {
@@ -153,12 +153,12 @@ describe("ProjectStatusBadge", () => {
     variant: string;
   }> = [
     // ACTIVE => tono success + variante soft por defecto
-    { status: "ACTIVE", label: "Active", tone: "bg-emerald-50", variant: "soft" },
+    { status: "ACTIVE", label: "Active", tone: "bg-[var(--kma-success-bg)]", variant: "soft" },
     // ARCHIVED => tono neutral + variante outline por defecto
     {
       status: "ARCHIVED",
       label: "Archived",
-      tone: "text-gray-700",
+      tone: "text-[var(--kma-muted)]",
       variant: "outline",
     },
   ];
@@ -173,7 +173,7 @@ describe("ProjectStatusBadge", () => {
 
   it("honours an explicit variant over the status derived default", () => {
     render(<ProjectStatusBadge status="ACTIVE" variant="solid" />);
-    expect(screen.getByText("Active")).toHaveClass("bg-emerald-600");
+    expect(screen.getByText("Active")).toHaveClass("bg-[var(--kma-success)]");
   });
 
   it("honours an explicit size", () => {

@@ -150,7 +150,7 @@ a backend limitation is documentation, not proof; check the backend before repea
   `main`/`develop`: a `quality` job (lint, typecheck, `test:run`, `test:coverage` with a 90% floor)
   and a separate `build` job. Playwright does not run in CI.
 - `CONFIRMED (stale doc):` the coverage step's comment says the threshold "rises as pending modules
-  are covered" and points at a plan doc in the backend repo; `vitest.config.ts` already treats 90%
+  are covered" and points at a plan doc in the backend repo; `vitest.config.mts` already treats 90%
   as the fixed gate.
 - `CONFIRMED:` `amplify.yml` builds with `npm ci && npm run build`, publishing `.next`.
   `INFERRED:` production deploys from `develop` (an incident note referenced an Amplify redeploy of
@@ -161,7 +161,7 @@ a backend limitation is documentation, not proof; check the backend before repea
 
 ## Known defects
 
-- `CONFIRMED:` 10 `FIXME` comments live inside tests, each documenting a live bug (for example, the
+- `CONFIRMED:` 9 `FIXME` comments live inside tests, each documenting a live bug (for example, the
   Flow editor not cleaning up references after deleting a step, or renaming a step breaking existing
   references). `rg FIXME` under `src` finds the current list; do not assume it is exhaustive of real
   bugs, only of the ones a test already caught.

@@ -7,21 +7,21 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const useListAudits = vi.fn();
+const useInfiniteAudits = vi.fn();
 const useAuditors = vi.fn();
 const useSendForReviewAudit = vi.fn();
 const mutateAsync = vi.fn();
 const push = vi.fn();
 const startSendForReview = vi.fn();
+const fetchNextPage = vi.fn();
 
 vi.mock("next/navigation", () => ({
+  useSearchParams: () => null,
   useRouter: () => ({ push }),
 }));
-vi.mock("@features/audits/lib/hooks/useListAudits", () => ({
-  // El stub se nombra con el prefijo "use" para que rules-of-hooks no lo lea
-  // como un componente llamado "default".
-  default: function useListAuditsStub(...args: unknown[]) {
-    return useListAudits(...args);
+vi.mock("@features/audits/lib/hooks/useInfiniteAudits", () => ({
+  useInfiniteAudits: function useInfiniteAuditsStub(...args: unknown[]) {
+    return useInfiniteAudits(...args);
   },
 }));
 vi.mock("@features/audits/lib/hooks/useDeleteAudit", () => ({
@@ -149,13 +149,18 @@ function stubHooks(
   list: Record<string, unknown> = {},
   send: Record<string, unknown> = {}
 ) {
-  useListAudits.mockReturnValue({
-    data: { audits: [makeAudit()], total: 1 },
+  useInfiniteAudits.mockReturnValue({
+    data: { pages: [{ audits: [makeAudit()], total: 1 }] },
+    hasNextPage: Boolean((list.data as { last_eval_id?: string })?.last_eval_id),
+    fetchNextPage,
+    isFetchingNextPage: false,
+    isFetchNextPageError: false,
     isLoading: false,
     isError: false,
     isFetching: false,
     refetch: vi.fn(),
     ...list,
+    ...(Object.hasOwn(list, "data") ? { data: list.data ? { pages: [list.data] } : undefined } : {}),
   });
   useAuditors.mockReturnValue({ auditors: [{ id: "u-1", name: "jane" }] });
   useSendForReviewAudit.mockReturnValue({
@@ -173,6 +178,7 @@ async function renderPage() {
 describe("AuditsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.history.replaceState({}, "", "/audits");
     stubHooks();
     vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
     vi.stubGlobal("alert", vi.fn());
@@ -186,22 +192,22 @@ describe("AuditsPage", () => {
     expect(screen.getByText("audit-1")).toBeTruthy();
   });
 
-  it("asks for the hybrid pagination threshold and no filters by default", async () => {
+  it("requests the incremental list with no filters by default", async () => {
     await renderPage();
 
-    expect(useListAudits).toHaveBeenCalledWith({ limit: 200 });
+    expect(useInfiniteAudits).toHaveBeenCalledWith({});
   });
 
   it.each([
-    ["the auditor", "filter auditor", { limit: 200, auditor: "jane" }],
-    ["the status", "filter status", { limit: 200, status: "completed" }],
+    ["the auditor", "filter auditor", { auditor: "jane" }],
+    ["the status", "filter status", { status: "completed" }],
   ])("pushes %s filter down to the query", async (_label, button, expected) => {
     await renderPage();
 
     await userEvent.click(screen.getByRole("button", { name: button }));
 
     await waitFor(() =>
-      expect(useListAudits).toHaveBeenLastCalledWith(expected)
+      expect(useInfiniteAudits).toHaveBeenLastCalledWith(expected)
     );
   });
 
@@ -212,7 +218,7 @@ describe("AuditsPage", () => {
     await userEvent.click(screen.getByRole("button", { name: "clear filters" }));
 
     await waitFor(() =>
-      expect(useListAudits).toHaveBeenLastCalledWith({ limit: 200 })
+      expect(useInfiniteAudits).toHaveBeenLastCalledWith({})
     );
   });
 
@@ -233,7 +239,7 @@ describe("AuditsPage", () => {
     );
   });
 
-  it("does not filter client side when the backend paginates", async () => {
+  it("searches loaded rows and explains partial results when a cursor remains", async () => {
     stubHooks({
       data: { audits: [makeAudit()], total: 1, last_eval_id: "cursor-1" },
     });
@@ -241,20 +247,20 @@ describe("AuditsPage", () => {
     await renderPage();
     await userEvent.type(screen.getByLabelText("search"), "zzz");
 
-    // En modo servidor el texto no filtra: los datos ya vienen filtrados.
-    await waitFor(() => expect(screen.getByText("audit-1")).toBeTruthy());
+    await waitFor(() => expect(screen.queryByText("audit-1")).toBeNull());
+    expect(screen.getByText(/Search applies to loaded audits/)).toBeTruthy();
   });
 
-  it("uses the backend total for the page count in server mode", async () => {
+  it("uses only loaded rows for page counts while more server results remain", async () => {
     stubHooks({
       data: { audits: [makeAudit()], total: 120, last_eval_id: "cursor-1" },
     });
 
     await renderPage();
 
-    expect(screen.getByTestId("total-items").textContent).toBe("120");
-    // 120 elementos con páginas de 25 son 5 páginas.
-    expect(screen.getByTestId("total-pages").textContent).toBe("5");
+    expect(screen.getByTestId("total-items").textContent).toBe("1");
+    // No promete páginas cuyos datos aún no se han cargado.
+    expect(screen.getByTestId("total-pages").textContent).toBe("1");
   });
 
   it("paginates in memory when the backend returns no cursor", async () => {
@@ -318,7 +324,7 @@ describe("AuditsPage", () => {
   });
 
   it("propagates the loading, fetching and error state", async () => {
-    stubHooks({ isLoading: true, isFetching: true, isError: true });
+    stubHooks({ data: undefined, isLoading: true, isFetching: true, isError: true });
 
     await renderPage();
 
@@ -443,6 +449,7 @@ describe("AuditsPage", () => {
       screen.getByRole("button", { name: "delete audit-1" })
     );
 
+    await userEvent.click(screen.getByRole("button", { name: "Delete audit" }));
     await waitFor(() => expect(mutateAsync).toHaveBeenCalledWith("audit-1"));
     expect(screen.getByTestId("deleting").textContent).toBe("none");
   });
@@ -456,7 +463,7 @@ describe("AuditsPage", () => {
       screen.getByRole("button", { name: "delete audit-1" })
     );
 
-    expect(confirmMock.mock.calls[0][0]).toContain("Proyecto Norte");
+    expect(screen.getByRole("dialog")).toHaveTextContent("Proyecto Norte");
     expect(mutateAsync).not.toHaveBeenCalled();
   });
 
@@ -472,7 +479,7 @@ describe("AuditsPage", () => {
       screen.getByRole("button", { name: "delete audit-1" })
     );
 
-    expect(confirmMock.mock.calls[0][0]).toContain("audit-1");
+    expect(screen.getByRole("dialog")).toHaveTextContent("audit-1");
   });
 
   it("reports a failed deletion and clears the pending id", async () => {
@@ -488,8 +495,125 @@ describe("AuditsPage", () => {
       screen.getByRole("button", { name: "delete audit-1" })
     );
 
-    await waitFor(() => expect(alertMock).toHaveBeenCalled());
-    expect(consoleError).toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: "Delete audit" }));
+    await screen.findByText("The audit could not be deleted. Please try again.");
+    expect(alertMock).not.toHaveBeenCalled();
+    consoleError.mockRestore();
     expect(screen.getByTestId("deleting").textContent).toBe("none");
   });
+  it("loads the next cursor page without changing filters", async () => {
+    stubHooks({ data: { audits: [makeAudit()], total: 120, last_eval_id: "cursor-1" } });
+    await renderPage();
+    await userEvent.click(screen.getByRole("button", { name: "filter status" }));
+    await userEvent.click(screen.getByRole("button", { name: "Load more audits" }));
+    expect(fetchNextPage).toHaveBeenCalledTimes(1);
+    expect(new URLSearchParams(window.location.search).get("status")).toBe("completed");
+    expect(useInfiniteAudits).toHaveBeenLastCalledWith({ status: "completed" });
+  });
+
+  it("restores search and server filters from the URL", async () => {
+    window.history.replaceState({}, "", "/audits?q=planta&status=completed&auditor=jane");
+    await renderPage();
+    expect(screen.getByLabelText("search")).toHaveValue("planta");
+    expect(useInfiniteAudits).toHaveBeenLastCalledWith({ status: "completed", auditor: "jane" });
+  });
+
+  it("ignores an unknown status in the URL instead of sending it to the backend", async () => {
+    window.history.replaceState({}, "", "/audits?status=not_a_status&auditor=jane");
+    await renderPage();
+    expect(useInfiniteAudits).toHaveBeenLastCalledWith({ auditor: "jane" });
+  });
+
+  it("accepts every status the filter offers", async () => {
+    window.history.replaceState({}, "", "/audits?status=audit_in_progress");
+    await renderPage();
+    expect(useInfiniteAudits).toHaveBeenLastCalledWith({ status: "audit_in_progress" });
+  });
+
+  it("recovers the cursor block needed by a restored page beyond the first 100 audits", async () => {
+    window.history.replaceState({}, "", "/audits?page=5&size=25&status=completed&auditor=jane&q=planta");
+    const first = Array.from({ length: 100 }, (_, index) => makeAudit({ id: `audit-${index + 1}` }));
+    stubHooks({ data: { audits: first, last_eval_id: "cursor-100" } });
+    const { rerender } = await renderPage();
+    await waitFor(() => expect(fetchNextPage).toHaveBeenCalledOnce());
+    const { default: AuditsPage } = await import("../page");
+    const second = Array.from({ length: 25 }, (_, index) => makeAudit({ id: `audit-${index + 101}` }));
+    stubHooks({ data: { audits: [...first, ...second] } });
+    rerender(<AuditsPage />);
+    expect(screen.getByTestId("page")).toHaveTextContent("5");
+    expect(screen.getByText("audit-101")).toBeInTheDocument();
+    expect(screen.queryByText("audit-100")).toBeNull();
+    expect(fetchNextPage).toHaveBeenCalledOnce();
+    expect(useInfiniteAudits).toHaveBeenLastCalledWith({ status: "completed", auditor: "jane" });
+    expect(new URLSearchParams(window.location.search).get("page")).toBe("5");
+  });
+
+  it("loads successive cursor blocks and stops at the end for an out-of-range URL page", async () => {
+    window.history.replaceState({}, "", "/audits?page=999&size=25");
+    const first = Array.from({ length: 100 }, (_, index) => makeAudit({ id: `audit-${index + 1}` }));
+    stubHooks({ data: { audits: first, last_eval_id: "cursor-100" } });
+    const { rerender } = await renderPage();
+    await waitFor(() => expect(fetchNextPage).toHaveBeenCalledTimes(1));
+    const { default: AuditsPage } = await import("../page");
+    const second = Array.from({ length: 100 }, (_, index) => makeAudit({ id: `audit-${index + 101}` }));
+    stubHooks({ data: { audits: [...first, ...second], last_eval_id: "cursor-200" } });
+    rerender(<AuditsPage />);
+    await waitFor(() => expect(fetchNextPage).toHaveBeenCalledTimes(2));
+    stubHooks({ data: { audits: [...first, ...second, makeAudit({ id: "audit-201" })] } });
+    rerender(<AuditsPage />);
+    expect(screen.getByTestId("page")).toHaveTextContent("9");
+    expect(screen.getByText("audit-201")).toBeInTheDocument();
+    rerender(<AuditsPage />);
+    expect(fetchNextPage).toHaveBeenCalledTimes(2);
+    expect(screen.queryByRole("button", { name: "Load more audits" })).toBeNull();
+  });
+
+  it("stops automatic page restoration on an incremental error and leaves retry available", async () => {
+    window.history.replaceState({}, "", "/audits?page=5&size=25");
+    const first = Array.from({ length: 100 }, (_, index) => makeAudit({ id: `audit-${index + 1}` }));
+    stubHooks({ data: { audits: first, last_eval_id: "cursor-100" } });
+    const { rerender } = await renderPage();
+    await waitFor(() => expect(fetchNextPage).toHaveBeenCalledOnce());
+    const { default: AuditsPage } = await import("../page");
+    stubHooks({ data: { audits: first, last_eval_id: "cursor-100" }, isFetchNextPageError: true });
+    rerender(<AuditsPage />);
+    rerender(<AuditsPage />);
+    expect(fetchNextPage).toHaveBeenCalledOnce();
+    expect(screen.getByText("audit-100")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("current results and filters are preserved");
+    await userEvent.click(screen.getByRole("button", { name: "Retry loading more" }));
+    expect(fetchNextPage).toHaveBeenCalledTimes(2);
+    expect(new URLSearchParams(window.location.search).get("page")).toBe("5");
+  });
+
+  it.each(["isFetching", "isRefetchError"])("does not start page restoration during %s", async flag => {
+    window.history.replaceState({}, "", "/audits?page=5&size=25");
+    stubHooks({ data: { audits: [makeAudit()], last_eval_id: "cursor" }, [flag]: true });
+    await renderPage();
+    expect(fetchNextPage).not.toHaveBeenCalled();
+  });
+
+  it("retries an incremental error while retaining loaded results", async () => {
+    stubHooks({ data: { audits: [makeAudit()], total: 2, last_eval_id: "cursor" }, isFetchNextPageError: true });
+    await renderPage();
+    expect(screen.getByText("audit-1")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("current results and filters are preserved");
+    await userEvent.click(screen.getByRole("button", { name: "Retry loading more" }));
+    expect(fetchNextPage).toHaveBeenCalledOnce();
+  });
+
+  it("shows a refresh failure while retaining cached rows and offers refresh retry", async () => {
+    const refetch = vi.fn();
+    stubHooks({ data: { audits: [makeAudit(), makeAudit({ id: "audit-2" })], total: 2 }, isError: true, isRefetchError: true, refetch });
+    await renderPage();
+    expect(screen.getByText("audit-1")).toBeInTheDocument();
+    expect(screen.getByText("audit-2")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("Audits could not be refreshed");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing previously loaded results");
+    expect(screen.getByRole("status")).not.toHaveTextContent("All available results loaded");
+    await userEvent.click(screen.getByRole("button", { name: "Retry refresh" }));
+    expect(refetch).toHaveBeenCalledOnce();
+    expect(fetchNextPage).not.toHaveBeenCalled();
+  });
+
 });

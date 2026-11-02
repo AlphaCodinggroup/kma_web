@@ -1,0 +1,9 @@
+{
+  "appId": "d3mbp3kh3ub3q9",
+  "branchName": "new-ui",
+  "description": "KMA Daylight frontend preview; independent from main",
+  "stage": "DEVELOPMENT",
+  "framework": "Next.js - SSR",
+  "enableAutoBuild": true,
+  "enablePullRequestPreview": false
+}

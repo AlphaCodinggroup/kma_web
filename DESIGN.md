@@ -1,0 +1,1 @@
+02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md

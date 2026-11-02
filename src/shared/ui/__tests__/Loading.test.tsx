@@ -3,21 +3,14 @@ import { describe, it, expect } from "vitest";
 import { Loading } from "../Loading";
 
 describe("Loading", () => {
-  it("renders the spinner element", () => {
-    const { container } = render(<Loading />);
-    // The spinner is a div with animate-spin class
-    const spinner = container.querySelector(".animate-spin");
-    expect(spinner).toBeInTheDocument();
+  it("announces section loading without replacing surrounding content", () => {
+    render(<main><h1>Projects</h1><Loading /></main>);
+    expect(screen.getByRole("heading", { name: "Projects" })).toBeVisible();
+    expect(screen.getByRole("status", { name: "Loading" })).toHaveAttribute("aria-live", "polite");
+    expect(screen.getByText("Loading…")).toBeVisible();
   });
-
-  it("renders without text when no text prop is provided", () => {
-    const { container } = render(<Loading />);
-    const paragraph = container.querySelector("p");
-    expect(paragraph).toBeNull();
-  });
-
-  it("renders the text when a text prop is provided", () => {
+  it("announces the operation being loaded", () => {
     render(<Loading text="Loading data..." />);
-    expect(screen.getByText("Loading data...")).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "Loading data..." })).toBeVisible();
   });
 });

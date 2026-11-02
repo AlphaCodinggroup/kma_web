@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@shared/lib/cn";
 import { MessageSquare, X, Pencil } from "lucide-react";
 import { Button } from "@shared/ui/controls";
@@ -36,12 +36,15 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
   // Los hooks deben ejecutarse siempre en el mismo orden: el corte por
   // "sin selección" va después de declararlos, no antes.
   const [value, setValue] = useState<string>("");
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [posting, setPosting] = useState(false);
+  const postingRef = useRef(false);
   const [comments, setComments] = useState<LocalComment[]>([]);
   const { mutateAsync: createComment, isPending: isCreating } =
     useCreateAuditCommentMutation();
   const { mutateAsync: updateComment, isPending: isUpdating } =
     useUpdateAuditCommentMutation();
-  const { data: fetchedComments, isLoading: isFetching } = useAuditComments(
+  const { data: fetchedComments, isLoading: isFetching, isError: commentsError, refetch } = useAuditComments(
     auditId,
     {
       enabled: Boolean(selected),
@@ -53,6 +56,7 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     setValue("");
     setComments([]);
     setEditingId(null);
+    setSaveError(null);
   }, [selected?.id]);
 
   useEffect(() => {
@@ -69,13 +73,16 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
     }
   }, [fetchedComments?.comments, selected]);
 
-  const isSaving = isCreating || isUpdating;
+  const isSaving = isCreating || isUpdating || posting;
   const isBusy = isFetching || isSaving;
 
   const handlePost = async () => {
-    if (!selected) return;
+    if (!selected || postingRef.current) return;
     const text = value.trim();
     if (!text) return;
+    postingRef.current = true;
+    setPosting(true);
+    setSaveError(null);
     try {
       if (editingId) {
         const updated = await updateComment({
@@ -110,6 +117,10 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
       setEditingId(null);
     } catch (err) {
       console.error("[CommentsSidebar] Error saving comment", err);
+      setSaveError("Comment could not be saved. Your message is preserved; please try again.");
+    } finally {
+      postingRef.current = false;
+      setPosting(false);
     }
   };
 
@@ -123,23 +134,25 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
   return (
     <aside
       className={cn(
-        "w-full max-w-md shrink-0 rounded-2xl border border-gray-200 bg-gray-50 shadow-sm md:sticky md:top-4",
+        "w-full shrink-0 border-t border-[var(--kma-border)] bg-[var(--kma-surface)] lg:sticky lg:top-[76px] lg:max-h-[75vh] lg:overflow-y-auto lg:border-l lg:border-t-0",
         className
       )}
       aria-label="Comments Panel"
     >
       {/* Header con botón chico a la derecha */}
-      <header className="grid grid-cols-[1fr_auto] items-center gap-2 border-b border-b-gray-200 px-4 py-3 sm:px-5">
-        <h3 className="text-base font-bold leading-none">Comments</h3>
+      <header className="sticky top-0 grid grid-cols-[1fr_auto] items-center gap-2 border-b border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-3 sm:px-5">
+        <h2 className="text-base font-semibold leading-none">Comments</h2>
         <div className="justify-self-end">
           <Button
             type="button"
             onClick={onClose}
             aria-label="Close comments panel"
             title="Close"
+            variant="ghost"
+            fullWidth={false}
             className={cn(
-              "h-8 w-8 rounded-lg border bg-background p-0",
-              "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"
+              "h-11 w-11 rounded p-0",
+              "hover:bg-[var(--kma-input)] focus-visible:ring-2 focus-visible:ring-[var(--kma-ring)]/30"
             )}
           >
             <X className="h-4 w-4" />
@@ -148,19 +161,25 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
       </header>
 
       <div className="p-4 sm:p-5">
+        <p className="mb-4 border-b border-[var(--kma-border)] pb-4 break-words text-sm font-medium text-[var(--kma-fg)]">{selected.title}</p>
         {/* Lista de comentarios */}
         <div>
-          {isFetching ? (
+          {commentsError ? (
+            <div className="space-y-3 rounded bg-[var(--kma-danger-bg)] p-3">
+              <p role="alert" className="text-sm text-[var(--kma-danger)]">Comments could not be loaded. Please try again.</p>
+              <Button fullWidth={false} onClick={() => void refetch()}>Retry comments</Button>
+            </div>
+          ) : isFetching ? (
             <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
-              <MessageSquare className="h-8 w-8 animate-pulse text-muted-foreground/60" />
-              <p className="max-w-[24ch] text-sm text-muted-foreground">
+              <MessageSquare className="h-8 w-8 animate-pulse text-[var(--kma-muted)]/60" />
+              <p className="max-w-[24ch] text-sm text-[var(--kma-muted)]">
                 Loading comments…
               </p>
             </div>
           ) : comments.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
-              <MessageSquare className="h-8 w-8 text-muted-foreground/60" />
-              <p className="max-w-[24ch] text-sm text-muted-foreground">
+              <MessageSquare className="h-8 w-8 text-[var(--kma-muted)]/60" />
+              <p className="max-w-[24ch] text-sm text-[var(--kma-muted)]">
                 No comments yet. Start the discussion below.
               </p>
             </div>
@@ -169,10 +188,10 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
               {comments.map((c) => (
                 <li
                   key={c.id}
-                  className="rounded-lg border border-gray-200 bg-white p-3"
+                  className="border-b border-[var(--kma-border)] py-3"
                 >
                   {/* fila superior: fecha + botón editar (compacto) */}
-                  <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="mb-1 flex items-center justify-between text-xs text-[var(--kma-muted)]">
                     <span>{new Date(c.createdAt).toLocaleString()}</span>
 
                     <RowActionButton
@@ -183,7 +202,7 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
                     />
                   </div>
 
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                  <p className="break-words whitespace-pre-wrap text-sm leading-relaxed">
                     {c.text}
                   </p>
                 </li>
@@ -193,10 +212,11 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
         </div>
 
         {/* Editor simple */}
-        <div className="mt-4 space-y-2">
+        <div className="mt-6 space-y-2 border-t border-[var(--kma-border)] pt-4">
+          {saveError && <p role="alert" className="text-sm text-[var(--kma-danger)]">{saveError}</p>}
           <label
             htmlFor="new-comment"
-            className="text-xs font-medium text-muted-foreground"
+            className="text-xs font-medium text-[var(--kma-muted)]"
           >
             Add a comment
           </label>
@@ -206,8 +226,8 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
             onChange={(e) => setValue(e.target.value)}
             rows={4}
             className={cn(
-              "w-full resize-none rounded-xl border bg-background/60 px-3 py-2 text-sm",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+              "w-full resize-y rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] px-3 py-2 text-sm",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--kma-ring)]/30"
             )}
             placeholder="Write your comment…"
             disabled={isBusy}
@@ -215,14 +235,15 @@ const CommentsSidebar: React.FC<CommentsSidebarProps> = ({
           <div className="flex items-center justify-end gap-2">
             <Button
               type="button"
-              className="h-8 rounded-lg border bg-background px-3 text-xs hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"
+              variant="secondary"
+              fullWidth={false}
               onClick={onClose}
             >
               Cancel
             </Button>
             <Button
               type="button"
-              className="h-8 rounded-lg px-3 text-xs"
+              fullWidth={false}
               disabled={!value.trim() || isBusy}
               aria-disabled={!value.trim() || isBusy}
               onClick={handlePost}

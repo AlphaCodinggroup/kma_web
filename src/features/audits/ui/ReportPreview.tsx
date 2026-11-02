@@ -62,7 +62,7 @@ const ReportPreview: React.FC<ReportPreviewProps> = ({
 
   return (
     <div
-      className="mx-auto w-full max-w-[1100px] bg-white p-4 text-[13px] leading-snug text-black shadow-sm ring-1 ring-gray-200 sm:p-6"
+      className="report-paper mx-auto w-full max-w-[1100px] bg-white p-4 text-[13px] leading-snug text-black shadow-sm ring-1 ring-gray-200 sm:p-6"
       data-testid="report-preview"
     >
       <div className="bg-black px-3 py-2 text-sm font-bold text-white">{facilityName}</div>

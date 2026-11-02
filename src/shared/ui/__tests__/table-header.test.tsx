@@ -7,7 +7,7 @@ describe("TableHeader", () => {
     render(<TableHeader title="Users" />);
 
     const heading = screen.getByRole("heading", { level: 2, name: "Users" });
-    expect(heading).toHaveClass("text-lg", "font-semibold", "text-black");
+    expect(heading).toHaveClass("text-lg", "font-semibold", "text-[var(--kma-fg)]");
   });
 
   it("renders the subtitle joined with the total", () => {

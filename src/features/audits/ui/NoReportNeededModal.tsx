@@ -33,7 +33,6 @@ const NoReportNeededModal: React.FC<NoReportNeededModalProps> = ({
         <Button
           type="button"
           onClick={() => onOpenChange(false)}
-          className="bg-black hover:opacity-80 rounded-xl w-full"
         >
           OK
         </Button>

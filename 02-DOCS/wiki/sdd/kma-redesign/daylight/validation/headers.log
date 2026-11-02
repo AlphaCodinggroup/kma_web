@@ -1,0 +1,15 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness
+
+ ✓ src/shared/ui/__tests__/page-header.test.tsx (16 tests) 213ms
+ ✓ app/(dashboard)/reports/__tests__/page.test.tsx (8 tests) 853ms
+   ✓ ReportsPage > renders, filters and forwards list state 553ms
+ ✓ app/(dashboard)/audits/__tests__/page.test.tsx (39 tests) 2321ms
+   ✓ AuditsPage > renders the header, the toolbar and the table 420ms
+
+ Test Files  3 passed (3)
+      Tests  63 passed (63)
+   Start at  22:08:11
+   Duration  3.93s (transform 561ms, setup 367ms, collect 1.24s, tests 3.39s, environment 1.59s, prepare 525ms)
+

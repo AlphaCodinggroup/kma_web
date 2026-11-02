@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="KMA">
+  <defs>
+    <clipPath id="kma-cap"><rect x="200" y="303" width="430" height="127"/></clipPath>
+  </defs>
+  <circle cx="50" cy="50" r="50" fill="#E2231A"/>
+  <g transform="translate(50 50) scale(0.18727) translate(-413 -366.5)" fill="none" stroke="#fff" stroke-linejoin="miter" clip-path="url(#kma-cap)">
+    <path d="M230 290V440" stroke-width="30"/>
+    <path d="M240 374L330 290" stroke-width="36"/>
+    <path d="M280 345L333 440" stroke-width="33"/>
+    <path d="M360 290V440M466 290V440" stroke-width="28"/>
+    <path d="M360 296L413 392L466 296" stroke-width="28"/>
+    <path d="M496 440L551 296L606 440" stroke-width="31"/>
+    <path d="M517 405H585" stroke-width="22"/>
+  </g>
+</svg>

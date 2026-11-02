@@ -1,3 +1,4 @@
+import { errorMessage } from "@shared/lib/error-message";
 import axios, {
   AxiosError,
   AxiosHeaders,
@@ -126,28 +127,24 @@ export function createServerHttp(
       const url = res.config?.url ?? "";
       const statusText = res.statusText || "";
       const serverMessage =
-        (res.data && (res.data as any).message) ||
+        errorMessage(res.data) ||
         (typeof res.data === "string" ? res.data : undefined);
 
-      const error = new Error(
+      const error = Object.assign(new Error(
         serverMessage
           ? serverMessage
           : `HTTP ${status}${statusText ? ` ${statusText}` : ""} on "${url}"`
-      );
-      (error as any).status = status;
-      (error as any).url = url;
-      (error as any).response = res;
+      ), { status, url, response: res });
 
       throw error;
     },
     (err: AxiosError) => {
       // Errores previos a respuesta (DNS, timeout, etc.)
       const msg =
-        (err.response?.data as any)?.message ||
+        errorMessage(err.response?.data) ||
         err.message ||
         "Network request failed.";
-      const error = new Error(msg);
-      (error as any).cause = err;
+      const error = new Error(msg, { cause: err });
       throw error;
     }
   );

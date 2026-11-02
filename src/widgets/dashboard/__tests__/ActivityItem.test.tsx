@@ -14,6 +14,15 @@ function renderItem(props: ActivityItemProps) {
 }
 
 describe("ActivityItem", () => {
+  it("separates the project, facility and flow while keeping the author and completion time", () => {
+    renderItem({ project: "North Campus", facility: "Library", flow: "Entrances", auditor: "Jane Doe", time: "2026-10-07 15:30" });
+    expect(screen.getByText("North Campus")).toBeInTheDocument();
+    expect(screen.getByText("Library")).toBeInTheDocument();
+    expect(screen.getByText("Entrances")).toBeInTheDocument();
+    expect(screen.getByText("Jane Doe")).toBeInTheDocument();
+    expect(screen.getByText("2026-10-07 15:30")).toBeInTheDocument();
+  });
+
   it("renders the project, the auditor and the time", () => {
     renderItem({ project: "Plant A", auditor: "Jane Doe", time: "2h ago" });
 
@@ -30,11 +39,11 @@ describe("ActivityItem", () => {
   });
 
   const variantCases: Array<{ variant: Variant; expected: string }> = [
-    { variant: "success", expected: "bg-emerald-500" },
-    { variant: "warning", expected: "bg-amber-500" },
-    { variant: "info", expected: "bg-sky-500" },
-    { variant: "danger", expected: "bg-rose-500" },
-    { variant: "neutral", expected: "bg-gray-400" },
+    { variant: "success", expected: "bg-[var(--kma-success)]" },
+    { variant: "warning", expected: "bg-[var(--kma-warning)]" },
+    { variant: "info", expected: "bg-[var(--kma-primary)]" },
+    { variant: "danger", expected: "bg-[var(--kma-danger)]" },
+    { variant: "neutral", expected: "bg-[var(--kma-muted)]" },
   ];
 
   it.each(variantCases)(
@@ -60,7 +69,7 @@ describe("ActivityItem", () => {
     });
 
     expect(container.querySelector("span[aria-hidden='true']")).toHaveClass(
-      "bg-emerald-500"
+      "bg-[var(--kma-success)]"
     );
   });
 
@@ -73,7 +82,7 @@ describe("ActivityItem", () => {
     });
 
     expect(container.querySelector("span[aria-hidden='true']")).toHaveClass(
-      "bg-gray-400"
+      "bg-[var(--kma-muted)]"
     );
   });
 

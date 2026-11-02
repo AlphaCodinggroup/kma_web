@@ -74,7 +74,7 @@ describe("Table primitives", () => {
     {
       name: "TableHead",
       tag: "TH",
-      baseClasses: ["h-11", "px-4", "text-left", "align-middle", "bg-gray-50"],
+      baseClasses: ["h-11", "px-4", "text-left", "align-middle", "bg-[var(--kma-subtle)]"],
     },
     {
       name: "TableBody",
@@ -84,17 +84,17 @@ describe("Table primitives", () => {
     {
       name: "TableRow",
       tag: "TR",
-      baseClasses: ["border-b", "transition-colors", "hover:bg-gray-100"],
+      baseClasses: ["border-b", "transition-colors", "hover:bg-[var(--kma-subtle)]"],
     },
     {
       name: "TableCell",
       tag: "TD",
-      baseClasses: ["p-4", "text-sm", "text-gray-900", "align-top"],
+      baseClasses: ["px-4", "py-4", "text-sm", "text-[var(--kma-fg)]", "align-top"],
     },
     {
       name: "TableCaption",
       tag: "CAPTION",
-      baseClasses: ["mt-4", "text-sm", "text-gray-500"],
+      baseClasses: ["mt-4", "text-sm", "text-[var(--kma-muted)]"],
     },
   ];
 
@@ -167,7 +167,7 @@ describe("Table primitives", () => {
 
     expect(screen.getByText("caption")).toHaveClass("caption-extra", "mt-4");
     expect(screen.getByText("head")).toHaveClass("th-extra", "h-11");
-    expect(screen.getByText("cell")).toHaveClass("td-extra", "p-4");
+    expect(screen.getByText("cell")).toHaveClass("td-extra", "px-4", "py-4");
   });
 
   it("forwards extra DOM props such as colSpan and scope", () => {

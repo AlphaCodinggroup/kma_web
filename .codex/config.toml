@@ -1,0 +1,3 @@
+# RSC's project hook definitions are stored in hooks.json.
+# Native memory activation also uses a user hook scoped to this worktree;
+# see 02-DOCS/wiki/harness/vscode.md for the verified client limitation.

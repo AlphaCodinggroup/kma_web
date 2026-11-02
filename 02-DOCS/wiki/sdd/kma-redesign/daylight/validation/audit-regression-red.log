@@ -1,0 +1,134 @@
+
+Running 3 tests using 1 worker
+
+(node:3708351) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › e2e/audit-navigation.spec.ts:32:5 › compact audit sorting preserves both directions and the original order (21.6s)
+(node:3713675) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › e2e/audit-navigation.spec.ts:50:5 › saved audit page restores its cursor after reload and a return from review (16.2s)
+(node:3717445) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › e2e/audit-navigation.spec.ts:70:5 › saved audit page stops on a cursor error and recovers through explicit retry (16.2s)
+
+
+  1) [chromium] › e2e/audit-navigation.spec.ts:32:5 › compact audit sorting preserves both directions and the original order 
+
+    TimeoutError: locator.selectOption: Timeout 20000ms exceeded.
+    Call log:
+      - waiting for getByRole('combobox', { name: 'Sort audits by' })
+
+
+      39 |   const rows = page.getByRole("list", { name: "Audit results" }).locator(":scope > li");
+      40 |   await expect(rows).toHaveCount(3);
+    > 41 |   await page.getByRole("combobox", { name: "Sort audits by" }).selectOption("project");
+         |                                                                ^
+      42 |   await expect(rows.first()).toContainText("Alpha fixture");
+      43 |   await page.getByRole("button", { name: "Sort descending", exact: true }).click();
+      44 |   await expect(rows.first()).toContainText("Zeta fixture");
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/audit-navigation.spec.ts:41:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/audit-navigation-compact-a-5e1c5-ions-and-the-original-order-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/audit-navigation-compact-a-5e1c5-ions-and-the-original-order-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/audit-navigation-compact-a-5e1c5-ions-and-the-original-order-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/audit-navigation-compact-a-5e1c5-ions-and-the-original-order-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/audit-navigation-compact-a-5e1c5-ions-and-the-original-order-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/audit-navigation.spec.ts:50:5 › saved audit page restores its cursor after reload and a return from review 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('row').filter({ hasText: 'Fixture project 100' })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('row').filter({ hasText: 'Fixture project 100' }) with timeout 15000ms
+      - waiting for getByRole('row').filter({ hasText: 'Fixture project 100' })
+
+
+      54 |   await page.goto(savedPage);
+      55 |   const target = page.getByRole("row").filter({ hasText: "Fixture project 100" });
+    > 56 |   await expect(target).toBeVisible();
+         |                        ^
+      57 |   await expect(page.getByRole("searchbox")).toHaveValue("Fixture");
+      58 |   await expect(page).toHaveURL(/page=5/);
+      59 |   await page.reload();
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/audit-navigation.spec.ts:56:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/audit-navigation-saved-aud-f9440-ad-and-a-return-from-review-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/audit-navigation-saved-aud-f9440-ad-and-a-return-from-review-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/audit-navigation-saved-aud-f9440-ad-and-a-return-from-review-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/audit-navigation-saved-aud-f9440-ad-and-a-return-from-review-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/audit-navigation-saved-aud-f9440-ad-and-a-return-from-review-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/audit-navigation.spec.ts:70:5 › saved audit page stops on a cursor error and recovers through explicit retry 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('alert').filter({ hasText: 'More audits could not be loaded' })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('alert').filter({ hasText: 'More audits could not be loaded' }) with timeout 15000ms
+      - waiting for getByRole('alert').filter({ hasText: 'More audits could not be loaded' })
+
+
+      73 |   const requests = await installPages(page, true);
+      74 |   await page.goto(savedPage);
+    > 75 |   await expect(page.getByRole("alert").filter({ hasText: "More audits could not be loaded" })).toBeVisible();
+         |                                                                                                ^
+      76 |   await expect(page.getByRole("searchbox")).toHaveValue("Fixture");
+      77 |   await expect(page).toHaveURL(/page=5/);
+      78 |   await page.waitForLoadState("networkidle");
+        at /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/e2e/audit-navigation.spec.ts:75:96
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/audit-navigation-saved-aud-ea00e-vers-through-explicit-retry-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/audit-navigation-saved-aud-ea00e-vers-through-explicit-retry-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/audit-navigation-saved-aud-ea00e-vers-through-explicit-retry-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/audit-navigation-saved-aud-ea00e-vers-through-explicit-retry-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/audit-navigation-saved-aud-ea00e-vers-through-explicit-retry-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › e2e/audit-navigation.spec.ts:32:5 › compact audit sorting preserves both directions and the original order 
+    [chromium] › e2e/audit-navigation.spec.ts:50:5 › saved audit page restores its cursor after reload and a return from review 
+    [chromium] › e2e/audit-navigation.spec.ts:70:5 › saved audit page stops on a cursor error and recovers through explicit retry 

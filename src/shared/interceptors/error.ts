@@ -5,6 +5,7 @@
 // - Ready to use with both browser and server axios instances.
 // -----------------------------------------------------------------------------
 
+import { errorMessage } from "@shared/lib/error-message";
 import type { AxiosError, AxiosInstance } from "axios";
 
 // Contrato de error centralizado para la app (UI, logs, boundary)
@@ -181,9 +182,7 @@ export function createApiErrorFromAxios(err: AxiosError): ApiError {
 
   // Preferimos message contenido en payload genérico
   const msgFromBody =
-    (data && typeof (data as any).message === "string"
-      ? (data as any).message
-      : undefined) ??
+    errorMessage(data) ??
     (typeof err.message === "string" ? err.message : undefined);
 
   const message = msgFromBody ?? defaultMessageFor(code);
@@ -221,7 +220,7 @@ export function createApiError(input: unknown): ApiError {
 
   // Si es Error estándar u objeto con message
   const message =
-    (typeof (input as any)?.message === "string" && (input as any).message) ||
+    errorMessage(input) ||
     defaultMessageFor(undefined);
 
   return {

@@ -4,6 +4,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ReportListItem } from "@entities/report/model/report-list";
 import type { AuditStatus } from "@entities/audit/model";
 
+const compactMock = vi.fn(() => false);
+vi.mock("@shared/lib/useMediaQuery", () => ({ useMediaQuery: () => compactMock() }));
 const isAdminMock = vi.fn<() => boolean>(() => true);
 
 vi.mock("@processes/auth/hooks", () => ({
@@ -92,6 +94,7 @@ function projectColumn(): string[] {
 describe("ReportsTable", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    compactMock.mockReturnValue(false);
     isAdminMock.mockReturnValue(true);
   });
 
@@ -139,9 +142,9 @@ describe("ReportsTable", () => {
   });
 
   const statusLabels: Array<{ status: AuditStatus; label: string }> = [
-    { status: "draft_report_pending_review", label: "Draft Report Pending Review" },
-    { status: "draft_report_in_review", label: "Draft Report In Review" },
-    { status: "final_report_sent_to_client", label: "Final Report Sent to Client" },
+    { status: "draft_report_pending_review", label: "Pending review" },
+    { status: "draft_report_in_review", label: "In review" },
+    { status: "final_report_sent_to_client", label: "Delivered" },
     { status: "completed", label: "Completed" },
   ];
 
@@ -201,7 +204,7 @@ describe("ReportsTable", () => {
     renderTable({ items: [readyReport, inReviewReport], downloadingId: "ready" });
 
     expect(
-      screen.getByRole("progressbar", { name: "Downloading report" })
+      screen.getByRole("button", { name: "Downloading report" })
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Download report" })).toBeEnabled();
   });
@@ -477,7 +480,7 @@ describe("ReportsTable", () => {
 
     expect(container.firstElementChild).toHaveClass(
       "overflow-hidden",
-      "rounded-2xl",
+      "rounded-lg",
       "!border-0"
     );
   });
@@ -486,5 +489,64 @@ describe("ReportsTable", () => {
     const { container } = renderTable({ bodyMaxHeightClassName: "max-h-96" });
 
     expect(container.querySelector(".overflow-auto")).toHaveClass("max-h-96");
+  });
+});
+
+
+describe("ReportsTable — mobile actions", () => {
+  beforeEach(() => compactMock.mockReturnValue(true));
+  const sortItems = [
+    makeReport({ id: "beta", reportName: "Beta", status: "draft_report_in_review", createdAt: "2026-02-01T00:00:00Z" }),
+    makeReport({ id: "alpha", reportName: "Alpha", status: "completed", createdAt: "2026-01-01T00:00:00Z" }),
+  ];
+  const mobileNames = () => within(screen.getByRole("list", { name: "Report results" })).getAllByRole("listitem")
+    .map(row => within(row).getByText(/^(Alpha|Beta)$/).textContent);
+
+  it.each([["project", "Project"], ["status", "Status"], ["date", "Created At"]])("sorts mobile reports by %s in both directions", async (value, label) => {
+    const user = userEvent.setup();
+    renderTable({ items: sortItems });
+    const sort = screen.getByRole("combobox", { name: "Sort reports by" });
+    expect(within(sort).getByRole("option", { name: label })).toHaveValue(value);
+    await user.selectOptions(sort, value);
+    expect(mobileNames()).toEqual(["Alpha", "Beta"]);
+    await user.click(screen.getByRole("button", { name: "Sort descending" }));
+    expect(mobileNames()).toEqual(["Beta", "Alpha"]);
+    await user.click(screen.getByRole("button", { name: "Sort ascending" }));
+    expect(mobileNames()).toEqual(["Alpha", "Beta"]);
+  });
+
+  it("restores default order while preserving the download, delete and detail actions", async () => {
+    const user = userEvent.setup();
+    const onDownload = vi.fn();
+    const onDelete = vi.fn();
+    renderTable({ items: sortItems, onDownload, onDelete });
+    const sort = screen.getByRole("combobox", { name: "Sort reports by" });
+    await user.selectOptions(sort, "project");
+    await user.selectOptions(sort, "");
+    expect(mobileNames()).toEqual(["Beta", "Alpha"]);
+    const row = within(screen.getByRole("list", { name: "Report results" })).getAllByRole("listitem")[0];
+    await user.click(within(row).getByRole("button", { name: "Download report" }));
+    expect(onDownload).toHaveBeenCalledWith("beta");
+    await user.click(within(row).getByRole("button", { name: "Delete report" }));
+    expect(onDelete).toHaveBeenCalledWith("beta");
+    expect(within(row).getByText("Details")).toBeInTheDocument();
+  });
+
+  it("downloads a report directly from the mobile result row", async () => {
+    const onDownload = vi.fn();
+    renderTable({ items: [readyReport], onDownload });
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "Report results" })).toBeVisible();
+    expect(screen.getByText("Completed")).toBeVisible();
+    await userEvent.click(screen.getByRole("button", { name: "Download report" }));
+    expect(onDownload).toHaveBeenCalledWith("ready");
+  });
+  it("cannot download a mobile report that has no file yet", async () => {
+    const onDownload = vi.fn();
+    renderTable({ items: [generatingReport], onDownload });
+    const action = screen.getByRole("button", { name: "Report not available yet" });
+    expect(action).toBeDisabled();
+    await userEvent.click(action);
+    expect(onDownload).not.toHaveBeenCalled();
   });
 });

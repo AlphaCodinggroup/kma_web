@@ -2,7 +2,7 @@ import type { Audit } from "@entities/audit/model";
 import type { Facility } from "@entities/facility/model";
 import type { Project } from "@entities/projects/model";
 
-/** Contadores de auditorías. "En curso" es todo lo que todavía no se completó. */
+/** Contadores del proyecto: sólo trabajo de campo y revisión activos cuentan en curso. */
 export type AuditSummary = {
   total: number;
   inProgress: number;
@@ -26,7 +26,7 @@ export function summarizeProjectAudits(audits: readonly Audit[]): AuditSummary {
   const completed = audits.filter((audit) => audit.status === "completed").length;
   return {
     total: audits.length,
-    inProgress: audits.length - completed,
+    inProgress: audits.filter(audit => audit.status === "audit_in_progress" || audit.status === "draft_report_pending_review" || audit.status === "draft_report_in_review").length,
     completed,
   };
 }

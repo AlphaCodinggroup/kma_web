@@ -3,16 +3,18 @@ import type { Route } from "next";
 /** Ruta de edición (QC) de una auditoría. */
 export type AuditEditRoute = Route<`/audits/${string}/edit`>;
 
-// Sólo se vuelve al detalle de un proyecto (con sus filtros en el query):
+// Sólo se vuelve al listado de auditorías o al detalle de un proyecto:
 // cualquier otro destino se descarta para que `returnTo` no sirva como
 // redirección abierta.
 const PROJECT_RETURN_PATH = /^\/projects\/[^/?#\\]+(\?[^#]*)?$/;
+
+const AUDITS_RETURN_PATH = /^\/audits(\?[^#\\]*)?$/;
 
 const DEFAULT_BACK_HREF = "/audits" as Route;
 
 /** Indica si `value` es un destino de vuelta permitido. */
 export function isAllowedReturnPath(value: unknown): value is string {
-  return typeof value === "string" && PROJECT_RETURN_PATH.test(value);
+  return typeof value === "string" && (PROJECT_RETURN_PATH.test(value) || AUDITS_RETURN_PATH.test(value));
 }
 
 /**
@@ -37,7 +39,7 @@ export function buildAuditEditHref(
   return (query.length > 0 ? `${base}?${query.join("&")}` : base) as AuditEditRoute;
 }
 
-/** Destino del botón "Back" de la edición: el proyecto de origen o Audits. */
+/** Destino del botón "Back" de la edición: el origen con sus filtros o Audits. */
 export function resolveAuditBackHref(returnTo: string | undefined): Route {
   return isAllowedReturnPath(returnTo) ? (returnTo as Route) : DEFAULT_BACK_HREF;
 }

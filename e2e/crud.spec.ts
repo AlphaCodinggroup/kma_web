@@ -15,14 +15,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Proyectos", () => {
-  test("alta, edición y borrado de un proyecto", async ({ page }) => {
+  test("alta, edición, archivo, restauración y borrado de un proyecto", async ({ page }) => {
     const { serverErrors } = collectErrors(page);
     const name = `Proyecto ${RUN}`;
     const renamed = `${name} v2`;
 
     await page.goto("/projects");
     await expect(
-      page.getByRole("heading", { name: /projects & facilities/i }),
+      page.getByRole("heading", { name: /^projects$/i, level: 1 }),
     ).toBeVisible();
 
     // Alta
@@ -47,6 +47,20 @@ test.describe("Proyectos", () => {
     const renamedRow = page.getByRole("row").filter({ hasText: renamed });
     await expect(renamedRow).toBeVisible({ timeout: 20_000 });
 
+    await page.getByRole("searchbox", { name: "Search projects", exact: true }).fill(renamed);
+    await renamedRow.getByRole("button", { name: "Archive project", exact: true }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Archive", exact: true }).click();
+    await expect(renamedRow).toBeHidden();
+    await page.getByRole("button", { name: "Show archived projects" }).click();
+    await expect(renamedRow).toBeVisible();
+    await page.reload();
+    await expect(page.getByRole("searchbox", { name: "Search projects", exact: true })).toHaveValue(renamed);
+    await renamedRow.getByRole("button", { name: "Restore project", exact: true }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Restore", exact: true }).click();
+    await expect(renamedRow).toBeHidden();
+    await page.getByRole("button", { name: "Show active projects" }).click();
+    await expect(renamedRow).toBeVisible();
+
     // Borrado
     await renamedRow.getByRole("button", { name: /delete project/i }).click();
     await page
@@ -66,9 +80,13 @@ test.describe("Proyectos", () => {
     await page.locator("#project-name").fill("   ");
     await page.locator("#project-name").blur();
 
-    // El formulario avisa y no deja enviar.
+    let submissions = 0;
+    page.on("request", request => { if (new URL(request.url()).pathname === "/api/projects" && request.method() === "POST") submissions++; });
+    await submit.click();
     await expect(page.getByText(/project name is required/i)).toBeVisible();
-    await expect(submit).toBeDisabled();
+    await expect(page.locator("#project-name")).toBeFocused();
+    await expect(page.locator("#project-name")).toHaveValue("   ");
+    expect(submissions).toBe(0);
   });
 });
 
@@ -162,7 +180,7 @@ test.describe("Facilities", () => {
 });
 
 test.describe("Usuarios", () => {
-  test("alta de un usuario con rol QC y borrado", async ({ page }) => {
+  test("alta, edición de rol y borrado de un usuario", async ({ page }) => {
     const { serverErrors } = collectErrors(page);
     const name = `QC ${RUN}`;
     const email = `qc-${Date.now()}@example.com`;
@@ -195,6 +213,16 @@ test.describe("Usuarios", () => {
     const row = page.getByRole("row").filter({ hasText: email });
     await expect(row).toBeVisible({ timeout: 20_000 });
 
+    await row.getByRole("button", { name: "Edit user", exact: true }).click();
+    await page.locator("#user-role").selectOption("auditor");
+    await page.getByRole("button", { name: "Save Changes", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "User Updated", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await expect(row.getByText("Auditor", { exact: true })).toBeVisible();
+    await row.getByRole("button", { name: "Edit user", exact: true }).click();
+    await expect(page.locator("#user-role")).toHaveValue("auditor");
+    await page.getByRole("dialog").getByRole("button", { name: "Close", exact: true }).click();
+
     await row.getByRole("button", { name: /delete/i }).click();
     const confirm = page.getByRole("dialog").filter({ hasText: "Delete User" });
     await confirm.getByRole("button", { name: "Delete User" }).click();
@@ -226,7 +254,7 @@ test.describe("Flows", () => {
     // administrador.
     await page.getByRole("link", { name: "Edit flow" }).first().click();
     await expect(
-      page.getByRole("heading", { name: /edit flow:/i }),
+      page.getByRole("heading", { level: 1, name: /^Edit Flow: / }),
     ).toBeVisible({ timeout: 20_000 });
 
     expect(serverErrors).toEqual([]);
@@ -247,15 +275,17 @@ test.describe("Reportes", () => {
 
     const search = page.getByPlaceholder(/search reports/i);
     await expect(search).toBeVisible();
-    const rowsBefore = await page.getByRole("row").count();
-
+    const reportRows = page.getByRole("row").filter({
+      has: page.getByRole("button", { name: "Delete report", exact: true }),
+    });
+    await expect(reportRows.first()).toBeVisible();
     await search.fill("zzzznada");
 
-    // Con un filtro que no matchea quedan menos filas que antes (a lo sumo la
-    // de encabezado).
-    await expect
-      .poll(() => page.getByRole("row").count(), { timeout: 20_000 })
-      .toBeLessThan(Math.max(rowsBefore, 2));
+    // Se cuentan reportes reales; la fila de vacío también tiene role=row.
+    await expect(reportRows).toHaveCount(0);
+    await expect(page.getByRole("cell", { name: "No reports found", exact: true })).toBeVisible();
+    await search.fill("");
+    await expect(reportRows.first()).toBeVisible();
 
     expect(serverErrors).toEqual([]);
   });

@@ -1,0 +1,12 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/new-ui
+
+ ✓ app/(auth)/login/__tests__/page.test.tsx (3 tests) 211ms
+ ✓ src/features/auth/ui/__tests__/LoginForm.test.tsx (6 tests) 279ms
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  00:12:34
+   Duration  1.23s (transform 144ms, setup 99ms, collect 359ms, tests 489ms, environment 283ms, prepare 147ms)
+

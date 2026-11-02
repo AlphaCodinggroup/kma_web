@@ -29,7 +29,7 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     await user.type(screen.getByLabelText(/username/i), "admin");
-    await user.type(screen.getByLabelText(/password/i), "secret123");
+    await user.type(screen.getByLabelText(/^password$/i), "secret123");
     await user.click(screen.getByRole("button", { name: /log in/i }));
 
     await waitFor(() => {
@@ -72,7 +72,7 @@ describe("LoginForm", () => {
     render(<LoginForm />);
 
     await user.type(screen.getByLabelText(/username/i), "admin");
-    await user.type(screen.getByLabelText(/password/i), "wrong");
+    await user.type(screen.getByLabelText(/^password$/i), "wrong");
     await user.click(screen.getByRole("button", { name: /log in/i }));
 
     await waitFor(() => {
@@ -80,5 +80,33 @@ describe("LoginForm", () => {
     });
 
     expect(pushMock).not.toHaveBeenCalled();
+    expect(screen.getByLabelText(/username/i)).toHaveValue("admin");
+    expect(screen.getByLabelText(/^password$/i)).toHaveValue("wrong");
+  });
+
+  it("shows a useful fallback when a rejection has no message", async () => {
+    loginMock.mockRejectedValue("unavailable");
+    const user = userEvent.setup();
+    render(<LoginForm />);
+    await user.type(screen.getByLabelText(/username/i), "admin");
+    await user.type(screen.getByLabelText(/^password$/i), "secret");
+    await user.click(screen.getByRole("button", { name: /log in/i }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Failed to log in. Please try again.");
+  });
+
+  it("prevents duplicate requests while a login is pending", async () => {
+    let resolveLogin!: () => void;
+    loginMock.mockImplementation(() => new Promise<void>((resolve) => { resolveLogin = resolve; }));
+    const user = userEvent.setup();
+    render(<LoginForm />);
+    await user.type(screen.getByLabelText(/username/i), "admin");
+    await user.type(screen.getByLabelText(/^password$/i), "secret");
+    const submit = screen.getByRole("button", { name: /log in/i });
+    await user.click(submit);
+    expect(submit).toBeDisabled();
+    await user.click(submit);
+    expect(loginMock).toHaveBeenCalledTimes(1);
+    resolveLogin();
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith("/dashboard"));
   });
 });

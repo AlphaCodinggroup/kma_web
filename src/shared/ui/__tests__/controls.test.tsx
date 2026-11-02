@@ -16,7 +16,7 @@ describe("Label", () => {
     render(<Label>My label</Label>);
     const label = screen.getByText("My label");
     expect(label.tagName).toBe("LABEL");
-    expect(label).toHaveClass("block", "text-sm", "font-medium", "text-black", "mb-1");
+    expect(label).toHaveClass("block", "text-sm", "font-medium", "text-[var(--kma-fg)]", "mb-1");
   });
 
   it("associates itself with a control through htmlFor", () => {
@@ -62,7 +62,7 @@ describe("Input", () => {
     render(<Input aria-label="Plain input" />);
     const input = screen.getByLabelText("Plain input");
     expect(input.tagName).toBe("INPUT");
-    expect(input).toHaveClass("w-full", "rounded-xl", "bg-gray-100", "text-black");
+    expect(input).toHaveClass("w-full", "rounded", "bg-[var(--kma-surface)]", "text-[var(--kma-fg)]");
   });
 
   it("renders with the minimum props and no explicit type", () => {
@@ -87,9 +87,9 @@ describe("Input", () => {
       );
       const input = screen.getByLabelText("Errored");
       if (shouldHave) {
-        expect(input).toHaveClass("ring-red-400");
+        expect(input).toHaveClass("border-[var(--kma-danger)]");
       } else {
-        expect(input).not.toHaveClass("ring-red-400");
+        expect(input).not.toHaveClass("border-[var(--kma-danger)]");
       }
     }
   );
@@ -147,13 +147,13 @@ describe("Input", () => {
     expect(input).toHaveAttribute("type", "password");
     expect(input).toHaveClass("pr-10");
 
-    const toggle = screen.getByRole("button", { name: "Mostrar contraseña" });
+    const toggle = screen.getByRole("button", { name: "Show password" });
     expect(toggle).toHaveAttribute("aria-pressed", "false");
     expect(toggle).toHaveAttribute("aria-controls", "pwd");
 
     await user.click(toggle);
     expect(screen.getByLabelText("Password")).toHaveAttribute("type", "text");
-    const hideToggle = screen.getByRole("button", { name: "Ocultar contraseña" });
+    const hideToggle = screen.getByRole("button", { name: "Hide password" });
     expect(hideToggle).toHaveAttribute("aria-pressed", "true");
 
     await user.click(hideToggle);
@@ -207,7 +207,7 @@ describe("Textarea", () => {
     render(<Textarea aria-label="Notes" />);
     const textarea = screen.getByLabelText("Notes");
     expect(textarea.tagName).toBe("TEXTAREA");
-    expect(textarea).toHaveClass("w-full", "rounded-xl", "bg-gray-100");
+    expect(textarea).toHaveClass("w-full", "rounded", "bg-[var(--kma-surface)]");
   });
 
   it("renders with the minimum props", () => {
@@ -233,9 +233,9 @@ describe("Textarea", () => {
       );
       const textarea = screen.getByLabelText("Errored area");
       if (shouldHave) {
-        expect(textarea).toHaveClass("ring-red-400");
+        expect(textarea).toHaveClass("border-[var(--kma-danger)]");
       } else {
-        expect(textarea).not.toHaveClass("ring-red-400");
+        expect(textarea).not.toHaveClass("border-[var(--kma-danger)]");
       }
     }
   );
@@ -284,15 +284,15 @@ describe("Button", () => {
   it("renders its children and the base classes", () => {
     render(<Button>Save</Button>);
     const button = screen.getByRole("button", { name: "Save" });
-    expect(button).toHaveClass("inline-flex", "rounded-xl", "bg-black", "text-white");
+    expect(button).toHaveClass("kma-control-button", "kma-button-primary");
     expect(button).toBeEnabled();
   });
 
-  it("renders the loading label and disables itself when isLoading is true", () => {
+  it("keeps its action name and announces busy while preventing duplicate submission", () => {
     render(<Button isLoading>Save</Button>);
-    const button = screen.getByRole("button", { name: "Loading..." });
+    const button = screen.getByRole("button", { name: "Save" });
     expect(button).toBeDisabled();
-    expect(screen.queryByText("Save")).not.toBeInTheDocument();
+    expect(button).toHaveAttribute("aria-busy", "true");
   });
 
   const disabledCases: Array<{
@@ -352,7 +352,7 @@ describe("Button", () => {
       </Button>
     );
     const button = screen.getByTestId("btn");
-    expect(button).toHaveClass("btn-extra", "bg-black");
+    expect(button).toHaveClass("btn-extra", "kma-control-button");
     expect(button).toHaveAttribute("type", "submit");
   });
 
@@ -373,8 +373,8 @@ describe("HelpText and ErrorText", () => {
     Component: React.ElementType;
     baseClasses: string[];
   }> = [
-    { name: "HelpText", Component: HelpText, baseClasses: ["mt-1", "text-xs", "text-gray-600"] },
-    { name: "ErrorText", Component: ErrorText, baseClasses: ["mt-2", "text-sm", "text-red-600"] },
+    { name: "HelpText", Component: HelpText, baseClasses: ["mt-1", "text-xs", "text-[var(--kma-muted)]"] },
+    { name: "ErrorText", Component: ErrorText, baseClasses: ["mt-2", "text-sm", "text-[var(--kma-danger)]"] },
   ];
 
   it.each(paragraphs)("$name renders a p with its base classes", ({ Component, baseClasses }) => {

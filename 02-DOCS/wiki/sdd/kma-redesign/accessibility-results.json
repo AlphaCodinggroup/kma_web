@@ -1,0 +1,22 @@
+{
+  "dashboard": {
+    "mode": "snapshot",
+    "accessibility_score": 1,
+    "failed_accessibility_audits": []
+  },
+  "review": {
+    "mode": "snapshot",
+    "accessibility_score": 1,
+    "failed_accessibility_audits": []
+  },
+  "users": {
+    "mode": "snapshot",
+    "accessibility_score": 1,
+    "failed_accessibility_audits": []
+  },
+  "flow-editor": {
+    "mode": "snapshot",
+    "accessibility_score": 1,
+    "failed_accessibility_audits": []
+  }
+}

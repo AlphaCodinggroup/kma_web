@@ -28,7 +28,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   return (
     <div
       data-testid={testId}
-      className={["grid gap-4 md:grid-cols-2 lg:grid-cols-3", className]
+      className={["grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-border)] md:grid-cols-4 xl:grid-cols-1", className]
         .filter(Boolean)
         .join(" ")}
     >

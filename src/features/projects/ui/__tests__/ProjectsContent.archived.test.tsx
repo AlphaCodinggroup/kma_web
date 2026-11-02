@@ -97,6 +97,7 @@ const archivedDuxbury = makeProject({
 });
 
 beforeEach(() => {
+    window.history.replaceState(null, "", "/");
   vi.clearAllMocks();
   state.active = [makeProject({ id: "p-act", name: "Active Tower" })];
   state.archived = [archivedComplejos, archivedDuxbury];
@@ -115,7 +116,7 @@ describe("ProjectsContent — archived view", () => {
     render(<ProjectsContent />);
 
     expect(screen.getByText("Active Tower")).toBeInTheDocument();
-    expect(screen.getByText("Total projects: 1")).toBeInTheDocument();
+    expect(screen.getByLabelText("Total projects: 1")).toBeInTheDocument();
     expect(projectsQuerySpy).toHaveBeenLastCalledWith({ status: "ACTIVE" });
   });
 
@@ -125,7 +126,7 @@ describe("ProjectsContent — archived view", () => {
     await showArchived();
 
     expect(projectsQuerySpy).toHaveBeenLastCalledWith({ status: "ARCHIVED" });
-    expect(screen.getByText("Archived projects: 2")).toBeInTheDocument();
+    expect(screen.getByLabelText("Archived projects: 2")).toBeInTheDocument();
     expect(screen.getByText("Complejos Apartamentos")).toBeInTheDocument();
     expect(screen.getByText("Duxbury SETP")).toBeInTheDocument();
     expect(screen.queryByText("Active Tower")).not.toBeInTheDocument();

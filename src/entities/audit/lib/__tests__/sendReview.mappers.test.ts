@@ -59,14 +59,12 @@ describe("mapSendForReviewDTO", () => {
   });
 
   // La lista blanca filtra de verdad: lo que no está en ella cae al estado
-  // inicial en vez de entrar al dominio y romper los switches por estado.
+  // desconocido para impedir que un dato inesperado habilite revisión.
   it.each([
     ["an unknown status", "surprise"],
     ["an empty status", ""],
-  ])("falls back to the initial status for %s", (_label, status) => {
-    expect(mapSendForReviewDTO(makeDTO({ status })).status).toBe(
-      "draft_report_pending_review"
-    );
+  ])("flags the status as unknown for %s", (_label, status) => {
+    expect(mapSendForReviewDTO(makeDTO({ status })).status).toBe("unknown");
   });
 
 

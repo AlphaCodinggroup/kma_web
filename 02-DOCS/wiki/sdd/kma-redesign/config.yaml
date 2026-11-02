@@ -1,0 +1,6 @@
+mode: autopilot
+approved_by: Pablo
+approved_at: 2026-10-07
+feature: kma-redesign
+models:
+  enabled: false

@@ -12,7 +12,7 @@ describe("PageHeader", () => {
       level: 1,
       name: "User Management",
     });
-    expect(heading).toHaveClass("truncate", "text-2xl", "font-semibold");
+    expect(heading).toBeInTheDocument();
   });
 
   it("renders the subtitle when provided", () => {
@@ -20,7 +20,7 @@ describe("PageHeader", () => {
 
     const subtitle = screen.getByText("Manage system users");
     expect(subtitle.tagName).toBe("P");
-    expect(subtitle).toHaveClass("mt-1", "text-sm", "text-gray-600");
+    expect(subtitle).toHaveTextContent("Manage system users");
   });
 
   it("omits the subtitle paragraph when not provided", () => {

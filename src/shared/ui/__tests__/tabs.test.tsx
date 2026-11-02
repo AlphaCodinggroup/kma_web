@@ -96,11 +96,11 @@ describe("Tabs", () => {
     renderTabs();
     expect(screen.getByRole("tablist")).toHaveClass(
       "inline-flex",
-      "h-10",
+      "max-w-full",
       "items-center",
-      "rounded-xl",
-      "bg-gray-100",
-      "shadow-sm"
+      "rounded",
+      "bg-[var(--kma-subtle)]",
+      "p-1"
     );
   });
 
@@ -108,7 +108,7 @@ describe("Tabs", () => {
     renderTabs();
     expect(screen.getByRole("tab", { name: "Overview" })).toHaveClass(
       "inline-flex",
-      "rounded-xl",
+      "rounded",
       "px-4",
       "py-2",
       "text-sm",

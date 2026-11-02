@@ -166,10 +166,10 @@ describe("mapAuditDtoToDomain", () => {
   it.each([
     ["an unknown status", "weird_status"],
     ["an empty status", ""],
-  ])("falls back to the initial status for %s", (_label, status) => {
+  ])("flags the status as unknown for %s", (_label, status) => {
     const result = mapAuditDtoToDomain(makeAuditDTO({ status }));
 
-    expect(result.status).toBe("draft_report_pending_review");
+    expect(result.status).toBe("unknown");
   });
 
   it("keeps every known status", () => {
@@ -187,7 +187,7 @@ describe("mapAuditDtoToDomain", () => {
     const result = mapAuditDtoToDomain({ id: "a-1" } as never);
 
     expect(result.flowId).toBe("");
-    expect(result.status).toBe("draft_report_pending_review");
+    expect(result.status).toBe("unknown");
   });
 });
 

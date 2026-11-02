@@ -11,13 +11,16 @@ export interface AuditsFiltersProps {
     onStatusChange: (value: string) => void;
     onClearFilters: () => void;
     availableAuditors: AuditorOption[];
+    /** Hay texto de búsqueda: el botón de limpiar también lo borra, así que debe mostrarse. */
+    searchActive?: boolean;
 }
 
-const STATUS_OPTIONS = [
-    { value: "", label: "All Audits in progress" },
-    { value: "draft_report_pending_review", label: "Draft Report Pending Review" },
-    { value: "draft_report_in_review", label: "Draft Report In Review" },
-    { value: "final_report_sent_to_client", label: "Final Report Sent to Client" },
+export const AUDIT_STATUS_FILTER_OPTIONS = [
+    { value: "", label: "All statuses" },
+    { value: "audit_in_progress", label: "Fieldwork" },
+    { value: "draft_report_pending_review", label: "Pending review" },
+    { value: "draft_report_in_review", label: "In review" },
+    { value: "final_report_sent_to_client", label: "Delivered" },
     { value: "completed", label: "Completed" },
 ];
 
@@ -32,12 +35,14 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
     onStatusChange,
     onClearFilters,
     availableAuditors,
+    searchActive = false,
 }) => {
-    const hasActiveFilters = auditorFilter !== "" || statusFilter !== "";
+    const hasActiveFilters = auditorFilter !== "" || statusFilter !== "" || searchActive;
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
             <FilterSelect
+                ariaLabel="Filter by auditor"
                 value={auditorFilter}
                 onChange={onAuditorChange}
                 allLabel="All Auditors"
@@ -47,9 +52,10 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
                 }))}
             />
             <FilterSelect
+                ariaLabel="Filter by audit status"
                 value={statusFilter}
                 onChange={onStatusChange}
-                options={STATUS_OPTIONS}
+                options={AUDIT_STATUS_FILTER_OPTIONS}
             />
             {hasActiveFilters && <ClearFiltersButton onClick={onClearFilters} />}
         </div>
@@ -57,3 +63,7 @@ const AuditsFilters: React.FC<AuditsFiltersProps> = ({
 };
 
 export default AuditsFilters;
+
+/** Devuelve el estado de la URL solo si es uno de los que el filtro ofrece; cualquier otro valor equivale a «todos». */
+export const toAuditStatusFilter = (raw: string): string =>
+    AUDIT_STATUS_FILTER_OPTIONS.some((option) => option.value === raw) ? raw : "";

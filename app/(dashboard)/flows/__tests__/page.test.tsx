@@ -6,16 +6,19 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const useFlowsQuery = vi.fn();
+const sessionMock = vi.fn();
+vi.mock("@processes/auth/hooks", () => ({ useSession: () => sessionMock() }));
 
 vi.mock("@features/flows/lib/useFlowsQuery", () => ({
   useFlowsQuery: (...args: unknown[]) => useFlowsQuery(...args),
 }));
 
 vi.mock("@shared/ui/page-header", () => ({
-  default: ({ title, subtitle }: { title: string; subtitle?: string }) => (
+  default: ({ title, subtitle, actionSlot }: { title: string; subtitle?: string; actionSlot?: React.ReactNode }) => (
     <header>
       <h1>{title}</h1>
       <p>{subtitle}</p>
+      {actionSlot}
     </header>
   ),
 }));
@@ -62,6 +65,7 @@ function stubFlows(overrides: Record<string, unknown> = {}) {
     },
     isLoading: false,
     error: undefined,
+    refetch: vi.fn(),
     ...overrides,
   });
 }
@@ -73,7 +77,22 @@ async function renderPage() {
 
 describe("FlowsPage", () => {
   beforeEach(() => {
+    window.history.replaceState(null, "", "/");
     vi.clearAllMocks();
+    sessionMock.mockReturnValue({ isAdmin: true });
+  });
+
+  it("allows administrators to create a flow", async () => {
+    stubFlows();
+    await renderPage();
+    expect(screen.getByRole("link", { name: "Create Flow" })).toHaveAttribute("href", "/flows/new");
+  });
+
+  it("keeps the creation action hidden for reviewers", async () => {
+    sessionMock.mockReturnValue({ isAdmin: false });
+    stubFlows();
+    await renderPage();
+    expect(screen.queryByRole("link", { name: "Create Flow" })).not.toBeInTheDocument();
   });
 
   it("asks the query for the active flows only", async () => {
@@ -108,6 +127,26 @@ describe("FlowsPage", () => {
     await renderPage();
 
     expect(screen.getByText(/Error loading flows: dynamo down/)).toBeTruthy();
+  });
+
+  it("keeps the catalog visible after a refresh fails and offers a retry", async () => {
+    const refetch = vi.fn();
+    stubFlows({ error: new Error("connection lost"), refetch });
+    await renderPage();
+    expect(screen.getByText("Curb ramps|Rampas de cordón")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("connection lost");
+    await userEvent.click(screen.getByRole("button", { name: "Try again" }));
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("clears a search with no matches and restores the catalog", async () => {
+    stubFlows();
+    await renderPage();
+    await userEvent.type(screen.getByLabelText("Search flows..."), "missing");
+    expect(screen.getByText("No flows match your search")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Clear search" }));
+    expect(screen.getByText("Curb ramps|Rampas de cordón")).toBeInTheDocument();
+    expect(new URL(window.location.href).searchParams.has("q")).toBe(false);
   });
 
   it("renders an empty list when the response has no flows", async () => {

@@ -4,7 +4,7 @@
  * una medición válida y no ausencia de dato), la subida de fotos y el estado
  * deshabilitado mientras la mutación está en vuelo.
  */
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -108,7 +108,7 @@ describe("AuditQuestionCard — answered YES", () => {
     expect(
       screen.getByRole("heading", {
         name: "Is the ramp compliant?",
-        level: 4,
+        level: 3,
       })
     ).toBeInTheDocument();
     expect(screen.getByText("Yes")).toBeInTheDocument();
@@ -142,7 +142,7 @@ describe("AuditQuestionCard — answered YES", () => {
     expect(screen.queryByText("Auditor Notes")).not.toBeInTheDocument();
   });
 
-  it("does not render attachments on the YES branch", () => {
+  it("preserves the field evidence on the YES branch", () => {
     render(
       <AuditQuestionCard
         text="Is the ramp compliant?"
@@ -152,7 +152,7 @@ describe("AuditQuestionCard — answered YES", () => {
       />
     );
 
-    expect(screen.queryByText("Attachments")).not.toBeInTheDocument();
+    expect(screen.getByText("Attachments")).toBeInTheDocument();
   });
 
   it("merges the extra class name into the card", () => {
@@ -317,7 +317,7 @@ describe("AuditQuestionCard — multiple choice", () => {
 
     expect(screen.getByText("Multiple Choice")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Which surface material?", level: 5 })
+      screen.getByRole("heading", { name: "Which surface material?", level: 3 })
     ).toBeInTheDocument();
   });
 
@@ -521,6 +521,26 @@ describe("AuditQuestionCard — UNSURE editing", () => {
     return user;
   };
 
+  it("associates each dynamic field label with its control", async () => {
+    const user = await renderEditing({
+      steps: [
+        { id: "q1", type: "Question", no_next: "f1" },
+        { id: "f1", type: "Form", fields: [NUMBER_FIELD, TEXT_FIELD, PHOTO_FIELD] },
+      ],
+    });
+    await user.click(screen.getByRole("button", { name: "NO" }));
+    expect(screen.getByRole("spinbutton", { name: /Measurements/ })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Notes" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Photos")).toHaveAttribute("type", "file");
+  });
+
+  it("associates fallback form labels with their controls", async () => {
+    const user = await renderEditing({ steps: [] });
+    await user.click(screen.getByRole("button", { name: "NO" }));
+    expect(screen.getByRole("spinbutton", { name: "Quantity" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Notes / Measurements" })).toBeInTheDocument();
+  });
+
   it("keeps Save disabled until an answer is picked", async () => {
     await renderEditing();
 
@@ -549,7 +569,7 @@ describe("AuditQuestionCard — UNSURE editing", () => {
       auditId: "a1",
       answers: [{ step_id: "q1", answer: "YES" }],
     });
-    expect(alertMock).toHaveBeenCalledWith("Answer updated successfully");
+    expect(await screen.findByRole("status")).toHaveTextContent("Answer updated successfully");
   });
 
   it("shows the finding form fields declared by the linked Form step", async () => {
@@ -1069,7 +1089,7 @@ describe("AuditQuestionCard — photo fields", () => {
     });
   });
 
-  it("alerts and aborts the save when the upload fails", async () => {
+  it("shows an upload error and keeps the form for retry", async () => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:one");
     postMock.mockRejectedValue(new Error("presign down"));
 
@@ -1080,9 +1100,8 @@ describe("AuditQuestionCard — photo fields", () => {
     );
     await user.click(screen.getByRole("button", { name: /Save Changes/ }));
 
-    await waitFor(() =>
-      expect(alertMock).toHaveBeenCalledWith("Failed to upload files")
-    );
+    expect(await screen.findByRole("alert")).toHaveTextContent("Failed to upload files");
+    expect(screen.getByText("Finding details")).toBeInTheDocument();
     expect(updateAnswerMock).not.toHaveBeenCalled();
   });
 });
@@ -1127,7 +1146,7 @@ describe("AuditQuestionCard — save guards and errors", () => {
     expect(updateAnswerMock).not.toHaveBeenCalled();
   });
 
-  it("alerts when the answer update fails and stays in the editing layout", async () => {
+  it("shows an update error and stays in the editing layout", async () => {
     const user = userEvent.setup();
     updateAnswerMock.mockRejectedValue(new Error("network down"));
 
@@ -1146,9 +1165,7 @@ describe("AuditQuestionCard — save guards and errors", () => {
     await user.click(screen.getByRole("button", { name: "YES" }));
     await user.click(screen.getByRole("button", { name: /Save Changes/ }));
 
-    await waitFor(() =>
-      expect(alertMock).toHaveBeenCalledWith("Failed to update answer")
-    );
+    expect(await screen.findByRole("alert")).toHaveTextContent("Failed to update answer");
     expect(screen.getByText("UNSURE (Editing)")).toBeInTheDocument();
   });
 
@@ -1220,5 +1237,49 @@ describe("AuditQuestionCard — save guards and errors", () => {
     expect(screen.getByRole("button", { name: /Save Changes/ })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
     expect(container.querySelector(".animate-spin")).toBeInTheDocument();
+  });
+});
+
+
+describe("AuditQuestionCard — field photographs", () => {
+  it("shows a photograph and opens the actual evidence URL", () => {
+    render(<AuditQuestionCard text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Entrance photograph", mime: "image/jpeg", url: "https://files.test/entrance.jpg" }]} />);
+    expect(screen.getByRole("img", { name: "Entrance photograph" })).toHaveAttribute("src", "https://files.test/entrance.jpg");
+    expect(screen.getByRole("link", { name: "View Entrance photograph" })).toHaveAttribute("href", "https://files.test/entrance.jpg");
+  });
+  it("does not turn an unsafe evidence URL into a clickable link", () => {
+    render(<AuditQuestionCard text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Unsafe attachment", mime: "image/jpeg", url: "javascript:alert(1)" }]} />);
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "View Unsafe attachment" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "View Unsafe attachment" })).toBeDisabled();
+  });
+});
+
+
+it("keeps access to the original photograph if its preview cannot load", () => {
+  render(<AuditQuestionCard text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Entrance photograph", mime: "image/jpeg", url: "https://files.test/entrance.jpg" }]} />);
+  fireEvent.error(screen.getByRole("img", { name: "Entrance photograph" }));
+  expect(screen.getByRole("status")).toHaveTextContent("Photograph unavailable");
+  expect(screen.getByRole("link", { name: "View Entrance photograph" })).toHaveAttribute("href", "https://files.test/entrance.jpg");
+});
+
+describe("AuditQuestionCard — answer colours", () => {
+  it("shows Yes in ink and No in the danger colour so findings stand out", () => {
+    const { rerender } = render(
+      <AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answeredYes={true} />
+    );
+    expect(screen.getByText("Yes")).toHaveClass("bg-[var(--kma-fg)]");
+    expect(screen.getByText("Yes")).not.toHaveClass("bg-[var(--kma-danger)]");
+
+    rerender(<AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answeredYes={false} />);
+    expect(screen.getByText("No")).toHaveClass("bg-[var(--kma-danger)]");
+  });
+
+  it("highlights the whole UNSURE card with the warning colour", () => {
+    render(
+      <AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answerValue="UNSURE" />
+    );
+    expect(screen.getByText("UNSURE")).toHaveClass("text-[var(--kma-warning)]");
+    expect(screen.getByRole("article")).toHaveClass("border-l-[var(--kma-warning)]");
   });
 });
