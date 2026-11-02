@@ -130,6 +130,14 @@
       "status": "indexed"
     },
     {
+      "path": "02-DOCS/wiki/harness/user-profile.md",
+      "hash": "523b4a62d116e5d19e04fc8124d13a4791be29b663519f4692846a1b4b8a4c4b",
+      "size": 266,
+      "format": "md",
+      "topic": "02-DOCS/wiki/harness",
+      "status": "indexed"
+    },
+    {
       "path": "02-DOCS/wiki/harness/vscode.md",
       "hash": "e7316407d181a51acdaf333f79dac2cc0a22a74107ea3e4ffe7af1798070d4c5",
       "size": 1617,
@@ -4112,8 +4120,12 @@
       "reason": "symlink"
     },
     {
+      "path": "coverage",
+      "reason": "tooling-or-build"
+    },
+    {
       "path": "node_modules",
-      "reason": "symlink"
+      "reason": "tooling-or-build"
     },
     {
       "path": "src/shared/auth/__tests__/verify-access-token.test.ts",

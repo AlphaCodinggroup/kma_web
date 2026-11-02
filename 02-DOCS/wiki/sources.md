@@ -2,7 +2,7 @@
 
 Inventario de rutas y huellas SHA-256. No acredita lectura, síntesis ni vigencia del contenido.
 Generado por `node scripts/second-brain.mjs`; no editar a mano.
-Fuentes indexadas: 512. Exclusiones explícitas: 6.
+Fuentes indexadas: 513. Exclusiones explícitas: 7.
 Los archivos eliminados desaparecen del inventario en la siguiente sincronización.
 
 Guía: [alcance y automatización](harness/second-brain.md).
@@ -30,6 +30,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/harness/decisions.md](<../../02-DOCS/wiki/harness/decisions.md>) — md, 2433 bytes.
 - [02-DOCS/wiki/harness/installation-plan.md](<../../02-DOCS/wiki/harness/installation-plan.md>) — md, 4817 bytes.
 - [02-DOCS/wiki/harness/second-brain.md](<../../02-DOCS/wiki/harness/second-brain.md>) — md, 7935 bytes.
+- [02-DOCS/wiki/harness/user-profile.md](<../../02-DOCS/wiki/harness/user-profile.md>) — md, 266 bytes.
 - [02-DOCS/wiki/harness/vscode.md](<../../02-DOCS/wiki/harness/vscode.md>) — md, 1617 bytes.
 ## 02-DOCS/wiki/project
 
@@ -588,6 +589,7 @@ Los directorios ocultos también se omiten. Detalle de límites: [configuración
 - 01-TOOLS: tooling-or-build.
 - DESIGN.md: symlink.
 - PRODUCT.md: symlink.
-- node\_modules: symlink.
+- coverage: tooling-or-build.
+- node\_modules: tooling-or-build.
 - src/shared/auth/\_\_tests\_\_/verify-access-token.test.ts: sensitive.
 - src/shared/auth/verify-access-token.ts: sensitive.
