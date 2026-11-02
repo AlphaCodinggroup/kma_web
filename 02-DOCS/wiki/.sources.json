@@ -34,6 +34,14 @@
       "status": "indexed"
     },
     {
+      "path": "02-DOCS/wiki/ftd/collapsible-navigation.md",
+      "hash": "ba1917394a2d55f894fe4f631e9c88fd5257fcbf839c37d5523e38ffc209b1b8",
+      "size": 4523,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
       "path": "02-DOCS/wiki/ftd/flow-inspector-width.md",
       "hash": "b91866d8a39e9b994173a268ecc892efb612fd40585ad181c3b2c76aa1bff931",
       "size": 2347,
@@ -114,14 +122,6 @@
       "status": "indexed"
     },
     {
-      "path": "02-DOCS/wiki/harness/user-profile.md",
-      "hash": "523b4a62d116e5d19e04fc8124d13a4791be29b663519f4692846a1b4b8a4c4b",
-      "size": 266,
-      "format": "md",
-      "topic": "02-DOCS/wiki/harness",
-      "status": "indexed"
-    },
-    {
       "path": "02-DOCS/wiki/harness/vscode.md",
       "hash": "e7316407d181a51acdaf333f79dac2cc0a22a74107ea3e4ffe7af1798070d4c5",
       "size": 1617,
@@ -131,8 +131,8 @@
     },
     {
       "path": "02-DOCS/wiki/index.md",
-      "hash": "ce5305cd2fa1b7e5c2619952fd8b9d92cdccafefddee68634c4199ac26ecbcb5",
-      "size": 5433,
+      "hash": "15f870b8bc3f6107a033b31fd78f316c098d268db324d957274093af97263d2b",
+      "size": 5560,
       "format": "md",
       "topic": "02-DOCS/wiki",
       "status": "indexed"
@@ -155,8 +155,8 @@
     },
     {
       "path": "02-DOCS/wiki/project/design-system-and-ui.md",
-      "hash": "05425c159e77c4f5c988262dda006007920ca312d4432aae9d1ca74329df5742",
-      "size": 5871,
+      "hash": "193e7411cc3039911100cae2211cc8877f4ef488d4df5b754239e19823f09dac",
+      "size": 6235,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
@@ -4105,7 +4105,7 @@
     },
     {
       "path": "node_modules",
-      "reason": "tooling-or-build"
+      "reason": "symlink"
     },
     {
       "path": "src/shared/auth/__tests__/verify-access-token.test.ts",

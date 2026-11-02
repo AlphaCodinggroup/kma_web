@@ -77,3 +77,5 @@ Conocimiento verificado de la web, escaneado en la rama `fix/frontend-startup-wa
 - [Carga XLSX como primera sección](ftd/catalog-upload-first.md): orden de Catalog y significado de `version=legacy`.
 
 - [Catálogo activo por defecto y logo de inicio](ftd/catalog-active-default.md): vista actual, historial y navegación a Dashboard.
+
+- [Menú lateral ocultable](ftd/collapsible-navigation.md): botón de escritorio para aprovechar todo el ancho de la página.

@@ -20,6 +20,7 @@ type AppShellProps = {
 
 export default function AppShell({ children, role, userName }: AppShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const section = pathname?.split("/")[1] ?? "dashboard";
@@ -31,11 +32,13 @@ export default function AppShell({ children, role, userName }: AppShellProps) {
     <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
       <div className="fixed inset-0 flex flex-col overflow-hidden bg-[var(--kma-nav)] text-[var(--kma-fg)]">
         <a href="#workspace-content" className="sr-only fixed left-4 top-2 z-50 rounded bg-[var(--kma-surface)] p-3 focus:not-sr-only">Skip to content</a>
-        <AppHeader title={title} role={role} userName={userName} menuOpen={menuOpen} onMenuOpen={() => setMenuOpen(true)} />
+        <AppHeader title={title} role={role} userName={userName} menuOpen={menuOpen} onMenuOpen={() => setMenuOpen(true)} sidebarOpen={sidebarOpen} onSidebarToggle={() => setSidebarOpen((open) => !open)} />
         <div className="flex min-h-0 flex-1">
-          <SidebarNav role={role} />
+          <div id="workspace-navigation" hidden={!sidebarOpen} className={sidebarOpen ? "hidden shrink-0 lg:flex" : "hidden"}>
+            <SidebarNav role={role} />
+          </div>
           <main id="workspace-content" className={`min-w-0 flex-1 border-[var(--kma-border)] bg-[var(--kma-canvas)] lg:border-l ${isFullHeight ? "overflow-hidden" : "overflow-y-auto"}`} tabIndex={-1}>
-            <div className={isFullHeight ? "mx-auto h-full max-w-[1920px] px-3 py-4 md:px-4 lg:px-4" : "mx-auto max-w-[1920px] px-3 py-6 md:px-4 lg:px-4 lg:py-6"}>{children}</div>
+            <div className={`${isFullHeight ? "mx-auto h-full max-w-[1920px] px-3 py-4 md:px-4 lg:px-4" : "mx-auto max-w-[1920px] px-3 py-6 md:px-4 lg:px-4 lg:py-6"}${sidebarOpen ? "" : " lg:max-w-none"}`}>{children}</div>
           </main>
         </div>
       </div>
