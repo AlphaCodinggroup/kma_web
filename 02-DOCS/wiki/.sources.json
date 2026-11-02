@@ -34,6 +34,14 @@
       "status": "indexed"
     },
     {
+      "path": "02-DOCS/wiki/ftd/collapsible-navigation.md",
+      "hash": "e3f887d040e9578335a06e48c320998e84ace75d12d6ed784845cb5f24499975",
+      "size": 3471,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
       "path": "02-DOCS/wiki/ftd/flow-inspector-width.md",
       "hash": "b91866d8a39e9b994173a268ecc892efb612fd40585ad181c3b2c76aa1bff931",
       "size": 2347,
@@ -131,8 +139,8 @@
     },
     {
       "path": "02-DOCS/wiki/index.md",
-      "hash": "ce5305cd2fa1b7e5c2619952fd8b9d92cdccafefddee68634c4199ac26ecbcb5",
-      "size": 5433,
+      "hash": "15f870b8bc3f6107a033b31fd78f316c098d268db324d957274093af97263d2b",
+      "size": 5560,
       "format": "md",
       "topic": "02-DOCS/wiki",
       "status": "indexed"
@@ -155,8 +163,8 @@
     },
     {
       "path": "02-DOCS/wiki/project/design-system-and-ui.md",
-      "hash": "05425c159e77c4f5c988262dda006007920ca312d4432aae9d1ca74329df5742",
-      "size": 5871,
+      "hash": "193e7411cc3039911100cae2211cc8877f4ef488d4df5b754239e19823f09dac",
+      "size": 6235,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
@@ -4102,6 +4110,10 @@
     {
       "path": "PRODUCT.md",
       "reason": "symlink"
+    },
+    {
+      "path": "coverage",
+      "reason": "tooling-or-build"
     },
     {
       "path": "node_modules",

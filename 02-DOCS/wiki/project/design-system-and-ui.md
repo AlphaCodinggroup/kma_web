@@ -53,8 +53,12 @@ Casi todos tienen test en `__tests__`. Iconos: `lucide-react`.
 
 CONFIRMADO en código:
 
-- Corte principal de la app: **1023/1024 px**. La navegación lateral es `hidden lg:flex`; por debajo se
-  abre como diálogo desde la cabecera. Las tablas pasan a filas móviles (`MobileEntityRow`) con
+- Corte principal de la app: **1023/1024 px**. En escritorio, un botón junto al logo permite ocultar
+  y mostrar la navegación lateral. `AppShell` conserva el estado durante la navegación; al ocultarla,
+  el contenido recupera el espacio y deja de limitarse a 1920 px. El botón permanece visible, con
+  `aria-expanded` y `aria-controls`. Por debajo de 1024 px, el menú se abre como diálogo desde la
+  cabecera, independientemente del estado de escritorio. [Entrega](../ftd/collapsible-navigation.md).
+  Las tablas pasan a filas móviles (`MobileEntityRow`) con
   `useMediaQuery("(max-width: 1023px)")` en audits, facilities, reports y users.
 - A menos de 1024 px o con puntero táctil, `--kma-control-height` sube a 44 px y los inputs usan 16 px
   (evita zoom en iOS) en [`globals.css`](../../../app/globals.css).

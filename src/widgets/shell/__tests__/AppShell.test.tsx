@@ -11,6 +11,33 @@ vi.mock("@shared/ui/theme-toggle", () => ({ ThemeToggle: () => <button>Appearanc
 vi.mock("@features/auth/lib/usecases/login", () => ({ logout: vi.fn() }));
 import AppShell from "../AppShell";
 
+describe("AppShell desktop navigation", () => {
+  it("hides and restores navigation with a persistent keyboard-accessible toggle", async () => {
+    const user = userEvent.setup();
+    render(<AppShell role="admin"><label>Draft<input /></label></AppShell>);
+    const toggle = screen.getByRole("button", { name: "Hide navigation" });
+    const navigation = document.getElementById(toggle.getAttribute("aria-controls")!);
+    const draft = screen.getByRole("textbox", { name: "Draft" });
+    await user.type(draft, "Unsaved work");
+
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(navigation).toBeVisible();
+    await user.click(toggle);
+    expect(navigation).not.toBeVisible();
+    expect(toggle).toHaveAccessibleName("Show navigation");
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(draft).toHaveValue("Unsaved work");
+
+    await user.keyboard("{Enter}");
+    expect(navigation).toBeVisible();
+    expect(toggle).toHaveAccessibleName("Hide navigation");
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(toggle).toHaveFocus();
+    expect(draft).toHaveValue("Unsaved work");
+  });
+});
+
 describe("AppShell mobile navigation", () => {
   it("opens an accessible drawer, then restores focus when Escape closes it", async () => {
     const user = userEvent.setup();

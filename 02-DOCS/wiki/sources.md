@@ -2,20 +2,21 @@
 
 Inventario de rutas y huellas SHA-256. No acredita lectura, síntesis ni vigencia del contenido.
 Generado por `node scripts/second-brain.mjs`; no editar a mano.
-Fuentes indexadas: 511. Exclusiones explícitas: 6.
+Fuentes indexadas: 512. Exclusiones explícitas: 7.
 Los archivos eliminados desaparecen del inventario en la siguiente sincronización.
 
 Guía: [alcance y automatización](harness/second-brain.md).
 
 ## 02-DOCS/wiki
 
-- [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 5433 bytes.
+- [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 5560 bytes.
 ## 02-DOCS/wiki/ftd
 
 - [02-DOCS/wiki/ftd/catalog-active-default.md](<../../02-DOCS/wiki/ftd/catalog-active-default.md>) — md, 4677 bytes.
 - [02-DOCS/wiki/ftd/catalog-implementation-prompt.md](<../../02-DOCS/wiki/ftd/catalog-implementation-prompt.md>) — md, 23915 bytes.
 - [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3646 bytes.
 - [02-DOCS/wiki/ftd/catalog-upload-first.md](<../../02-DOCS/wiki/ftd/catalog-upload-first.md>) — md, 2595 bytes.
+- [02-DOCS/wiki/ftd/collapsible-navigation.md](<../../02-DOCS/wiki/ftd/collapsible-navigation.md>) — md, 3471 bytes.
 - [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 2347 bytes.
 - [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2743 bytes.
 - [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2688 bytes.
@@ -34,7 +35,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 
 - [02-DOCS/wiki/project/auth-and-session.md](<../../02-DOCS/wiki/project/auth-and-session.md>) — md, 4712 bytes.
 - [02-DOCS/wiki/project/changes-2026-10-29.md](<../../02-DOCS/wiki/project/changes-2026-10-29.md>) — md, 9160 bytes.
-- [02-DOCS/wiki/project/design-system-and-ui.md](<../../02-DOCS/wiki/project/design-system-and-ui.md>) — md, 5871 bytes.
+- [02-DOCS/wiki/project/design-system-and-ui.md](<../../02-DOCS/wiki/project/design-system-and-ui.md>) — md, 6235 bytes.
 - [02-DOCS/wiki/project/dev-test-and-deploy.md](<../../02-DOCS/wiki/project/dev-test-and-deploy.md>) — md, 5387 bytes.
 - [02-DOCS/wiki/project/environments.md](<../../02-DOCS/wiki/project/environments.md>) — md, 3142 bytes.
 - [02-DOCS/wiki/project/features.md](<../../02-DOCS/wiki/project/features.md>) — md, 8657 bytes.
@@ -587,6 +588,7 @@ Los directorios ocultos también se omiten. Detalle de límites: [configuración
 - 01-TOOLS: tooling-or-build.
 - DESIGN.md: symlink.
 - PRODUCT.md: symlink.
+- coverage: tooling-or-build.
 - node\_modules: tooling-or-build.
 - src/shared/auth/\_\_tests\_\_/verify-access-token.test.ts: sensitive.
 - src/shared/auth/verify-access-token.ts: sensitive.
