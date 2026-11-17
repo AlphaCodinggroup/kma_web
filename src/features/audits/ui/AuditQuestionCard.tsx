@@ -523,7 +523,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
           
           updates.push({
             step_id: currentFormId,
-            type: "form",
+            type: "Form",
             values: formValues,
           });
           pushedAnyForm = true;
@@ -535,7 +535,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
         if (!pushedAnyForm) {
           updates.push({
             step_id: noNextId,
-            type: "form",
+            type: "Form",
             values: cleanValues,
           });
         }

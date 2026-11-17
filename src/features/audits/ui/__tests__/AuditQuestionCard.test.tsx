@@ -40,6 +40,7 @@ import AuditQuestionCard, {
   type AttachmentVM,
   type QuestionType,
 } from "../AuditQuestionCard";
+import { updateAuditAnswer } from "../../lib/usecases/updateAuditAnswer";
 
 const NUMBER_FIELD = {
   id: "measurements",
@@ -502,6 +503,62 @@ describe("AuditQuestionCard — UNSURE read-only", () => {
 });
 
 describe("AuditQuestionCard — UNSURE editing", () => {
+  it("PUTs resolved form evidence with distinct measurements and zero quantity", async () => {
+    const user = userEvent.setup();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ audit_id: "a1", status: "draft_report_in_review" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    updateAnswerMock.mockImplementation(updateAuditAnswer);
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:entrance");
+    postMock.mockResolvedValue({ data: { urls: [{
+      file_name: "entrance.jpg",
+      upload_url: "https://storage.example.test/upload",
+      file_url: "https://storage.example.test/entrance.jpg",
+    }] } });
+    uploadFileMock.mockResolvedValue(undefined);
+
+    render(<AuditQuestionCard
+      auditId="a1" questionId="q1" text="Is the entrance compliant?"
+      type="yes_no" answerValue="UNSURE"
+      steps={[
+        { id: "q1", type: "Question", no_next: "f1" },
+        { id: "f1", type: "Form", next: "f2", fields: [
+          { id: "measurements_1", type: "number", label: "Width", unit: "in" },
+          { id: "measurements_2", type: "number", label: "Height", unit: "in" },
+          PHOTO_FIELD,
+        ] },
+        { id: "f2", type: "Form", next: "END", fields: [
+          { id: "quantity", type: "number", label: "Quantity" },
+        ] },
+      ]}
+    />);
+    await user.click(screen.getByRole("button", { name: "Resolve Answer..." }));
+    await user.click(screen.getByRole("button", { name: "NO" }));
+    await user.type(screen.getByRole("spinbutton", { name: "Width (in)" }), "12.5");
+    await user.type(screen.getByRole("spinbutton", { name: "Height (in)" }), "34");
+    await user.type(screen.getByRole("spinbutton", { name: "Quantity" }), "0");
+    await user.upload(screen.getByLabelText("Photos"), new File(["image"], "entrance.jpg", { type: "image/jpeg" }));
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
+    expect(fetchMock).toHaveBeenCalledWith("/api/audits-review/a1/answers", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers: [
+        { step_id: "q1", answer: "NO" },
+        { step_id: "f1", type: "Form", values: {
+          measurements_1: 12.5, measurements_2: 34,
+          photos: ["https://storage.example.test/entrance.jpg"],
+        } },
+        { step_id: "f2", type: "Form", values: { quantity: 0 } },
+      ] }),
+    });
+    expect(uploadFileMock).toHaveBeenCalledWith("https://storage.example.test/upload", expect.any(File));
+    expect(await screen.findByRole("status")).toHaveTextContent("Answer updated successfully");
+  });
+
   const renderEditing = async (
     props: Partial<React.ComponentProps<typeof AuditQuestionCard>> = {}
   ) => {
@@ -602,7 +659,7 @@ describe("AuditQuestionCard — UNSURE editing", () => {
       auditId: "a1",
       answers: [
         { step_id: "q1", answer: "NO" },
-        { step_id: "f1", type: "form", values: { measurements: 0 } },
+        { step_id: "f1", type: "Form", values: { measurements: 0 } },
       ],
     });
   });
@@ -625,7 +682,7 @@ describe("AuditQuestionCard — UNSURE editing", () => {
         { step_id: "q1", answer: "NO" },
         {
           step_id: "f1",
-          type: "form",
+          type: "Form",
           values: { measurements: 34, notes: "Handrail missing" },
         },
       ],
@@ -648,7 +705,7 @@ describe("AuditQuestionCard — UNSURE editing", () => {
       auditId: "a1",
       answers: [
         { step_id: "q1", answer: "NO" },
-        { step_id: "f1", type: "form", values: { measurements: "" } },
+        { step_id: "f1", type: "Form", values: { measurements: "" } },
       ],
     });
   });
@@ -699,8 +756,8 @@ describe("AuditQuestionCard — UNSURE editing", () => {
       auditId: "a1",
       answers: [
         { step_id: "q1", answer: "NO" },
-        { step_id: "f1", type: "form", values: { measurements: 12 } },
-        { step_id: "f2", type: "form", values: { notes: "Blocked" } },
+        { step_id: "f1", type: "Form", values: { measurements: 12 } },
+        { step_id: "f2", type: "Form", values: { notes: "Blocked" } },
       ],
     });
   });
@@ -867,7 +924,7 @@ describe("AuditQuestionCard — generic finding form fallback", () => {
         { step_id: "q1", answer: "NO" },
         {
           step_id: "q2",
-          type: "form",
+          type: "Form",
           values: { quantity: 4, notes: "Broken latch" },
         },
       ],
@@ -894,7 +951,7 @@ describe("AuditQuestionCard — generic finding form fallback", () => {
       auditId: "a1",
       answers: [
         { step_id: "q1", answer: "NO" },
-        { step_id: "q2", type: "form", values: { quantity: 0 } },
+        { step_id: "q2", type: "Form", values: { quantity: 0 } },
       ],
     });
   });
@@ -1016,7 +1073,7 @@ describe("AuditQuestionCard — photo fields", () => {
         { step_id: "q1", answer: "NO" },
         {
           step_id: "f1",
-          type: "form",
+          type: "Form",
           values: { photos: ["https://s3.example.com/first.png"] },
         },
       ],
@@ -1055,7 +1112,7 @@ describe("AuditQuestionCard — photo fields", () => {
         { step_id: "q1", answer: "NO" },
         {
           step_id: "f1",
-          type: "form",
+          type: "Form",
           values: {
             photos: [
               "https://cdn.example.com/existing.png",
@@ -1084,7 +1141,7 @@ describe("AuditQuestionCard — photo fields", () => {
       auditId: "a1",
       answers: [
         { step_id: "q1", answer: "NO" },
-        { step_id: "f1", type: "form", values: { photos: [] } },
+        { step_id: "f1", type: "Form", values: { photos: [] } },
       ],
     });
   });
