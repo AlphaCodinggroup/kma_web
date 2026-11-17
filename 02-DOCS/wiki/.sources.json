@@ -43,8 +43,8 @@
     },
     {
       "path": "02-DOCS/wiki/ftd/feedback-permissions-states-web.md",
-      "hash": "76e388890197b56a2f00f6af429bc7b3a20afe51ea5c7c7e7350f3460340ea32",
-      "size": 3505,
+      "hash": "b1f3c87398986b1b50b82ac5f9990bf7749528af6adc3a2207d54628ab2992d8",
+      "size": 4429,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
@@ -4118,6 +4118,10 @@
     {
       "path": "PRODUCT.md",
       "reason": "symlink"
+    },
+    {
+      "path": "coverage",
+      "reason": "tooling-or-build"
     },
     {
       "path": "node_modules",

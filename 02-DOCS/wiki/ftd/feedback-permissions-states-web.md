@@ -23,7 +23,7 @@ Base fa8721b. UNSURE d99839e2 integrado mediante cherry-pick 00aa9ff antes de pr
 
 ## Siguiente
 
-Integrar con reportes y revisar independientemente el checkpoint de reapertura.
+Recorrido integrado y nueve criterios funcionales aprobados. Conservar los recibos y límites del cierre conjunto; no se publica ni despliega.
 
 
 ### Reapertura y evidencia final
@@ -38,7 +38,20 @@ Revisión independiente #1/#2 aprobada sin defectos funcionales. Matiz de format
 
 ## Integración del 2026-11-17
 
+
 Unidad aprobada independientemente e incorporada con UNSURE e integridad de
-reportes. El checkpoint anterior no certifica el snapshot combinado: gate
-completo y recorrido real todavía pendientes. Ver el
-[registro conjunto](../../../../kma-backend/02-DOCS/wiki/ftd/feedback-integration.md).
+reportes al web `0f81ef1` y backend `2aa7ffb1`. El gate web pasó: lint, tipos,
+3653 pruebas en 254 archivos, cobertura superior a los pisos de 90% y build.
+QA de navegador confirmó edición/guardado del propietario, ausencia de edición
+para ajeno, Flows oculto y ruta administrativa protegida. Las mutaciones y
+aprobación fueron verificadas contra el backend; la UI no sustituye ese control.
+
+El primer PDF real, consolidado de dos instalaciones, fue inspeccionado junto a
+la vista previa. Completed→reapertura→edición→regeneración pasó en navegador: la medida cambia
+de 0 a 7.25, conserva 34, excluye las fotos elegidas y genera un PDF nuevo en
+la misma clave S3. Los nueve criterios funcionales tienen PASS; los límites
+heredados del gate backend permanecen explícitos en el registro conjunto. Los originales
+no se modificaron. Ver el
+[registro conjunto](../../../../kma-backend/02-DOCS/wiki/ftd/feedback-integration.md)
+para la evidencia local, los límites heredados del gate backend y el cierre
+coordinado. No se verificó AWS ni se publicó o desplegó.

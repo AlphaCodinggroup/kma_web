@@ -2,7 +2,7 @@
 
 Inventario de rutas y huellas SHA-256. No acredita lectura, síntesis ni vigencia del contenido.
 Generado por `node scripts/second-brain.mjs`; no editar a mano.
-Fuentes indexadas: 513. Exclusiones explícitas: 6.
+Fuentes indexadas: 513. Exclusiones explícitas: 7.
 Los archivos eliminados desaparecen del inventario en la siguiente sincronización.
 
 Guía: [alcance y automatización](harness/second-brain.md).
@@ -17,7 +17,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3646 bytes.
 - [02-DOCS/wiki/ftd/catalog-upload-first.md](<../../02-DOCS/wiki/ftd/catalog-upload-first.md>) — md, 2595 bytes.
 - [02-DOCS/wiki/ftd/collapsible-navigation.md](<../../02-DOCS/wiki/ftd/collapsible-navigation.md>) — md, 5679 bytes.
-- [02-DOCS/wiki/ftd/feedback-permissions-states-web.md](<../../02-DOCS/wiki/ftd/feedback-permissions-states-web.md>) — md, 3505 bytes.
+- [02-DOCS/wiki/ftd/feedback-permissions-states-web.md](<../../02-DOCS/wiki/ftd/feedback-permissions-states-web.md>) — md, 4429 bytes.
 - [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 2347 bytes.
 - [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2743 bytes.
 - [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2688 bytes.
@@ -589,6 +589,7 @@ Los directorios ocultos también se omiten. Detalle de límites: [configuración
 - 01-TOOLS: tooling-or-build.
 - DESIGN.md: symlink.
 - PRODUCT.md: symlink.
+- coverage: tooling-or-build.
 - node\_modules: symlink.
 - src/shared/auth/\_\_tests\_\_/verify-access-token.test.ts: sensitive.
 - src/shared/auth/verify-access-token.ts: sensitive.
