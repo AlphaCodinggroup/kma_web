@@ -51,9 +51,11 @@
 - `verifyAccessToken` (`src/shared/auth/verify-access-token.ts`) is the only source of a verified
   role; it fails closed in production when `COGNITO_JWKS_URL` is unset. Do not reintroduce decoding
   a JWT without verifying it outside that documented non-production fallback.
-- The audit state machine lives in the backend (`../kma-backend/lambdas/shared/statemachine`); do
-  not encode a different one here. QC editing requires `draft_report_in_review` and an admin role;
-  UI disabling is not authorization, the backend and API Gateway authorizer are.
+- The audit state machine lives in the backend (`../kma-backend/domain/statemachine`); do
+  not encode a different one here. QC editing requires `draft_report_in_review` and either an
+  admin role or an auditor whose verified user ID matches the audit `created_by`; use
+  `canReviewAudit` to keep UI capabilities consistent. Approval and reopening Completed remain
+  admin-only. UI disabling is not authorization; the backend validates actor, role, and ownership.
 - A report is per project, not per audit: the backend consolidates every eligible audit's findings
   into one PDF and one `report_url`. The QC preview mirrors `reports-worker`'s PDF format
   (`src/shared/lib/report-format.ts`); changing one requires checking the other.

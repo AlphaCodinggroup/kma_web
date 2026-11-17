@@ -1,6 +1,6 @@
 ---
 type: delivery
-status: ready-for-review
+status: integration-review
 branch: fix/feedback-permissions-states
 ---
 # Permisos y reapertura en la consola
@@ -35,3 +35,10 @@ Download requiere estado reportado, por lo que una URL cacheada en revisión no 
 Repro /tmp/kma-reopen-web-repro.log: fallaban botón ausente, descarga cacheada y omisión de generación. Tras cambio: 79 pruebas en AuditEditContent, ReportActionBar, useExportAuditReport y useUpdateAuditReviewStatus (/tmp/kma-reopen-web-first.log). Pruebas de permisos previas: 323 en ocho archivos (/tmp/kma-permissions-web-final.log). npm run typecheck, npm run lint y npm run build terminaron sin error (/tmp/kma-reopen-web-types.log, /tmp/kma-reopen-web-lint.log, /tmp/kma-permissions-web-build.log). No se ejecutó navegador ni AWS.
 
 Revisión independiente #1/#2 aprobada sin defectos funcionales. Matiz de formato: audit-detail.ts y AuditEditContent.test.tsx ya usan CRLF; se preservó su formato. git diff --check normal marca los CR como espacios finales; git -c core.whitespace=cr-at-eol diff --check 00aa9ff f138e97 pasó. La comprobación del rango final usará la misma opción, sin normalizar archivos ajenos. Catálogos reservados a integración.
+
+## Integración del 2026-11-17
+
+Unidad aprobada independientemente e incorporada con UNSURE e integridad de
+reportes. El checkpoint anterior no certifica el snapshot combinado: gate
+completo y recorrido real todavía pendientes. Ver el
+[registro conjunto](../../../../kma-backend/02-DOCS/wiki/ftd/feedback-integration.md).
