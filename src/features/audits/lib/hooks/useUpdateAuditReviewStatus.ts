@@ -23,7 +23,13 @@ export function useUpdateAuditReviewStatus() {
     async onSuccess(_data, variables) {
       const { auditId } = variables;
 
+      if (variables.status === "draft_report_in_review") {
+        const queryKey = ["reports", "by-audit", auditId];
+        await queryClient.cancelQueries({ queryKey });
+        queryClient.removeQueries({ queryKey });
+      }
       await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["reports"] }),
         queryClient.invalidateQueries({ queryKey: auditReviewDetailKey(auditId) }),
         queryClient.invalidateQueries({ queryKey: auditDetailKey(auditId) }),
         queryClient.invalidateQueries({ queryKey: ["audits", "list"] }),

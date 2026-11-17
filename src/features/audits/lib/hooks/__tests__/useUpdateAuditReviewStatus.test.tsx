@@ -115,7 +115,7 @@ describe("useUpdateAuditReviewStatus", () => {
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: ["audits", "list"],
     });
-    expect(invalidateQueries).toHaveBeenCalledTimes(3);
+    expect(invalidateQueries).toHaveBeenCalledTimes(4);
   });
 
   it("exposes the error and skips the invalidation", async () => {
@@ -134,5 +134,35 @@ describe("useUpdateAuditReviewStatus", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error).toMatchObject({ code: "FORBIDDEN" });
     expect(invalidateQueries).not.toHaveBeenCalled();
+  });
+});
+
+
+describe("reopening report cache", () => {
+  it("clears the reopened audit snapshot and retains other completed snapshots", async () => {
+    updateAuditReviewStatusMock.mockResolvedValue({ ...makeChange(), oldStatus: "completed" });
+    const { wrapper, client } = createWrapper();
+    const key = ["reports", "by-audit", "audit-1"];
+    const otherKey = ["reports", "by-audit", "audit-2"];
+    client.setQueryData(key, { reportUrl: "https://files.test/old.pdf" });
+    client.setQueryData(otherKey, { reportUrl: "https://files.test/old.pdf" });
+    const cancel = vi.spyOn(client, "cancelQueries");
+    const { result } = renderHook(() => useUpdateAuditReviewStatus(), { wrapper });
+    result.current.mutate(input);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(cancel).toHaveBeenCalledWith({ queryKey: key });
+    expect(client.getQueryData(key)).toBeUndefined();
+    expect(client.getQueryData(otherKey)).toEqual({ reportUrl: "https://files.test/old.pdf" });
+  });
+
+  it("retains the current PDF when reopening fails", async () => {
+    updateAuditReviewStatusMock.mockRejectedValue(new Error("conflict"));
+    const { wrapper, client } = createWrapper();
+    const key = ["reports", "by-audit", "audit-1"];
+    client.setQueryData(key, { reportUrl: "https://files.test/old.pdf" });
+    const { result } = renderHook(() => useUpdateAuditReviewStatus(), { wrapper });
+    result.current.mutate(input);
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(client.getQueryData(key)).toEqual({ reportUrl: "https://files.test/old.pdf" });
   });
 });

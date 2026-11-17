@@ -29,6 +29,11 @@ vi.mock("@features/audits/lib/hooks/useAuditReviewDetail", () => ({
   }),
 }));
 
+const reopenMutation = { isPending: false, mutateAsync: vi.fn() };
+vi.mock("@features/audits/lib/hooks/useUpdateAuditReviewStatus", () => ({
+  useUpdateAuditReviewStatus: () => reopenMutation,
+}));
+const closeApprove = vi.fn();
 const session = { isAdmin: true, user: { id: "auditor-1", role: "auditor" } };
 vi.mock("@processes/auth/hooks", () => ({
   useSession: () => session,
@@ -74,7 +79,7 @@ vi.mock("@features/audits/lib/hooks/useExportAuditReport", () => ({
       start: startApprove,
       retry: vi.fn(),
       stopWaiting: vi.fn(),
-      close: vi.fn(),
+      close: closeApprove,
     };
   },
 }));
@@ -270,6 +275,8 @@ beforeEach(() => {
   reviewDetailState.isLoading = false;
   reviewDetailState.isError = false;
   session.isAdmin = true;
+  reopenMutation.isPending = false;
+  reopenMutation.mutateAsync.mockResolvedValue({});
   draftsState.isDirty = false;
   draftsState.hasErrors = false;
   draftsState.isSaving = false;
@@ -549,4 +556,62 @@ describe("auditor ownership", () => {
   expect(screen.getByTestId("preview-editable")).toHaveTextContent("true");
   expect(screen.getByRole("button", {name: "Approve"})).toBeDisabled();
  });
+});
+
+
+describe("AuditEditContent — reopened reports", () => {
+  it("does not offer a cached PDF while the audit is in review", async () => {
+    reportState.data = { id: "audit-1", reportName: "Old snapshot", reportUrl: "https://files.test/old.pdf" };
+    await openReportTab();
+    expect(screen.getByRole("button", { name: "Download" })).toBeDisabled();
+  });
+
+  it("offers reopening only to an administrator on completed audits", async () => {
+    reviewDetailState.data = makeReviewDetail({ status: "completed" });
+    await openReportTab();
+    expect(screen.getByRole("button", { name: "Reopen review" })).toBeEnabled();
+  });
+});
+
+
+describe("AuditEditContent — reopening permissions", () => {
+  it.each(["draft_report_in_review", "draft_report_pending_review", "final_report_sent_to_client"] as const)("cannot reopen %s", async (status) => {
+    reviewDetailState.data = makeReviewDetail({ status });
+    await openReportTab();
+    expect(screen.queryByRole("button", { name: "Reopen review" })).not.toBeInTheDocument();
+  });
+
+  it("does not let the owning auditor reopen a completed audit", async () => {
+    session.isAdmin = false;
+    reviewDetailState.data = makeReviewDetail({ status: "completed" });
+    await openReportTab({ auditDetail: makeAuditDetail({ createdBy: "auditor-1" }) });
+    expect(screen.queryByRole("button", { name: "Reopen review" })).not.toBeInTheDocument();
+    expect(reopenMutation.mutateAsync).not.toHaveBeenCalled();
+  });
+
+  it("reopens into review and resets the previous approval session", async () => {
+    reviewDetailState.data = makeReviewDetail({ status: "completed" });
+    const { user } = await openReportTab();
+    await user.click(screen.getByRole("button", { name: "Reopen review" }));
+    expect(reopenMutation.mutateAsync).toHaveBeenCalledWith({ auditId: "audit-1", status: "draft_report_in_review" });
+    expect(closeApprove).toHaveBeenCalledOnce();
+  });
+
+  it("shows a reopening failure without resetting the approval session", async () => {
+    reopenMutation.mutateAsync.mockRejectedValue(new Error("conflict"));
+    reviewDetailState.data = makeReviewDetail({ status: "completed" });
+    const { user } = await openReportTab();
+    await user.click(screen.getByRole("button", { name: "Reopen review" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("could not be reopened");
+    expect(closeApprove).not.toHaveBeenCalled();
+  });
+
+  it("blocks download and repeated reopen while the transition is pending", async () => {
+    reopenMutation.isPending = true;
+    reviewDetailState.data = makeReviewDetail({ status: "completed" });
+    reportState.data = { id: "audit-1", reportName: "Old snapshot", reportUrl: "https://files.test/old.pdf" };
+    await openReportTab();
+    expect(screen.getByRole("button", { name: "Reopen review" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Download" })).toBeDisabled();
+  });
 });

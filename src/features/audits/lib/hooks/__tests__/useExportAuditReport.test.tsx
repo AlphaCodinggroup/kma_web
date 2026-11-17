@@ -111,6 +111,15 @@ describe("useExportAuditReport", () => {
     });
   });
 
+  it("regenerates a reopened audit even when a stale URL remains", async () => {
+    mocks.refetch.mockResolvedValue({ data: { ...readyReport, status: "draft_report_in_review" } });
+    const { result } = renderHook(() => useExportAuditReport("audit-1", { downloadWhenReady: false }));
+    await act(async () => result.current.start());
+    expect(mocks.mutateAsync).toHaveBeenCalledWith({ auditId: "audit-1" });
+    expect(result.current.progress.phase).toBe("generating");
+    expect(mocks.download).not.toHaveBeenCalled();
+  });
+
   it("queues generation and follows matching real progress", async () => {
     const onQueued = vi.fn();
     const { result, rerender } = renderHook(() =>
