@@ -43,7 +43,7 @@ export async function updateAuditFinding(
     throw new Error("updateAuditFinding: quantity must be a finite number");
   }
 
-  if (measurements?.some((m) => !Number.isFinite(m.value) || m.value < 0)) {
+  if (measurements?.some((m) => m.value !== null && (!Number.isFinite(m.value) || m.value < 0))) {
     throw new Error(
       "updateAuditFinding: every measurement must be a finite number of 0 or more"
     );

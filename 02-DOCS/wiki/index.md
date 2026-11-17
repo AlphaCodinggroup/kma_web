@@ -1,5 +1,8 @@
 # Documentación de KMA Web
 
+- [Integración del feedback del 17/11/2026](../../../kma-backend/02-DOCS/wiki/ftd/feedback-integration.md).
+- [Permisos y reapertura de revisión](ftd/feedback-permissions-states-web.md).
+
 ## RSC Harness
 
 - [Perfil personal](harness/user-profile.md).

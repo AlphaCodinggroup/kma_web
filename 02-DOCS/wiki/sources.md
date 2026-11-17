@@ -9,7 +9,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 
 ## 02-DOCS/wiki
 
-- [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 5692 bytes.
+- [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 5882 bytes.
 ## 02-DOCS/wiki/ftd
 
 - [02-DOCS/wiki/ftd/catalog-active-default.md](<../../02-DOCS/wiki/ftd/catalog-active-default.md>) — md, 4677 bytes.
@@ -17,6 +17,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3646 bytes.
 - [02-DOCS/wiki/ftd/catalog-upload-first.md](<../../02-DOCS/wiki/ftd/catalog-upload-first.md>) — md, 2595 bytes.
 - [02-DOCS/wiki/ftd/collapsible-navigation.md](<../../02-DOCS/wiki/ftd/collapsible-navigation.md>) — md, 5679 bytes.
+- [02-DOCS/wiki/ftd/feedback-permissions-states-web.md](<../../02-DOCS/wiki/ftd/feedback-permissions-states-web.md>) — md, 4429 bytes.
 - [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 2347 bytes.
 - [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2743 bytes.
 - [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2688 bytes.
@@ -30,18 +31,17 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/harness/decisions.md](<../../02-DOCS/wiki/harness/decisions.md>) — md, 2433 bytes.
 - [02-DOCS/wiki/harness/installation-plan.md](<../../02-DOCS/wiki/harness/installation-plan.md>) — md, 4817 bytes.
 - [02-DOCS/wiki/harness/second-brain.md](<../../02-DOCS/wiki/harness/second-brain.md>) — md, 7935 bytes.
-- [02-DOCS/wiki/harness/user-profile.md](<../../02-DOCS/wiki/harness/user-profile.md>) — md, 266 bytes.
 - [02-DOCS/wiki/harness/vscode.md](<../../02-DOCS/wiki/harness/vscode.md>) — md, 1617 bytes.
 ## 02-DOCS/wiki/project
 
-- [02-DOCS/wiki/project/auth-and-session.md](<../../02-DOCS/wiki/project/auth-and-session.md>) — md, 4712 bytes.
+- [02-DOCS/wiki/project/auth-and-session.md](<../../02-DOCS/wiki/project/auth-and-session.md>) — md, 5148 bytes.
 - [02-DOCS/wiki/project/changes-2026-10-29.md](<../../02-DOCS/wiki/project/changes-2026-10-29.md>) — md, 9160 bytes.
 - [02-DOCS/wiki/project/design-system-and-ui.md](<../../02-DOCS/wiki/project/design-system-and-ui.md>) — md, 6657 bytes.
 - [02-DOCS/wiki/project/dev-test-and-deploy.md](<../../02-DOCS/wiki/project/dev-test-and-deploy.md>) — md, 5387 bytes.
 - [02-DOCS/wiki/project/environments.md](<../../02-DOCS/wiki/project/environments.md>) — md, 3142 bytes.
-- [02-DOCS/wiki/project/features.md](<../../02-DOCS/wiki/project/features.md>) — md, 8657 bytes.
+- [02-DOCS/wiki/project/features.md](<../../02-DOCS/wiki/project/features.md>) — md, 9771 bytes.
 - [02-DOCS/wiki/project/overview.md](<../../02-DOCS/wiki/project/overview.md>) — md, 5604 bytes.
-- [02-DOCS/wiki/project/routes-and-bff.md](<../../02-DOCS/wiki/project/routes-and-bff.md>) — md, 8547 bytes.
+- [02-DOCS/wiki/project/routes-and-bff.md](<../../02-DOCS/wiki/project/routes-and-bff.md>) — md, 8711 bytes.
 ## 02-DOCS/wiki/sdd
 
 - [02-DOCS/wiki/sdd/constitution.md](<../../02-DOCS/wiki/sdd/constitution.md>) — md, 5112 bytes.
@@ -561,7 +561,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/verifications/mitigation-qa-2026-10-23.md](<../../02-DOCS/wiki/sdd/verifications/mitigation-qa-2026-10-23.md>) — md, 7384 bytes.
 ## docs/agents
 
-- [docs/agents/project-context.md](<../../docs/agents/project-context.md>) — md, 13059 bytes.
+- [docs/agents/project-context.md](<../../docs/agents/project-context.md>) — md, 13458 bytes.
 ## docs/architecture
 
 - [docs/architecture/auth.md](<../../docs/architecture/auth.md>) — md, 3914 bytes.
@@ -574,7 +574,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [public/fonts/source-sans-3-OFL.txt](<../../public/fonts/source-sans-3-OFL.txt>) — txt, 4579 bytes.
 ## raíz
 
-- [AGENTS.md](<../../AGENTS.md>) — md, 16992 bytes.
+- [AGENTS.md](<../../AGENTS.md>) — md, 17178 bytes.
 - [CLAUDE.md](<../../CLAUDE.md>) — md, 356 bytes.
 - [README.md](<../../README.md>) — md, 4827 bytes.
 ## src/features/flows/ui
@@ -590,6 +590,6 @@ Los directorios ocultos también se omiten. Detalle de límites: [configuración
 - DESIGN.md: symlink.
 - PRODUCT.md: symlink.
 - coverage: tooling-or-build.
-- node\_modules: tooling-or-build.
+- node\_modules: symlink.
 - src/shared/auth/\_\_tests\_\_/verify-access-token.test.ts: sensitive.
 - src/shared/auth/verify-access-token.ts: sensitive.

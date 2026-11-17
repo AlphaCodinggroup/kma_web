@@ -1,5 +1,7 @@
 "use client";
 
+import { canReviewAudit } from "@entities/audit/lib/audit-permissions";
+
 import React, { memo, useState, useMemo } from "react";
 import { ClipboardCheck, Eye, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 import type { Audit } from "@entities/audit/model";
@@ -73,12 +75,12 @@ const SmartEditButton = memo(({
   row,
   onEdit,
   editingId,
-  isAdmin,
+  canReview,
 }: {
   row: Audit;
   onEdit?: ((audit: Audit, isCompliant?: boolean) => void) | undefined;
   editingId?: string | null | undefined;
-  isAdmin: boolean;
+  canReview: boolean;
 }) => {
   const available = isAuditReviewAvailable(row.status);
   const checkAnswers = available && row.findingsCount === 0;
@@ -116,14 +118,14 @@ const SmartEditButton = memo(({
         variant="secondary"
         fullWidth={false}
         onClick={() => onEdit?.(row, isCompliant)}
-        disabled={editingId === row.id || !isAdmin || !available}
+        disabled={editingId === row.id || !canReview || !available}
         className={cn(
           "min-h-[var(--kma-control-height)] gap-1.5 px-3 text-sm"
         )}
         aria-label={label}
         title={
-          !isAdmin
-            ? "Only administrators can review audits"
+          !canReview
+            ? "Only administrators and the owning auditor can review this audit"
             : !available ? "This audit is not available for review"
             : isCompliant ? "No findings, unsures, or blanks - fully compliant"
             : label
@@ -165,7 +167,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
 }) => {
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-  const { isAdmin } = useSession();
+  const { isAdmin, user } = useSession();
   const compact = useMediaQuery("(max-width: 1023px)");
   const showProject = !hiddenColumns?.includes("project");
   const showFacility = !hiddenColumns?.includes("facility");
@@ -315,7 +317,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
               title={showProject ? row.projectName ?? "Untitled project" : row.flowName ?? "Audit"}
               subtitle={[showFacility ? row.facilityName : null, row.flowName].filter(Boolean).join(" · ")}
               status={<StatusBadge status={row.status} />}
-              actions={<><SmartEditButton row={row} onEdit={onEdit} editingId={editingId} isAdmin={isAdmin} />{onDelete && <Button variant="ghost" fullWidth={false} aria-label="Delete audit" title={!isAdmin ? "Only administrators can delete audits" : "Delete audit"} onClick={() => onDelete(row)} disabled={!isAdmin || deletingId === row.id}>{deletingId === row.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="h-4 w-4" aria-hidden="true" />}Delete</Button>}</>}
+              actions={<><SmartEditButton row={row} onEdit={onEdit} editingId={editingId} canReview={canReviewAudit(isAdmin, user, row.createdBy)} />{onDelete && <Button variant="ghost" fullWidth={false} aria-label="Delete audit" title={!isAdmin ? "Only administrators can delete audits" : "Delete audit"} onClick={() => onDelete(row)} disabled={!isAdmin || deletingId === row.id}>{deletingId === row.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="h-4 w-4" aria-hidden="true" />}Delete</Button>}</>}
             >
               <dl className="grid grid-cols-2 gap-4"><div><dt>Auditor</dt><dd className="mt-1 text-[var(--kma-fg)]">{row.auditorName ?? "Not assigned"}</dd></div><div><dt>Audit date</dt><dd className="mt-1 tabular-nums text-[var(--kma-fg)]">{formatIsoToYmdHm(row.createdAt)}</dd></div></dl>
             </MobileEntityRow>
@@ -428,7 +430,7 @@ const AuditsTable: React.FC<AuditsTableProps> = ({
                       row={row}
                       onEdit={onEdit}
                       editingId={editingId}
-                      isAdmin={isAdmin}
+                      canReview={canReviewAudit(isAdmin, user, row.createdBy)}
                     />
                     {onDelete && (
                       <button

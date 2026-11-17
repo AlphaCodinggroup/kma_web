@@ -251,7 +251,7 @@ describe("ReportPreview — editing in place", () => {
     );
   });
 
-  it("warns that a measurement of 0 is not printed", () => {
+  it("accepts zero without claiming that the PDF will omit it", () => {
     renderPreview({
       editable: true,
       drafts: makeDrafts({
@@ -259,7 +259,8 @@ describe("ReportPreview — editing in place", () => {
       }),
     });
 
-    expect(screen.getByText("0 is not printed in the PDF")).toBeInTheDocument();
+    expect(screen.queryByText("0 is not printed in the PDF")).not.toBeInTheDocument();
+    expect(screen.getByRole("spinbutton", {name:"Measurement of finding 1"})).toHaveValue(0);
   });
 
   it("prints the measurements as the PDF does when it is not editable", () => {

@@ -23,7 +23,7 @@ verificado en código y añade lo que esos documentos no cubren.
 fallo: `missing-token`, `invalid-signature`, `expired`, `invalid-issuer`, `not-configured`. Sin JWKS: en
 producción (`NEXT_PUBLIC_APP_ENV=production`) falla cerrado; fuera de producción decodifica sin verificar
 (`verified: false`). No valida `token_use`, `client_id` ni `aud` (CONFIRMADO: solo issuer y firma/expiración).
-Su único consumidor es `getServerSession` y, a través de él, la página y el handler de `/catalog`.
+Su consumidor es `getServerSession`; `/catalog` y el layout de `/flows` usan esa sesión para controlar acceso en servidor.
 
 ## Roles
 
@@ -33,9 +33,14 @@ Su único consumidor es `getServerSession` y, a través de él, la página y el 
   precedencia `administrator > admin > auditor > viewer` en
   [`mappers.ts`](../../../src/entities/user/lib/mappers.ts). Un grupo desconocido (p. ej. `qc`) pasa como texto
   fuera del tipo (contexto del proyecto).
-- Dónde se aplica de verdad en este repo: solo `/catalog` (página y `/api/catalog/*`, 403). En el resto, el
-  rol solo oculta enlaces (`/users`, `/catalog`) y deshabilita controles; el BFF reenvía el bearer y la
-  autorización recae en el backend/API Gateway (NO VERIFICADO desde este repo).
+- `/catalog` y su BFF mantienen su control administrativo; el layout servidor de `/flows` ahora
+  exige `admin`/`administrator` y oculta ese enlace a otros roles. Las lecturas GET compartidas
+  del backend se conservan; sus mutaciones requieren admin.
+- En revisión, `canReviewAudit` permite admin o auditor con ID igual a `created_by`; las ediciones
+  además exigen `draft_report_in_review`. Aprobar y reabrir Completed siguen sólo para admin. El
+  BFF reenvía el bearer: backend comprueba rol/propiedad antes de abrir/leer revisión o escribir.
+  Esto no demuestra aislamiento general del listado ni configuración desplegada. Ver
+  [permisos de UI](../../../src/entities/audit/lib/audit-permissions.ts).
 
 ## CSRF y Origin
 

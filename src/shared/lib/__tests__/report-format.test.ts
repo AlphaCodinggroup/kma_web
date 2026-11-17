@@ -57,7 +57,7 @@ describe("formatMeasurementLines", () => {
     ).toEqual(['Measurement: 45"', "Measurement 1: 3.2%", "Measurement 2: 12 IN"]);
   });
 
-  it("skips measurements without a positive value and falls back past the third label", () => {
+  it("prints zero, skips negative measurements and falls back past the third label", () => {
     expect(
       formatMeasurementLines([
         { value: 0, unit: null },
@@ -65,7 +65,7 @@ describe("formatMeasurementLines", () => {
         { value: -1, unit: null },
         { value: 7, unit: "ft" },
       ])
-    ).toEqual(["Measurement 1: 9.5", "Measurement: 7 FT"]);
+    ).toEqual(["Measurement: 0", "Measurement 1: 9.5", "Measurement: 7 FT"]);
   });
 });
 

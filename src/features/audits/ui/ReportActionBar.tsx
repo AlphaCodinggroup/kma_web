@@ -19,6 +19,9 @@ export interface ReportActionBarProps {
   canDownload: boolean;
   downloading: boolean;
   onDownload: () => void;
+  canReopen?: boolean;
+  reopening?: boolean;
+  onReopen?: () => void;
 }
 
 const RETURN_TOOLTIP = "Returning an audit is currently unavailable";
@@ -40,6 +43,9 @@ const ReportActionBar: React.FC<ReportActionBarProps> = ({
   canDownload,
   downloading,
   onDownload,
+  canReopen = false,
+  reopening = false,
+  onReopen,
 }) => {
   const blockedBySave = isDirty ? "Save your changes first" : undefined;
 
@@ -99,7 +105,17 @@ const ReportActionBar: React.FC<ReportActionBarProps> = ({
             )}
             Approve
           </Button>
-          <Button fullWidth={false}
+          {canReopen ? (
+            <Button fullWidth={false}
+              type="button"
+              onClick={onReopen}
+              disabled={isDirty || reopening || approving || downloading}
+              variant="secondary"
+            >
+              {reopening ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Undo2 className="h-4 w-4" aria-hidden="true" />}
+              Reopen review
+            </Button>
+          ) : (<Button fullWidth={false}
             type="button"
             disabled
             title={RETURN_TOOLTIP}
@@ -108,11 +124,11 @@ const ReportActionBar: React.FC<ReportActionBarProps> = ({
           >
             <Undo2 className="h-4 w-4" aria-hidden="true" />
             Return
-          </Button>
+          </Button>)}
           <Button fullWidth={false}
             type="button"
             onClick={onDownload}
-            disabled={!canDownload || isDirty || downloading}
+            disabled={!canDownload || isDirty || downloading || reopening}
             title={blockedBySave ?? (canDownload ? "Download the project report" : "Available once the report is approved")}
             variant="secondary"
           >

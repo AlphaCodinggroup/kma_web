@@ -19,8 +19,24 @@ desajustes: [contexto del proyecto](../../../docs/agents/project-context.md#doma
 | Hooks clave | `useInfiniteAudits`, `useProjectAudits`, `useAuditDetail`, `useOpenAuditReview`, `useReportDrafts` (PATCH secuencial por hallazgo), `useUpdateAuditFindingMutation`, `useCompleteReviewAuditMutation`, `useExportAuditReport` (sondea el informe), `usePoollAuditReview`, comentarios (`useAuditComments` y mutaciones) |
 | Usecases | `listAudits`, `getAuditById`, `deleteAudit`, `send-for-review`, `updateAuditAnswer`, `updateAuditFinding`, `completeReviewAudit`, `updateAuditReviewStatus`, comentarios |
 | Contrato | `/api/audits*`, `/api/audits-review/*`, `/api/comments*` (tabla de rutas); estados en `entities/audit` (4 de los 5 del backend) |
-| Guardas | [`audit-edit-href.ts`](../../../src/features/audits/lib/audit-edit-href.ts) `isAllowedReturnPath` (anti open redirect); edición solo `isAdmin` y `draft_report_in_review` |
+| Guardas | [`audit-edit-href.ts`](../../../src/features/audits/lib/audit-edit-href.ts) `isAllowedReturnPath` (anti open redirect); edición en `draft_report_in_review` para admin o auditor propietario mediante `canReviewAudit`; aprobación y reapertura sólo admin |
 | Dependencias cruzadas | importa `reports`, `flows`, `users` (violación conocida) |
+
+### Revisión y reporte: actualización del 2026-11-17
+
+El GET mantiene fotos como cadenas y añade detalles individuales con referencia
+original y selección. La vista permite excluir todas las fotos o elegir hasta
+tres, y guarda referencias estables en lugar de URLs temporales. Los borradores
+se conservan al fallar el guardado. Las medidas mantienen nombre, posición y
+slots legacy sin valor; cada medida se presenta junto a su barrera en vista
+previa y PDF. `quantity_present` distingue cero de ausencia. La agrupación usa
+fuentes de captura, cuenta una cantidad compartida una vez y respeta overrides QC.
+
+La reapertura administrativa de Completed invalida la caché de reporte de esa
+auditoría y solicita revisión. Download queda inhabilitado durante revisión;
+volver a aprobar solicita un PDF consolidado nuevo. Los snapshots de otras
+auditorías no se borran. Las pruebas de las unidades están aprobadas; gate
+conjunto y recorrido real siguen pendientes en esta actualización.
 
 ## auth (3 tests)
 
@@ -65,7 +81,7 @@ inventar campos ausentes.
 | Responsabilidad | Listar flows y editar su estructura de pasos (Question, Form, Select, End), navegación condicional, imágenes y campos de formulario |
 | UI | [`FlowEditor`](../../../src/features/flows/ui/FlowEditor.tsx) (1062 líneas), `FlowStepsTable`, [`StepDetailInspector`](../../../src/features/flows/ui/StepDetailInspector.tsx), `StepSelector`, `ConditionalNavEditor`, `FlowCard`, `FlowQuestionsDialog`; adapters en `ui/adapters` |
 | Datos | [`flows.repo.impl.ts`](../../../src/features/flows/api/flows.repo.impl.ts) (`/api/flows`, `/summary`, `/{id}`; imágenes por `/api/uploads/presigned` y `/api/uploads/proxy`), [`flows.dto.ts`](../../../src/features/flows/api/flows.dto.ts), `useFlowsQuery`/`useFlowById`; modelo en [`entities/flow/model.ts`](../../../src/entities/flow/model.ts) |
-| Roles | edición y borrado de pasos solo con `isAdmin`; el resto ve el flow en solo lectura (UI) |
+| Roles | la consola requiere admin en servidor; POST/PUT/DELETE backend son administrativos y GET compartidos conservan compatibilidad |
 | Notas | `app_example.md` y `flow_example.json` en `ui/` son ejemplos, no código. Ancho del inspector: [flow-inspector-width](../ftd/flow-inspector-width.md). Los `FIXME` de tests documentan fallos conocidos al borrar o renombrar pasos |
 
 ## projects (19 tests)

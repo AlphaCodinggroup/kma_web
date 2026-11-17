@@ -13,10 +13,10 @@ salvo donde se marque. Invariantes del proxy (401 sin cookie, `forwardQuery`, `n
 | `/dashboard` | [`(dashboard)/dashboard`](../../../app/(dashboard)/dashboard/page.tsx) | `AuthGuard` (solo existencia de cookie) | todos |
 | `/projects` (`?tab=projects\|facilities`) | [`projects/page.tsx`](../../../app/(dashboard)/projects/page.tsx) | `AuthGuard` | edición solo `isAdmin` |
 | `/projects/[id]` | [`projects/[id]`](../../../app/(dashboard)/projects/[id]/page.tsx) | `AuthGuard` | |
-| `/audits` | [`audits/page.tsx`](../../../app/(dashboard)/audits/page.tsx) | `AuthGuard` | editar/borrar solo `isAdmin` |
-| `/audits/[id]/edit` | [`(standalone)/audits/[id]/edit`](../../../app/(standalone)/audits/[id]/edit/page.tsx) | `AuthGuard` en su `layout.tsx`, sin shell | edición QC: `isAdmin` y estado `draft_report_in_review` |
+| `/audits` | [`audits/page.tsx`](../../../app/(dashboard)/audits/page.tsx) | `AuthGuard` | abrir revisión admin o auditor propietario; borrar conserva guarda administrativa |
+| `/audits/[id]/edit` | [`(standalone)/audits/[id]/edit`](../../../app/(standalone)/audits/[id]/edit/page.tsx) | `AuthGuard` en su `layout.tsx`, sin shell | edición QC: admin o auditor propietario y estado `draft_report_in_review`; aprobar/reabrir sólo admin |
 | `/reports` | [`reports/page.tsx`](../../../app/(dashboard)/reports/page.tsx) | `AuthGuard` | borrar solo `isAdmin` |
-| `/flows`, `/flows/new`, `/flows/[id]` | [`flows`](../../../app/(dashboard)/flows) | `AuthGuard` | crear/editar/borrar solo `isAdmin` |
+| `/flows`, `/flows/new`, `/flows/[id]` | [`flows`](../../../app/(dashboard)/flows) | `AuthGuard` y layout con sesión administrativa verificada | sólo admin; backend conserva GET compartidos |
 | `/users` | [`users/page.tsx`](../../../app/(dashboard)/users/page.tsx) | `AuthGuard`; sin comprobación de rol | enlace oculto a no admin; editar/borrar `isAdmin` |
 | `/catalog` | [`catalog/page.tsx`](../../../app/(dashboard)/catalog/page.tsx) | verifica el rol en servidor: `admin` o `administrator`, si no muestra un aviso | enlace oculto a no admin |
 
@@ -25,7 +25,7 @@ Layouts: [`(dashboard)/layout.tsx`](../../../app/(dashboard)/layout.tsx) (`force
 [`global-error.tsx`](../../../app/global-error.tsx). No existe `middleware.ts`.
 
 Sidebar ([`SidebarNav.tsx`](../../../src/widgets/shell/SidebarNav.tsx)): grupo Workspace (Dashboard,
-Projects, Facilities, Audits, Reports) y Administration (Catalog, Flows, User Management). Solo `/users` y
+Projects, Facilities, Audits, Reports) y Administration (Catalog, Flows, User Management). `/users`, `/flows` y
 `/catalog` se ocultan a quien no es `admin`/`administrator`; el ocultamiento es de UI, no autorización.
 
 ## Rutas BFF (`app/api/**`) hacia el backend
