@@ -68,6 +68,7 @@ export interface AuditStep {
 }
 
 export interface AuditDetail {
+  createdBy?: string | null;
   id: string;
   flowId: string;
   flowName?: string | null;

@@ -98,7 +98,7 @@ afterEach(() => {
 describe("AuditQuestionCard — answered YES", () => {
   it("renders the hero heading with the YES pill and the auditor notes", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the ramp compliant?"
         type="yes_no"
         answeredYes={true}
@@ -119,7 +119,7 @@ describe("AuditQuestionCard — answered YES", () => {
 
   it("omits the notes block when the notes are blank", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the ramp compliant?"
         type="yes_no"
         answeredYes={true}
@@ -132,7 +132,7 @@ describe("AuditQuestionCard — answered YES", () => {
 
   it("omits the notes block when the notes are null", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the ramp compliant?"
         type="yes_no"
         answeredYes={true}
@@ -145,7 +145,7 @@ describe("AuditQuestionCard — answered YES", () => {
 
   it("preserves the field evidence on the YES branch", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the ramp compliant?"
         type="yes_no"
         answeredYes={true}
@@ -158,7 +158,7 @@ describe("AuditQuestionCard — answered YES", () => {
 
   it("merges the extra class name into the card", () => {
     const { container } = render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the ramp compliant?"
         type="yes_no"
         answeredYes={true}
@@ -175,7 +175,7 @@ describe("AuditQuestionCard — answered YES", () => {
 describe("AuditQuestionCard — answered NO", () => {
   it("renders the NO pill and the attachments list", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the door width compliant?"
         type="yes_no"
         answeredYes={false}
@@ -196,7 +196,7 @@ describe("AuditQuestionCard — answered NO", () => {
 
   it("picks the icon that matches each attachment mime type", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the door width compliant?"
         type="yes_no"
         answeredYes={false}
@@ -233,7 +233,7 @@ describe("AuditQuestionCard — answered NO", () => {
     };
 
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the door width compliant?"
         type="yes_no"
         answeredYes={false}
@@ -252,7 +252,7 @@ describe("AuditQuestionCard — answered NO", () => {
     const user = userEvent.setup();
 
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the door width compliant?"
         type="yes_no"
         answeredYes={false}
@@ -268,7 +268,7 @@ describe("AuditQuestionCard — answered NO", () => {
 
   it("omits the attachments block when the list is empty", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the door width compliant?"
         type="yes_no"
         answeredYes={false}
@@ -283,7 +283,7 @@ describe("AuditQuestionCard — answered NO", () => {
 describe("AuditQuestionCard — multiple choice", () => {
   it("renders the selected option as a pill", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Which surface material?"
         type="multiple_choice"
         answerValue="Concrete"
@@ -297,7 +297,7 @@ describe("AuditQuestionCard — multiple choice", () => {
 
   it("renders a numeric choice through the string cast", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Which surface material?"
         type="multiple_choice"
         answerValue={3}
@@ -309,7 +309,7 @@ describe("AuditQuestionCard — multiple choice", () => {
 
   it("falls back to the general layout when the choice is blank", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Which surface material?"
         type="multiple_choice"
         answerValue="   "
@@ -324,7 +324,7 @@ describe("AuditQuestionCard — multiple choice", () => {
 
   it("falls back to the general layout when the choice is null", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Which surface material?"
         type="multiple_choice"
         answerValue={null}
@@ -338,7 +338,7 @@ describe("AuditQuestionCard — multiple choice", () => {
 describe("AuditQuestionCard — general layout", () => {
   it("renders the index, the type label and the answer", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         index={7}
         text="How many parking spaces?"
         type="number"
@@ -354,7 +354,7 @@ describe("AuditQuestionCard — general layout", () => {
 
   it("treats a zero measurement as a real answer, not as a missing one", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Slope percentage at the landing"
         type="number"
         answerValue={0}
@@ -368,7 +368,7 @@ describe("AuditQuestionCard — general layout", () => {
 
   it("hides the answer row when the value is an empty string", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Observations"
         type="text"
         answerValue=""
@@ -381,21 +381,21 @@ describe("AuditQuestionCard — general layout", () => {
 
   it("hides the answer row when the value is null", () => {
     render(
-      <AuditQuestionCard text="Observations" type="text" answerValue={null} />
+      <AuditQuestionCard editable text="Observations" type="text" answerValue={null} />
     );
 
     expect(screen.queryByText("Answer:")).not.toBeInTheDocument();
   });
 
   it("hides the answer row when there is no value at all", () => {
-    render(<AuditQuestionCard text="Observations" type="text" />);
+    render(<AuditQuestionCard editable text="Observations" type="text" />);
 
     expect(screen.queryByText("Answer:")).not.toBeInTheDocument();
   });
 
   it("omits the index when it is not a number", () => {
     render(
-      <AuditQuestionCard text="Observations" type="text" answerValue="ok" />
+      <AuditQuestionCard editable text="Observations" type="text" answerValue="ok" />
     );
 
     expect(screen.queryByText(/^#/)).not.toBeInTheDocument();
@@ -405,7 +405,7 @@ describe("AuditQuestionCard — general layout", () => {
     // answeredYes null no entra en las ramas YES/NO, así que cae en el layout
     // general y el chip no se dibuja.
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Observations"
         type="yes_no"
         answeredYes={null}
@@ -420,7 +420,7 @@ describe("AuditQuestionCard — general layout", () => {
 
   it("renders the notes card and the attachments in the general layout", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Observations"
         type="text"
         answerValue="ok"
@@ -436,7 +436,7 @@ describe("AuditQuestionCard — general layout", () => {
 
   it("falls back to the raw type when it is not a known question type", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Observations"
         type={"signature" as QuestionType}
         answerValue="ok"
@@ -450,7 +450,7 @@ describe("AuditQuestionCard — general layout", () => {
 describe("AuditQuestionCard — UNSURE read-only", () => {
   it("renders the UNSURE pill and the resolve button", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the signage readable?"
         type="yes_no"
         answerValue="UNSURE"
@@ -467,7 +467,7 @@ describe("AuditQuestionCard — UNSURE read-only", () => {
 
   it("detects the unsure state regardless of the answer casing", () => {
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         text="Is the signage readable?"
         type="yes_no"
         answerValue="unsure"
@@ -483,7 +483,7 @@ describe("AuditQuestionCard — UNSURE read-only", () => {
     const user = userEvent.setup();
 
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         questionId="q1"
         steps={stepsWithForm}
@@ -519,7 +519,7 @@ describe("AuditQuestionCard — UNSURE editing", () => {
     }] } });
     uploadFileMock.mockResolvedValue(undefined);
 
-    render(<AuditQuestionCard
+    render(<AuditQuestionCard editable
       auditId="a1" questionId="q1" text="Is the entrance compliant?"
       type="yes_no" answerValue="UNSURE"
       steps={[
@@ -564,7 +564,7 @@ describe("AuditQuestionCard — UNSURE editing", () => {
   ) => {
     const user = userEvent.setup();
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         questionId="q1"
         steps={stepsWithForm}
@@ -846,7 +846,7 @@ describe("AuditQuestionCard — generic finding form fallback", () => {
   ) => {
     const user = userEvent.setup();
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         questionId="q1"
         text="Is the signage readable?"
@@ -980,7 +980,7 @@ describe("AuditQuestionCard — photo fields", () => {
   const openPhotoForm = async () => {
     const user = userEvent.setup();
     const view = render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         questionId="q1"
         steps={photoSteps}
@@ -1167,7 +1167,7 @@ describe("AuditQuestionCard — save guards and errors", () => {
   it("does nothing when there is no auditId", async () => {
     const user = userEvent.setup();
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         questionId="q1"
         steps={stepsWithForm}
         text="Is the signage readable?"
@@ -1187,7 +1187,7 @@ describe("AuditQuestionCard — save guards and errors", () => {
   it("does nothing when there is no questionId", async () => {
     const user = userEvent.setup();
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         steps={stepsWithForm}
         text="Is the signage readable?"
@@ -1208,7 +1208,7 @@ describe("AuditQuestionCard — save guards and errors", () => {
     updateAnswerMock.mockRejectedValue(new Error("network down"));
 
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         questionId="q1"
         steps={stepsWithForm}
@@ -1230,7 +1230,7 @@ describe("AuditQuestionCard — save guards and errors", () => {
     const user = userEvent.setup();
 
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         questionId="q1"
         steps={stepsWithForm}
@@ -1255,7 +1255,7 @@ describe("AuditQuestionCard — save guards and errors", () => {
     const user = userEvent.setup();
 
     render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         questionId="q1"
         steps={stepsWithForm}
@@ -1278,7 +1278,7 @@ describe("AuditQuestionCard — save guards and errors", () => {
     const user = userEvent.setup();
 
     const { container } = render(
-      <AuditQuestionCard
+      <AuditQuestionCard editable
         auditId="a1"
         questionId="q1"
         steps={stepsWithForm}
@@ -1300,12 +1300,12 @@ describe("AuditQuestionCard — save guards and errors", () => {
 
 describe("AuditQuestionCard — field photographs", () => {
   it("shows a photograph and opens the actual evidence URL", () => {
-    render(<AuditQuestionCard text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Entrance photograph", mime: "image/jpeg", url: "https://files.test/entrance.jpg" }]} />);
+    render(<AuditQuestionCard editable text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Entrance photograph", mime: "image/jpeg", url: "https://files.test/entrance.jpg" }]} />);
     expect(screen.getByRole("img", { name: "Entrance photograph" })).toHaveAttribute("src", "https://files.test/entrance.jpg");
     expect(screen.getByRole("link", { name: "View Entrance photograph" })).toHaveAttribute("href", "https://files.test/entrance.jpg");
   });
   it("does not turn an unsafe evidence URL into a clickable link", () => {
-    render(<AuditQuestionCard text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Unsafe attachment", mime: "image/jpeg", url: "javascript:alert(1)" }]} />);
+    render(<AuditQuestionCard editable text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Unsafe attachment", mime: "image/jpeg", url: "javascript:alert(1)" }]} />);
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "View Unsafe attachment" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "View Unsafe attachment" })).toBeDisabled();
@@ -1314,7 +1314,7 @@ describe("AuditQuestionCard — field photographs", () => {
 
 
 it("keeps access to the original photograph if its preview cannot load", () => {
-  render(<AuditQuestionCard text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Entrance photograph", mime: "image/jpeg", url: "https://files.test/entrance.jpg" }]} />);
+  render(<AuditQuestionCard editable text="Entrance clearance" type="yes_no" answeredYes={false} attachments={[{ id: "photo-1", name: "Entrance photograph", mime: "image/jpeg", url: "https://files.test/entrance.jpg" }]} />);
   fireEvent.error(screen.getByRole("img", { name: "Entrance photograph" }));
   expect(screen.getByRole("status")).toHaveTextContent("Photograph unavailable");
   expect(screen.getByRole("link", { name: "View Entrance photograph" })).toHaveAttribute("href", "https://files.test/entrance.jpg");
@@ -1323,20 +1323,29 @@ it("keeps access to the original photograph if its preview cannot load", () => {
 describe("AuditQuestionCard — answer colours", () => {
   it("shows Yes in ink and No in the danger colour so findings stand out", () => {
     const { rerender } = render(
-      <AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answeredYes={true} />
+      <AuditQuestionCard editable text="Is the ramp compliant?" type="yes_no" answeredYes={true} />
     );
     expect(screen.getByText("Yes")).toHaveClass("bg-[var(--kma-fg)]");
     expect(screen.getByText("Yes")).not.toHaveClass("bg-[var(--kma-danger)]");
 
-    rerender(<AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answeredYes={false} />);
+    rerender(<AuditQuestionCard editable text="Is the ramp compliant?" type="yes_no" answeredYes={false} />);
     expect(screen.getByText("No")).toHaveClass("bg-[var(--kma-danger)]");
   });
 
   it("highlights the whole UNSURE card with the warning colour", () => {
     render(
-      <AuditQuestionCard text="Is the ramp compliant?" type="yes_no" answerValue="UNSURE" />
+      <AuditQuestionCard editable text="Is the ramp compliant?" type="yes_no" answerValue="UNSURE" />
     );
     expect(screen.getByText("UNSURE")).toHaveClass("text-[var(--kma-warning)]");
     expect(screen.getByRole("article")).toHaveClass("border-l-[var(--kma-warning)]");
   });
+});
+
+
+it("keeps answer resolution read-only without edit capability", async () => {
+ render(<AuditQuestionCard auditId="a1" questionId="q1" text="Question" type="yes_no" answerValue="UNSURE" />);
+ const resolve=screen.getByRole("button",{name:"Resolve Answer..."});
+ expect(resolve).toBeDisabled();
+ await userEvent.click(resolve);
+ expect(updateAnswerMock).not.toHaveBeenCalled();
 });

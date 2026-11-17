@@ -331,6 +331,7 @@ export const mapAuditDetailDTOToDomain = (dto: AuditDetailDTO): AuditDetail => {
 
   return {
     id: dto.id,
+    createdBy: dto.created_by ?? null,
     flowId: dto.flow_id ?? dto.flowId ?? "",
     flowName: dto.flow_name ?? null,
     version: toNumber(dto.flow_version ?? dto.flowVersion, 1),

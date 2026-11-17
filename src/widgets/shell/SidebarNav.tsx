@@ -56,7 +56,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items = DEFAULT_NAV, widthClass
   }, [pathname, currentTab]);
 
   const normalizedRole = role?.toLowerCase();
-  const visibleItems = items.filter((item) => !item.hidden && (!["/users", "/catalog"].includes(item.href) || normalizedRole === "admin" || normalizedRole === "administrator"));
+  const visibleItems = items.filter((item) => !item.hidden && (!["/users", "/catalog", "/flows"].includes(item.href) || normalizedRole === "admin" || normalizedRole === "administrator"));
 
   const handleLogout = useCallback(async () => {
     setLogoutError(null);

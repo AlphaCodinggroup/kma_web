@@ -23,6 +23,7 @@ export interface QuestionItemVM {
 }
 
 export interface AuditQuestionsListProps {
+  editable?: boolean;
   auditId?: string | undefined;
   steps?: AuditStep[] | undefined;
   items: QuestionItemVM[];
@@ -33,6 +34,7 @@ export interface AuditQuestionsListProps {
 }
 
 export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
+  editable = false,
   auditId,
   steps,
   items,
@@ -149,6 +151,7 @@ export const AuditQuestionsList: React.FC<AuditQuestionsListProps> = ({
         <div className="grid grid-cols-1 divide-y divide-[var(--kma-border)] overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]">
           {filtered.map((q, i) => (
             <AuditQuestionCard
+              editable={editable}
               key={q.id}
               auditId={auditId}
               questionId={q.id}

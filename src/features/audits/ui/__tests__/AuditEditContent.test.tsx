@@ -29,7 +29,7 @@ vi.mock("@features/audits/lib/hooks/useAuditReviewDetail", () => ({
   }),
 }));
 
-const session = { isAdmin: true };
+const session = { isAdmin: true, user: { id: "auditor-1", role: "auditor" } };
 vi.mock("@processes/auth/hooks", () => ({
   useSession: () => session,
 }));
@@ -539,4 +539,14 @@ describe("AuditEditContent — save, approve and download", () => {
 
     expect(screen.getByRole("button", { name: "Download" })).toBeDisabled();
   });
+});
+
+
+describe("auditor ownership", () => {
+ it("lets the owner edit without allowing approval", async () => {
+  session.isAdmin = false;
+  await openReportTab({auditDetail: {...makeAuditDetail(), createdBy: "auditor-1"}});
+  expect(screen.getByTestId("preview-editable")).toHaveTextContent("true");
+  expect(screen.getByRole("button", {name: "Approve"})).toBeDisabled();
+ });
 });

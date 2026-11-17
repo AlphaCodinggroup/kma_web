@@ -471,7 +471,7 @@ describe("AuditsTable — row actions", () => {
     const edit = screen.getByRole("button", { name: /^(Review|View) audit$/ });
     const remove = screen.getByRole("button", { name: "Delete audit" });
     expect(edit).toBeDisabled();
-    expect(edit).toHaveAttribute("title", "Only administrators can review audits");
+    expect(edit).toHaveAttribute("title", "Only administrators and the owning auditor can review this audit");
     expect(remove).toBeDisabled();
     expect(remove).toHaveAttribute(
       "title",
@@ -908,4 +908,11 @@ describe("AuditsTable — mobile workflow and safe states", () => {
     expect(screen.getByText("Compliant")).toBeVisible();
     expect(screen.getByRole("button", { name: "View audit" })).toHaveTextContent("View");
   });
+});
+
+
+it("allows an auditor to open their own review", () => {
+ useSessionMock.mockReturnValue({isAdmin: false, user: {id: "user-1", role:"auditor"}});
+ render(<AuditsTable items={[makeAudit()]} onError={vi.fn()} />);
+ expect(screen.getByRole("button", {name:"Review audit"})).toBeEnabled();
 });

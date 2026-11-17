@@ -1,5 +1,6 @@
 "use client";
 
+import { canReviewAudit } from "@entities/audit/lib/audit-permissions";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@shared/lib/cn";
@@ -55,7 +56,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   onDirtyChange,
 }) => {
   const queryClient = useQueryClient();
-  const { isAdmin } = useSession();
+  const { isAdmin, user } = useSession();
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [tabValue, setInternalTab] = useUrlParameter("view", "questions");
   const internalTab: AuditEditTab = tabValue === "report" ? "report" : "questions";
@@ -79,8 +80,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     [reviewDetail?.findings]
   );
   const status = reviewDetail?.status;
-  // Sólo un admin edita, y sólo con la auditoría en revisión (lo exige el backend).
-  const editable = isAdmin && status === "draft_report_in_review";
+  const editable = canReviewAudit(isAdmin, user, auditDetail?.createdBy) && status === "draft_report_in_review";
   const drafts = useReportDrafts(id, findings);
 
   useEffect(() => {
@@ -164,6 +164,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             className="mb-4"
           />
           <AuditQuestionsList
+            editable={editable}
             auditId={id}
             steps={auditDetail?.steps}
             items={questionsToRender}
@@ -218,7 +219,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             saveError={drafts.saveError}
             onSave={() => void drafts.save()}
             onDiscard={drafts.discard}
-            canApprove={editable && findings.length > 0}
+            canApprove={isAdmin && editable && findings.length > 0}
             approving={approveFlow.isBusy}
             onApprove={() => void approveFlow.start()}
             canDownload={canDownload}
