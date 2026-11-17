@@ -45,7 +45,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <div
       className={cn(
-        "mb-6 flex justify-between gap-4 border-b border-gray-200 pb-4",
+        "mb-6 flex flex-wrap justify-between gap-4 border-b border-[var(--kma-border)] pb-6",
         alignClass,
         className
       )}
@@ -53,7 +53,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       <div className="min-w-0">
         <h1
           className={cn(
-            "truncate text-2xl font-semibold tracking-tight text-black",
+            "kma-page-title text-[var(--kma-fg)]",
             titleClassName
           )}
         >
@@ -62,7 +62,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         {subtitle ? (
           <p
             className={cn(
-              "mt-1 text-sm font-semibold text-gray-600",
+              "mt-2 max-w-[65ch] text-[15px] leading-[22px] text-[var(--kma-muted)]",
               subtitleClassName
             )}
           >
@@ -76,16 +76,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           : primaryAction && (
               <Button
                 type="button"
+                fullWidth={false}
                 onClick={primaryAction.onClick}
                 data-testid={primaryAction["data-testid"]}
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 cursor-pointer",
-                  "text-white shadow-sm transition-colors",
-                  "hover:bg-black/90 focus-visible:outline-none",
-                  "focus-visible:ring-2 focus-visible:ring-black/30"
-                )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4" aria-hidden="true" />
                 <span className="text-sm font-semibold">
                   {primaryAction.label}
                 </span>

@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "name": "KMA Web \u2014 RSC",
+      "path": "."
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "openai.chatgpt",
+      "anthropic.claude-code"
+    ]
+  }
+}

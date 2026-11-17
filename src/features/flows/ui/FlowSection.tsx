@@ -8,12 +8,14 @@ export interface FlowItemVM {
   title: string;
   description?: string;
   flowId?: string;
+  code?: string | undefined;
 }
 
 export interface FlowsSectionProps {
   /** Lista de flows a mostrar (catálogo de la página). */
   items: FlowItemVM[];
   className?: string;
+  onDeleted?: (() => void) | undefined;
   "data-testid"?: string;
 }
 /**
@@ -23,19 +25,22 @@ export interface FlowsSectionProps {
 export const FlowsSection: React.FC<FlowsSectionProps> = ({
   items,
   className,
+  onDeleted,
   "data-testid": testId,
 }) => {
   return (
     <section className={className} data-testid={testId ?? "flows-section"}>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="divide-y divide-[var(--kma-border)]">
         {items.map((it) => {
           return (
             <FlowCardWithDialog
               key={it.id}
               flowId={it.flowId ?? it.id}
               title={it.title}
+              code={it.code}
               description={it.description ?? ""}
               data-testid={`flow-card-${it.id}`}
+              {...(onDeleted ? { onDeleted } : {})}
               dialogTestId={`flow-dialog-${it.id}`}
             />
           );

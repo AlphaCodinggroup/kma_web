@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "maxFileBytes": 20971520,
+  "intervalMs": 10000,
+  "excludePaths": [
+    "docs/DATOS.md"
+  ]
+}

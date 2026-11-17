@@ -45,29 +45,29 @@ const Pagination: React.FC<PaginationProps> = ({
     return (
         <div
             className={cn(
-                "flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3",
+                "flex flex-wrap items-center justify-between gap-3 border-t border-[var(--kma-border)] bg-[var(--kma-surface)] px-4 py-3",
                 className
             )}
         >
             {/* Left side: Item count */}
-            <div className="text-sm text-gray-700">
+            <div className="text-sm text-[var(--kma-muted)] ">
                 Showing <span className="font-medium">{startItem}</span> to{" "}
                 <span className="font-medium">{endItem}</span> of{" "}
                 <span className="font-medium">{totalItems}</span> results
             </div>
 
             {/* Right side: Navigation and page size selector */}
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-4">
                 {/* Page size selector */}
                 <div className="flex items-center gap-2">
-                    <label htmlFor="pageSize" className="text-sm text-gray-700 whitespace-nowrap">
+                    <label htmlFor="pageSize" className="text-sm text-[var(--kma-muted)] whitespace-nowrap">
                         Items per page:
                     </label>
                     <select
                         id="pageSize"
                         value={pageSize}
                         onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                        className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="min-h-10 rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)] px-3 py-1.5 text-sm text-[var(--kma-muted)] hover:border-[var(--kma-border)] focus:border-[var(--kma-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--kma-primary)]/25 transition-all duration-200"
                     >
                         {pageSizeOptions.map((size) => (
                             <option key={size} value={size}>
@@ -84,19 +84,19 @@ const Pagination: React.FC<PaginationProps> = ({
                         onClick={() => onPageChange(currentPage - 1)}
                         disabled={!canGoPrevious}
                         className={cn(
-                            "inline-flex items-center justify-center h-9 px-4 rounded-md border text-sm font-medium transition-all duration-200",
-                            "border-gray-300 bg-white text-gray-700",
-                            "hover:bg-gray-50 hover:border-gray-400",
-                            "focus:outline-none focus:ring-2 focus:ring-blue-200",
-                            "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300"
+                            "inline-flex items-center justify-center min-h-10 px-3 rounded-lg border text-sm font-medium transition-all duration-200",
+                            "border-[var(--kma-border)] bg-[var(--kma-surface)] text-[var(--kma-muted)] ",
+                            "hover:bg-[var(--kma-subtle)] hover:border-[var(--kma-border)] ",
+                            "focus:outline-none focus:ring-2 focus:ring-[var(--kma-primary)]/25",
+                            "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--kma-surface)] disabled:hover:border-[var(--kma-border)] "
                         )}
                         aria-label="Previous page"
                     >
-                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        <ChevronLeft aria-hidden="true" className="h-4 w-4 mr-1" />
                         Previous
                     </button>
 
-                    <div className="text-sm text-gray-700 px-3 min-w-[100px] text-center">
+                    <div className="text-sm text-[var(--kma-muted)] px-1 min-w-[85px] text-center">
                         Page <span className="font-medium">{currentPage}</span> of{" "}
                         <span className="font-medium">{totalPages}</span>
                     </div>
@@ -106,16 +106,16 @@ const Pagination: React.FC<PaginationProps> = ({
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={!canGoNext}
                         className={cn(
-                            "inline-flex items-center justify-center h-9 px-4 rounded-md border text-sm font-medium transition-all duration-200",
-                            "border-gray-300 bg-white text-gray-700",
-                            "hover:bg-gray-50 hover:border-gray-400",
-                            "focus:outline-none focus:ring-2 focus:ring-blue-200",
-                            "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300"
+                            "inline-flex items-center justify-center min-h-10 px-3 rounded-lg border text-sm font-medium transition-all duration-200",
+                            "border-[var(--kma-border)] bg-[var(--kma-surface)] text-[var(--kma-muted)] ",
+                            "hover:bg-[var(--kma-subtle)] hover:border-[var(--kma-border)] ",
+                            "focus:outline-none focus:ring-2 focus:ring-[var(--kma-primary)]/25",
+                            "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--kma-surface)] disabled:hover:border-[var(--kma-border)] "
                         )}
                         aria-label="Next page"
                     >
                         Next
-                        <ChevronRight className="h-4 w-4 ml-1" />
+                        <ChevronRight aria-hidden="true" className="h-4 w-4 ml-1" />
                     </button>
                 </div>
             </div>

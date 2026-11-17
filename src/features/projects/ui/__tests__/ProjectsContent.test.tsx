@@ -7,7 +7,6 @@
  */
 import {
   act,
-  fireEvent,
   render,
   screen,
   waitFor,
@@ -45,6 +44,8 @@ const createProjectMock = vi.fn();
 const updateProjectMock = vi.fn();
 const deleteProjectMock = vi.fn();
 const archiveProjectMock = vi.fn();
+const resetDeleteMock = vi.fn();
+const resetArchiveMock = vi.fn();
 const projectsQuerySpy = vi.fn();
 const usersQuerySpy = vi.fn();
 const facilitiesQuerySpy = vi.fn();
@@ -105,7 +106,7 @@ vi.mock("@features/projects/ui/hooks/useDeleteProjectMutation", () => ({
     onError?: (error: unknown) => void;
   }) => {
     state.deleteOptions = options;
-    return { mutate: deleteProjectMock, isPending: state.isDeleting };
+    return { mutate: deleteProjectMock, isPending: state.isDeleting, error: null, reset: resetDeleteMock };
   },
 }));
 
@@ -113,6 +114,8 @@ vi.mock("@features/projects/ui/hooks/useArchiveProjectMutation", () => ({
   useArchiveProjectMutation: () => ({
     mutateAsync: archiveProjectMock,
     isPending: state.isArchiving,
+    error: null,
+    reset: resetArchiveMock,
   }),
 }));
 
@@ -235,7 +238,7 @@ function bodyRows(): HTMLTableRowElement[] {
 }
 
 function rowNames(): string[] {
-  return bodyRows().map((row) => row.cells[0]?.textContent?.trim() ?? "");
+  return bodyRows().map((row) => row.cells[0]?.querySelector("a")?.textContent?.trim() ?? "");
 }
 
 function rowFor(name: string): HTMLElement {
@@ -265,6 +268,7 @@ function openCreateDialog(ref: MutableRefObject<(() => void) | undefined>) {
 
 describe("ProjectsContent", () => {
   beforeEach(() => {
+    window.history.replaceState(null, "", "/");
     vi.clearAllMocks();
     state.projects = {
       data: { items: [projectBeta, projectAlpha, projectMinimal] },
@@ -304,7 +308,7 @@ describe("ProjectsContent", () => {
       expect(
         screen.getByRole("heading", { name: "Projects" }),
       ).toBeInTheDocument();
-      expect(screen.getByText("Total projects: 3")).toBeInTheDocument();
+      expect(screen.getByLabelText("Total projects: 3")).toBeInTheDocument();
 
       const alpha = rowFor("Alpha Tower");
       expect(within(alpha).getByText("Ada Lovelace")).toBeInTheDocument();
@@ -371,7 +375,7 @@ describe("ProjectsContent", () => {
       renderContent();
 
       expect(screen.getByText("No projects found")).toBeInTheDocument();
-      expect(screen.getByText("Total projects: 0")).toBeInTheDocument();
+      expect(screen.getByLabelText("Total projects: 0")).toBeInTheDocument();
     });
 
     it("renders the empty message when the payload has no items at all", () => {
@@ -411,7 +415,7 @@ describe("ProjectsContent", () => {
       await waitFor(() => {
         expect(screen.getByText("No projects found")).toBeInTheDocument();
       });
-      expect(screen.getByText("Total projects: 0")).toBeInTheDocument();
+      expect(screen.getByLabelText("Total projects: 0")).toBeInTheDocument();
     });
 
     it("ignores a query shorter than the debounce minimum", async () => {
@@ -715,7 +719,7 @@ describe("ProjectsContent", () => {
       expect(screen.getByLabelText("Project Name")).toBeDisabled();
       expect(screen.getByLabelText("Select an auditor to add")).toBeDisabled();
       expect(screen.getByLabelText("Select a facility to add")).toBeDisabled();
-      expect(screen.getByRole("button", { name: "Loading..." })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Create Project" })).toBeDisabled();
     });
 
     it("closes the dialog from the close button", async () => {
@@ -915,7 +919,7 @@ describe("ProjectsContent", () => {
         }),
       );
 
-      expect(screen.getByRole("button", { name: "Loading..." })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Update Project" })).toBeDisabled();
       expect(screen.getByLabelText("Project Name")).toBeDisabled();
       expect(
         screen.getByRole("button", { name: "Remove Ada Lovelace" }),
@@ -924,6 +928,18 @@ describe("ProjectsContent", () => {
   });
 
   describe("delete", () => {
+    it("clears a previous delete error when the dialog opens for another project", async () => {
+      renderContent();
+
+      await userEvent.click(
+        within(rowFor("Alpha Tower")).getByRole("button", {
+          name: "Delete project",
+        }),
+      );
+
+      expect(resetDeleteMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and deletes the selected project", async () => {
       renderContent();
 
@@ -1002,12 +1018,22 @@ describe("ProjectsContent", () => {
       );
 
       expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-      await userEvent.click(screen.getByRole("button", { name: "Loading..." }));
+      await userEvent.click(screen.getByRole("button", { name: "Delete" }));
       expect(deleteProjectMock).not.toHaveBeenCalled();
     });
   });
 
   describe("archive", () => {
+    it("clears a previous archive error when the dialog opens for another project", async () => {
+      renderContent();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: "archive p-alpha" }),
+      );
+
+      expect(resetArchiveMock).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation and archives the selected project", async () => {
       renderContent();
 
@@ -1089,7 +1115,7 @@ describe("ProjectsContent", () => {
       );
 
       expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-      await userEvent.click(screen.getByRole("button", { name: "Loading..." }));
+      await userEvent.click(screen.getByRole("button", { name: "Archive" }));
       expect(archiveProjectMock).not.toHaveBeenCalled();
     });
   });
@@ -1129,13 +1155,8 @@ describe("ProjectsContent", () => {
       const input = screen.getByLabelText("Project Name");
       await userEvent.type(input, "   ");
 
-      expect(
-        screen.getByRole("button", { name: "Create Project" }),
-      ).toBeDisabled();
-
-      // El submit está deshabilitado, así que se dispara el submit del
-      // formulario para ejercitar la guarda interna.
-      fireEvent.submit(input.closest("form") as HTMLFormElement);
+      await userEvent.click(screen.getByRole("button", { name: "Create Project" }));
+      expect(input).toHaveFocus();
 
       expect(screen.getByText("Project name is required.")).toBeInTheDocument();
       expect(createProjectMock).not.toHaveBeenCalled();

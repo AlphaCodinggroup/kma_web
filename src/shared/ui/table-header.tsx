@@ -16,8 +16,8 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   return (
     <div className="mb-4 flex items-center justify-between">
       <div>
-        <h2 className="text-lg font-semibold text-black">{title}</h2>
-        <p className="text-sm font-semibold text-gray-600">
+        <h2 className="text-lg font-semibold text-[var(--kma-fg)]">{title}</h2>
+        <p className="text-sm font-semibold text-[var(--kma-muted)] ">
           {subtitle}: {total}
         </p>
       </div>

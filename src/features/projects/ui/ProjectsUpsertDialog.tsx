@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, X } from "lucide-react";
 import { cn } from "@shared/lib/cn";
 import { Label, Input, Button, ErrorText, HelpText } from "@shared/ui/controls";
@@ -75,6 +75,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
   const [pendingAuditorId, setPendingAuditorId] = useState<string>("");
   const [pendingFacilityId, setPendingFacilityId] = useState<string>("");
   const [nameTouched, setNameTouched] = useState(false);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (open) {
@@ -139,6 +140,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
   const onSubmitInternal = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+      if (loading || submittingRef.current) return;
 
       // Bloqueo extra por seguridad
       if (hasPendingSelection) {
@@ -148,6 +150,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
       const trimmedNameLocal = values.name.trim();
       if (!trimmedNameLocal) {
         setNameTouched(true);
+        e.currentTarget.querySelector<HTMLElement>("#project-name")?.focus();
         return;
       }
 
@@ -160,14 +163,16 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
         ...(trimmedDescription ? { description: trimmedDescription } : {}),
       };
 
-      await onSubmit(payload);
+      submittingRef.current = true;
+      try { await onSubmit(payload); }
+      finally { submittingRef.current = false; }
     },
-    [onSubmit, values, hasPendingSelection]
+    [onSubmit, values, hasPendingSelection, loading]
   );
 
   const isFormControlsDisabled = loading === true;
   const isSubmitDisabled =
-    loading === true || isNameInvalid || hasPendingSelection;
+    loading === true || hasPendingSelection;
 
   // Index de opciones para mostrar labels en chips (user.name/email/id)
   const auditorNameById = useMemo<Map<string, string>>(() => {
@@ -198,19 +203,21 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className={cn(className)}>
+      <ModalContent className={cn("max-w-2xl", className)}>
         <ModalCloseButton onClick={() => onOpenChange(false)} />
 
         <ModalHeader>
           <ModalTitle>{copy.title}</ModalTitle>
         </ModalHeader>
 
-        <form onSubmit={onSubmitInternal} className="space-y-5">
+        <form onSubmit={onSubmitInternal} className="grid gap-x-6 gap-y-5 border-t border-[var(--kma-border)] pt-5 sm:grid-cols-2 [&_input]:min-h-11">
           {/* Project Name */}
-          <div>
+          <div className="border-b border-[var(--kma-border)] pb-5 sm:col-span-2">
             <Label htmlFor="project-name">Project Name</Label>
             <Input
               id="project-name"
+              aria-invalid={showNameError}
+              aria-describedby={showNameError ? "project-name-error" : undefined}
               placeholder={
                 mode === "create" ? "Enter project name" : "Project name"
               }
@@ -223,7 +230,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
               disabled={isFormControlsDisabled}
             />
             {showNameError && (
-              <p className="mt-1 text-sm text-red-500">
+              <p id="project-name-error" role="alert" className="mt-1 text-sm text-[var(--kma-danger)]">
                 Project name is required.
               </p>
             )}
@@ -236,11 +243,11 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
             <div className="relative">
               <select
                 className={cn(
-                  "w-full appearance-none rounded-xl",
+                  "w-full appearance-none rounded",
                   "bg-[var(--kma-input)] text-[var(--kma-input-fg)]",
-                  "border border-[var(--kma-input-border)] h-10 px-3 pr-9",
+                  "border border-[var(--kma-input-border)] min-h-11 px-3 pr-9",
                   "outline-none transition focus:bg-[var(--kma-input-focus)]",
-                  "focus:ring-2 focus:ring-[color:oklch(0_0_0_/_0.2)]"
+                  "focus:ring-2 focus:ring-[var(--kma-primary)]"
                 )}
                 value={pendingAuditorId}
                 onChange={(e) => {
@@ -259,7 +266,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                   </option>
                 ))}
               </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--kma-muted)]" />
             </div>
 
             {values.auditorIds && values.auditorIds.length > 0 ? (
@@ -267,13 +274,13 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 {values.auditorIds.map((id) => (
                   <span
                     key={id}
-                    className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800 ring-1 ring-gray-200"
+                    className="inline-flex items-center gap-2 rounded bg-[var(--kma-subtle)] px-3 py-1 text-sm text-[var(--kma-fg)] ring-1 ring-[var(--kma-border)]"
                   >
                     {auditorNameById.get(id) ?? id}
                     <button
                       type="button"
                       onClick={() => removeAuditor(id)}
-                      className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200"
+                      className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-subtle)]"
                       aria-label={`Remove ${auditorNameById.get(id) ?? id}`}
                       disabled={isFormControlsDisabled}
                     >
@@ -292,11 +299,11 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
             <div className="relative">
               <select
                 className={cn(
-                  "w-full appearance-none rounded-xl",
+                  "w-full appearance-none rounded",
                   "bg-[var(--kma-input)] text-[var(--kma-input-fg)]",
-                  "border border-[var(--kma-input-border)] h-10 px-3 pr-9",
+                  "border border-[var(--kma-input-border)] min-h-11 px-3 pr-9",
                   "outline-none transition focus:bg-[var(--kma-input-focus)]",
-                  "focus:ring-2 focus:ring-[color:oklch(0_0_0_/_0.2)]"
+                  "focus:ring-2 focus:ring-[var(--kma-primary)]"
                 )}
                 value={pendingFacilityId}
                 onChange={(e) => {
@@ -315,7 +322,7 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                   </option>
                 ))}
               </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--kma-muted)]" />
             </div>
 
 
@@ -324,13 +331,13 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
                 {values.facilityIds.map((id, i) => (
                   <span
                     key={i}
-                    className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800 ring-1 ring-gray-200"
+                    className="inline-flex items-center gap-2 rounded bg-[var(--kma-subtle)] px-3 py-1 text-sm text-[var(--kma-fg)] ring-1 ring-[var(--kma-border)]"
                   >
                     {facilityNameById.get(id) ?? id}
                     <button
                       type="button"
                       onClick={() => removeFacility(id)}
-                      className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200"
+                      className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded text-[var(--kma-muted)] hover:bg-[var(--kma-subtle)]"
                       aria-label={`Remove ${facilityNameById.get(id) ?? id}`}
                       disabled={isFormControlsDisabled}
                     >
@@ -342,15 +349,12 @@ const ProjectUpsertDialog: React.FC<ProjectUpsertDialogProps> = ({
             )}
           </div>
 
-          {globalError ? (
-            <ErrorText>{globalError}</ErrorText>
-          ) : (
-            <HelpText>&nbsp;</HelpText>
-          )}
+          <div className="sm:col-span-2">{globalError ? <ErrorText>{globalError}</ErrorText> : <HelpText>&nbsp;</HelpText>}</div>
 
-          <ModalFooter>
+          <ModalFooter className="border-t border-[var(--kma-border)] pt-4 sm:col-span-2">
             <Button
               type="submit"
+              fullWidth={false}
               isLoading={loading === true}
               disabled={isSubmitDisabled}
             >

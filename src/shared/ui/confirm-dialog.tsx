@@ -23,6 +23,7 @@ export interface ConfirmDialogProps {
   confirmLabel?: string | undefined;
   cancelLabel?: string | undefined;
   className?: string | undefined;
+  variant?: "primary" | "destructive";
 }
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -36,12 +37,13 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   className,
+  variant = "destructive",
 }) => {
   const disabled = loading === true;
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className={cn(className)}>
+    <Modal open={open} onOpenChange={onOpenChange} closeOnEsc={!disabled} closeOnOverlay={!disabled}>
+      <ModalContent className={cn("max-w-md", className)}>
         <ModalHeader>
           <ModalTitle>{title}</ModalTitle>
           {description ? (
@@ -50,7 +52,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         </ModalHeader>
 
         {error ? (
-          <p className="mt-2 text-sm text-red-600">{error}</p>
+          <p role="alert" className="mt-2 text-sm text-[var(--kma-danger)]">{error}</p>
         ) : (
           <div className="mt-2" />
         )}
@@ -60,6 +62,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             type="button"
             onClick={() => onOpenChange(false)}
             disabled={disabled}
+            variant="secondary"
+            fullWidth={false}
           >
             {cancelLabel}
           </Button>
@@ -72,7 +76,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             }}
             disabled={disabled}
             isLoading={disabled}
-            className={cn("bg-red-600 hover:opacity-50 rounded-xl")}
+            variant={variant}
+            fullWidth={false}
           >
             {confirmLabel}
           </Button>

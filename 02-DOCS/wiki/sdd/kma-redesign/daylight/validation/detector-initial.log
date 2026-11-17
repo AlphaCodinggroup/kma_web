@@ -1,0 +1,54 @@
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/widgets/shell/SidebarNav.tsx (imported by AppShell.tsx, SidebarNav.test.tsx)
+  line 94: [side-tab] border-l-2
+    → Thick colored border on one side of a card — the most recognizable tell of AI-generated UIs. Use a subtler accent or remove it entirely.
+
+1 anti-pattern found.
+
+── Advisory (not counted as failures) ──
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/(auth)/login/page.tsx
+  line 28: [design-system-font-size] text-[…] class: 50px is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+  line 28: [design-system-font-size] text-[…] class: 60px is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/global-error.tsx
+  line 23: [design-system-font-size] fontSize: 1.25rem is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+  line 26: [design-system-color] Undocumented color #666 is outside DESIGN.md colors
+    → A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.
+  line 33: [design-system-radius] borderRadius: 0.375rem is outside the DESIGN.md rounded scale
+    → A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/app/globals.css (imported by layout.tsx)
+  line 118: [design-system-font-size] font-size: clamp(32px, 3.4vw, 44px) has fluid endpoints 32px and 44px off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+  line 162: [design-system-radius] border-radius: 4px is outside the DESIGN.md rounded scale
+    → A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.
+  line 172: [design-system-radius] border-radius: 4px is outside the DESIGN.md rounded scale
+    → A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.
+  line 180: [design-system-radius] border-radius: 4px is outside the DESIGN.md rounded scale
+    → A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.
+  line 223: [design-system-font-size] font-size: 16px is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/widgets/shell/AppHeader.tsx (imported by AppShell.tsx, AppHeader.test.tsx)
+  line 29: [design-system-font-size] text-[…] class: 13px is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/widgets/shell/SidebarNav.tsx (imported by AppShell.tsx, SidebarNav.test.tsx)
+  line 90: [design-system-font-size] text-[…] class: 11px is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+  line 105: [design-system-font-size] text-[…] class: 13px is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/widgets/dashboard/MetricCard.tsx (imported by MetricCard.test.tsx)
+  line 73: [design-system-font-size] text-[…] class: 32px is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+
+/home/pablocristo/Proyectos/alphacoding/kma_web/.worktrees/install-rsc-harness/src/widgets/dashboard/ReviewPipeline.tsx
+  line 18: [design-system-font-size] text-[…] class: 40px is off the DESIGN.md type ramp
+    → A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.
+
+15 advisory notes. Suppress with --no-advisory.

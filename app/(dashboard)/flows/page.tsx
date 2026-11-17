@@ -1,9 +1,11 @@
 "use client";
 
+import { useUrlParameter } from "@shared/lib/useUrlParameter";
 import React from "react";
 import PageHeader from "@shared/ui/page-header";
-// import { Button } from "@shared/ui/controls";
-// import { Plus } from "lucide-react";
+import Link from "next/link";
+import { Plus } from "lucide-react";
+import { useSession } from "@processes/auth/hooks";
 import {
   FlowsSection,
   type FlowItemVM,
@@ -11,18 +13,19 @@ import {
 import SearchInput from "@shared/ui/search-input";
 import { useFlowsQuery } from "@features/flows/lib/useFlowsQuery";
 import { Loading } from "@shared/ui/Loading";
+import { Button } from "@shared/ui/controls";
 
 
 export default function FlowsPage() {
-  const [search, setSearch] = React.useState<string>("");
-  const { data, isLoading, error } = useFlowsQuery(true);
-  const [isNavigating] = React.useState(false);
+  const { isAdmin } = useSession();
+  const [search, setSearch] = useUrlParameter("q");
+  const { data, isLoading, error, refetch } = useFlowsQuery(true);
 
   const handleSearchChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearch(e.target.value);
     },
-    []
+    [setSearch]
   );
 
   const flows: FlowItemVM[] = React.useMemo(() => {
@@ -32,6 +35,7 @@ export default function FlowsPage() {
       title: f.title,
       description: f.description ?? "",
       flowId: f.id,
+      code: f.code,
     }));
   }, [data]);
 
@@ -45,44 +49,29 @@ export default function FlowsPage() {
     );
   }, [search, flows]);
 
-  if (isLoading || isNavigating) return <Loading text={isNavigating ? "Navigating to create a new flow..." : "Loading flows…"} />;
-
-  if (error) {
-    return (
-      <div className="p-8 text-center text-destructive">
-        Error loading flows: {error.message}
-      </div>
-    );
-  }
-
   return (
-    <main className="flex w-full flex-col gap-6">
+    <section className="flex w-full flex-col gap-6">
       <PageHeader
         title="Flows"
-        subtitle="View all audit flow templates used in the system"
+        subtitle="Build the steps and questions that guide each audit."
+        className="mb-0"
+        actionSlot={isAdmin ? <Link href="/flows/new" className="btn gap-2 whitespace-nowrap no-underline"><Plus className="h-4 w-4" aria-hidden="true" />Create Flow</Link> : undefined}
       />
-
-      <div className="max-w-full flex items-center gap-4">
-        <div className="flex-1">
-          <SearchInput
-            placeholder="Search flows..."
-            value={search}
-            onChange={handleSearchChange}
-          />
+      <div className="overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-surface)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--kma-border)] px-4 py-4 sm:px-6">
+          <div><h2 className="text-base font-semibold text-[var(--kma-fg)]">Audit templates</h2><p className="mt-1 text-xs text-[var(--kma-muted)]">{filtered.length} {filtered.length === 1 ? "template" : "templates"}{search ? " found" : " available"}</p></div>
+          <div className="w-full sm:w-72">
+            <SearchInput placeholder="Search flows..." aria-label="Search flows" value={search} onChange={handleSearchChange} />
+          </div>
         </div>
-        {/* <Button
-          onClick={() => {
-            setIsNavigating(true);
-            router.push("/flows/new");
-          }}
-          className="bg-black text-white hover:bg-gray-800 shadow-md gap-2 !w-auto px-6"
-        >
-          <Plus className="h-4 w-4" />
-          Create Flow
-        </Button> */}
+        {error ? <div role="alert" className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--kma-border)] px-4 py-4 sm:px-6"><p className="text-sm text-[var(--kma-danger)]">Error loading flows: {error.message}</p><Button type="button" variant="secondary" fullWidth={false} onClick={() => refetch()}>Try again</Button></div> : null}
+        {isLoading ? <Loading text="Loading flows…" /> : (
+          <>
+            <FlowsSection items={filtered} onDeleted={() => refetch()} />
+            {filtered.length === 0 && !error ? <div className="px-5 py-12 text-center"><p className="font-semibold">{search ? "No flows match your search" : "No flow templates yet"}</p><p className="mt-1 text-sm text-[var(--kma-muted)]">{search ? "Try another name or clear the search." : "Create a template to guide auditors through an inspection."}</p>{search ? <Button type="button" variant="secondary" fullWidth={false} className="mt-4" onClick={() => setSearch("")}>Clear search</Button> : null}</div> : null}
+          </>
+        )}
       </div>
-
-      <FlowsSection items={filtered} />
-    </main>
+    </section>
   );
 }

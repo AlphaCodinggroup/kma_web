@@ -15,7 +15,7 @@ test.describe("Autenticación", () => {
   test("credenciales inválidas no inician sesión", async ({ page }) => {
     await page.goto("/login");
     await page.getByLabel(/username/i).fill(CREDENTIALS.username);
-    await page.getByLabel(/password/i).fill("contraseña-incorrecta");
+    await page.getByLabel(/^password$/i).fill("contraseña-incorrecta");
     await page.getByRole("button", { name: /log ?in|sign ?in|ingresar/i }).click();
 
     // Sigue en el login y se muestra un mensaje de error.

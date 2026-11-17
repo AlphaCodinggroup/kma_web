@@ -1,0 +1,33 @@
+# Límites del Auto-Ingest Sweep nativo de RSC; rutas relativas al repositorio.
+# El inventario second-brain usa second-brain.json y reglas propias.
+node_modules/
+.git/
+.next/
+dist/
+build/
+coverage/
+.venv/
+__pycache__/
+.dart_tool/
+.pytest_cache/
+.ruff_cache/
+.worktrees/
+.claude/
+.codex/
+.agents/
+.rsc/
+01-TOOLS/
+02-DOCS/inbox/_processed/
+02-DOCS/raw/
+02-DOCS/wiki/
+02-DOCS/audits/
+02-DOCS/second-brain.json
+docs/DATOS.md
+**/*secret*
+**/*credential*
+**/*password*
+**/*token*
+.env*
+**/.env*
+**/*.pem
+**/*.key

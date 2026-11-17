@@ -43,15 +43,15 @@ export interface BaseStep {
 /** Condition for checking previous step answers */
 export interface Condition {
   step_id: string;
-  answer?: "YES" | "NO";        // For Question steps
-  selected_option?: string;      // For Select steps
+  answer?: "YES" | "NO" | undefined;        // For Question steps
+  selected_option?: string | undefined;      // For Select steps
 }
 
 /** Conditional navigation - alternate next step based on conditions */
 export interface ConditionalNext {
   conditions: Condition[];
   next: string;
-  match_any?: boolean;  // Default: false (AND logic)
+  match_any?: boolean | undefined;  // Default: false (AND logic)
 }
 
 export interface QuestionStep extends BaseStep {

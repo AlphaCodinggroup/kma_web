@@ -29,7 +29,7 @@ export const FlowCardWithDialog: React.FC<FlowCardWithDialogDataProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const { flow, isLoading, error } = useFlowById(flowId, open);
+  const { flow, isLoading, error, refetch } = useFlowById(flowId, open);
 
 
   // Fallback visual mínimo mientras carga/errores.
@@ -60,6 +60,9 @@ export const FlowCardWithDialog: React.FC<FlowCardWithDialogDataProps> = ({
         open={open}
         onOpenChange={setOpen}
         flow={detail}
+        isLoading={isLoading}
+        error={error ? error.status === 401 ? "Your session has expired. Sign in again to view this flow." : "Questions could not be loaded. Try again." : undefined}
+        onRetry={refetch ? () => { void refetch(); } : undefined}
         data-testid={dialogTestId ?? "flow-questions-dialog"}
       />
     </>

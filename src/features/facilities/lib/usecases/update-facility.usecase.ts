@@ -14,7 +14,6 @@ export type UpdateFacilityInput = UpdateFacilityParams & {
 
 function assertValidUrl(url: string): void {
   try {
-    // eslint-disable-next-line no-new
     new URL(url);
   } catch {
     throw new Error("Photo URL is invalid");

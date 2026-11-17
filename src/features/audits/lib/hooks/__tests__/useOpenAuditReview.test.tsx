@@ -12,6 +12,7 @@ const startSendForReview = vi.fn();
 const useSendForReviewAudit = vi.fn();
 
 vi.mock("next/navigation", () => ({
+  useSearchParams: () => null,
   useRouter: () => ({ push }),
 }));
 vi.mock("@features/audits/lib/hooks/useSendForReviewAudit", () => ({
@@ -48,6 +49,23 @@ beforeEach(() => {
 });
 
 describe("useOpenAuditReview", () => {
+  it.each(["unknown", "deleted", "audit_in_progress"] as const)("does not open QC or send %s audits for review", status => {
+    const { result } = renderHook(() => useOpenAuditReview());
+    act(() => result.current.openReview(makeAudit({ status })));
+    expect(startSendForReview).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+    expect(result.current.editingId).toBeNull();
+    expect(result.current.noReportNeeded.open).toBe(false);
+  });
+
+  it.each(["unknown", "deleted", "audit_in_progress"] as const)("cannot bypass the %s guard with the compliance flag", status => {
+    const { result } = renderHook(() => useOpenAuditReview());
+    act(() => result.current.openReview(makeAudit({ status }), true));
+    expect(startSendForReview).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+    expect(result.current.noReportNeeded.open).toBe(false);
+  });
+
   it("polls the review every five seconds until it is ready", () => {
     renderHook(() => useOpenAuditReview());
 

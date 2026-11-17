@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Audit } from "@entities/audit/model";
 import { useSendForReviewAudit } from "@features/audits/lib/hooks/useSendForReviewAudit";
+import { isAuditReviewAvailable } from "../audit-review-availability";
 import { buildAuditEditHref } from "@features/audits/lib/audit-edit-href";
 
 export type UseOpenAuditReviewOptions = {
@@ -15,7 +16,8 @@ export type UseOpenAuditReviewOptions = {
  * Abre la revisión (QC) de una auditoría:
  * - Conforme (sin hallazgos): no hay reporte; se abre el aviso "No Report Needed".
  * - Borrador pendiente: primero se envía a revisión y se navega al resolverse.
- * - Resto: se navega directo a la edición.
+ * - En revisión o entregada: se navega al detalle.
+ * - Campo, eliminada o desconocida: no se abre QC ni se envía a revisión.
  */
 export function useOpenAuditReview(options: UseOpenAuditReviewOptions = {}) {
   const { returnTo, onReady } = options;
@@ -32,6 +34,7 @@ export function useOpenAuditReview(options: UseOpenAuditReviewOptions = {}) {
 
   const openReview = useCallback(
     (audit: Audit, isCompliant?: boolean) => {
+      if (!isAuditReviewAvailable(audit.status)) return;
       if (isCompliant) {
         setNoReportNeededOpen(true);
         return;

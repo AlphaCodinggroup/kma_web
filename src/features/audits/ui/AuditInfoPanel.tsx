@@ -34,62 +34,62 @@ export const AuditInfoPanel: React.FC<AuditInfoPanelProps> = ({
       aria-labelledby={ariaLabelledById}
       data-testid="audit-info-panel"
     >
-      <div className="rounded-2xl border border-gray-100 bg-card p-4 shadow-sm sm:p-6">
-        <h3 id={ariaLabelledById} className="mb-4 text-base font-bold">
+      <div>
+        <h2 id={ariaLabelledById} className="mb-4 text-sm font-semibold">
           Audit Information
-        </h3>
+        </h2>
 
-        <dl className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-4 md:grid-cols-3 xl:grid-cols-6 [&>div]:min-w-0 [&>div]:border-t [&>div]:border-[var(--kma-border)] [&>div]:pt-3">
           <div>
-            <dt className="text-sm font-semibold text-muted-foreground">
+            <dt className="text-xs font-medium text-[var(--kma-muted)]">
               Audit Date
             </dt>
-            <dd className="mt-1 text-sm" data-testid="audit-date">
+            <dd className="mt-1.5 break-words text-sm font-medium" data-testid="audit-date">
               {formatIsoToYmdHm(auditDate)}
             </dd>
           </div>
 
-          <div className="sm:justify-self-end">
-            <dt className="text-sm font-semibold text-muted-foreground">
+          <div className="min-w-0 break-words">
+            <dt className="text-xs font-medium text-[var(--kma-muted)]">
               Completed Date
             </dt>
-            <dd className="mt-1 text-sm" data-testid="completed-date">
+            <dd className="mt-1.5 break-words text-sm font-medium" data-testid="completed-date">
               {formatIsoToYmdHm(completedDate)}
             </dd>
           </div>
 
           <div>
-            <dt className="text-sm font-semibold text-muted-foreground">
+            <dt className="text-xs font-medium text-[var(--kma-muted)]">
               Project
             </dt>
-            <dd className="mt-1 text-sm" data-testid="project-name">
+            <dd className="mt-1.5 break-words text-sm font-medium" data-testid="project-name">
               {projectName || "—"}
             </dd>
           </div>
 
-          <div className="sm:justify-self-end">
-            <dt className="text-sm font-semibold text-muted-foreground">
+          <div className="min-w-0 break-words">
+            <dt className="text-xs font-medium text-[var(--kma-muted)]">
               Facility
             </dt>
-            <dd className="mt-1 text-sm" data-testid="facility-name">
+            <dd className="mt-1.5 break-words text-sm font-medium" data-testid="facility-name">
               {facilityName || "—"}
             </dd>
           </div>
 
           <div>
-            <dt className="text-sm font-semibold text-muted-foreground">
+            <dt className="text-xs font-medium text-[var(--kma-muted)]">
               Auditor
             </dt>
-            <dd className="mt-1 text-sm" data-testid="auditor-name">
+            <dd className="mt-1.5 break-words text-sm font-medium" data-testid="auditor-name">
               {auditorName || "—"}
             </dd>
           </div>
 
-          <div className="sm:justify-self-end">
-            <dt className="text-sm font-semibold text-muted-foreground">
+          <div className="min-w-0 break-words">
+            <dt className="text-xs font-medium text-[var(--kma-muted)]">
               Location
             </dt>
-            <dd className="mt-1 text-sm" data-testid="location">
+            <dd className="mt-1.5 break-words text-sm font-medium" data-testid="location">
               {location || "—"}
             </dd>
           </div>

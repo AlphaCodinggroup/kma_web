@@ -4,6 +4,10 @@ import React from "react";
 import Link from "next/link";
 import { Eye, RotateCcw } from "lucide-react";
 import { cn } from "@shared/lib/cn";
+import { useMediaQuery } from "@shared/lib/useMediaQuery";
+import { MobileEntityRow } from "@shared/ui/mobile-entity-row";
+import { Button } from "@shared/ui/controls";
+import { ProjectStatusBadge } from "@shared/ui/badge";
 import { projectDetailHref } from "@features/projects/lib/project-href";
 import {
   Table,
@@ -45,6 +49,7 @@ export const ArchivedProjectsTable: React.FC<ArchivedProjectsTableProps> = ({
   className,
 }) => {
   const { isAdmin } = useSession();
+  const isCompact = useMediaQuery("(max-width: 1023px)");
 
   if (isLoading) return <Loading text="Loading archived projects…" />;
 
@@ -56,26 +61,37 @@ export const ArchivedProjectsTable: React.FC<ArchivedProjectsTableProps> = ({
       />
     );
 
+  if (isCompact) return (
+    <div className={className}>
+      {items.length ? <ul aria-label="Archived projects" className="divide-y divide-[var(--kma-border)]">
+        {items.map(row => <MobileEntityRow key={row.id} title={<Link href={projectDetailHref(row.id)} className="no-underline hover:underline">{row.name}</Link>} status={<ProjectStatusBadge status="ARCHIVED" />} subtitle={`Archived ${formatIsoToYmdHm(row.archivedAt).slice(0, 10)}`} actions={<>
+          <Link href={projectDetailHref(row.id)} aria-label={`View ${row.name}`} className="inline-flex min-h-11 items-center rounded border border-[var(--kma-border)] px-3 text-sm font-medium no-underline">View project</Link>
+          <Button fullWidth={false} variant="secondary" disabled={!isAdmin} aria-label="Restore project" onClick={() => onRestore(row.id)}>Restore</Button>
+        </>}><ProjectAuditsProgress projectId={row.id} /></MobileEntityRow>)}
+      </ul> : <p className="px-4 py-10 text-center text-sm text-[var(--kma-muted)]">{emptyMessage}</p>}
+    </div>
+  );
+
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-gray-200",
+        "overflow-x-auto",
         className
       )}
     >
-      <Table>
+      <Table className="min-w-[760px]">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[40%] px-4 py-3 font-semibold text-black">
+            <TableHead className="w-[40%] px-4 py-3 font-semibold text-[var(--kma-fg)]">
               Project
             </TableHead>
-            <TableHead className="w-[20%] px-4 py-3 font-semibold text-black">
+            <TableHead className="w-[20%] px-4 py-3 font-semibold text-[var(--kma-fg)]">
               Archived
             </TableHead>
-            <TableHead className="w-[20%] px-4 py-3 font-semibold text-black">
+            <TableHead className="w-[20%] px-4 py-3 font-semibold text-[var(--kma-fg)]">
               Audits
             </TableHead>
-            <TableHead className="w-[20%] px-4 py-3 text-black">
+            <TableHead className="w-[20%] px-5 py-3 text-[var(--kma-muted)]">
               Actions
             </TableHead>
           </TableRow>
@@ -85,27 +101,27 @@ export const ArchivedProjectsTable: React.FC<ArchivedProjectsTableProps> = ({
           {items.length > 0 ? (
             items.map((row) => (
               <TableRow key={row.id}>
-                <TableCell className="px-4 py-4 text-black">
+                <TableCell className="px-5 py-4 text-[var(--kma-fg)]">
                   <Link
                     href={projectDetailHref(row.id)}
-                    className="font-semibold text-black no-underline hover:underline"
+                    className="font-semibold text-[var(--kma-fg)] no-underline hover:underline"
                   >
                     {row.name}
                   </Link>
                 </TableCell>
-                <TableCell className="px-4 py-4 text-black">
+                <TableCell className="px-5 py-4 text-[var(--kma-fg)]">
                   {formatIsoToYmdHm(row.archivedAt).slice(0, 10)}
                 </TableCell>
-                <TableCell className="px-4 py-4 text-black">
+                <TableCell className="px-5 py-4 text-[var(--kma-fg)]">
                   <ProjectAuditsProgress projectId={row.id} />
                 </TableCell>
-                <TableCell className="px-4 py-4">
+                <TableCell className="px-5 py-4">
                   <div className="flex items-center justify-end gap-2">
                     <Link
                       href={projectDetailHref(row.id)}
                       aria-label={`View ${row.name}`}
                       title="View project"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--kma-border)] bg-white text-black hover:bg-gray-100"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] text-[var(--kma-fg)] hover:bg-[var(--kma-subtle)]"
                     >
                       <Eye className="h-4 w-4" />
                     </Link>
@@ -129,7 +145,7 @@ export const ArchivedProjectsTable: React.FC<ArchivedProjectsTableProps> = ({
             <TableRow>
               <TableCell
                 colSpan={4}
-                className="px-4 py-10 text-center text-sm text-gray-600"
+                className="px-4 py-10 text-center text-sm text-[var(--kma-muted)]"
               >
                 {emptyMessage}
               </TableCell>

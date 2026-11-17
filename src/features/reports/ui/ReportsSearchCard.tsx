@@ -15,20 +15,17 @@ export interface ReportsSearchCardProps {
 const ReportsSearchCard: React.FC<ReportsSearchCardProps> = ({
   query,
   onQueryChange,
-  placeholder = "Search by project name, auditor, or report ID…",
+  placeholder = "Search by project name, status, or date…",
   className,
 }) => {
   return (
     <section
+      aria-label="Search reports"
       className={cn(
-        "rounded-2xl border border-gray-200 bg-white p-6",
+        "w-full lg:w-80",
         className
       )}
     >
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-base font-bold text-gray-900">Search Reports</h3>
-      </div>
       <SearchInput
         placeholder={placeholder}
         value={query}

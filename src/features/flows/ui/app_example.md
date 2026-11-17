@@ -12,7 +12,7 @@ Pregunta YES/NO que dirige a diferentes pasos
 ```json
 {
   "id": "AR-Q01",
-  " type": "Question",
+  "type": "Question",
   "text": "Is the surface stable?",
   "yes_next": "AR-Q02",
   "no_next": "AR-F01",
@@ -33,6 +33,12 @@ Múltiples opciones, cada una va a un paso diferente
     {"label": "Regrade route", "next": "AR-F04", "barrier_id": "AR-B04"}
   ]
 }
+```
+
+Cada opción también puede llevar `yes_next`, `no_next` y una `condition`; el cliente web los conserva al guardar (fix #71), así que no deben descartarse al mapear.
+
+```json
+{"label": "Regrade route", "next": "AR-F04", "barrier_id": "AR-B04", "yes_next": "AR-F06", "no_next": "AR-F07"}
 ```
 
 ### 3. Form
@@ -511,9 +517,11 @@ no_next  cond.  no_next  yes_next  cond.  yes_next
 
 ---
 
+## Flujo y código
+
+Un flujo lleva además un `code` opcional (por ejemplo `CURB_RAMPS`) que el editor conserva al editar (fix #72). Los ejemplos completos viven en el backend (`../kma-backend`, fixtures de `local/fixtures`), que es la fuente de cada contrato; este documento describe cómo los consume el frontend.
+
 ## Referencias
 
-- [accessible_route.json](../docs/accessible_route.json) - Ejemplo con `conditional_yes_next` (Select condition)
-- [designation_signage.json](../docs/designation_signage.json) - Ejemplo con `conditional_yes_next` (Question conditions)
-- [curb_ramps.json](../docs/curb_ramps.json) - Ejemplo con `conditional_yes_next` y `conditional_no_next` (navegación compleja)
-- [Backend README](../README.md) - Documentación del backend
+- Contratos y DTO del frontend: `src/features/flows/api/flows.dto.ts` y `src/entities/flow/lib/mappers.ts`.
+- Editor: `src/features/flows/ui/FlowEditor.tsx` (estructura descrita en `02-DOCS/wiki/sdd/kma-redesign/daylight/main-parity.md`).

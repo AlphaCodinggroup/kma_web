@@ -49,9 +49,9 @@ describe("DashboardMetrics", () => {
 
     expect(container.firstElementChild).toHaveClass(
       "grid",
-      "gap-4",
-      "md:grid-cols-2",
-      "lg:grid-cols-3"
+      "grid-cols-2",
+      "gap-px",
+      "md:grid-cols-4"
     );
   });
 
@@ -68,7 +68,7 @@ describe("DashboardMetrics", () => {
     const { container } = render(<DashboardMetrics items={items} />);
 
     expect(container.firstElementChild?.getAttribute("class")).toBe(
-      "grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+      "grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[var(--kma-border)] bg-[var(--kma-border)] md:grid-cols-4 xl:grid-cols-1"
     );
   });
 

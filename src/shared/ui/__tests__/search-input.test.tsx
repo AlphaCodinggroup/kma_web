@@ -85,9 +85,9 @@ describe("SearchInput", () => {
 
       const input = screen.getByLabelText("Search");
       if (shouldHave) {
-        expect(input).toHaveClass("ring-red-400");
+        expect(input).toHaveClass("border-[var(--kma-danger)]");
       } else {
-        expect(input).not.toHaveClass("ring-red-400");
+        expect(input).not.toHaveClass("border-[var(--kma-danger)]");
       }
     }
   );

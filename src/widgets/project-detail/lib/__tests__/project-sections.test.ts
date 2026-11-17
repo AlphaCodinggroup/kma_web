@@ -42,15 +42,18 @@ const facilitiesById = new Map<string, Pick<Facility, "address" | "city">>([
 ]);
 
 describe("summarizeProjectAudits", () => {
-  it("counts everything that is not completed as in progress", () => {
+  it("counts only active fieldwork and review states as in progress", () => {
     expect(
       summarizeProjectAudits([
         makeAudit({ status: "draft_report_pending_review" }),
         makeAudit({ status: "draft_report_in_review" }),
         makeAudit({ status: "final_report_sent_to_client" }),
         makeAudit({ status: "completed" }),
+        makeAudit({ status: "audit_in_progress" }),
+        makeAudit({ status: "deleted" }),
+        makeAudit({ status: "unknown" }),
       ])
-    ).toEqual({ total: 4, inProgress: 3, completed: 1 });
+    ).toEqual({ total: 7, inProgress: 3, completed: 1 });
   });
 
   it("returns zeros for no audits", () => {

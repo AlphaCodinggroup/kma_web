@@ -60,7 +60,7 @@ export default function AuditEditPage(props: AuditEditPageProps) {
 
   const memoed = useMemo(() => {
     const title = auditDetail?.flowName ?? "";
-    const status = auditDetail?.status ?? "draft_report_in_review";
+    const status = auditDetail?.status ?? "unknown";
     const createdAt = auditDetail?.createdAt ?? "";
     const updatedAt = auditDetail?.updatedAt ?? "";
     const auditor = auditorFromQuery ?? "";
@@ -88,10 +88,10 @@ export default function AuditEditPage(props: AuditEditPageProps) {
   }
 
   return (
-    <main className="flex min-h-screen flex-col py-4 sm:py-6">
+    <main className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col bg-[var(--kma-bg)]">
       <AuditEditHeader
         title={memoed.title}
-        auditor={memoed.auditor}
+        auditor={memoed.auditor || auditDetail?.auditorName || "Not assigned"}
         status={memoed.status}
         createdAt={memoed.createdAt}
         updatedAt={memoed.updatedAt}
@@ -99,7 +99,7 @@ export default function AuditEditPage(props: AuditEditPageProps) {
         {...(isDirty ? { onBack: () => setConfirmLeave(true) } : {})}
       />
 
-      <div className="mt-4 sm:mt-6">
+      <div className="border-b border-[var(--kma-border)] bg-[var(--kma-surface)] py-5">
         <AuditInfoPanel
           auditDate={memoed.createdAt}
           completedDate={memoed.updatedAt}
@@ -110,7 +110,7 @@ export default function AuditEditPage(props: AuditEditPageProps) {
         />
       </div>
 
-      <div className="mt-4 sm:mt-5">
+      <div className="bg-[var(--kma-bg)] pb-6">
         <AuditEditContent
           id={auditId}
           auditDetail={auditDetail}

@@ -57,20 +57,20 @@ export const AuditEditHeader: React.FC<AuditEditHeaderProps> = ({
 
   return (
     <header
-      className={cn("w-full", containerPaddingClassName, className)}
+      className={cn("w-full border-b border-[var(--kma-border)] bg-[var(--kma-surface)] py-6", containerPaddingClassName, className)}
       aria-labelledby={headingId}
       data-testid="audit-edit-header"
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Izquierda: Back + stack (título/subtítulo) */}
-        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5">
           <Link
             href={(backHref ?? "#") as Route}
             onClick={handleBack}
             className={cn(
-              "mt-[6px] inline-flex shrink-0 items-center gap-2",
-              "font-semibold text-foreground no-underline",
-              "hover:opacity-70 transition-opacity"
+              "inline-flex min-h-[var(--kma-control-height)] shrink-0 items-center gap-2 rounded border border-[var(--kma-border)] px-3 text-sm",
+              "font-semibold text-[var(--kma-fg)] no-underline",
+              "hover:bg-[var(--kma-input)] transition-colors"
             )}
             aria-label={label}
             data-testid="audit-back-link"
@@ -79,14 +79,14 @@ export const AuditEditHeader: React.FC<AuditEditHeaderProps> = ({
             <span>{label}</span>
           </Link>
 
-          <div className="ml-4 min-w-0">
+          <div className="min-w-0">
             <h1
               id={headingId}
-              className="truncate text-3xl font-extrabold leading-tight"
+              className="kma-page-title break-words text-2xl leading-tight sm:text-[32px]"
             >
               {title}
             </h1>
-            <p className="truncate text-base text-muted-foreground">
+            <p className="mt-1 break-words text-sm text-[var(--kma-muted)]">
               <span className="font-medium">Auditor:</span> {auditor}
             </p>
           </div>

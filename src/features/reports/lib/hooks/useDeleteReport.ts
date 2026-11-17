@@ -6,8 +6,8 @@ export function useDeleteReport() {
 
     return useMutation({
         mutationFn: (id: string) => reportsRepo.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["reports", "list"] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["reports"] });
         },
     });
 }

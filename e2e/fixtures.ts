@@ -23,7 +23,7 @@ export async function login(page: Page): Promise<void> {
   await page.goto("/login");
 
   const username = page.getByLabel(/username/i);
-  const password = page.getByLabel(/password/i);
+  const password = page.getByLabel(/^password$/i);
 
   await expect(username).toBeVisible();
   await username.fill(CREDENTIALS.username);

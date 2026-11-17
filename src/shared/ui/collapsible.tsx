@@ -30,31 +30,31 @@ export function Collapsible({
 
   return (
     <section
-      className={cn("rounded-xl border border-gray-200 bg-white", className)}
+      className={cn("rounded-xl border border-[var(--kma-border)] bg-[var(--kma-surface)]", className)}
     >
       <button
         type="button"
         aria-expanded={open}
         aria-controls={contentId}
         onClick={() => setOpen((value) => !value)}
-        className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-gray-50"
+        className="grid w-full grid-cols-[16px_minmax(0,1fr)] items-start gap-x-3 gap-y-1 rounded-xl px-4 py-3 text-left transition-colors hover:bg-[var(--kma-subtle)] md:flex md:items-center"
       >
         <ChevronDown
           aria-hidden="true"
           className={cn(
-            "h-4 w-4 shrink-0 text-gray-500 transition-transform",
+            "h-4 w-4 shrink-0 text-[var(--kma-muted)] transition-transform",
             open ? "" : "-rotate-90"
           )}
         />
-        <span className="min-w-0 flex-1">{title}</span>
+        <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{title}</span>
         {meta ? (
-          <span className="shrink-0 text-sm text-gray-600">{meta}</span>
+          <span className="col-start-2 min-w-0 break-words text-sm text-[var(--kma-muted)] md:shrink-0">{meta}</span>
         ) : null}
       </button>
       <div
         id={contentId}
         hidden={!open}
-        className="border-t border-gray-200"
+        className="border-t border-[var(--kma-border)] "
       >
         {open ? children : null}
       </div>

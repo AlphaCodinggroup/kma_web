@@ -186,10 +186,7 @@ export function lastButtonIn(block: HTMLElement): HTMLElement {
 /** Columna izquierda del editor (buscador + lista de pasos + botones de alta). */
 export function sidebar(): HTMLElement {
   const input = screen.getByPlaceholderText("Search steps...");
-  const panel =
-    input.closest("div.rounded-xl") ??
-    input.closest("div.w-80") ??
-    input.closest("div.flex-1");
+  const panel = input.closest("[data-testid=flow-steps-panel]");
   if (!panel) throw new Error("Sidebar not found");
   return panel as HTMLElement;
 }
@@ -251,7 +248,7 @@ export function conditionalTarget(branch: "YES" | "NO"): HTMLElement {
 /** Bloques de condiciones del panel, en orden. */
 export function conditionBlocks(branch: "YES" | "NO"): HTMLElement[] {
   return Array.from(
-    requirePanel(branch).querySelectorAll<HTMLElement>("div.bg-white")
+    requirePanel(branch).querySelectorAll<HTMLElement>("[data-condition-row]")
   );
 }
 
@@ -273,18 +270,17 @@ export function createMenuItem(
   createButton: HTMLElement,
   type: "Question" | "Form" | "Select" | "End"
 ): HTMLElement {
-  const wrapper = createButton.parentElement;
-  if (!wrapper) throw new Error("Create menu wrapper not found");
-  return within(wrapper as HTMLElement).getByRole("button", { name: type });
+  if (createButton.getAttribute("aria-expanded") !== "true") throw new Error("Create menu is not open");
+  return within(screen.getByRole("menu")).getByRole("menuitem", { name: type });
 }
 
 export function queryCreateMenuItem(
   createButton: HTMLElement,
   type: "Question" | "Form" | "Select" | "End"
 ): HTMLElement | null {
-  const wrapper = createButton.parentElement;
-  if (!wrapper) throw new Error("Create menu wrapper not found");
-  return within(wrapper as HTMLElement).queryByRole("button", { name: type });
+  if (createButton.getAttribute("aria-expanded") !== "true") return null;
+  const menu = screen.queryByRole("menu");
+  return menu ? within(menu).queryByRole("menuitem", { name: type }) : null;
 }
 
 /** Modal abierto (Modal expone role="dialog"). */

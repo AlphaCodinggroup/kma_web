@@ -3,6 +3,9 @@
 import React, { useState, useMemo } from "react";
 import { Pencil, Trash2, MapPin, Archive, ArchiveRestore, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@shared/lib/cn";
+import { useMediaQuery } from "@shared/lib/useMediaQuery";
+import { MobileEntityRow } from "@shared/ui/mobile-entity-row";
+import { Button } from "@shared/ui/controls";
 import {
   Table,
   TableBody,
@@ -53,6 +56,7 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const { isAdmin } = useSession();
+  const isCompact = useMediaQuery("(max-width: 1023px)");
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -96,10 +100,10 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
   }, [items, sortColumn, sortDirection]);
 
   const SortIcon = ({ column }: { column: SortColumn }) => {
-    if (sortColumn !== column) return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
-    if (sortDirection === "asc") return <ArrowUp className="h-4 w-4 text-black" />;
-    if (sortDirection === "desc") return <ArrowDown className="h-4 w-4 text-black" />;
-    return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    if (sortColumn !== column) return <ArrowUpDown className="h-4 w-4 text-[var(--kma-muted)]" />;
+    if (sortDirection === "asc") return <ArrowUp className="h-4 w-4 text-[var(--kma-fg)]" />;
+    if (sortDirection === "desc") return <ArrowDown className="h-4 w-4 text-[var(--kma-fg)]" />;
+    return <ArrowUpDown className="h-4 w-4 text-[var(--kma-muted)]" />;
   };
 
   const hasItems = sortedItems.length > 0;
@@ -117,44 +121,62 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
     );
   }
 
+  if (isCompact) return (
+    <div className={className}>
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--kma-border)] px-4 py-3">
+        <select aria-label="Sort facilities" value={sortColumn ?? ""} onChange={event => { if (event.target.value) handleSort(event.target.value as SortColumn); else { setSortColumn(null); setSortDirection(null); } }} className="min-h-11 min-w-0 flex-1 rounded border border-[var(--kma-border)] bg-[var(--kma-surface)] px-3 text-sm"><option value="">Original order</option><option value="name">Facility name</option><option value="address">Address</option><option value="date">Created date</option></select>
+        <Button fullWidth={false} variant="ghost" aria-label="Change facility sort direction" onClick={() => handleSort(sortColumn ?? "name")}>{sortDirection === "asc" ? "Ascending" : sortDirection === "desc" ? "Descending" : "Sort"}</Button>
+      </div>
+      {hasItems ? <ul aria-label="Facilities" className="divide-y divide-[var(--kma-border)]">
+        {sortedItems.map(row => <MobileEntityRow key={row.id} title={row.name} subtitle={[row.address, row.city].filter(Boolean).join(" · ")} status={<span className="inline-flex rounded border border-[var(--kma-border)] bg-[var(--kma-subtle)] px-2 py-1 text-xs text-[var(--kma-muted)]">{showArchived ? "Archived" : "Active"}</span>} actions={<>
+          <Button fullWidth={false} variant="secondary" disabled={!isAdmin} aria-label="Edit facility" onClick={() => onEdit(row.id)}>Edit</Button>
+          {showArchived && onRestore ? <Button fullWidth={false} variant="secondary" disabled={!isAdmin} aria-label="Restore facility" onClick={() => onRestore(row.id)}>Restore</Button> : <>
+            <Button fullWidth={false} variant="ghost" disabled={!isAdmin} aria-label="Archive facility" onClick={() => onArchive(row.id)}>Archive</Button>
+            <RowActionButton className="min-h-11 min-w-11" icon={Trash2} ariaLabel="Delete facility" variant="danger" disabled={!isAdmin} onClick={() => onDelete(row.id)} />
+          </>}
+        </>}><dl className="space-y-3"><div><dt className="font-medium text-[var(--kma-fg)]">Created</dt><dd>{row.createdAt ? formatIsoToYmdHm(row.createdAt) : "—"}</dd></div>{row.description ? <div><dt className="font-medium text-[var(--kma-fg)]">Description</dt><dd>{row.description}</dd></div> : null}</dl></MobileEntityRow>)}
+      </ul> : <p className="px-4 py-10 text-center text-sm text-[var(--kma-muted)]">{emptyMessage}</p>}
+    </div>
+  );
+
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-gray-200",
+        "overflow-x-auto",
         className
       )}
     >
-      <Table>
-        <TableHeader className="bg-muted/40">
+      <Table className="min-w-[760px]">
+        <TableHeader className="bg-[var(--kma-subtle)]">
           <TableRow className="[&_th]:h-12">
-            <TableHead className="w-[44%]">
+            <TableHead className="w-[38%]">
               <button
                 onClick={() => handleSort("name")}
-                className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
               >
                 Facility
                 <SortIcon column="name" />
               </button>
             </TableHead>
-            <TableHead className="w-[36%]">
+            <TableHead className="w-[30%]">
               <button
                 onClick={() => handleSort("address")}
-                className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
               >
                 Address
                 <SortIcon column="address" />
               </button>
             </TableHead>
-            <TableHead className="w-[12%]">
+            <TableHead className="w-[16%]">
               <button
                 onClick={() => handleSort("date")}
-                className="flex items-center gap-2 hover:text-black transition-colors font-semibold"
+                className="flex items-center gap-2 hover:text-[var(--kma-fg)] transition-colors font-semibold"
               >
                 Created At
                 <SortIcon column="date" />
               </button>
             </TableHead>
-            <TableHead className="w-[8%] text-right font-semibold pr-4">Actions</TableHead>
+            <TableHead className="w-[16%] text-right font-semibold pr-4">Actions</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -167,28 +189,28 @@ const FacilityTable: React.FC<FacilityTableProps> = ({
         >
           {hasItems ? (
             sortedItems.map((row) => (
-              <TableRow key={row.id} className="hover:bg-muted/30">
+              <TableRow key={row.id} className="hover:bg-[var(--kma-selected)]">
                 {/* Facility + status */}
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex h-6 w-6 items-center justify-center">
+                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded bg-[var(--kma-subtle)] text-[var(--kma-muted)]">
                       <MapPin className="h-4 w-4" />
                     </span>
                     <div className="flex">
-                      <span className="font-medium">{row.name}</span>
+                      <span className="font-semibold">{row.name}</span>
                     </div>
                   </div>
                 </TableCell>
 
                 {/* Address + city */}
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-[var(--kma-muted)]">
                   {row.address || row.city
                     ? [row.address, row.city].filter(Boolean).join(" · ")
                     : "—"}
                 </TableCell>
 
                 {/* Created at (formateado) */}
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-[var(--kma-muted)]">
                   {row.createdAt ? formatIsoToYmdHm(row.createdAt) : "—"}
                 </TableCell>
 

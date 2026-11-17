@@ -53,6 +53,21 @@ describe("FlowQuestionsDialog", () => {
     expect(screen.getByText("Questions (3)")).toBeInTheDocument();
   });
 
+  it("exposes one named dialog for keyboard and screen reader navigation", () => {
+    renderDialog();
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(screen.getByRole("dialog", { name: "Ramps audit" })).toHaveAccessibleDescription("All ramp related questions");
+  });
+
+  it("offers a retry when questions fail to load", async () => {
+    const onRetry = vi.fn();
+    render(<FlowQuestionsDialog open onOpenChange={vi.fn()} flow={{ ...baseFlow, questions: [] }} error="Questions could not be loaded. Try again." onRetry={onRetry} />);
+    expect(screen.getByRole("alert")).toHaveTextContent("Questions could not be loaded.");
+    expect(screen.queryByText("This flow has no questions to display.")).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Try again" }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
+  });
+
   it("omits the description paragraph when there is none", () => {
     renderDialog({ description: "" });
 

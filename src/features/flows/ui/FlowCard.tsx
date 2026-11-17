@@ -1,17 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { Eye, Pencil, Loader2, Trash2 } from "lucide-react";
+import { Eye, Pencil, Loader2, Trash2, Workflow } from "lucide-react";
 import { cn } from "@shared/lib/cn";
-import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card";
 import { Button } from "@shared/ui/controls";
-import { Loading } from "@shared/ui/Loading";
 import Link from "next/link";
+import type { Route } from "next";
+import ConfirmDialog from "@shared/ui/confirm-dialog";
 import { useSession } from "@processes/auth/hooks";
 
 export interface FlowCardProps {
   title: string;
   description?: string;
+  code?: string | undefined;
   className?: string;
   onViewQuestions?: () => void;
   "data-testid"?: string;
@@ -22,6 +23,7 @@ export interface FlowCardProps {
 export const FlowCard: React.FC<FlowCardProps> = ({
   title,
   description,
+  code,
   className,
   onViewQuestions,
   "data-testid": dataTestId,
@@ -31,114 +33,57 @@ export const FlowCard: React.FC<FlowCardProps> = ({
   const [isNavigating, setIsNavigating] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const { isAdmin } = useSession();
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<string | null>(null);
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this flow? This action cannot be undone.")) {
-      return;
-    }
-
+    if (isDeleting || !isAdmin) return;
+    setDeleteError(null);
     setIsDeleting(true);
     try {
-      // Import dynamic to avoid circular dependencies if any, or just use global flowsRepo if available. 
-      // Since flowsRepo is in src/features/flows/api/flows.repo.impl, we can import it.
-      // But wait, FlowCard is UI component, it strictly shouldn't dep on infrastructure normally.
-      // However, user asked "que hace la request para el delete". 
-      // I'll assume we can use the repo here or fetch directly. Using repo is cleaner.
-      // I need to add import { flowsRepo } ...
       const { flowsRepo } = await import("@features/flows/api/flows.repo.impl");
       await flowsRepo.delete(flowId);
       setIsDeleting(false);
+      setConfirmDelete(false);
       if (onDeleted) onDeleted();
       else window.location.reload(); // Fallback
     } catch (error) {
       console.error("Failed to delete flow", error);
-      alert("Failed to delete flow");
+      setDeleteError(error instanceof Error ? error.message : "Failed to delete flow. Try again.");
       setIsDeleting(false);
     }
   };
 
-  if (isNavigating) {
-    return <Loading text="Navigating to flow..." />;
-  }
-
   return (
-    <Card
-      data-testid={dataTestId}
-      className={cn(
-        "relative h-full overflow-hidden rounded-2xl border bg-white",
-        "shadow-[0_1px_2px_rgba(0,0,0,0.06)]",
-        "flex flex-col",
-        className
-      )}
-    >
-      <CardHeader className="pb-2">
-        <div className="relative">
-          <CardTitle className="pr-10 text-xl font-bold leading-7 text-foreground">
-            {title}
-          </CardTitle>
-
-          <div className="absolute right-0 top-0 flex items-center gap-2">
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting || !isAdmin}
-              className="text-muted-foreground hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title={!isAdmin ? "Only administrators can delete flows" : "Delete flow"}
-            >
-              {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
-            </button>
-
-            {isAdmin ? (
-              <Link
-                href={`/flows/${flowId}` as any}
-                aria-label="Edit flow"
-                onClick={() => setIsNavigating(true)}
-                className={cn(
-                  "inline-flex h-6 w-6 items-center justify-center",
-                  "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {isNavigating ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Pencil className="h-5 w-5 cursor-pointer" stroke="#6a7282" />
-                )}
-              </Link>
-            ) : (
-              <div
-                className="inline-flex h-6 w-6 items-center justify-center text-muted-foreground opacity-50 cursor-not-allowed"
-                title="Only administrators can edit flows"
-              >
-                <Pencil className="h-5 w-5" stroke="#6a7282" />
-              </div>
-            )}
-          </div>
+    <>
+    <article data-testid={dataTestId} className={cn("grid gap-4 bg-[var(--kma-surface)] px-4 py-5 transition-colors hover:bg-[var(--kma-subtle)] sm:items-center sm:px-6 xl:grid-cols-[minmax(0,1fr)_14rem]", className)} aria-busy={isNavigating || isDeleting}>
+      <div className="flex min-w-0 flex-1 items-start gap-3.5">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-[var(--kma-brand)] text-[var(--kma-brand-fg)]"><Workflow className="h-5 w-5" aria-hidden="true" /></div>
+        <div className="min-w-0">
+          <h3 className="break-words text-base font-semibold leading-6 text-[var(--kma-fg)]">{title}</h3>
+          {code ? <p className="mt-1 text-xs font-medium tracking-wide text-[var(--kma-muted)]">{code}</p> : null}
+          {description ? <p className="mt-1 max-w-2xl break-words text-sm leading-5 text-[var(--kma-muted)]">{description}</p> : null}
         </div>
-
-        {description ? (
-          <p className="mt-4 text-base text-muted-foreground  text-gray-500">
-            {description}
-          </p>
-        ) : null}
-      </CardHeader>
-
-      <CardContent className="flex h-full flex-col pt-3">
-        <div className="flex-1" />
-
-        <Button
-          type="button"
-          onClick={onViewQuestions}
-          className={cn(
-            "inline-flex w-full items-center justify-center gap-2",
-            "rounded-xl border border-gray-300 bg-white",
-            "transition-colors hover:bg-gray-100",
-            "focus-visible:ring-2 focus-visible:ring-ring/30"
-          )}
-        >
-          <Eye className="h-5 w-5" stroke="black" />
-          <span className="text-black">View Questions</span>
+      </div>
+      <div className="flex shrink-0 items-center gap-2 xl:justify-end">
+        <Button type="button" variant="ghost" fullWidth={false} onClick={onViewQuestions} disabled={isNavigating || isDeleting}>
+          <Eye className="h-4 w-4" aria-hidden="true" /><span>View Questions</span>
         </Button>
-      </CardContent>
-    </Card>
+        {isAdmin ? (
+          <Link href={`/flows/${encodeURIComponent(flowId)}` as Route} aria-label="Edit flow" aria-disabled={isDeleting || isNavigating} onClick={(event) => { if (isDeleting || isNavigating) event.preventDefault(); else setIsNavigating(true); }} className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--kma-muted)] transition-colors hover:bg-[var(--kma-subtle)] hover:text-[var(--kma-fg)]">
+            {isNavigating ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Pencil className="h-4 w-4" aria-hidden="true" />}
+          </Link>
+        ) : (
+          <div className="inline-flex h-11 w-11 items-center justify-center text-[var(--kma-muted)] opacity-50 cursor-not-allowed" title="Only administrators can edit flows"><Pencil className="h-4 w-4" aria-hidden="true" /></div>
+        )}
+        <button type="button" onClick={() => { setDeleteError(null); setConfirmDelete(true); }} disabled={isDeleting || isNavigating || !isAdmin} aria-label="Delete flow" className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--kma-muted)] transition-colors hover:bg-[color-mix(in_srgb,var(--kma-danger)_10%,transparent)] hover:text-[var(--kma-danger)] disabled:opacity-50 disabled:cursor-not-allowed" title={!isAdmin ? "Only administrators can delete flows" : "Delete flow"}>
+          {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" aria-hidden="true" />}
+        </button>
+      </div>
+      {isNavigating ? <span role="status" className="sr-only">Navigating to flow...</span> : null}
+    </article>
+    <ConfirmDialog open={confirmDelete} onOpenChange={setConfirmDelete} title={`Delete ${title}?`} description="This action cannot be undone." confirmLabel="Delete" onConfirm={handleDelete} loading={isDeleting} error={deleteError} />
+    </>
   );
 };
 

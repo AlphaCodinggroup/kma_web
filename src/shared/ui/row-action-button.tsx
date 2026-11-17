@@ -2,6 +2,7 @@
 
 import React from "react";
 import { cn } from "@shared/lib/cn";
+import { Tooltip } from "@shared/ui/tooltip";
 
 export type RowActionVariant = "default" | "danger";
 export type RowActionSize = "sm" | "md";
@@ -25,32 +26,32 @@ const RowActionButton: React.FC<RowActionButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const sizeCls = size === "sm" ? "h-8 w-8 rounded-lg" : "h-9 w-9 rounded-lg";
+  const sizeCls = size === "sm" ? "h-8 w-8 rounded" : "h-9 w-9 rounded";
 
   const variantCls =
     variant === "danger"
       ? cn(
-          "bg-white text-red-600",
-          "hover:bg-red-50",
-          "focus-visible:ring-2 focus-visible:ring-black/30",
+          "bg-[var(--kma-surface)] text-[var(--kma-danger)]",
+          "hover:bg-[var(--kma-danger-bg)]",
+          "focus-visible:ring-2 focus-visible:ring-[var(--kma-primary)]/30",
           "border border-[var(--kma-border)]"
         )
       : cn(
-          "bg-white text-black",
-          "hover:bg-gray-100",
-          "focus-visible:ring-2 focus-visible:ring-black/30",
+          "bg-[var(--kma-surface)] text-[var(--kma-fg)]",
+          "hover:bg-[var(--kma-subtle)] ",
+          "focus-visible:ring-2 focus-visible:ring-[var(--kma-primary)]/30",
           "border border-[var(--kma-border)]"
         );
 
-  const disabledCls = disabled ? "opacity-60 hover:bg-white" : "cursor-pointer";
+  const disabledCls = disabled ? "opacity-60 hover:bg-[var(--kma-surface)]" : "cursor-pointer";
 
   return (
+    <Tooltip content={ariaLabel}>
     <button
       type="button"
       aria-label={ariaLabel}
-      title={ariaLabel}
       className={cn(
-        "inline-flex items-center justify-center transition-colors",
+        "inline-flex items-center justify-center transition-colors max-md:min-h-11 max-md:min-w-11",
         sizeCls,
         variantCls,
         disabledCls,
@@ -59,8 +60,9 @@ const RowActionButton: React.FC<RowActionButtonProps> = ({
       disabled={disabled}
       {...props}
     >
-      <Icon className={cn(size === "sm" ? "h-4 w-4" : "h-4 w-4")} />
+      <Icon className="h-4 w-4" aria-hidden="true" />
     </button>
+    </Tooltip>
   );
 };
 

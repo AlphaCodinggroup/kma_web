@@ -10,13 +10,13 @@ const metrics: UsersMetricsProps["metrics"] = {
 };
 
 describe("UsersMetrics", () => {
-  it("renders the four fixed metric cards", () => {
+  it("renders the four metric labels", () => {
     render(<UsersMetrics metrics={metrics} />);
 
     expect(screen.getByText("Total Users")).toBeInTheDocument();
     expect(screen.getByText("Auditors")).toBeInTheDocument();
     expect(screen.getByText("QC Managers")).toBeInTheDocument();
-    expect(screen.getByText("Project Managers")).toBeInTheDocument();
+    expect(screen.getByText("Administrators")).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(4);
   });
 
@@ -45,22 +45,12 @@ describe("UsersMetrics", () => {
     expect(screen.getAllByText("0")).toHaveLength(4);
   });
 
-  it("renders one decorative icon per card", () => {
+  it("associates each role count with its metric label", () => {
     const { container } = render(<UsersMetrics metrics={metrics} />);
-
-    const icons = container.querySelectorAll("svg[aria-hidden='true']");
-    expect(icons).toHaveLength(4);
-  });
-
-  it("applies the four column responsive grid", () => {
-    const { container } = render(<UsersMetrics metrics={metrics} />);
-
-    expect(container.firstElementChild).toHaveClass(
-      "grid",
-      "gap-4",
-      "md:grid-cols-2",
-      "lg:grid-cols-4"
-    );
+    const entries = Array.from(container.querySelectorAll("dl > div"));
+    expect(entries.map(entry => [entry.querySelector("dt")?.textContent, entry.querySelector("dd")?.textContent])).toEqual([
+      ["Total Users", "12"], ["Auditors", "5"], ["QC Managers", "3"], ["Administrators", "4"],
+    ]);
   });
 
   it("appends a custom className", () => {
