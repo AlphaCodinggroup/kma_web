@@ -17,7 +17,7 @@ export type UpdateAuditFindingDTO = {
     url: string;
     include_in_report?: boolean;
   }>;
-  measurements?: Array<{ name: string; value: number }>;
+  measurements?: Array<{ name: string; value: number | null }>;
 };
 
 export type AuditFindingUpdateResponseDTO = {
@@ -53,7 +53,7 @@ const mapPhotoInputToDTO = (
 // medición sin nombre se manda con "" (equivale a "sin nombre" allá).
 const mapMeasurementInputToDTO = (
   measurement: AuditFindingMeasurementInput
-): { name: string; value: number } => ({
+): { name: string; value: number | null } => ({
   name: measurement.name ?? "",
   value: measurement.value,
 });

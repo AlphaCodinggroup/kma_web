@@ -16,6 +16,9 @@ type FindingMeasurementDTO = {
   name?: string | null;
   value?: number | string | null;
   unit?: string | null;
+  source_question_code?: string | null;
+  source_step_id?: string | null;
+  captured_value?: number | null;
 };
 
 /**
@@ -27,6 +30,7 @@ export type AuditFindingDTO = {
   answer: string;
   mitigation_id?: string | null;
   barrier_statement?: string | null;
+  barrier_details?: {question_code: string; barrier_statement?: string | null}[];
   mitigation_statement?: string | null;
   code_reference?: string | null;
   quantity?: number | null;
@@ -85,9 +89,16 @@ const mapPhoto = (photo: FindingPhotoDTO): FindingPhoto | null => {
 };
 
 const mapMeasurement = (m: FindingMeasurementDTO): FindingMeasurement | null => {
+  if (!m || typeof m !== "object") return null;
   const value = toNumberOrNull(m?.value);
-  if (value === null) return null;
-  return { name: toTextOrNull(m.name), value, unit: toTextOrNull(m.unit) };
+  const sourceQuestionCode = toTextOrNull(m.source_question_code);
+  const sourceStepId = toTextOrNull(m.source_step_id);
+  return {
+    name: toTextOrNull(m.name), value, unit: toTextOrNull(m.unit),
+    ...(sourceQuestionCode ? {sourceQuestionCode} : {}),
+    ...(sourceStepId ? {sourceStepId} : {}),
+    ...(m.captured_value !== undefined ? {capturedValue: toNumberOrNull(m.captured_value)} : {}),
+  };
 };
 
 export const mapAuditFindingDTO = (dto: AuditFindingDTO): AuditFinding => {
@@ -96,6 +107,7 @@ export const mapAuditFindingDTO = (dto: AuditFindingDTO): AuditFinding => {
     answer: dto.answer,
     mitigationId: toTextOrNull(dto.mitigation_id),
     barrierStatement: dto.barrier_statement ?? null,
+    ...(dto.barrier_details ? {barrierDetails: dto.barrier_details.map((barrier)=>({questionCode:barrier.question_code,barrierStatement:barrier.barrier_statement ?? null}))} : {}),
     proposedMitigation: dto.mitigation_statement ?? null,
     adasReference: dto.code_reference ?? null,
     quantity: dto.quantity_present === false ? null : toNumberOrNull(dto.quantity),

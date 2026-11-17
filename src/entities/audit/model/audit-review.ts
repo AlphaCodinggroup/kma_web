@@ -3,8 +3,11 @@ import type { AuditStatus } from "@entities/audit/model";
 /** Medición cargada por el auditor (p. ej. 45 pulgadas). */
 export interface FindingMeasurement {
   name: string | null;
-  value: number;
+  value: number | null;
   unit: string | null;
+  sourceQuestionCode?: string;
+  sourceStepId?: string;
+  capturedValue?: number | null;
 }
 
 /** Foto de un hallazgo; las que no van al reporte no se imprimen en el PDF. */
@@ -20,6 +23,7 @@ export interface AuditFinding {
   answer: string;
   mitigationId: string | null;
   barrierStatement?: string | null;
+  barrierDetails?: {questionCode: string; barrierStatement: string | null}[];
   proposedMitigation?: string | null;
   adasReference?: string | null;
   /** null cuando no hay cantidad; cero es un valor explícito. */

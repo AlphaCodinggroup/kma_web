@@ -6,7 +6,7 @@ export interface AuditFindingPhotoInput {
 /** Valor nuevo de una medición; el nombre identifica cuál es y no se edita. */
 export interface AuditFindingMeasurementInput {
   name: string | null;
-  value: number;
+  value: number | null;
 }
 
 export interface UpdateAuditFindingInput {
