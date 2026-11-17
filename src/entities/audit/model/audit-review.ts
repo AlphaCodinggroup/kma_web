@@ -10,6 +10,7 @@ export interface FindingMeasurement {
 /** Foto de un hallazgo; las que no van al reporte no se imprimen en el PDF. */
 export interface FindingPhoto {
   url: string;
+  reference?: string;
   includeInReport: boolean;
 }
 
@@ -21,7 +22,7 @@ export interface AuditFinding {
   barrierStatement?: string | null;
   proposedMitigation?: string | null;
   adasReference?: string | null;
-  /** null cuando el backend la descarta (0 o negativa). */
+  /** null cuando no hay cantidad; cero es un valor explícito. */
   quantity: number | null;
   /** Costo unitario del catálogo. */
   unitCost: number | null;

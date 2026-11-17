@@ -6,7 +6,11 @@ import type {
   FindingPhoto,
 } from "@entities/audit/model/audit-review";
 
-type FindingPhotoDTO = string | { url?: string | null; include_in_report?: boolean | null };
+type FindingPhotoDTO = string | {
+  url?: string | null;
+  reference?: string | null;
+  include_in_report?: boolean | null;
+};
 
 type FindingMeasurementDTO = {
   name?: string | null;
@@ -26,6 +30,7 @@ export type AuditFindingDTO = {
   mitigation_statement?: string | null;
   code_reference?: string | null;
   quantity?: number | null;
+  quantity_present?: boolean;
   unit_cost?: number | null;
   unit_of_measure?: string | null;
   cost?: number | null;
@@ -33,6 +38,7 @@ export type AuditFindingDTO = {
   measurements?: FindingMeasurementDTO[] | null;
   notes?: string | null;
   photos?: FindingPhotoDTO[] | null;
+  photo_details?: Exclude<FindingPhotoDTO, string>[] | null;
   calculated_cost?: number | null;
 };
 
@@ -70,7 +76,12 @@ const mapPhoto = (photo: FindingPhotoDTO): FindingPhoto | null => {
   }
   const url = typeof photo?.url === "string" ? photo.url.trim() : "";
   if (!url) return null;
-  return { url, includeInReport: photo.include_in_report !== false };
+  const reference = toTextOrNull(photo.reference);
+  return {
+    url,
+    ...(reference ? { reference } : {}),
+    includeInReport: photo.include_in_report !== false,
+  };
 };
 
 const mapMeasurement = (m: FindingMeasurementDTO): FindingMeasurement | null => {
@@ -87,14 +98,14 @@ export const mapAuditFindingDTO = (dto: AuditFindingDTO): AuditFinding => {
     barrierStatement: dto.barrier_statement ?? null,
     proposedMitigation: dto.mitigation_statement ?? null,
     adasReference: dto.code_reference ?? null,
-    quantity: toNumberOrNull(dto.quantity),
+    quantity: dto.quantity_present === false ? null : toNumberOrNull(dto.quantity),
     unitCost: toNumberOrNull(dto.unit_cost ?? dto.cost),
     unitOfMeasure: toTextOrNull(dto.unit_of_measure ?? dto.unit),
     measurements: (dto.measurements ?? [])
       .map(mapMeasurement)
       .filter((m): m is FindingMeasurement => m !== null),
     notes: dto.notes ?? null,
-    photos: (dto.photos ?? [])
+    photos: (dto.photo_details ?? dto.photos ?? [])
       .map(mapPhoto)
       .filter((p): p is FindingPhoto => p !== null),
     calculatedCost: toNumberOrNull(dto.calculated_cost),
