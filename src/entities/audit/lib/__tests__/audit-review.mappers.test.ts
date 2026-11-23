@@ -154,7 +154,7 @@ describe("mapAuditFindingDTO", () => {
     ]);
   });
 
-  it("drops measurements without a numeric value and blank names or units", () => {
+  it("keeps absent measurement slots and normalizes blank names or units", () => {
     const result = mapAuditFindingDTO(
       makeFindingDTO({
         measurements: [
@@ -165,7 +165,10 @@ describe("mapAuditFindingDTO", () => {
       })
     );
 
-    expect(result.measurements).toEqual([{ name: null, value: 3.2, unit: null }]);
+    expect(result.measurements).toEqual([
+      { name: null, value: 3.2, unit: null },
+      { name: "Width", value: null, unit: null },
+    ]);
   });
 });
 

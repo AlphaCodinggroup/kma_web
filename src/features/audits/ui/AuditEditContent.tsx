@@ -1,5 +1,6 @@
 "use client";
 
+import { canReviewAudit } from "@entities/audit/lib/audit-permissions";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@shared/lib/cn";
@@ -16,6 +17,7 @@ import ReportActionBar from "./ReportActionBar";
 import FinalReportHeader from "./FinalReportHeader";
 import CommentsSidebar from "./CommentsSidebar";
 import { useAuditReviewDetail } from "../lib/hooks/useAuditReviewDetail";
+import { useUpdateAuditReviewStatus } from "../lib/hooks/useUpdateAuditReviewStatus";
 import { auditDetailKey } from "../lib/hooks/useAuditDetail";
 import { useReportDrafts } from "../lib/hooks/useReportDrafts";
 import { resolveAuditEvidence } from "../lib/resolve-audit-evidence";
@@ -55,7 +57,9 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   onDirtyChange,
 }) => {
   const queryClient = useQueryClient();
-  const { isAdmin } = useSession();
+  const { isAdmin, user } = useSession();
+  const reopenReview = useUpdateAuditReviewStatus();
+  const [reopenError, setReopenError] = useState<string | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [tabValue, setInternalTab] = useUrlParameter("view", "questions");
   const internalTab: AuditEditTab = tabValue === "report" ? "report" : "questions";
@@ -79,8 +83,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
     [reviewDetail?.findings]
   );
   const status = reviewDetail?.status;
-  // Sólo un admin edita, y sólo con la auditoría en revisión (lo exige el backend).
-  const editable = isAdmin && status === "draft_report_in_review";
+  const editable = canReviewAudit(isAdmin, user, auditDetail?.createdBy) && status === "draft_report_in_review";
   const drafts = useReportDrafts(id, findings);
 
   useEffect(() => {
@@ -101,7 +104,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   const reportEnabled = Boolean(status && REPORTED_STATUSES.has(status)) || approved;
   const { data: report } = useAuditReport(id, { enabled: reportEnabled });
   const { download, activeId: downloadingId } = useDownloadReportFile();
-  const canDownload = hasDownloadUrl(report?.reportUrl);
+  const canDownload = Boolean(status && REPORTED_STATUSES.has(status)) && !reopenReview.isPending && hasDownloadUrl(report?.reportUrl);
 
   useEffect(() => {
     if (!approved) return;
@@ -112,13 +115,25 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
   }, [approved, id, queryClient, refetchReviewDetail]);
 
   const handleDownload = useCallback(() => {
-    if (!report) return;
+    if (!canDownload || !report) return;
     setDownloadError(null);
     void download(report).catch((error: unknown) => {
       console.error("[AuditEditContent] Error downloading report:", error);
       setDownloadError("Error downloading the report. Please try again.");
     });
-  }, [download, report]);
+  }, [canDownload, download, report]);
+
+  const handleReopen = useCallback(async () => {
+    if (!isAdmin || status !== "completed" || drafts.isDirty || reopenReview.isPending) return;
+    setReopenError(null);
+    try {
+      await reopenReview.mutateAsync({ auditId: id, status: "draft_report_in_review" });
+      approveFlow.close();
+      setDownloadError(null);
+    } catch {
+      setReopenError("The audit could not be reopened. Please try again.");
+    }
+  }, [approveFlow, drafts.isDirty, id, isAdmin, reopenReview, status]);
 
   const hasSidebar = Boolean(selectedCommentTarget);
   const compact = useMediaQuery("(max-width: 1023px)");
@@ -164,6 +179,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             className="mb-4"
           />
           <AuditQuestionsList
+            editable={editable}
             auditId={id}
             steps={auditDetail?.steps}
             items={questionsToRender}
@@ -210,6 +226,7 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             </div>
           )}
 
+          {reopenError && <p role="alert" className="mt-3 text-sm text-[var(--kma-danger)]">{reopenError}</p>}
           {downloadError && <p role="alert" className="mt-3 rounded-lg bg-[var(--kma-danger-bg)] p-3 text-sm text-[var(--kma-danger)]">{downloadError}</p>}
           <ReportActionBar
             isDirty={drafts.isDirty}
@@ -218,9 +235,12 @@ const AuditEditContent: React.FC<AuditEditContentProps> = ({
             saveError={drafts.saveError}
             onSave={() => void drafts.save()}
             onDiscard={drafts.discard}
-            canApprove={editable && findings.length > 0}
+            canApprove={isAdmin && editable && findings.length > 0}
             approving={approveFlow.isBusy}
             onApprove={() => void approveFlow.start()}
+            canReopen={isAdmin && status === "completed"}
+            reopening={reopenReview.isPending}
+            onReopen={() => void handleReopen()}
             canDownload={canDownload}
             downloading={Boolean(report) && downloadingId === report?.id}
             onDownload={handleDownload}

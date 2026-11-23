@@ -17,10 +17,9 @@ a backend limitation is documentation, not proof; check the backend before repea
 - `CONFIRMED:` the QC journey is create/submit on mobile → `send-for-review` (pending → in_review) →
   edit findings in `AuditEditContent.tsx`/`ReportPreview.tsx` → `complete-review` → poll
   `GET /api/reports/{id}` → download. See [report rules](#report-rules) for the per-project PDF.
-- `INFERRED:` non-admin web use is contemplated (the backend dashboard scopes a non-admin to their
-  assigned projects), but the web has no route guard by role beyond hiding the `/users` sidebar link
-  (`src/widgets/shell/SidebarNav.tsx`). `UNVERIFIED` whether the backend enforces role on every route
-  this implies.
+- `CONFIRMED:` la consola Flows requiere sesión administrativa en servidor y oculta su enlace a
+  otros roles. La revisión permite admin o auditor propietario; las escrituras backend validan
+  identidad, rol y propiedad. No se infiere aislamiento general de los demás listados.
 
 ## Architecture boundaries
 
@@ -72,8 +71,11 @@ a backend limitation is documentation, not proof; check the backend before repea
   (`useProjectFacilitiesQuery`). That endpoint returns each facility's detail, but a facility whose
   row no longer exists comes back with only id, project id and name, so `ProjectFacility` keeps every
   other field optional and the mapper does not invent them.
-- `CONFIRMED:` the finding `PATCH` takes `measurements: [{name, value}]` (the full list, in order:
-  same length and names as the stored ones, only the value changes) and an optional
+- `CONFIRMED:` el finding `PATCH` recibe la lista completa `measurements: [{name, value}]`,
+  con el mismo orden, largo y nombres. Conserva slots históricos null y no permite vaciar una
+  medida ya capturada. GET añade origen/valor capturado de medidas, `quantity_present`,
+  contribuciones de cantidad y `photo_details` con referencia estable e inclusión individual;
+  mantiene `photos: string[]` compatible. El PATCH admite el parámetro opcional
   `?mitigation_id=` for two findings that share a `question_code`. `useReportDrafts.ts` sends
   `mitigationId` only when a code repeats among the loaded findings, keying that finding's draft by
   `code#mitigationId`; `ReportPreview.tsx` edits each measurement with the PDF's positional label.
@@ -110,9 +112,11 @@ a backend limitation is documentation, not proof; check the backend before repea
 - `CONFIRMED:` `report-format.ts` copies formatting from the backend's `pdf_service.go` and
   `report_formatter_service.go` (amount formatting, unit display, measurement line labels by
   position). Keep both in sync when either changes.
-- `CONFIRMED:` editing in `AuditEditContent.tsx` is gated on
-  `isAdmin && status === "draft_report_in_review"`. Approve and Download are disabled while there are
-  unsaved draft changes; a `beforeunload` handler and a confirm dialog guard navigating away.
+- `CONFIRMED:` la edición usa `canReviewAudit(isAdmin, user, audit.createdBy)` y
+  `status === "draft_report_in_review"`: admin o auditor propietario. Aprobar y reabrir Completed
+  siguen siendo administrativos. Los cambios sin guardar bloquean aprobar/descargar y conservan
+  las guardas de navegación. Reabrir limpia la caché de PDF de esa auditoría; una URL vieja en
+  revisión no evita solicitar generación nueva.
 - `CONFIRMED:` `useExportAuditReport.ts` polls `GET /api/reports/{id}` at
   `NEXT_PUBLIC_REPORT_POLL_INTERVAL_MS` (default 2000ms) up to `REPORT_TIMEOUT_MS` (default
   180000ms) after `complete-review`. Download uses `src/shared/lib/download.ts`: a streamed fetch to

@@ -42,6 +42,14 @@
       "status": "indexed"
     },
     {
+      "path": "02-DOCS/wiki/ftd/feedback-permissions-states-web.md",
+      "hash": "b1f3c87398986b1b50b82ac5f9990bf7749528af6adc3a2207d54628ab2992d8",
+      "size": 4429,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
       "path": "02-DOCS/wiki/ftd/flow-inspector-width.md",
       "hash": "b91866d8a39e9b994173a268ecc892efb612fd40585ad181c3b2c76aa1bff931",
       "size": 2347,
@@ -130,14 +138,6 @@
       "status": "indexed"
     },
     {
-      "path": "02-DOCS/wiki/harness/user-profile.md",
-      "hash": "523b4a62d116e5d19e04fc8124d13a4791be29b663519f4692846a1b4b8a4c4b",
-      "size": 266,
-      "format": "md",
-      "topic": "02-DOCS/wiki/harness",
-      "status": "indexed"
-    },
-    {
       "path": "02-DOCS/wiki/harness/vscode.md",
       "hash": "e7316407d181a51acdaf333f79dac2cc0a22a74107ea3e4ffe7af1798070d4c5",
       "size": 1617,
@@ -147,16 +147,16 @@
     },
     {
       "path": "02-DOCS/wiki/index.md",
-      "hash": "44c73a8260b01f88bc9e1867bd02b5087b25584fef0064dfd75724b4fecec115",
-      "size": 5692,
+      "hash": "7de940d97b317b3100d98de0bf58c435ef2db239c277cae1eada7c1d9e96777b",
+      "size": 5882,
       "format": "md",
       "topic": "02-DOCS/wiki",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/auth-and-session.md",
-      "hash": "82ee58c36120c43b819a5c31c5566729b2555f09c0ca61fe0f61e96e63196616",
-      "size": 4712,
+      "hash": "1199fb2f986833f84a9c3b72c61f1443d06c3e1ee655d1ce4518b6eefbdc3cf6",
+      "size": 5148,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
@@ -195,8 +195,8 @@
     },
     {
       "path": "02-DOCS/wiki/project/features.md",
-      "hash": "d8405abe5d4df8af6d8efe6a16c2e455664634f43603a4c4a6923df5b113a5ea",
-      "size": 8657,
+      "hash": "e4bf056a70b4f6d365741477af5b99537c11222c5f2bd1fe383e3a983dea07a6",
+      "size": 9771,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
@@ -211,8 +211,8 @@
     },
     {
       "path": "02-DOCS/wiki/project/routes-and-bff.md",
-      "hash": "bbf566ffbb810a4fe4e0dba754839a592856394bc4c0743b39b7f177d6a06606",
-      "size": 8547,
+      "hash": "7e5d456d609446c7936d496bac61be5d9e2563361c68746c3998b0225b850ee1",
+      "size": 8711,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
@@ -4019,8 +4019,8 @@
     },
     {
       "path": "AGENTS.md",
-      "hash": "db11b0b72682777aa0689aca60a1c95f686a1094616f9b7eb5d21c5b43c9dd3b",
-      "size": 16992,
+      "hash": "3a4cdc66e65ca603696bb6c8dd4c6b7bea93d6758c8c46406bb61e4390a88ab8",
+      "size": 17178,
       "format": "md",
       "topic": "raíz",
       "status": "indexed"
@@ -4043,8 +4043,8 @@
     },
     {
       "path": "docs/agents/project-context.md",
-      "hash": "13169253dcbe6c5d367a02d2e99774cdeb197c61dc778d6fe7e1cdf8b17c6be2",
-      "size": 13059,
+      "hash": "d401087e89adab498955bcb84ec351f2f185cd5eea2855fbae48e091fc693148",
+      "size": 13458,
       "format": "md",
       "topic": "docs/agents",
       "status": "indexed"
@@ -4125,7 +4125,7 @@
     },
     {
       "path": "node_modules",
-      "reason": "tooling-or-build"
+      "reason": "symlink"
     },
     {
       "path": "src/shared/auth/__tests__/verify-access-token.test.ts",

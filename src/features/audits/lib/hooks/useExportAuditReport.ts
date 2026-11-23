@@ -25,7 +25,7 @@ const initialProgress: ExportProgress = {
 };
 
 const hasDownloadUrl = (report: AuditReport | undefined) =>
-  Boolean(report?.reportUrl && /^https?:\/\//.test(report.reportUrl));
+  Boolean(report && ["completed", "final_report_sent_to_client"].includes(report.status) && report.reportUrl && /^https?:\/\//.test(report.reportUrl));
 
 export const generationMessage = (step: string | null) => {
   switch (step) {

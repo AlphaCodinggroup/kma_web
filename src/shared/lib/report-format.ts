@@ -40,19 +40,56 @@ export const measurementUnitLabel = (unit: string | null | undefined): string =>
 /**
  * Líneas de medición del PDF. Las etiquetas son posicionales: la primera es
  * "Measurement", la segunda "Measurement 1", la tercera "Measurement 2".
- * Las mediciones sin valor positivo no se imprimen.
+ * Missing and negative measurements are omitted; zero remains visible.
  */
 export function formatMeasurementLines(
-  measurements: readonly { value: number; unit: string | null }[]
+  measurements: readonly { value: number | null; unit: string | null }[]
 ): string[] {
   const lines: string[] = [];
   measurements.forEach((measurement, index) => {
-    if (!(measurement.value > 0)) return;
-    lines.push(
-      `${measurementLabel(index)}: ${formatMeasurementValue(measurement.value, measurement.unit)}`
-    );
+    const line = formatMeasurementLine(measurement, index);
+    if (line !== null) lines.push(line);
   });
   return lines;
+}
+
+export function formatMeasurementLine(
+  measurement: { value: number | null; unit: string | null },
+  index: number
+): string | null {
+  if (measurement.value === null || measurement.value < 0 || !Number.isFinite(measurement.value)) {
+    return null;
+  }
+  return `${measurementLabel(index)}: ${formatMeasurementValue(measurement.value, measurement.unit)}`;
+}
+
+export function reportBarrierSections(finding: {
+  barrierStatement?: string | null;
+  barrierDetails?: readonly { questionCode: string; barrierStatement: string | null }[];
+  measurements: readonly { sourceQuestionCode?: string }[];
+}): { questionCode: string | null; statement: string; measurementIndexes: number[] }[] {
+  if (!finding.barrierDetails?.length) {
+    return [{
+      questionCode: null,
+      statement: finding.barrierStatement ?? "—",
+      measurementIndexes: finding.measurements.map((_, index) => index),
+    }];
+  }
+  const used = new Set<number>();
+  const sections = finding.barrierDetails.map((barrier) => ({
+    questionCode: barrier.questionCode,
+    statement: barrier.barrierStatement ?? "",
+    measurementIndexes: finding.measurements.flatMap((measurement, index) => {
+      if (used.has(index) || measurement.sourceQuestionCode !== barrier.questionCode) return [];
+      used.add(index);
+      return [index];
+    }),
+  }));
+  const unassigned = finding.measurements.flatMap((_, index) => used.has(index) ? [] : [index]);
+  return [
+    ...sections,
+    ...(unassigned.length ? [{ questionCode: null, statement: "", measurementIndexes: unassigned }] : []),
+  ];
 }
 
 function formatMeasurementValue(value: number, unit: string | null): string {

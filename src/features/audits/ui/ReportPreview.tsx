@@ -6,7 +6,8 @@ import type { AuditFinding } from "@entities/audit/model/audit-review";
 import type { FindingDraft } from "@features/audits/lib/hooks/useReportDrafts";
 import { cn } from "@shared/lib/cn";
 import {
-  formatMeasurementLines,
+  formatMeasurementLine,
+  reportBarrierSections,
   formatQuantityValue,
   formatReportCurrency,
   formatUnitCostLine,
@@ -24,6 +25,7 @@ export interface ReportPreviewDrafts {
   errorOf: (key: string) => string | null;
   measurementErrorOf: (key: string, index: number) => string | null;
   costOf: (finding: AuditFinding) => number;
+  photoErrorOf?: (key: string) => string | null;
 }
 
 export interface ReportPreviewProps {
@@ -140,8 +142,12 @@ function FindingRows({
   const draft = drafts.draftOf(key);
   const error = drafts.errorOf(key);
   const unitLabel = mitigationUnitLabel(finding.unitOfMeasure);
-  const measurementLines = formatMeasurementLines(finding.measurements);
-  const printedPhotos = finding.photos.filter((photo) => photo.includeInReport);
+  const sections = reportBarrierSections(finding);
+  const photos = finding.photos.map((photo, index) => ({
+    ...photo,
+    includeInReport: draft.photos?.[index] ?? photo.includeInReport,
+  }));
+  const printedPhotos = photos.filter((photo) => photo.includeInReport);
   const shownPhotos = printedPhotos.slice(0, MAX_PHOTOS);
   const notPrinted = finding.photos.length - shownPhotos.length;
   // El PDF sólo arma la mitigación con texto, costo unitario y cantidad.
@@ -171,9 +177,20 @@ function FindingRows({
         </td>
 
         <td className={cell}>
-          <p className="whitespace-pre-line">{finding.barrierStatement ?? "—"}</p>
-          {editable
-            ? finding.measurements.map((measurement, measurementIndex) => {
+          {sections.map((section, sectionIndex) => (
+            <div
+              key={sectionIndex}
+              role={section.questionCode ? "group" : undefined}
+              aria-label={section.questionCode ? `Barrier ${section.questionCode}` : undefined}
+            >
+              {section.statement ? <p className="whitespace-pre-line">{section.statement}</p> : null}
+              {section.measurementIndexes.map((measurementIndex) => {
+                const measurement = finding.measurements[measurementIndex];
+                if (!measurement) return null;
+                if (!editable) {
+                  const line = formatMeasurementLine(measurement, measurementIndex);
+                  return line ? <p key={measurementIndex}>{line}</p> : null;
+                }
                 const label = measurementLabel(measurementIndex);
                 const unit = measurementUnitLabel(measurement.unit);
                 const raw = draft.measurements[measurementIndex] ?? "";
@@ -206,13 +223,12 @@ function FindingRows({
                       <p className="text-xs text-red-600" role="alert">
                         {measurementError}
                       </p>
-                    ) : raw.trim() !== "" && Number(raw) === 0 ? (
-                      <p className="text-xs text-amber-700">0 is not printed in the PDF</p>
                     ) : null}
                   </div>
                 );
-              })
-            : measurementLines.map((line, lineIndex) => <p key={lineIndex}>{line}</p>)}
+              })}
+            </div>
+          ))}
           {location ? <p>Location: {location}</p> : null}
         </td>
 
@@ -220,16 +236,38 @@ function FindingRows({
 
         <td className={cell}>
           <div className="flex flex-col gap-2">
-            {shownPhotos.map((photo, photoIndex) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={`${photo.url}#${photoIndex}`}
-                src={photo.url}
-                alt={`Photo ${photoIndex + 1} of ${rowLabel}`}
-                loading="lazy"
-                className="h-36 w-full object-contain"
-              />
+            {editable && photos.length > 0 ? (
+              <p className="text-xs text-gray-600">Choose up to 3 photos for the report.</p>
+            ) : null}
+            {(editable ? photos : shownPhotos).map((photo, photoIndex) => (
+              <div key={`${photo.url}#${photoIndex}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photo.url}
+                  alt={`Photo ${photoIndex + 1} of ${rowLabel}`}
+                  loading="lazy"
+                  className="h-36 w-full object-contain"
+                />
+                {editable ? (
+                  <label className="flex items-center gap-2 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={photo.includeInReport}
+                      aria-label={`Include photo ${photoIndex + 1} of ${rowLabel} in report`}
+                      onChange={(event) => {
+                        const next = photos.map((candidate) => candidate.includeInReport);
+                        next[photoIndex] = event.target.checked;
+                        drafts.setDraft(key, { photos: next });
+                      }}
+                    />
+                    Include in report
+                  </label>
+                ) : null}
+              </div>
             ))}
+            {drafts.photoErrorOf?.(key) ? (
+              <p role="alert" className="text-xs text-red-600">{drafts.photoErrorOf(key)}</p>
+            ) : null}
             {notPrinted > 0 && (
               <span className="text-xs text-gray-500">
                 +{notPrinted} not in the report

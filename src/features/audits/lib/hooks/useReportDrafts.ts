@@ -13,6 +13,7 @@ export type FindingDraft = {
   quantity: string;
   notes: string;
   measurements: string[];
+  photos?: boolean[];
 };
 
 const EMPTY_DRAFT: FindingDraft = { quantity: "", notes: "", measurements: [] };
@@ -20,7 +21,8 @@ const EMPTY_DRAFT: FindingDraft = { quantity: "", notes: "", measurements: [] };
 const toDraft = (finding: AuditFinding): FindingDraft => ({
   quantity: finding.quantity === null ? "" : String(finding.quantity),
   notes: finding.notes ?? "",
-  measurements: finding.measurements.map((measurement) => String(measurement.value)),
+  measurements: finding.measurements.map((measurement) => measurement.value === null ? "" : String(measurement.value)),
+  ...(finding.photos.length ? {photos:finding.photos.map((photo)=>photo.includeInReport)} : {}),
 });
 
 const parseQuantity = (raw: string): number | null => {
@@ -49,7 +51,8 @@ function diffDraft(original: FindingDraft, draft: FindingDraft) {
     draft.quantity.trim() !== original.quantity.trim();
   const notes = draft.notes.trim() !== original.notes.trim();
   const measurements = changedMeasurements(original, draft);
-  return { quantity, notes, measurements };
+  const photos = draft.photos !== undefined && draft.photos.some((include,index)=>include !== original.photos?.[index]);
+  return { quantity, notes, measurements, photos };
 }
 
 /**
@@ -83,6 +86,7 @@ type Change = {
   quantity: boolean;
   notes: boolean;
   measurements: number[];
+  photos: boolean;
 };
 
 /**
@@ -156,7 +160,7 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
       const finding = byKey.get(key);
       if (!original || !finding) continue;
       const diff = diffDraft(original, draft);
-      if (diff.quantity || diff.notes || diff.measurements.length > 0) {
+      if (diff.quantity || diff.notes || diff.measurements.length > 0 || diff.photos) {
         list.push({ key, finding, draft, ...diff });
       }
     }
@@ -166,6 +170,7 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
   const errors = useMemo(() => {
     const quantity: Record<string, string> = {};
     const measurements: Record<string, string> = {};
+    const photos: Record<string, string> = {};
     for (const change of changes) {
       const quantityError = change.quantity ? validateQuantity(change.draft.quantity) : null;
       if (quantityError) quantity[change.key] = quantityError;
@@ -173,8 +178,11 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
         const error = validateMeasurement(change.draft.measurements[index] ?? "");
         if (error) measurements[`${change.key}:${index}`] = error;
       }
+      if (change.photos && (change.draft.photos?.filter(Boolean).length ?? 0) > 3) {
+        photos[change.key] = "Choose up to 3 photos for the report";
+      }
     }
-    return { quantity, measurements };
+    return { quantity, measurements, photos };
   }, [changes]);
 
   const errorOf = useCallback((key: string) => errors.quantity[key] ?? null, [errors]);
@@ -182,8 +190,9 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
     (key: string, index: number) => errors.measurements[`${key}:${index}`] ?? null,
     [errors]
   );
+  const photoErrorOf = useCallback((key: string)=>errors.photos[key] ?? null,[errors]);
   const hasErrors =
-    Object.keys(errors.quantity).length > 0 || Object.keys(errors.measurements).length > 0;
+    Object.keys(errors.quantity).length > 0 || Object.keys(errors.measurements).length > 0 || Object.keys(errors.photos).length > 0;
 
   /** Costo que se va a imprimir: cantidad × costo unitario mientras se edita. */
   const costOf = useCallback(
@@ -221,6 +230,10 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
       }
       if (change.quantity) input.quantity = parseQuantity(change.draft.quantity) as number;
       if (change.notes) input.notes = change.draft.notes;
+      if (change.photos) input.photos = change.finding.photos.map((photo,index)=>({
+        url:photo.reference ?? photo.url,
+        includeInReport:change.draft.photos?.[index] ?? photo.includeInReport,
+      }));
       if (change.measurements.length > 0) {
         // El backend pide todas las mediciones, en orden; sólo cambian las editadas.
         input.measurements = change.finding.measurements.map((measurement, index) => ({
@@ -272,6 +285,7 @@ export function useReportDrafts(auditId: string, findings: readonly AuditFinding
     setDraft,
     errorOf,
     measurementErrorOf,
+    photoErrorOf,
     costOf,
     isDirty: changes.length > 0,
     hasErrors,

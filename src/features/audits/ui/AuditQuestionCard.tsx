@@ -29,6 +29,7 @@ export interface AttachmentVM {
 }
 
 export interface AuditQuestionCardProps {
+  editable?: boolean;
   auditId?: string | undefined;
   questionId?: string | undefined;
   steps?: AuditStep[] | undefined;
@@ -375,6 +376,7 @@ function YesNoChip({ value }: { value: boolean }) {
 }
 
 const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
+  editable = false,
   auditId,
   questionId,
   steps,
@@ -430,7 +432,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
   };
 
   const handleSave = async () => {
-    if (!draftAnswer || !auditId || !questionId || saving.current) return;
+    if (!editable || !draftAnswer || !auditId || !questionId || saving.current) return;
     saving.current = true;
     setSavePending(true);
     setActionError(null);
@@ -523,7 +525,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
           
           updates.push({
             step_id: currentFormId,
-            type: "form",
+            type: "Form",
             values: formValues,
           });
           pushedAnyForm = true;
@@ -535,7 +537,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
         if (!pushedAnyForm) {
           updates.push({
             step_id: noNextId,
-            type: "form",
+            type: "Form",
             values: cleanValues,
           });
         }
@@ -574,7 +576,7 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
     typeof answerValue === "string" && answerValue.toUpperCase() === "UNSURE";
 
   if (isUnsure) {
-    if (isEditing) {
+    if (isEditing && editable) {
       return (
         <article
           className={cn(
@@ -657,7 +659,8 @@ const AuditQuestionCard: React.FC<AuditQuestionCardProps> = ({
             type="button"
             fullWidth={false}
             variant="secondary"
-            onClick={() => { setActionError(null); setSuccessMessage(null); setIsEditing(true); }}
+            disabled={!editable}
+            onClick={() => { if (!editable) return; setActionError(null); setSuccessMessage(null); setIsEditing(true); }}
           >
             Resolve Answer...
           </Button>

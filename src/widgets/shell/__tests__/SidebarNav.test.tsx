@@ -50,7 +50,6 @@ const DEFAULT_LABELS = [
   "Dashboard",
   "Audits",
   "Reports",
-  "Flows",
   "Projects",
   "Facilities",
 ];
@@ -110,7 +109,6 @@ describe("SidebarNav", () => {
     { label: "Dashboard", href: "/dashboard" },
     { label: "Audits", href: "/audits" },
     { label: "Reports", href: "/reports" },
-    { label: "Flows", href: "/flows" },
     { label: "Projects", href: "/projects?tab=projects" },
     { label: "Facilities", href: "/projects?tab=facilities" },
   ];
@@ -380,4 +378,14 @@ it.each(["admin", "administrator"])("shows Catalog after Reports for %s", role =
 it.each(["viewer", "auditor", "qc"])("hides Catalog for %s", role => {
   render(<SidebarNav role={role as Role} />);
   expect(screen.queryByRole("link", { name: "Catalog" })).not.toBeInTheDocument();
+});
+
+
+it.each(["auditor", "viewer", undefined] as const)("hides Flows for %s", role=>{
+ render(<SidebarNav role={role} />);
+ expect(screen.queryByRole("link",{name:"Flows"})).not.toBeInTheDocument();
+});
+it.each(["admin","administrator"] as const)("shows Flows for %s",role=>{
+ render(<SidebarNav role={role} />);
+ expect(screen.getByRole("link",{name:"Flows"})).toHaveAttribute("href","/flows");
 });
