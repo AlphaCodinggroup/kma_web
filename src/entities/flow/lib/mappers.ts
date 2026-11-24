@@ -9,6 +9,10 @@ import type {
   Condition,
   ConditionalNext,
   StepMetadata,
+  FlowCategory,
+  FlowCategoryList,
+  CreateFlowCategoryInput,
+  UpdateFlowCategoryInput,
 } from "../model";
 import type {
   FlowDTO,
@@ -23,6 +27,10 @@ import type {
   StepMetadataDTO,
   ConditionDTO,
   ConditionalNextDTO,
+  FlowCategoryDTO,
+  FlowCategoryListDTO,
+  CreateFlowCategoryDTO,
+  UpdateFlowCategoryDTO,
 } from "@features/flows/api/flows.dto";
 
 function normalizeImages(image?: string | null, images?: string[] | null): string[] {
@@ -160,6 +168,7 @@ export function mapFlowDTO(dto: FlowDTO): Flow {
     ...(dto.code !== undefined ? { code: dto.code } : {}),
     title: dto.title,
     description: dto.description ?? null,
+    ...(dto.category ? { category: dto.category } : {}),
     steps: dto.steps.map(mapFlowStepDTO),
     flowType: dto.flow_type ?? null,
     version: dto.version,
@@ -224,6 +233,7 @@ function mapFlowListItemDTO(dto: FlowListItemDTO): Flow {
     id: dto.id,
     title: dto.title,
     description: dto.description ?? null,
+    ...(dto.category ? { category: dto.category } : {}),
     steps: safeSteps,
     flowType: dto.flow_type ?? null,
     version: dto.version,
@@ -372,6 +382,7 @@ export function mapFlowToDTO(flow: Flow): FlowDTO {
     ...(flow.code !== undefined ? { code: flow.code } : {}),
     title: flow.title,
     description: flow.description || undefined,
+    ...(flow.category ? { category: flow.category } : {}),
     steps: flow.steps.map(mapFlowStepToDTO),
     flow_type: flow.flowType || DEFAULT_FLOW_TYPE,
     version: flow.version,
@@ -380,5 +391,46 @@ export function mapFlowToDTO(flow: Flow): FlowDTO {
     // sin este campo la fecha de creación original se perdía.
     ...(flow.createdAt ? { created_at: flow.createdAt } : {}),
     updated_at: flow.updatedAt,
+  };
+}
+
+/** ------------------------
+ *  Categorías: DTO <-> Dominio
+ *  -----------------------*/
+export function mapFlowCategoryDTO(dto: FlowCategoryDTO): FlowCategory {
+  return {
+    id: dto.id,
+    name: dto.name,
+    ...(dto.description !== undefined && dto.description !== null
+      ? { description: dto.description }
+      : {}),
+    isActive: dto.is_active ?? true,
+    ...(dto.created_at ? { createdAt: dto.created_at } : {}),
+    ...(dto.updated_at ? { updatedAt: dto.updated_at } : {}),
+    ...(dto.created_by ? { createdBy: dto.created_by } : {}),
+    ...(dto.updated_by ? { updatedBy: dto.updated_by } : {}),
+  };
+}
+
+export function mapFlowCategoryListDTO(dto: FlowCategoryListDTO): FlowCategoryList {
+  return {
+    categories: dto.categories.map(mapFlowCategoryDTO),
+    total: dto.total,
+  };
+}
+
+export function mapCreateFlowCategoryToDTO(input: CreateFlowCategoryInput): CreateFlowCategoryDTO {
+  return {
+    name: input.name.trim(),
+    ...(input.description !== undefined ? { description: input.description.trim() } : {}),
+    ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
+  };
+}
+
+export function mapUpdateFlowCategoryToDTO(input: UpdateFlowCategoryInput): UpdateFlowCategoryDTO {
+  return {
+    ...(input.name !== undefined ? { name: input.name.trim() } : {}),
+    ...(input.description !== undefined ? { description: input.description.trim() } : {}),
+    ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
   };
 }

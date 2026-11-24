@@ -19,13 +19,15 @@ import {
     Zap,
     HelpCircle,
     FileText,
-    AlertTriangle
+    AlertTriangle,
+    Tag
 } from "lucide-react";
 import { flowsRepo } from "@features/flows/api/flows.repo.impl";
 import { sanitizeFileName } from "@shared/lib/file";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { flowsKeys } from "@features/flows/lib/useFlowsQuery";
+import { useFlowCategoriesQuery } from "@features/flows/lib/useFlowCategoriesQuery";
 import { useSession } from "@processes/auth/hooks";
 import { FlowStepsTable } from "./FlowStepsTable";
 import { StepDetailInspector } from "./StepDetailInspector";
@@ -55,6 +57,23 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
 
     const router = useRouter();
     const queryClient = useQueryClient();
+    const { data: categoriesData } = useFlowCategoriesQuery(true);
+
+    const categoryOptions = React.useMemo(() => {
+        const list = categoriesData?.categories ?? [];
+        const options = list
+            .filter((cat) => cat.isActive || cat.id === flow.category)
+            .map((cat) => ({
+                value: cat.id,
+                label: cat.isActive ? cat.name : `${cat.name} (Inactive)`,
+            }));
+
+        // Conserva el valor actual si aún no coincide con el catálogo cargado.
+        if (flow.category && !options.some((opt) => opt.value === flow.category)) {
+            options.unshift({ value: flow.category, label: flow.category });
+        }
+        return options;
+    }, [categoriesData, flow.category]);
 
     // Feedback Modal State
     const [feedback, setFeedback] = React.useState<{
@@ -791,16 +810,37 @@ export const FlowEditor: React.FC<FlowEditorProps> = ({ initialFlow }) => {
                             </button>
                         </span>
                     </div>
-                    <Label htmlFor={`${metadataId}-description`} className="sr-only">Flow description</Label>
-                    <Input
-                        id={`${metadataId}-description`}
-                        value={flow.description ?? ""}
-                        onChange={(e) => setFlow({ ...flow, description: e.target.value })}
-                        disabled={isSaving || !isAdmin}
-                        placeholder="Add a description (optional)..."
-                        aria-label="Flow description"
-                        className={`${inlineField} !min-h-0 w-full max-w-md !text-sm`}
-                    />
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                        <Label htmlFor={`${metadataId}-description`} className="sr-only">Flow description</Label>
+                        <Input
+                            id={`${metadataId}-description`}
+                            value={flow.description ?? ""}
+                            onChange={(e) => setFlow({ ...flow, description: e.target.value })}
+                            disabled={isSaving || !isAdmin}
+                            placeholder="Add a description (optional)..."
+                            aria-label="Flow description"
+                            className={`${inlineField} !min-h-0 w-full max-w-md !text-sm`}
+                        />
+                        <div className="flex items-center gap-1.5">
+                            <Tag className="h-3.5 w-3.5 shrink-0 text-[var(--kma-muted)]" aria-hidden="true" />
+                            <Label htmlFor={`${metadataId}-category`} className="sr-only">Flow category</Label>
+                            <select
+                                id={`${metadataId}-category`}
+                                value={flow.category ?? ""}
+                                onChange={(e) => setFlow({ ...flow, category: e.target.value || undefined })}
+                                disabled={isSaving || !isAdmin}
+                                aria-label="Flow category"
+                                className={`${inlineField} h-8 max-w-[16rem] cursor-pointer text-sm`}
+                            >
+                                <option value="">No category</option>
+                                {categoryOptions.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
                     {titleMissing ? <p id={`${metadataId}-error`} className="mt-1 text-sm text-[var(--kma-danger)]">Enter a title for this flow.</p> : null}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">

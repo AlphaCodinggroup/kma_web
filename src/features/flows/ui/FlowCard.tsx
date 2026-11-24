@@ -6,6 +6,7 @@ import { cn } from "@shared/lib/cn";
 import { Button } from "@shared/ui/controls";
 import Link from "next/link";
 import type { Route } from "next";
+import { Badge } from "@shared/ui/badge";
 import ConfirmDialog from "@shared/ui/confirm-dialog";
 import { useSession } from "@processes/auth/hooks";
 
@@ -13,6 +14,7 @@ export interface FlowCardProps {
   title: string;
   description?: string;
   code?: string | undefined;
+  categoryName?: string | undefined;
   className?: string;
   onViewQuestions?: () => void;
   "data-testid"?: string;
@@ -24,6 +26,7 @@ export const FlowCard: React.FC<FlowCardProps> = ({
   title,
   description,
   code,
+  categoryName,
   className,
   onViewQuestions,
   "data-testid": dataTestId,
@@ -60,7 +63,10 @@ export const FlowCard: React.FC<FlowCardProps> = ({
       <div className="flex min-w-0 flex-1 items-start gap-3.5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-[var(--kma-brand)] text-[var(--kma-brand-fg)]"><Workflow className="h-5 w-5" aria-hidden="true" /></div>
         <div className="min-w-0">
-          <h3 className="break-words text-base font-semibold leading-6 text-[var(--kma-fg)]">{title}</h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="break-words text-base font-semibold leading-6 text-[var(--kma-fg)]">{title}</h3>
+            {categoryName ? <Badge tone="neutral">{categoryName}</Badge> : null}
+          </div>
           {code ? <p className="mt-1 text-xs font-medium tracking-wide text-[var(--kma-muted)]">{code}</p> : null}
           {description ? <p className="mt-1 max-w-2xl break-words text-sm leading-5 text-[var(--kma-muted)]">{description}</p> : null}
         </div>

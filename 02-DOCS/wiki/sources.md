@@ -2,88 +2,88 @@
 
 Inventario de rutas y huellas SHA-256. No acredita lectura, síntesis ni vigencia del contenido.
 Generado por `node scripts/second-brain.mjs`; no editar a mano.
-Fuentes indexadas: 514. Exclusiones explícitas: 7.
+Fuentes indexadas: 516. Exclusiones explícitas: 5.
 Los archivos eliminados desaparecen del inventario en la siguiente sincronización.
 
 Guía: [alcance y automatización](harness/second-brain.md).
 
 ## 02-DOCS/wiki
 
-- [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 5882 bytes.
+- [02-DOCS/wiki/index.md](<../../02-DOCS/wiki/index.md>) — md, 5968 bytes.
 ## 02-DOCS/wiki/ftd
 
-- [02-DOCS/wiki/ftd/catalog-active-default.md](<../../02-DOCS/wiki/ftd/catalog-active-default.md>) — md, 4677 bytes.
-- [02-DOCS/wiki/ftd/catalog-implementation-prompt.md](<../../02-DOCS/wiki/ftd/catalog-implementation-prompt.md>) — md, 23915 bytes.
-- [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3646 bytes.
-- [02-DOCS/wiki/ftd/catalog-upload-first.md](<../../02-DOCS/wiki/ftd/catalog-upload-first.md>) — md, 2595 bytes.
-- [02-DOCS/wiki/ftd/collapsible-navigation.md](<../../02-DOCS/wiki/ftd/collapsible-navigation.md>) — md, 5679 bytes.
-- [02-DOCS/wiki/ftd/feedback-permissions-states-web.md](<../../02-DOCS/wiki/ftd/feedback-permissions-states-web.md>) — md, 4429 bytes.
-- [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 2347 bytes.
-- [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2743 bytes.
-- [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2688 bytes.
-- [02-DOCS/wiki/ftd/install-rsc-harness.md](<../../02-DOCS/wiki/ftd/install-rsc-harness.md>) — md, 2777 bytes.
-- [02-DOCS/wiki/ftd/install-rsc-original-checkouts.md](<../../02-DOCS/wiki/ftd/install-rsc-original-checkouts.md>) — md, 5856 bytes.
-- [02-DOCS/wiki/ftd/responsive-flow-steps.md](<../../02-DOCS/wiki/ftd/responsive-flow-steps.md>) — md, 4066 bytes.
+- [02-DOCS/wiki/ftd/catalog-active-default.md](<../../02-DOCS/wiki/ftd/catalog-active-default.md>) — md, 4758 bytes.
+- [02-DOCS/wiki/ftd/catalog-implementation-prompt.md](<../../02-DOCS/wiki/ftd/catalog-implementation-prompt.md>) — md, 24224 bytes.
+- [02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md](<../../02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md>) — md, 3711 bytes.
+- [02-DOCS/wiki/ftd/catalog-upload-first.md](<../../02-DOCS/wiki/ftd/catalog-upload-first.md>) — md, 2649 bytes.
+- [02-DOCS/wiki/ftd/collapsible-navigation.md](<../../02-DOCS/wiki/ftd/collapsible-navigation.md>) — md, 5781 bytes.
+- [02-DOCS/wiki/ftd/feedback-permissions-states-web.md](<../../02-DOCS/wiki/ftd/feedback-permissions-states-web.md>) — md, 4486 bytes.
+- [02-DOCS/wiki/ftd/flow-inspector-width.md](<../../02-DOCS/wiki/ftd/flow-inspector-width.md>) — md, 2387 bytes.
+- [02-DOCS/wiki/ftd/flows-categories-ui.md](<../../02-DOCS/wiki/ftd/flows-categories-ui.md>) — md, 2112 bytes.
+- [02-DOCS/wiki/ftd/frontend-startup-warnings.md](<../../02-DOCS/wiki/ftd/frontend-startup-warnings.md>) — md, 2781 bytes.
+- [02-DOCS/wiki/ftd/impeccable-claude-code.md](<../../02-DOCS/wiki/ftd/impeccable-claude-code.md>) — md, 2725 bytes.
+- [02-DOCS/wiki/ftd/install-rsc-harness.md](<../../02-DOCS/wiki/ftd/install-rsc-harness.md>) — md, 2830 bytes.
+- [02-DOCS/wiki/ftd/install-rsc-original-checkouts.md](<../../02-DOCS/wiki/ftd/install-rsc-original-checkouts.md>) — md, 5965 bytes.
+- [02-DOCS/wiki/ftd/responsive-flow-steps.md](<../../02-DOCS/wiki/ftd/responsive-flow-steps.md>) — md, 4152 bytes.
 - [02-DOCS/wiki/ftd/ui-scroll-fixes.md](<../../02-DOCS/wiki/ftd/ui-scroll-fixes.md>) — md, 3808 bytes.
-- [02-DOCS/wiki/ftd/update-rsc-3-6-0.md](<../../02-DOCS/wiki/ftd/update-rsc-3-6-0.md>) — md, 804 bytes.
+- [02-DOCS/wiki/ftd/update-rsc-3-6-0.md](<../../02-DOCS/wiki/ftd/update-rsc-3-6-0.md>) — md, 821 bytes.
 ## 02-DOCS/wiki/harness
 
-- [02-DOCS/wiki/harness/decisions.md](<../../02-DOCS/wiki/harness/decisions.md>) — md, 2433 bytes.
-- [02-DOCS/wiki/harness/installation-plan.md](<../../02-DOCS/wiki/harness/installation-plan.md>) — md, 4817 bytes.
-- [02-DOCS/wiki/harness/second-brain.md](<../../02-DOCS/wiki/harness/second-brain.md>) — md, 7935 bytes.
-- [02-DOCS/wiki/harness/user-profile.md](<../../02-DOCS/wiki/harness/user-profile.md>) — md, 266 bytes.
-- [02-DOCS/wiki/harness/vscode.md](<../../02-DOCS/wiki/harness/vscode.md>) — md, 1617 bytes.
+- [02-DOCS/wiki/harness/decisions.md](<../../02-DOCS/wiki/harness/decisions.md>) — md, 2474 bytes.
+- [02-DOCS/wiki/harness/installation-plan.md](<../../02-DOCS/wiki/harness/installation-plan.md>) — md, 4865 bytes.
+- [02-DOCS/wiki/harness/second-brain.md](<../../02-DOCS/wiki/harness/second-brain.md>) — md, 8080 bytes.
+- [02-DOCS/wiki/harness/vscode.md](<../../02-DOCS/wiki/harness/vscode.md>) — md, 1649 bytes.
 ## 02-DOCS/wiki/project
 
-- [02-DOCS/wiki/project/auth-and-session.md](<../../02-DOCS/wiki/project/auth-and-session.md>) — md, 5148 bytes.
-- [02-DOCS/wiki/project/changes-2026-10-29.md](<../../02-DOCS/wiki/project/changes-2026-10-29.md>) — md, 9160 bytes.
-- [02-DOCS/wiki/project/design-system-and-ui.md](<../../02-DOCS/wiki/project/design-system-and-ui.md>) — md, 6657 bytes.
-- [02-DOCS/wiki/project/dev-test-and-deploy.md](<../../02-DOCS/wiki/project/dev-test-and-deploy.md>) — md, 5387 bytes.
-- [02-DOCS/wiki/project/environments.md](<../../02-DOCS/wiki/project/environments.md>) — md, 3142 bytes.
-- [02-DOCS/wiki/project/features.md](<../../02-DOCS/wiki/project/features.md>) — md, 9771 bytes.
-- [02-DOCS/wiki/project/overview.md](<../../02-DOCS/wiki/project/overview.md>) — md, 5604 bytes.
-- [02-DOCS/wiki/project/routes-and-bff.md](<../../02-DOCS/wiki/project/routes-and-bff.md>) — md, 8711 bytes.
+- [02-DOCS/wiki/project/auth-and-session.md](<../../02-DOCS/wiki/project/auth-and-session.md>) — md, 5212 bytes.
+- [02-DOCS/wiki/project/changes-2026-10-29.md](<../../02-DOCS/wiki/project/changes-2026-10-29.md>) — md, 9280 bytes.
+- [02-DOCS/wiki/project/design-system-and-ui.md](<../../02-DOCS/wiki/project/design-system-and-ui.md>) — md, 6747 bytes.
+- [02-DOCS/wiki/project/dev-test-and-deploy.md](<../../02-DOCS/wiki/project/dev-test-and-deploy.md>) — md, 5473 bytes.
+- [02-DOCS/wiki/project/environments.md](<../../02-DOCS/wiki/project/environments.md>) — md, 3198 bytes.
+- [02-DOCS/wiki/project/features.md](<../../02-DOCS/wiki/project/features.md>) — md, 9886 bytes.
+- [02-DOCS/wiki/project/overview.md](<../../02-DOCS/wiki/project/overview.md>) — md, 5685 bytes.
+- [02-DOCS/wiki/project/routes-and-bff.md](<../../02-DOCS/wiki/project/routes-and-bff.md>) — md, 8816 bytes.
 ## 02-DOCS/wiki/sdd
 
-- [02-DOCS/wiki/sdd/constitution.md](<../../02-DOCS/wiki/sdd/constitution.md>) — md, 5112 bytes.
+- [02-DOCS/wiki/sdd/constitution.md](<../../02-DOCS/wiki/sdd/constitution.md>) — md, 5176 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign
 
-- [02-DOCS/wiki/sdd/kma-redesign/accessibility-results.json](<../../02-DOCS/wiki/sdd/kma-redesign/accessibility-results.json>) — json, 454 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/delivery.md](<../../02-DOCS/wiki/sdd/kma-redesign/delivery.md>) — md, 4834 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/plan.md](<../../02-DOCS/wiki/sdd/kma-redesign/plan.md>) — md, 775 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/progress.md](<../../02-DOCS/wiki/sdd/kma-redesign/progress.md>) — md, 5073 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/accessibility-results.json](<../../02-DOCS/wiki/sdd/kma-redesign/accessibility-results.json>) — json, 476 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/delivery.md](<../../02-DOCS/wiki/sdd/kma-redesign/delivery.md>) — md, 4883 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/plan.md](<../../02-DOCS/wiki/sdd/kma-redesign/plan.md>) — md, 784 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/progress.md](<../../02-DOCS/wiki/sdd/kma-redesign/progress.md>) — md, 5125 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/reviewed-project.pdf](<../../02-DOCS/wiki/sdd/kma-redesign/reviewed-project.pdf>) — pdf, 11858 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/screenshots.md](<../../02-DOCS/wiki/sdd/kma-redesign/screenshots.md>) — md, 3736 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/spec.md](<../../02-DOCS/wiki/sdd/kma-redesign/spec.md>) — md, 1299 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/tasks.md](<../../02-DOCS/wiki/sdd/kma-redesign/tasks.md>) — md, 849 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/validation-results.json](<../../02-DOCS/wiki/sdd/kma-redesign/validation-results.json>) — json, 637 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/verification.md](<../../02-DOCS/wiki/sdd/kma-redesign/verification.md>) — md, 2321 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/screenshots.md](<../../02-DOCS/wiki/sdd/kma-redesign/screenshots.md>) — md, 3766 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/spec.md](<../../02-DOCS/wiki/sdd/kma-redesign/spec.md>) — md, 1316 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/tasks.md](<../../02-DOCS/wiki/sdd/kma-redesign/tasks.md>) — md, 859 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/validation-results.json](<../../02-DOCS/wiki/sdd/kma-redesign/validation-results.json>) — json, 671 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/verification.md](<../../02-DOCS/wiki/sdd/kma-redesign/verification.md>) — md, 2352 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/daylight
 
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md>) — md, 24591 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/brand-red-logo.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/brand-red-logo.md>) — md, 1946 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/deployment.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/deployment.md>) — md, 3333 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/implementation.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/implementation.md>) — md, 6880 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md>) — md, 24967 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/brand-red-logo.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/brand-red-logo.md>) — md, 1978 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/deployment.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/deployment.md>) — md, 3370 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/implementation.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/implementation.md>) — md, 6939 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/login-illustration-prompt.txt](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/login-illustration-prompt.txt>) — txt, 1602 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/main-parity.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/main-parity.md>) — md, 6748 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/user-feedback.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/user-feedback.md>) — md, 3906 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/main-parity.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/main-parity.md>) — md, 6825 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/user-feedback.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/user-feedback.md>) — md, 3938 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/daylight/validation
 
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-dark.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-dark.json>) — json, 2449 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-light.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-light.json>) — json, 2449 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/capturas.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/capturas.md>) — md, 8471 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-dark.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-dark.json>) — json, 2615 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-light.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-light.json>) — json, 2615 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/capturas.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/capturas.md>) — md, 8501 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-1440.png>) — png, 337551 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-390.png>) — png, 495153 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-dark-768.png>) — png, 445525 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-1440.png>) — png, 320762 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-390.png>) — png, 461547 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/contact-final-light-768.png>) — png, 418628 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/entrega.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/entrega.md>) — md, 8311 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/gallery.html](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/gallery.html>) — html, 3673 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/manifest.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/manifest.json>) — json, 2946 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/review.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/review.md>) — md, 4936 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/entrega.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/entrega.md>) — md, 8358 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/gallery.html](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/gallery.html>) — html, 3692 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/manifest.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/manifest.json>) — json, 3047 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/review.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/review.md>) — md, 4969 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/reviewed-project.pdf](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/reviewed-project.pdf>) — pdf, 11857 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/user-feedback-review.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/user-feedback-review.md>) — md, 2258 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/user-feedback-review.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/user-feedback-review.md>) — md, 2290 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after
 
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/audits-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/audits-dark-1440.png>) — png, 134993 bytes.
@@ -154,7 +154,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/users-light-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/after/users-light-768.png>) — png, 46340 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback
 
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/DESIGN.md>) — md, 19137 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/DESIGN.md>) — md, 19487 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-1440.png>) — png, 140008 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-390.png>) — png, 51831 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/audits-dark-768.png>) — png, 62836 bytes.
@@ -167,7 +167,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-1440.png>) — png, 117032 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-390.png>) — png, 51854 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/dashboard-light-768.png>) — png, 78464 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/design.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/design.json>) — json, 43184 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/design.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/design.json>) — json, 44124 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-1440.png>) — png, 107102 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-390.png>) — png, 43650 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/facilities-dark-768.png>) — png, 53735 bytes.
@@ -228,7 +228,7 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-mobile-fix/dashboard-light-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-mobile-fix/dashboard-light-390.png>) — png, 43460 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login
 
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/README.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/README.md>) — md, 1452 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/README.md](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/README.md>) — md, 1466 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-1440.png>) — png, 301788 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-390.png>) — png, 37352 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/login-dark-768.png>) — png, 43879 bytes.
@@ -247,8 +247,8 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity/flow-editor-light-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/main-parity/flow-editor-light-1440.png>) — png, 114296 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1
 
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-dark.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-dark.json>) — json, 2449 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-light.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-light.json>) — json, 2449 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-dark.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-dark.json>) — json, 2615 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-light.json](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-light.json>) — json, 2615 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-1440.png>) — png, 140008 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-390.png>) — png, 51760 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/audits-dark-768.png>) — png, 61008 bytes.
@@ -324,8 +324,8 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/users-light-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/users-light-768.png>) — png, 50992 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/premium
 
-- [02-DOCS/wiki/sdd/kma-redesign/premium/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/premium/DESIGN.md>) — md, 3590 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/premium/implementation.md](<../../02-DOCS/wiki/sdd/kma-redesign/premium/implementation.md>) — md, 1669 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/premium/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/premium/DESIGN.md>) — md, 3666 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/premium/implementation.md](<../../02-DOCS/wiki/sdd/kma-redesign/premium/implementation.md>) — md, 1702 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/premium/before
 
 - [02-DOCS/wiki/sdd/kma-redesign/premium/before/audits-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/premium/before/audits-dark-1440.png>) — png, 164417 bytes.
@@ -396,11 +396,11 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/premium/before/users-light-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/premium/before/users-light-768.png>) — png, 61930 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/premium/validation
 
-- [02-DOCS/wiki/sdd/kma-redesign/premium/validation/report.md](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/report.md>) — md, 2465 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/premium/validation/report.md](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/report.md>) — md, 2486 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close
 
-- [02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-dark.json](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-dark.json>) — json, 2449 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-light.json](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-light.json>) — json, 2449 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-dark.json](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-dark.json>) — json, 2615 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-light.json](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-light.json>) — json, 2615 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-1440.png>) — png, 141665 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-390.png](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-390.png>) — png, 54155 bytes.
 - [02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/audits-dark-768.png>) — png, 60253 bytes.
@@ -470,9 +470,9 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/users-light-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/users-light-768.png>) — png, 50207 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/revision-2
 
-- [02-DOCS/wiki/sdd/kma-redesign/revision-2/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/revision-2/DESIGN.md>) — md, 3248 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/revision-2/PRODUCT.md](<../../02-DOCS/wiki/sdd/kma-redesign/revision-2/PRODUCT.md>) — md, 1244 bytes.
-- [02-DOCS/wiki/sdd/kma-redesign/revision-2/direction.md](<../../02-DOCS/wiki/sdd/kma-redesign/revision-2/direction.md>) — md, 3401 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/revision-2/DESIGN.md](<../../02-DOCS/wiki/sdd/kma-redesign/revision-2/DESIGN.md>) — md, 3324 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/revision-2/PRODUCT.md](<../../02-DOCS/wiki/sdd/kma-redesign/revision-2/PRODUCT.md>) — md, 1267 bytes.
+- [02-DOCS/wiki/sdd/kma-redesign/revision-2/direction.md](<../../02-DOCS/wiki/sdd/kma-redesign/revision-2/direction.md>) — md, 3427 bytes.
 ## 02-DOCS/wiki/sdd/kma-redesign/screenshots
 
 - [02-DOCS/wiki/sdd/kma-redesign/screenshots/audits-dark-1440.png](<../../02-DOCS/wiki/sdd/kma-redesign/screenshots/audits-dark-1440.png>) — png, 128957 bytes.
@@ -547,40 +547,42 @@ Guía: [alcance y automatización](harness/second-brain.md).
 - [02-DOCS/wiki/sdd/kma-redesign/screenshots/users-light-768.png](<../../02-DOCS/wiki/sdd/kma-redesign/screenshots/users-light-768.png>) — png, 64091 bytes.
 ## 02-DOCS/wiki/sdd/plans
 
-- [02-DOCS/wiki/sdd/plans/catalog-management.md](<../../02-DOCS/wiki/sdd/plans/catalog-management.md>) — md, 10256 bytes.
+- [02-DOCS/wiki/sdd/plans/catalog-management.md](<../../02-DOCS/wiki/sdd/plans/catalog-management.md>) — md, 10358 bytes.
 ## 02-DOCS/wiki/sdd/progress
 
-- [02-DOCS/wiki/sdd/progress/catalog-management.md](<../../02-DOCS/wiki/sdd/progress/catalog-management.md>) — md, 11688 bytes.
+- [02-DOCS/wiki/sdd/progress/catalog-management.md](<../../02-DOCS/wiki/sdd/progress/catalog-management.md>) — md, 11801 bytes.
 ## 02-DOCS/wiki/sdd/specs
 
-- [02-DOCS/wiki/sdd/specs/catalog-management.md](<../../02-DOCS/wiki/sdd/specs/catalog-management.md>) — md, 3150 bytes.
+- [02-DOCS/wiki/sdd/specs/catalog-management.md](<../../02-DOCS/wiki/sdd/specs/catalog-management.md>) — md, 3196 bytes.
 ## 02-DOCS/wiki/sdd/verifications
 
-- [02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-22.md](<../../02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-22.md>) — md, 8439 bytes.
-- [02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-23.md](<../../02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-23.md>) — md, 4137 bytes.
-- [02-DOCS/wiki/sdd/verifications/mitigation-crud-export-2026-10-23.md](<../../02-DOCS/wiki/sdd/verifications/mitigation-crud-export-2026-10-23.md>) — md, 4802 bytes.
-- [02-DOCS/wiki/sdd/verifications/mitigation-qa-2026-10-23.md](<../../02-DOCS/wiki/sdd/verifications/mitigation-qa-2026-10-23.md>) — md, 7384 bytes.
+- [02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-22.md](<../../02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-22.md>) — md, 8533 bytes.
+- [02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-23.md](<../../02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-23.md>) — md, 4172 bytes.
+- [02-DOCS/wiki/sdd/verifications/mitigation-crud-export-2026-10-23.md](<../../02-DOCS/wiki/sdd/verifications/mitigation-crud-export-2026-10-23.md>) — md, 4831 bytes.
+- [02-DOCS/wiki/sdd/verifications/mitigation-qa-2026-10-23.md](<../../02-DOCS/wiki/sdd/verifications/mitigation-qa-2026-10-23.md>) — md, 7450 bytes.
 ## docs/agents
 
-- [docs/agents/project-context.md](<../../docs/agents/project-context.md>) — md, 13458 bytes.
+- [docs/agents/project-context.md](<../../docs/agents/project-context.md>) — md, 13642 bytes.
 ## docs/architecture
 
-- [docs/architecture/auth.md](<../../docs/architecture/auth.md>) — md, 3914 bytes.
+- [docs/architecture/auth.md](<../../docs/architecture/auth.md>) — md, 3986 bytes.
 ## public/fonts
 
-- [public/fonts/albert-sans-OFL.txt](<../../public/fonts/albert-sans-OFL.txt>) — txt, 4390 bytes.
+- [public/fonts/albert-sans-OFL.txt](<../../public/fonts/albert-sans-OFL.txt>) — txt, 4483 bytes.
 - [public/fonts/alumni-sans-OFL.txt](<../../public/fonts/alumni-sans-OFL.txt>) — txt, 4483 bytes.
-- [public/fonts/chakra-petch-OFL.txt](<../../public/fonts/chakra-petch-OFL.txt>) — txt, 4396 bytes.
-- [public/fonts/manrope-OFL.txt](<../../public/fonts/manrope-OFL.txt>) — txt, 4387 bytes.
+- [public/fonts/chakra-petch-OFL.txt](<../../public/fonts/chakra-petch-OFL.txt>) — txt, 4489 bytes.
+- [public/fonts/manrope-OFL.txt](<../../public/fonts/manrope-OFL.txt>) — txt, 4480 bytes.
 - [public/fonts/source-sans-3-OFL.txt](<../../public/fonts/source-sans-3-OFL.txt>) — txt, 4579 bytes.
 ## raíz
 
-- [AGENTS.md](<../../AGENTS.md>) — md, 17178 bytes.
-- [CLAUDE.md](<../../CLAUDE.md>) — md, 356 bytes.
-- [README.md](<../../README.md>) — md, 4827 bytes.
+- [AGENTS.md](<../../AGENTS.md>) — md, 17456 bytes.
+- [CLAUDE.md](<../../CLAUDE.md>) — md, 367 bytes.
+- [DESIGN.md](<../../DESIGN.md>) — md, 48 bytes.
+- [PRODUCT.md](<../../PRODUCT.md>) — md, 51 bytes.
+- [README.md](<../../README.md>) — md, 4883 bytes.
 ## src/features/flows/ui
 
-- [src/features/flows/ui/app\_example.md](<../../src/features/flows/ui/app_example.md>) — md, 13403 bytes.
+- [src/features/flows/ui/app\_example.md](<../../src/features/flows/ui/app_example.md>) — md, 13930 bytes.
 
 ## Exclusiones
 
@@ -588,8 +590,6 @@ No se lee el contenido de rutas sensibles, enlaces simbólicos ni árboles exclu
 Los directorios ocultos también se omiten. Detalle de límites: [configuración](../second-brain.json).
 
 - 01-TOOLS: tooling-or-build.
-- DESIGN.md: symlink.
-- PRODUCT.md: symlink.
 - coverage: tooling-or-build.
 - node\_modules: tooling-or-build.
 - src/shared/auth/\_\_tests\_\_/verify-access-token.test.ts: sensitive.

@@ -1,16 +1,37 @@
 /**
- * Listado de flows: búsqueda, estados de carga y de error.
+ * Listado de flows y gestión de categorías: búsqueda, pestañas, alta/edición y estados de carga/error.
  */
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const useFlowsQuery = vi.fn();
+const useFlowCategoriesQuery = vi.fn();
+const createCategoryMutateAsync = vi.fn();
+const updateCategoryMutateAsync = vi.fn();
+const deleteCategoryMutateAsync = vi.fn();
 const sessionMock = vi.fn();
+
 vi.mock("@processes/auth/hooks", () => ({ useSession: () => sessionMock() }));
 
 vi.mock("@features/flows/lib/useFlowsQuery", () => ({
   useFlowsQuery: (...args: unknown[]) => useFlowsQuery(...args),
+}));
+
+vi.mock("@features/flows/lib/useFlowCategoriesQuery", () => ({
+  useFlowCategoriesQuery: (...args: unknown[]) => useFlowCategoriesQuery(...args),
+  useCreateFlowCategory: () => ({
+    mutateAsync: createCategoryMutateAsync,
+    isPending: false,
+  }),
+  useUpdateFlowCategory: () => ({
+    mutateAsync: updateCategoryMutateAsync,
+    isPending: false,
+  }),
+  useDeleteFlowCategory: () => ({
+    mutateAsync: deleteCategoryMutateAsync,
+    isPending: false,
+  }),
 }));
 
 vi.mock("@shared/ui/page-header", () => ({
@@ -45,7 +66,7 @@ vi.mock("@features/flows/ui/FlowSection", () => ({
   FlowsSection: ({
     items,
   }: {
-    items: Array<{ id: string; title: string; description?: string }>;
+    items: Array<{ id: string; title: string; description?: string; categoryName?: string }>;
   }) => (
     <ul data-testid="flows">
       {items.map((item) => (
@@ -59,9 +80,25 @@ function stubFlows(overrides: Record<string, unknown> = {}) {
   useFlowsQuery.mockReturnValue({
     data: {
       flows: [
-        { id: "flow-1", title: "Curb ramps", description: "Rampas de cordón" },
+        { id: "flow-1", title: "Curb ramps", description: "Rampas de cordón", category: "cat-1" },
         { id: "flow-2", title: "Doors", description: null },
       ],
+    },
+    isLoading: false,
+    error: undefined,
+    refetch: vi.fn(),
+    ...overrides,
+  });
+}
+
+function stubCategories(overrides: Record<string, unknown> = {}) {
+  useFlowCategoriesQuery.mockReturnValue({
+    data: {
+      categories: [
+        { id: "cat-1", name: "Exterior", description: "Exterior routes", isActive: true },
+        { id: "cat-2", name: "Legacy", description: "Old category", isActive: false },
+      ],
+      total: 2,
     },
     isLoading: false,
     error: undefined,
@@ -80,6 +117,7 @@ describe("FlowsPage", () => {
     window.history.replaceState(null, "", "/");
     vi.clearAllMocks();
     sessionMock.mockReturnValue({ isAdmin: true });
+    stubCategories();
   });
 
   it("allows administrators to create a flow", async () => {
@@ -101,6 +139,7 @@ describe("FlowsPage", () => {
     await renderPage();
 
     expect(useFlowsQuery).toHaveBeenCalledWith(true);
+    expect(useFlowCategoriesQuery).toHaveBeenCalledWith(true);
   });
 
   it("renders every flow, with an empty description when it is null", async () => {
@@ -180,5 +219,79 @@ describe("FlowsPage", () => {
     await userEvent.type(screen.getByLabelText("Search flows..."), "  doors  ");
 
     expect(screen.getByTestId("flows").children).toHaveLength(1);
+  });
+
+  it("switches to the Categories tab, filters categories, and creates/edits a category", async () => {
+    const user = userEvent.setup();
+    stubFlows();
+    createCategoryMutateAsync.mockResolvedValueOnce({
+      id: "cat-3",
+      name: "Parking",
+      description: "Parking lots",
+      isActive: true,
+    });
+    updateCategoryMutateAsync.mockResolvedValueOnce({
+      id: "cat-1",
+      name: "Exterior Updated",
+      description: "Exterior routes",
+      isActive: true,
+    });
+
+    await renderPage();
+
+    await user.click(screen.getByRole("tab", { name: /Categories/i }));
+    expect(screen.getByText("Exterior")).toBeInTheDocument();
+    expect(screen.getByText("Legacy")).toBeInTheDocument();
+
+    // Filtrar por estado activo
+    await user.selectOptions(screen.getByLabelText("Filter categories by status"), "active");
+    expect(screen.getByText("Exterior")).toBeInTheDocument();
+    expect(screen.queryByText("Legacy")).not.toBeInTheDocument();
+
+    // Crear nueva categoría desde el botón de cabecera
+    await user.click(screen.getByRole("button", { name: "Create Category" }));
+    await user.type(screen.getByLabelText("Name"), "Parking");
+    await user.type(screen.getByLabelText("Description"), "Parking lots");
+    await user.click(screen.getByRole("button", { name: "Create category" }));
+
+    expect(createCategoryMutateAsync).toHaveBeenCalledWith({
+      name: "Parking",
+      description: "Parking lots",
+      isActive: true,
+    });
+
+    // Editar categoría existente
+    await user.click(screen.getByRole("button", { name: "Edit category Exterior" }));
+    await user.clear(screen.getByLabelText("Name"));
+    await user.type(screen.getByLabelText("Name"), "Exterior Updated");
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(updateCategoryMutateAsync).toHaveBeenCalledWith({
+      id: "cat-1",
+      input: {
+        name: "Exterior Updated",
+        description: "Exterior routes",
+        isActive: true,
+      },
+    });
+  });
+
+  it("shows categories loading and error states with retry", async () => {
+    const user = userEvent.setup();
+    const refetchCategories = vi.fn();
+    stubFlows();
+    stubCategories({
+      data: undefined,
+      isLoading: false,
+      error: new Error("categories offline"),
+      refetch: refetchCategories,
+    });
+
+    window.history.replaceState(null, "", "/?tab=categories");
+    await renderPage();
+
+    expect(screen.getByText(/Error loading categories: categories offline/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Try again" }));
+    expect(refetchCategories).toHaveBeenCalledTimes(1);
   });
 });

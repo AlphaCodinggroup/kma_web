@@ -9,6 +9,7 @@ export interface FlowItemVM {
   description?: string;
   flowId?: string;
   code?: string | undefined;
+  categoryName?: string | undefined;
 }
 
 export interface FlowsSectionProps {
@@ -38,6 +39,7 @@ export const FlowsSection: React.FC<FlowsSectionProps> = ({
               flowId={it.flowId ?? it.id}
               title={it.title}
               code={it.code}
+              categoryName={it.categoryName}
               description={it.description ?? ""}
               data-testid={`flow-card-${it.id}`}
               {...(onDeleted ? { onDeleted } : {})}

@@ -55,6 +55,7 @@ import {
   makeSelectStep,
   createMenuItem,
   makeValidFlow,
+  optionBlocks,
   queryCreateMenuItem,
   renderEditor,
   sidebarCard,
@@ -212,9 +213,9 @@ describe("FlowEditor - step management", () => {
     );
 
     await user.click(screen.getByText("Choose the barrier"));
-    const [firstOption, secondOption] = screen.getAllByRole("combobox");
-    expect(firstOption).toHaveValue("");
-    expect(secondOption).toHaveValue("AR-E01");
+    const [firstBlock, secondBlock] = optionBlocks();
+    expect(within(firstBlock as HTMLElement).getByRole("combobox")).toHaveValue("");
+    expect(within(secondBlock as HTMLElement).getByRole("combobox")).toHaveValue("AR-E01");
   });
 
   it("keeps the new step unlinked and selected when the modal is skipped", async () => {
@@ -276,7 +277,8 @@ describe("FlowEditor - step management", () => {
 
     expect(screen.getByRole("heading", { name: "AR-Q01" })).toBeInTheDocument();
     await user.click(screen.getByText("Choose the barrier"));
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AR-Q01");
+    const [firstBlock] = optionBlocks();
+    expect(within(firstBlock as HTMLElement).getByRole("combobox")).toHaveValue("AR-Q01");
   });
 
   it("creates and links both branches of a Question independently", async () => {

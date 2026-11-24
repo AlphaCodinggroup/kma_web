@@ -39,6 +39,18 @@ vi.mock("@features/flows/api/flows.repo.impl", () => ({
   FlowsApiError: class FlowsApiError extends Error {},
 }));
 
+vi.mock("@features/flows/api/flow-categories.repo.impl", () => ({
+  flowCategoriesRepo: {
+    list: vi.fn(async () => ({
+      categories: [
+        { id: "cat-1", name: "Exterior", description: "Outdoor", isActive: true },
+        { id: "cat-2", name: "Archived", description: "Old", isActive: false },
+      ],
+      total: 2,
+    })),
+  },
+}));
+
 vi.mock("@shared/config/env", () => ({
   PublicEnv: { queryStaleTimeMs: 30_000 },
 }));
@@ -601,5 +613,28 @@ describe("FlowEditor - validation and save", () => {
     await user.click(overlay as HTMLElement);
 
     expect(pushMock).toHaveBeenCalledWith("/flows");
+  });
+
+  it("allows selecting a category and persists its id when saving the flow", async () => {
+    const user = userEvent.setup();
+    const flow = makeValidFlow();
+    flow.steps = [makeEndStep()];
+    renderEditor(flow, "edit");
+
+    const categorySelect = screen.getByRole("combobox", { name: "Flow category" });
+    await waitFor(() =>
+      expect(within(categorySelect).getByRole("option", { name: "Exterior" })).toBeInTheDocument()
+    );
+    expect(within(categorySelect).queryByRole("option", { name: /Archived/i })).not.toBeInTheDocument();
+
+    await user.selectOptions(categorySelect, "cat-1");
+    expect(categorySelect).toHaveValue("cat-1");
+
+    await clickSave(user);
+    await waitFor(() => expect(repoMock.update).toHaveBeenCalledTimes(1));
+    expect(repoMock.update).toHaveBeenCalledWith(
+      "AR",
+      expect.objectContaining({ category: "cat-1" })
+    );
   });
 });

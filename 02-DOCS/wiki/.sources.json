@@ -3,96 +3,104 @@
   "sources": [
     {
       "path": "02-DOCS/wiki/ftd/catalog-active-default.md",
-      "hash": "a49ea6fd9786f0e84b13c3cd8a195c69bc77cb5d5a39e070bb62d170892f3596",
-      "size": 4677,
+      "hash": "46589e929c5f323866b94391f4843d13767a56bd674def836aab76cd21d67d39",
+      "size": 4758,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/catalog-implementation-prompt.md",
-      "hash": "f4426d29052954004944052282eac36702f370c0ad2b20d9f448f483d62ac413",
-      "size": 23915,
+      "hash": "4e5bf39ca5ccf0a597e7ff329e6f911d350e8988a9a5dd0cd476b3c5974aadd4",
+      "size": 24224,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/catalog-recovery-and-sidebar.md",
-      "hash": "19d3aef62dfa0eedc7089e551eb9c11b9770cb9ac0571f4f2e47c988dd55c6d5",
-      "size": 3646,
+      "hash": "d637ebd974f4f824179c9286a67b9fd750202ade6c7cd2404a0d91b2ec7cab47",
+      "size": 3711,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/catalog-upload-first.md",
-      "hash": "ead4d6e5b799fe51af402933248e42c5d3355653e2f91df454f510589a1e1f52",
-      "size": 2595,
+      "hash": "7399c95fa15a6015327edf3c9ef74ab63f6468edb0bb598e0c6b49ce411b4ef1",
+      "size": 2649,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/collapsible-navigation.md",
-      "hash": "8bec71b8d9d96ae3e3157b3260c7bba52a79c98d5d0dc7fcd281eb9d148c8a18",
-      "size": 5679,
+      "hash": "3173d4215ae1d64d852a7cf7088ab032a519c2f5898c026e6b1d934075c080ad",
+      "size": 5781,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/feedback-permissions-states-web.md",
-      "hash": "b1f3c87398986b1b50b82ac5f9990bf7749528af6adc3a2207d54628ab2992d8",
-      "size": 4429,
+      "hash": "a4caef5328f8159ec99f3709cfe56ec48ab6b048da9a80faa1930e63abb2285a",
+      "size": 4486,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/flow-inspector-width.md",
-      "hash": "b91866d8a39e9b994173a268ecc892efb612fd40585ad181c3b2c76aa1bff931",
-      "size": 2347,
+      "hash": "ef586aaecebfce322aeff7c80af1db890b736f20f69741ebef82f1455e2c764d",
+      "size": 2387,
+      "format": "md",
+      "topic": "02-DOCS/wiki/ftd",
+      "status": "indexed"
+    },
+    {
+      "path": "02-DOCS/wiki/ftd/flows-categories-ui.md",
+      "hash": "1a32bab1ba8d72e6477ce3c0b429cd4c90112d157a686672e80dd3d9f817a745",
+      "size": 2112,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/frontend-startup-warnings.md",
-      "hash": "ed7cbb4e1df2c7085e1c918f6befd25b6efdbb7ac0e3c83ca93f6495b8ac7813",
-      "size": 2743,
+      "hash": "5dc07411c504aef1599bfba7adaca1499acaf06fa32c54f1f769b44eaae61a70",
+      "size": 2781,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/impeccable-claude-code.md",
-      "hash": "48fd70416941ddf00e0ac1303fcc67b3d41bcb415148d717cf109ebe1f9caeb0",
-      "size": 2688,
+      "hash": "bc54f7d5a33ddbb72983f0683fcd823aecfca7fe1ffeb2d7d128f613b2d8f166",
+      "size": 2725,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/install-rsc-harness.md",
-      "hash": "c69432a333c41c198c7b851f650c907680bf5f2bac3d0788ccc0de89025058b1",
-      "size": 2777,
+      "hash": "509e8e01c0ffb07fd718315f9a3aadc2f6746423ce5982b1bdc697c76df52fe8",
+      "size": 2830,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/install-rsc-original-checkouts.md",
-      "hash": "f045e67c7d5939abb2f4ef496e7d15e99793a5db8b40602a2836b3fc9402943d",
-      "size": 5856,
+      "hash": "beedffa5d6d188a464b5990e9c0798351a6f3fc16d323de14bc5ac3374ee02a1",
+      "size": 5965,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/ftd/responsive-flow-steps.md",
-      "hash": "8ee065bac02a8f80de4bad4c66dff8a9a6ef2998dafd190f6b4442eddfd5ef43",
-      "size": 4066,
+      "hash": "d82f445405c84ca7b8fafa8ff3b6c9a84ef44345835403d8a22e45ef92028079",
+      "size": 4152,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
@@ -107,168 +115,160 @@
     },
     {
       "path": "02-DOCS/wiki/ftd/update-rsc-3-6-0.md",
-      "hash": "9b24a6947e9d01b2e9ab93ff10bc1a37e19e42bd2b6d1d3ea84586856993525a",
-      "size": 804,
+      "hash": "1cbd37e6d1c1d83c2a39c1aad246bc9809afa1336cacf18f5ca2fa55916d9739",
+      "size": 821,
       "format": "md",
       "topic": "02-DOCS/wiki/ftd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/harness/decisions.md",
-      "hash": "56114b0fe807ada5bf2c22253fcf8cf9e8c890a1f5f05b068030a86b87e89877",
-      "size": 2433,
+      "hash": "fa1e65f34162a2ea81f153a2d61404e1fb291991ceff7ce7e3a200e40d47d250",
+      "size": 2474,
       "format": "md",
       "topic": "02-DOCS/wiki/harness",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/harness/installation-plan.md",
-      "hash": "36888d1996d7e252669c390837805d31a426ff3359899cfc27ad075e6bdeb412",
-      "size": 4817,
+      "hash": "dce68066787ebd38d4512f5c4a7c5586cd4644e4f4779167c0d80d0921fa9d1e",
+      "size": 4865,
       "format": "md",
       "topic": "02-DOCS/wiki/harness",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/harness/second-brain.md",
-      "hash": "a3691e3dc18fe07f4be225bd7f25ed6d26fdcb3089c79a9fd8dee47b30923648",
-      "size": 7935,
-      "format": "md",
-      "topic": "02-DOCS/wiki/harness",
-      "status": "indexed"
-    },
-    {
-      "path": "02-DOCS/wiki/harness/user-profile.md",
-      "hash": "523b4a62d116e5d19e04fc8124d13a4791be29b663519f4692846a1b4b8a4c4b",
-      "size": 266,
+      "hash": "b2ace578a8689bf77e5f72bfd95532004d5f717c46aadcc44ae95113bba86304",
+      "size": 8080,
       "format": "md",
       "topic": "02-DOCS/wiki/harness",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/harness/vscode.md",
-      "hash": "e7316407d181a51acdaf333f79dac2cc0a22a74107ea3e4ffe7af1798070d4c5",
-      "size": 1617,
+      "hash": "fc29758a4aec0874e74ea5f446aa2e57634d0eeff23b4cacf6872a3baa9eb143",
+      "size": 1649,
       "format": "md",
       "topic": "02-DOCS/wiki/harness",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/index.md",
-      "hash": "7de940d97b317b3100d98de0bf58c435ef2db239c277cae1eada7c1d9e96777b",
-      "size": 5882,
+      "hash": "d4bd84de360c111975330a45b3d1d42ae1e0197e9e8df2e3a42666294811f497",
+      "size": 5968,
       "format": "md",
       "topic": "02-DOCS/wiki",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/auth-and-session.md",
-      "hash": "1199fb2f986833f84a9c3b72c61f1443d06c3e1ee655d1ce4518b6eefbdc3cf6",
-      "size": 5148,
+      "hash": "74e4bd328c69f91bfd4dba90c30f2571142588ea3d7d9c76ed0c516e5321ed23",
+      "size": 5212,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/changes-2026-10-29.md",
-      "hash": "7dc4c2fd546639ee436b9c5f0cd609580c43d27e8cc654624f3acf13475bafe7",
-      "size": 9160,
+      "hash": "f05ba1b0c2883c6e415e11b6d4a857a899360817edf754801f32b874028c49af",
+      "size": 9280,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/design-system-and-ui.md",
-      "hash": "0418a576fa69a3507e736ab5f7e580f488fc9ea16362c337995ccd5c5036df17",
-      "size": 6657,
+      "hash": "5a12541ba621c46ed7e9b3629a8eb42d7512d0fb2b45e0d1703bdfd19b8ef99b",
+      "size": 6747,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/dev-test-and-deploy.md",
-      "hash": "4bed8c097f5b3d816ab6eff9ec32e8786460528b49a0dc0ec073e6af9511b8a5",
-      "size": 5387,
+      "hash": "f3a5421ded1ecb3d6f5b7b0582ed6cdd33ba9bc6e0eba52f3e1d208d11510cf4",
+      "size": 5473,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/environments.md",
-      "hash": "d36348959fd5fb8ee3ca6313afb371c2a501c817b35e92d8319540e6f5b99105",
-      "size": 3142,
+      "hash": "1fc927b84a8fd9fefc316ab1eda40995607e4cf2d4827eea614e52ad9e698555",
+      "size": 3198,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/features.md",
-      "hash": "e4bf056a70b4f6d365741477af5b99537c11222c5f2bd1fe383e3a983dea07a6",
-      "size": 9771,
+      "hash": "8280a98c4f5b52b92ce94a3a7a8f81b12952117be1488c3ee809d24ff92eefee",
+      "size": 9886,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/overview.md",
-      "hash": "85458b0f1a017c9ce000499e40d6f3653bcf7b50ee07f0697174d9778f2d98c5",
-      "size": 5604,
+      "hash": "66d78442ba30934287241b2d782e04d487a3664402d24c3d84dad3d9fe73ce66",
+      "size": 5685,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/project/routes-and-bff.md",
-      "hash": "7e5d456d609446c7936d496bac61be5d9e2563361c68746c3998b0225b850ee1",
-      "size": 8711,
+      "hash": "447597e4ac85444b646d2bd6f388b740da005d4fb3fd01b08764d8e1348b886e",
+      "size": 8816,
       "format": "md",
       "topic": "02-DOCS/wiki/project",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/constitution.md",
-      "hash": "5848cf81985ebaeda66ee8d884ee6002cc50e9af38f2407c98e958f8be8f4d7f",
-      "size": 5112,
+      "hash": "ca819cc00628da332e583b10badad80d5e77bd9a5b9afc010477c4cfbe9315be",
+      "size": 5176,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/accessibility-results.json",
-      "hash": "f4b54a9bb4647a2b18087725515accd4ff9fb66979419de27cb0758643615b13",
-      "size": 454,
+      "hash": "4d0e2a2f050856015a3275f6c9fd67e9828a533001a4705a72612fa5712b00f9",
+      "size": 476,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/DESIGN.md",
-      "hash": "6d6052e1c923814c9db77cb783a53a8e07dc5a7b8d5e882b9744330a1cff4fa7",
-      "size": 24591,
+      "hash": "ac77d86cac5c465ed2c00fef75d1d9fd3cdfc4857bedcd50b1f553243f86f1e2",
+      "size": 24967,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/brand-red-logo.md",
-      "hash": "a1a97f2f03e1eba00bbcf2738c86b187e7168f6679aa5d664bb20a280685233c",
-      "size": 1946,
+      "hash": "9f8e76c38b15da2d9d09669d73e2738fb8ab0cfd68a1867f6a18440fd16d10c0",
+      "size": 1978,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/deployment.md",
-      "hash": "ec5d6b8f31690cede6bdaacf5ba52c3251b78fd7c5a79cd271be3dcad3c80468",
-      "size": 3333,
+      "hash": "3896f9246a98df747989b07963735a89740285b918e4970d6ece27794994912f",
+      "size": 3370,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/implementation.md",
-      "hash": "107e9490aaa0cbfac8dcaea99f4b1a9e52cef4077e695ac94acd7b14fc77883a",
-      "size": 6880,
+      "hash": "cf2e27a7fa3db293f8a17b4e84911ceed5b0db2235dffac43048fc5682490916",
+      "size": 6939,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
       "status": "indexed"
@@ -283,32 +283,32 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/main-parity.md",
-      "hash": "00701737cf02abd0be1bf31826d65a85663452297072a8b46420a40560741b76",
-      "size": 6748,
+      "hash": "979a6273e28faf0614dc2500d91a991f41475c49f8b7df617fb13a50cc2c0ce7",
+      "size": 6825,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/user-feedback.md",
-      "hash": "d92ad743cb9e5d8807065163aa57b34ffdf217dbd762920012af85c377bbcc2b",
-      "size": 3906,
+      "hash": "2c01d4760523ea9dd0a7183a0ed2b74c5bf1cad4c2c929f5a53829012e7951da",
+      "size": 3938,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-dark.json",
-      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
-      "size": 2449,
+      "hash": "63c4cd4579667987dfb5d67676922332286eb3aaf20c6c8d08c7e171c221ae29",
+      "size": 2615,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/accessibility-light.json",
-      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
-      "size": 2449,
+      "hash": "63c4cd4579667987dfb5d67676922332286eb3aaf20c6c8d08c7e171c221ae29",
+      "size": 2615,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
       "status": "indexed"
@@ -843,8 +843,8 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/DESIGN.md",
-      "hash": "ca050dccea6d66ea916ccdf628190f96e96d2638b3b68ee7b3453822aac2e74a",
-      "size": 19137,
+      "hash": "3ae6b2eb9f85dc507acf6ae7505a3fd31602cd16234f96a4ad7288434cbc69b2",
+      "size": 19487,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
       "status": "indexed"
@@ -947,8 +947,8 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback/design.json",
-      "hash": "ca4d0c8cfd3dbe683a339ffc046577e52a8249d36df13729881c40e5aaf20958",
-      "size": 43184,
+      "hash": "e0f2bd96b76dd3238be5ce1c52defe871ed54267a6ebdd25c6fae22b79c8328a",
+      "size": 44124,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/before-impeccable-feedback",
       "status": "indexed"
@@ -1403,8 +1403,8 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/capturas.md",
-      "hash": "0e927085d93bb35f09bb2d5a9decc844f96bf2ecf175371629263dafb913df31",
-      "size": 8471,
+      "hash": "534bbd9151190d7ae038b46061049caca93a471f40350a8ec10a69bbd04f458d",
+      "size": 8501,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
       "status": "indexed"
@@ -1459,8 +1459,8 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login/README.md",
-      "hash": "a36b8455212a70a743ef683691dda2da1254a7be540c4b48613a53cc025d627b",
-      "size": 1452,
+      "hash": "f3866945d4b12647e1fed7108e7442dd9467b5ea7b84ad967d5b918043e39c6d",
+      "size": 1466,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/dark-login",
       "status": "indexed"
@@ -1515,16 +1515,16 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/entrega.md",
-      "hash": "bfc7e3293ae7d24255cbddbd74c4f86c59b5c9d80a78b4497d1d7978f5e2ddfa",
-      "size": 8311,
+      "hash": "130823659b4c94d1af0eef788f8e904c1902e07abedef02992e6a2714c6aaaa0",
+      "size": 8358,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/gallery.html",
-      "hash": "b3517dd2f3faf78dcdcb67f6a39fdcecb2720c989df4b8138d11d085b2cc235d",
-      "size": 3673,
+      "hash": "8ded3f634dc48caa5456d4390ac601b1d7883e2e9f02b64ee7b961a5f8d40b21",
+      "size": 3692,
       "format": "html",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
       "status": "indexed"
@@ -1579,16 +1579,16 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/manifest.json",
-      "hash": "02c3938986493d9cc49b3a5af60be36db3af9d64ed980178bf428515fea3c6a1",
-      "size": 2946,
+      "hash": "ea7c441faf3de33c5e5ee85c27a9dcae975be17d31008fb564b083500cd2fbf1",
+      "size": 3047,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/review.md",
-      "hash": "d65b751ff2213eb6e6fdff105dc0de293481b7405c233da03b9d9219b260e44b",
-      "size": 4936,
+      "hash": "2f392461579c963bd81ec6fa0503efacc8eb5d65364f58273334815fcc9a881d",
+      "size": 4969,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
       "status": "indexed"
@@ -1603,16 +1603,16 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-dark.json",
-      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
-      "size": 2449,
+      "hash": "63c4cd4579667987dfb5d67676922332286eb3aaf20c6c8d08c7e171c221ae29",
+      "size": 2615,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1/accessibility-light.json",
-      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
-      "size": 2449,
+      "hash": "63c4cd4579667987dfb5d67676922332286eb3aaf20c6c8d08c7e171c221ae29",
+      "size": 2615,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/round-1",
       "status": "indexed"
@@ -2203,32 +2203,32 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation/user-feedback-review.md",
-      "hash": "0ef6c76cb6203939b70116208327218c602efa55c01ffd1c34abe6dab9bedf28",
-      "size": 2258,
+      "hash": "7707f818b15f4f996ad13e26e12f6465496fd3f3e21c057892dc494de2e28e92",
+      "size": 2290,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/daylight/validation",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/delivery.md",
-      "hash": "71b93a925d630c8a2220ef706dbc04674bbc82a6c951e292b284e4d25181a68c",
-      "size": 4834,
+      "hash": "ee3ddeb96218a0de0762396db99dc1c3729a82bd0fdf095a3f55e8bc84d8e7fe",
+      "size": 4883,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/plan.md",
-      "hash": "e8514f4214e74e5b4abad566ce48ba04f674a3133f58fb9a08ce81add30fb02f",
-      "size": 775,
+      "hash": "7506f8173c0ada7350caa2929ee72567b85dbadfcbc5cd826a7a3e78aeacc055",
+      "size": 784,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/premium/DESIGN.md",
-      "hash": "47d46ed2664836df08b13b786ebdd399ba0fe8096bab8bf64c037d5e33d09dd3",
-      "size": 3590,
+      "hash": "cf098b86ffbf3c0a0cf8ba9b0e8bcd7042854a98808845326200529ef49b9be9",
+      "size": 3666,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/premium",
       "status": "indexed"
@@ -2763,24 +2763,24 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/premium/implementation.md",
-      "hash": "3161ce79796135ed072c56d9812c2559e1d256940af076345a5d00df096dcbc7",
-      "size": 1669,
+      "hash": "b0efa45760f6509114cd1a3d78cae18724b75287fe4225551912aeb5dfc23692",
+      "size": 1702,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/premium",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-dark.json",
-      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
-      "size": 2449,
+      "hash": "63c4cd4579667987dfb5d67676922332286eb3aaf20c6c8d08c7e171c221ae29",
+      "size": 2615,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close/accessibility-light.json",
-      "hash": "ea04763e30db01c6c5a6514d5dc90d4cee5fa059193dfcb28d4a761027683033",
-      "size": 2449,
+      "hash": "63c4cd4579667987dfb5d67676922332286eb3aaf20c6c8d08c7e171c221ae29",
+      "size": 2615,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/pre-close",
       "status": "indexed"
@@ -3323,16 +3323,16 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/premium/validation/report.md",
-      "hash": "f66d7fb94b2482b5b4f52cdca0cd54c215e77b0185afaa00b561b0684af3d6eb",
-      "size": 2465,
+      "hash": "6023c6ff2b99e7b826a7196d859fb38f2cc45de3f51edaf7a7c713b72914e635",
+      "size": 2486,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/premium/validation",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/progress.md",
-      "hash": "6065d1e93dae886e6d5d051a39f2087818e124a35ee3f90d48537037927ab688",
-      "size": 5073,
+      "hash": "ed3b6a335c7d5284ddf26503e753b049fa0f39aa4704cbcd5e373126ea9495cd",
+      "size": 5125,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
@@ -3347,32 +3347,32 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/revision-2/DESIGN.md",
-      "hash": "9101a50f74a37c99ad297c2abccb7f62d70f0a0ad8bc086ebc719d9121609922",
-      "size": 3248,
+      "hash": "e0885823ab60197351dd249543075e340c1d9bb39f4ddf9854f2ade64109a289",
+      "size": 3324,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/revision-2",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/revision-2/PRODUCT.md",
-      "hash": "fb8c7b050e1ba22c08785ec152ed92004b08f1c9fc3f9e7d4d85a643f34d075b",
-      "size": 1244,
+      "hash": "ecdb7aa9f09955960a24d1c478043c8680324519c71e2669b94375ab06c3013c",
+      "size": 1267,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/revision-2",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/revision-2/direction.md",
-      "hash": "8dbedefb8e935415a5fffc7c91378ed21a10e0fd5c0dfaa807c1ec8ef1e0c881",
-      "size": 3401,
+      "hash": "6ab14bbf0b2f30fe5cc196c2d4bafa273be7c2c9c9dd3fe08d916f6b9e388826",
+      "size": 3427,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign/revision-2",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/screenshots.md",
-      "hash": "7914d3b09ca372efbf5a845db1190140587a1d6eae4d3ef1ec4f97c7d2bac8c1",
-      "size": 3736,
+      "hash": "87cd4757c9939d98ec3e5d751b4ac30a58c36a1da278803bf255be5b8a995527",
+      "size": 3766,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
@@ -3939,136 +3939,152 @@
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/spec.md",
-      "hash": "63de046d17db88a141214b48f0db6f49f0e42e4b004cdd17d23747018022c8a7",
-      "size": 1299,
+      "hash": "584832c848a3df649da034a5384c92857cc82df90e84f8e9adf0b4fdc4d7f280",
+      "size": 1316,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/tasks.md",
-      "hash": "4617c3a5286c443607946e6cd852ac112d430f9f084c1daf6a0c98f75da4bbbf",
-      "size": 849,
+      "hash": "74c1a6b67df5e28c39a590d38d068f803677987006d7d4f0990e56f5978dfa9e",
+      "size": 859,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/validation-results.json",
-      "hash": "43d3148d7bcffa4c34f4fa6b266b011f7e30c6203a046d7874da5da983896325",
-      "size": 637,
+      "hash": "bf4e5babbd604b17101512b7ccd167618418694a70dec8a5fbaef5b6e62a1476",
+      "size": 671,
       "format": "json",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/kma-redesign/verification.md",
-      "hash": "d52c0da1c5fd28ea87d840bba27a6424b912b0a562b7bae1c05071214f1a0e97",
-      "size": 2321,
+      "hash": "ff5d703f57fcab4dfa73093e1a5dfbb88bd21b03f5ef74ce6c05d3fe2c756e55",
+      "size": 2352,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/kma-redesign",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/plans/catalog-management.md",
-      "hash": "6f3cf933d8e193bdc31dcf03f8e5bf700b195ff43043a733d8d7a251c8cf03c0",
-      "size": 10256,
+      "hash": "947975cb6851dfcbd66dc11ce03fbd9ff5d11943fc42b5f119b74c825bb246e4",
+      "size": 10358,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/plans",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/progress/catalog-management.md",
-      "hash": "1413263c80135914205fb7e393f7dc29fcd9351f790709354618a989cbecaac1",
-      "size": 11688,
+      "hash": "e5fd4bea088597b8cc91b95b9f99a588976be09ee837372510783de05c42a031",
+      "size": 11801,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/progress",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/specs/catalog-management.md",
-      "hash": "9ca4b99ddf6e29c2459192ff53396616bde6046d5ae81347505b56dea17bf6b2",
-      "size": 3150,
+      "hash": "edb7814498ae9e77d5b8ebf1ae8eed0ed6d2add20de5e715c47c313ce3c27341",
+      "size": 3196,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/specs",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-22.md",
-      "hash": "f3386a09ffeb6d303cc413219d0a1e76b70d562a548e4068931f43e9c9ce6754",
-      "size": 8439,
+      "hash": "ad4e0326cae5752970a25c66f3dbfe6d2d1a2dd8d001eb6a55ee328196b9c803",
+      "size": 8533,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/verifications",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/verifications/catalog-management-2026-10-23.md",
-      "hash": "ad73b9a8b1e149d9346a7a676e0534912c81aa769fe2075619a2b9ab516a30a1",
-      "size": 4137,
+      "hash": "27e15027924e2991d3b8d53e5c17dae6b77488a3e84c62d140c1fa637d1ff5b6",
+      "size": 4172,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/verifications",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/verifications/mitigation-crud-export-2026-10-23.md",
-      "hash": "1fc030f35edb45fc110efa7aa6ef26ebca6961cedae000fa6f0e67b4a4f58540",
-      "size": 4802,
+      "hash": "db7d6dc36a59540490868eabf122386018e00c16a69bb804d11f4ef35f86802d",
+      "size": 4831,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/verifications",
       "status": "indexed"
     },
     {
       "path": "02-DOCS/wiki/sdd/verifications/mitigation-qa-2026-10-23.md",
-      "hash": "668a3c881ee269c61729a6cae04ee363d846f7149e10359119f68858a6483875",
-      "size": 7384,
+      "hash": "656ba5321537879d0c155516cfb58f0d80eb790ec245d0277aedcc8bd6de7714",
+      "size": 7450,
       "format": "md",
       "topic": "02-DOCS/wiki/sdd/verifications",
       "status": "indexed"
     },
     {
       "path": "AGENTS.md",
-      "hash": "3a4cdc66e65ca603696bb6c8dd4c6b7bea93d6758c8c46406bb61e4390a88ab8",
-      "size": 17178,
+      "hash": "842a16039b30f86f28f7140a0fbb5038a84833b57c08090e8ec5dfa6e125a9d2",
+      "size": 17456,
       "format": "md",
       "topic": "raíz",
       "status": "indexed"
     },
     {
       "path": "CLAUDE.md",
-      "hash": "ff7bc9a950d7df24ec05730534a2a2dbe846c9dfdf66d5c9b109016818de15df",
-      "size": 356,
+      "hash": "e6745ba066f253deae8d26ac53f1d1dc32b1f52fafb82e6f936fffb82f30d130",
+      "size": 367,
+      "format": "md",
+      "topic": "raíz",
+      "status": "indexed"
+    },
+    {
+      "path": "DESIGN.md",
+      "hash": "21e69dff3f06d79effae63e494c50b9d496a59bf7ff8d12b1bdf5337d26a5f82",
+      "size": 48,
+      "format": "md",
+      "topic": "raíz",
+      "status": "indexed"
+    },
+    {
+      "path": "PRODUCT.md",
+      "hash": "db9b3fd98fd998de83dd0c0bc59c4b712fd98cbfe4c9724f75b875f5e01d94e2",
+      "size": 51,
       "format": "md",
       "topic": "raíz",
       "status": "indexed"
     },
     {
       "path": "README.md",
-      "hash": "5eec29d2c4ae81fea257f6c7f0c7bfdf84ae0e041c1014f30f56dee0b01d7232",
-      "size": 4827,
+      "hash": "66a8dd41d5c8a25c254f0e7237c543db0b2e2651d23b8c206844606cd6aedcf2",
+      "size": 4883,
       "format": "md",
       "topic": "raíz",
       "status": "indexed"
     },
     {
       "path": "docs/agents/project-context.md",
-      "hash": "d401087e89adab498955bcb84ec351f2f185cd5eea2855fbae48e091fc693148",
-      "size": 13458,
+      "hash": "2f5fb6f0ecae1beeaf8bf1cb316c84c00a248528c7d6c89fb83dc19c9dea0a52",
+      "size": 13642,
       "format": "md",
       "topic": "docs/agents",
       "status": "indexed"
     },
     {
       "path": "docs/architecture/auth.md",
-      "hash": "dc325235beeb8e0096474720816e1e6ed9eb404839400a07a640619290db391d",
-      "size": 3914,
+      "hash": "fe964859744fe16935efa8a742579a718a49b786e041a00b47afc0bddeccec2f",
+      "size": 3986,
       "format": "md",
       "topic": "docs/architecture",
       "status": "indexed"
     },
     {
       "path": "public/fonts/albert-sans-OFL.txt",
-      "hash": "5c856c086e8743b84932aae46ced424729a703932b601e9eb8aaeac15a617ec6",
-      "size": 4390,
+      "hash": "55158f845babab877b46a7ca20e6fe04d479ebb588563289f76360282536579c",
+      "size": 4483,
       "format": "txt",
       "topic": "public/fonts",
       "status": "indexed"
@@ -4083,16 +4099,16 @@
     },
     {
       "path": "public/fonts/chakra-petch-OFL.txt",
-      "hash": "13831d02389d917d22fcfa6c79f98f8acbf61d230add0e73a4d4dc5f3bfb9e56",
-      "size": 4396,
+      "hash": "af39909c36b215eef56267c54843b6ffa9d2a81a8850fdeffde82bd9e4c58238",
+      "size": 4489,
       "format": "txt",
       "topic": "public/fonts",
       "status": "indexed"
     },
     {
       "path": "public/fonts/manrope-OFL.txt",
-      "hash": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b",
-      "size": 4387,
+      "hash": "4b8929f05a122b7abb9059501dc7dc4df86f8c97d5a1769d60d82cf2d2795dde",
+      "size": 4480,
       "format": "txt",
       "topic": "public/fonts",
       "status": "indexed"
@@ -4107,8 +4123,8 @@
     },
     {
       "path": "src/features/flows/ui/app_example.md",
-      "hash": "1a837e928cebfc202e2099f1226fd52cc34d35b47b9a214ca3a856e37d975f11",
-      "size": 13403,
+      "hash": "9a228056c542f344a1cdd32febf0f8c0d22db9aaa4b34f8c5479d8b2f518752d",
+      "size": 13930,
       "format": "md",
       "topic": "src/features/flows/ui",
       "status": "indexed"
@@ -4118,14 +4134,6 @@
     {
       "path": "01-TOOLS",
       "reason": "tooling-or-build"
-    },
-    {
-      "path": "DESIGN.md",
-      "reason": "symlink"
-    },
-    {
-      "path": "PRODUCT.md",
-      "reason": "symlink"
     },
     {
       "path": "coverage",

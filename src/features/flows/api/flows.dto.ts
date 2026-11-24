@@ -93,6 +93,7 @@ export const FlowDTOSchema = z.object({
   code: z.string().optional(),
   title: z.string(),
   description: z.string().optional().nullable(),
+  category: z.string().optional().nullable(),
   steps: z.array(FlowStepDTOSchema),
   flow_type: z.string().optional().nullable(),
   version: z.number(),
@@ -106,6 +107,7 @@ export const FlowListItemDTOSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string().optional().nullable(),
+  category: z.string().optional().nullable(),
   // En el listado solo necesitamos saber el tipo para contar las preguntas.
   // Permitimos passthrough para no romper si faltan campos de detalle.
   steps: z.array(
@@ -127,6 +129,35 @@ export const FlowListDTOSchema = z.object({
   offset: z.number(),
 });
 
+// -- Flow Categories
+export const FlowCategoryDTOSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional().nullable(),
+  is_active: z.boolean().optional(),
+  created_at: z.string().optional().nullable(),
+  updated_at: z.string().optional().nullable(),
+  created_by: z.string().optional().nullable(),
+  updated_by: z.string().optional().nullable(),
+});
+
+export const FlowCategoryListDTOSchema = z.object({
+  categories: z.array(FlowCategoryDTOSchema),
+  total: z.number(),
+});
+
+export interface CreateFlowCategoryDTO {
+  name: string;
+  description?: string | undefined;
+  is_active?: boolean | undefined;
+}
+
+export interface UpdateFlowCategoryDTO {
+  name?: string | undefined;
+  description?: string | undefined;
+  is_active?: boolean | undefined;
+}
+
 // ===============================
 // Tipos inferidos (para DX/TS)
 // ===============================
@@ -143,10 +174,20 @@ export type EndStepDTO = z.infer<typeof EndStepDTOSchema>;
 export type FormFieldDTO = z.infer<typeof FormFieldDTOSchema>;
 export type StepMetadataDTO = z.infer<typeof StepMetadataDTOSchema>;
 export type SharedQuantityMetadataDTO = z.infer<typeof SharedQuantityMetadataDTOSchema>;
+export type FlowCategoryDTO = z.infer<typeof FlowCategoryDTOSchema>;
+export type FlowCategoryListDTO = z.infer<typeof FlowCategoryListDTOSchema>;
 
 // ===============================
 // Helpers de validación
 // ===============================
 export function parseFlowListDTO(input: unknown): FlowListDTO {
   return FlowListDTOSchema.parse(input);
+}
+
+export function parseFlowCategoryDTO(input: unknown): FlowCategoryDTO {
+  return FlowCategoryDTOSchema.parse(input);
+}
+
+export function parseFlowCategoryListDTO(input: unknown): FlowCategoryListDTO {
+  return FlowCategoryListDTOSchema.parse(input);
 }

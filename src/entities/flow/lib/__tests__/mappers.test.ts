@@ -9,6 +9,10 @@ import {
   mapFlowListDTO,
   mapFlowStepToDTO,
   mapFlowToDTO,
+  mapFlowCategoryDTO,
+  mapFlowCategoryListDTO,
+  mapCreateFlowCategoryToDTO,
+  mapUpdateFlowCategoryToDTO,
 } from "../mappers";
 import type {
   Flow,
@@ -747,6 +751,82 @@ describe("mapFlowToDTO", () => {
       yes_next: "s-2",
       no_next: "s-3",
       images: ["a.jpg"],
+    });
+  });
+
+  it("maps category on Flow DTO <-> domain and omits it when absent", () => {
+    const withCat = mapFlowDTO(makeFlowDTO({ category: "cat-uuid-1" }));
+    expect(withCat.category).toBe("cat-uuid-1");
+    expect(mapFlowToDTO(withCat).category).toBe("cat-uuid-1");
+
+    const withoutCat = mapFlowDTO(makeFlowDTO({ category: null }));
+    expect(withoutCat.category).toBeUndefined();
+    expect(mapFlowToDTO(withoutCat).category).toBeUndefined();
+  });
+});
+
+describe("flow category mappers", () => {
+  it("maps FlowCategoryDTO tolerating absent optional fields", () => {
+    expect(
+      mapFlowCategoryDTO({
+        id: "cat-1",
+        name: "Exterior",
+      })
+    ).toEqual({
+      id: "cat-1",
+      name: "Exterior",
+      isActive: true,
+    });
+  });
+
+  it("maps FlowCategoryListDTO and create/update payloads with trimmed strings", () => {
+    const list = mapFlowCategoryListDTO({
+      categories: [
+        {
+          id: "cat-1",
+          name: "Exterior",
+          description: "Outdoor routes",
+          is_active: false,
+          created_at: "2026-01-01T00:00:00Z",
+          updated_at: "2026-01-02T00:00:00Z",
+          created_by: "admin",
+          updated_by: "admin",
+        },
+      ],
+      total: 1,
+    });
+    expect(list.total).toBe(1);
+    expect(list.categories[0]).toEqual({
+      id: "cat-1",
+      name: "Exterior",
+      description: "Outdoor routes",
+      isActive: false,
+      createdAt: "2026-01-01T00:00:00Z",
+      updatedAt: "2026-01-02T00:00:00Z",
+      createdBy: "admin",
+      updatedBy: "admin",
+    });
+
+    expect(
+      mapCreateFlowCategoryToDTO({
+        name: "  Restrooms  ",
+        description: "  All toilet rooms ",
+        isActive: true,
+      })
+    ).toEqual({
+      name: "Restrooms",
+      description: "All toilet rooms",
+      is_active: true,
+    });
+
+    expect(
+      mapUpdateFlowCategoryToDTO({
+        name: "  Updated ",
+        isActive: false,
+      })
+    ).toEqual({
+      name: "Updated",
+      is_active: false,
     });
   });
 });

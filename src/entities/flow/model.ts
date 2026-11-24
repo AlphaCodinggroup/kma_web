@@ -10,12 +10,43 @@ export interface Flow {
   code?: string | undefined;
   title: string;
   description?: string | null;
+  category?: string | undefined;
   steps: FlowStep[];
   flowType?: string | null; // p.ej. "Ramps"
   version: number;
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export type FlowCategoryId = string;
+
+export interface FlowCategory {
+  id: FlowCategoryId;
+  name: string;
+  description?: string | undefined;
+  isActive: boolean;
+  createdAt?: string | undefined;
+  updatedAt?: string | undefined;
+  createdBy?: string | undefined;
+  updatedBy?: string | undefined;
+}
+
+export interface FlowCategoryList {
+  categories: FlowCategory[];
+  total: number;
+}
+
+export interface CreateFlowCategoryInput {
+  name: string;
+  description?: string | undefined;
+  isActive?: boolean | undefined;
+}
+
+export interface UpdateFlowCategoryInput {
+  name?: string | undefined;
+  description?: string | undefined;
+  isActive?: boolean | undefined;
 }
 
 /** -----------------------
